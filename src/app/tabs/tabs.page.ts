@@ -19,7 +19,19 @@ import {
   IonRouterOutlet,
   IonTabs,
   IonTabBar,
-  IonTabButton
+  IonTabButton,
+  IonMenu,
+  IonMenuToggle,
+  IonMenuButton,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonFooter,
+  IonAvatar,
+  IonContent,
+  IonSplitPane,
+  MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
@@ -39,6 +51,7 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
     IonIcon,
     IonSearchbar,
     IonButton,
@@ -57,7 +70,17 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonTabs,
     IonTabBar,
     IonTabButton,
-    FormsModule
+    IonMenu,
+    IonMenuToggle,
+    IonMenuButton,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonFooter,
+    IonAvatar,
+    IonContent,
+    IonSplitPane
   ],
   animations: [
     trigger('slideInOut', [
@@ -77,6 +100,7 @@ export class TabsPage implements OnDestroy {
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);
   public fullscreenService = inject(FullscreenService);
+  private menuCtrl = inject(MenuController);
 
   @ViewChild('searchBar', { read: ElementRef }) searchbarRef!: ElementRef;
 
@@ -85,6 +109,7 @@ export class TabsPage implements OnDestroy {
   globalSearch: string = '';
   selectedGrupo: number = 0;
   searchExpanded: boolean = false;
+  isDesktop: boolean = window.innerWidth >= 992; // 992px es el breakpoint de ion-split-pane
   grupos: string[] = []; // Grupos dinámicos desde estudiantes
   tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG'; // Toggle para tipo de rúbrica
 
@@ -109,6 +134,9 @@ export class TabsPage implements OnDestroy {
 
   constructor() {
     addIcons({ homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline });
+
+    // Abrir menú automáticamente en desktop
+    this.setupMenuBehavior();
 
     // Suscribirse al seguimiento actual con cleanup
     this.subscriptions.push(
@@ -561,5 +589,32 @@ export class TabsPage implements OnDestroy {
   getDescripcionNivel(criterio: CriterioEvaluado): string {
     const nivel = criterio.niveles.find(n => n.nombre === criterio.nivelSeleccionado);
     return nivel?.descripcion || criterio.comentario || '';
+  }
+
+  /**
+   * Configurar comportamiento del menú: fijo en desktop (via ion-split-pane), overlay en móvil
+   */
+  private async setupMenuBehavior(): Promise<void> {
+    const checkScreenSize = async () => {
+      this.isDesktop = window.innerWidth >= 992; // 992px es el breakpoint estándar de ion-split-pane
+
+      if (this.isDesktop) {
+        // En desktop: ion-split-pane maneja el menú automáticamente
+        // El menú debe estar habilitado para que split-pane lo muestre
+        await this.menuCtrl.enable(true, 'mainMenu');
+        await this.menuCtrl.swipeGesture(false, 'mainMenu'); // Sin swipe en desktop
+      } else {
+        // En móvil: habilitar menú con swipe
+        await this.menuCtrl.enable(true, 'mainMenu');
+        await this.menuCtrl.swipeGesture(true, 'mainMenu');
+        await this.menuCtrl.close('mainMenu');
+      }
+    };
+
+    // Ejecutar al cargar
+    await checkScreenSize();
+
+    // Escuchar cambios de tamaño de ventana
+    window.addEventListener('resize', () => checkScreenSize());
   }
 }

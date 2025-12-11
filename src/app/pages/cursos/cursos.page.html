@@ -95,13 +95,13 @@
       </ion-card>
 
       <!-- Mensaje si no hay cursos -->
-      <ion-card *ngIf="cursosDisponibles.length === 0">
-        <ion-card-content class="text-center">
-          <ion-icon name="person-outline" size="large" color="medium"></ion-icon>
-          <h3>No hay Cursos Disponibles</h3>
-          <p>Vaya a <ion-icon name="document-text-outline" class="inline-icon"></ion-icon> para cargar un curso</p>
-        </ion-card-content>
-      </ion-card>
+      <div *ngIf="cursosDisponibles.length === 0" class="empty-state-fullscreen">
+        <div class="empty-state-content">
+          <ion-icon name="document-text-outline" size="large" color="medium"></ion-icon>
+          <h3>No hay cursos disponibles.</h3>
+          <p>Seleccione (botón <strong>Crear</strong>)</p>
+        </div>
+      </div>
 
       <!-- Lista de Estudiantes -->
       @if (cursoActivo && estudiantesActuales.length > 0) {

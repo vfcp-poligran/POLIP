@@ -26,41 +26,64 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /* ============================================================
-   REGLA GLOBAL ANTI-BLOQUEO Z-INDEX - SOLUCIÓN DEFINITIVA
+   LAYOUT LIMPIO SIN !important
    ============================================================ */
 
-/* Garantizar que componentes de página NUNCA estén bloqueados */
+/* Componentes de página - display block estándar */
 app-inicio, app-cursos, app-gestion-cursos,
 app-rubricas, app-calificaciones, app-sistema {
-  position: relative !important;
-  z-index: auto !important; /* Reset - permite interacción */
-  pointer-events: auto !important;
-
-  /* Todos los elementos dentro también deben ser accesibles */
-  * {
-    pointer-events: auto !important;
-  }
-
-  /* Forzar que todos los botones, inputs, cards sean clicables */
-  ion-button, ion-input, ion-card, ion-item,
-  ion-fab-button, ion-select, ion-checkbox,
-  ion-radio, ion-toggle, ion-searchbar,
-  button, input, a, textarea, select {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-  }
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-/* Contenedores de contenido deben permitir interacción */
-.page-container, .content-area, ion-router-outlet {
-  pointer-events: auto !important;
-  position: relative !important;
+/* ion-split-pane layout nativo de Ionic */
+ion-split-pane {
+  --side-width: 280px;
+  --side-max-width: 300px;
+  --side-min-width: 250px;
 }
 
-/* Asegurar que el contenido principal nunca bloquee */
-ion-router-outlet, ion-router-outlet > * {
-  z-index: auto !important;
-  pointer-events: auto !important;
+/* FIX: Asegurar que ion-router-outlet funcione correctamente */
+ion-router-outlet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  contain: layout size style;
+}
+
+ion-router-outlet .ion-page {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  justify-content: space-between;
+  contain: layout size style;
+  z-index: 0;
+}
+
+ion-router-outlet .ion-page.ion-page-invisible {
+  opacity: 0;
+}
+
+ion-router-outlet .ion-page.ion-page-hidden {
+  display: none;
+}
+
+/* FIX: Asegurar interactividad de botones y controles */
+ion-button, ion-item[button], ion-fab-button, button {
+  position: relative;
+  z-index: 1;
+}
+
+ion-content {
+  position: relative;
+  z-index: 0;
 }
 
 /**
@@ -192,57 +215,10 @@ ion-router-outlet[class*="_nghost-"] {
 }
 
 /* ============================================================================
- * CRITICAL FIX: Ensure all Ionic components receive pointer events
- *
- * Previous approach with pointer-events: none broke the layout.
- * New approach: ensure all interactive elements have pointer-events: auto
+ * Ionic components - configuración limpia sin !important
  * ============================================================================ */
 
-/* Ensure ion-tabs and ion-router-outlet allow events to their children */
-ion-tabs {
-  pointer-events: auto !important;
-}
-
-ion-router-outlet {
-  pointer-events: auto !important;
-}
-
-/* Everything inside router-outlet MUST receive events */
-ion-router-outlet>* {
-  pointer-events: auto !important;
-}
-
-/* .ion-page and ion-page should be interactive */
-.ion-page,
-ion-page {
-  pointer-events: auto !important;
-}
-
-/* All interactive Ionic components get pointer-events */
-ion-button,
-ion-item,
-ion-list,
-ion-card,
-ion-content,
-ion-header,
-ion-footer,
-ion-toolbar,
-ion-segment,
-ion-segment-button,
-ion-input,
-ion-select,
-ion-checkbox,
-ion-toggle,
-ion-searchbar,
-ion-chip,
-ion-item-sliding,
-ion-item-options,
-ion-item-option,
-ion-fab,
-ion-fab-button,
-ion-tab-bar {
-  pointer-events: auto !important;
-}
+/* ion-split-pane maneja el layout automáticamente */
 
 /* Estilos legacy de .estudiantes-table eliminados - tabla HTML ya no existe en el diseño actual */
 
@@ -383,7 +359,7 @@ ion-toast {
     right: 20px !important;
     top: 30px !important; // Alineado verticalmente con el tab bar
     position: fixed !important;
-    z-index: 10000 !important;
+    z-index: 9999 !important;
     max-width: 350px !important;
     margin: 0 !important;
   }
