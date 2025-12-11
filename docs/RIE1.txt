@@ -1,0 +1,73 @@
+=== RIE1 ===
+CURSO: ÉNFASIS EN PROGRAMACIÓN MÓVIL
+PUNTUACIÓN_TOTAL: 75
+--
+ESCALA_CALIFICACION:
+0-9|Desempeño insuficiente
+10-25|Desempeño aceptable
+70-75|Desempeño excelente
+---
+CRITERIO_1: Participación Individual
+PESO: 50
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-9
+TITULO: Insuficiente
+DESCRIPCION: Participación mínima o nula en el proyecto. No demuestra compromiso ni aportes significativos.
+
+NIVEL_2:
+PUNTOS: 9-39
+TITULO: Aceptable
+DESCRIPCION: Participación adecuada. Realiza sus tareas asignadas de manera satisfactoria.
+
+NIVEL_3:
+PUNTOS: 40-50
+TITULO: Excelente
+DESCRIPCION: Participación destacada. Va más allá de lo esperado y lidera iniciativas.
+
+---
+
+CRITERIO_2: Calidad del Código Individual
+PESO: 15
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-2
+TITULO: Insuficiente
+DESCRIPCION: Código de baja calidad, con múltiples errores o sin seguir estándares.
+
+NIVEL_2:
+PUNTOS: 3-11
+TITULO: Aceptable
+DESCRIPCION: Código funcional que cumple con los requisitos básicos y estándares mínimos.
+
+NIVEL_3:
+PUNTOS: 12-15
+TITULO: Excelente
+DESCRIPCION: Código limpio, bien documentado, eficiente y siguiendo mejores prácticas.
+
+---
+
+CRITERIO_3: Creatividad e Innovación
+PESO: 10
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-2
+TITULO: Insuficiente
+DESCRIPCION: Soluciones básicas sin originalidad ni innovación.
+
+NIVEL_2:
+PUNTOS: 3-7
+TITULO: Aceptable
+DESCRIPCION: Soluciones funcionales con algunos elementos creativos.
+
+NIVEL_3:
+PUNTOS: 8-10
+TITULO: Excelente
+DESCRIPCION: Soluciones innovadoras que demuestran pensamiento creativo y original.
+
+---
+
+=== FIN DE RÚBRICA ===

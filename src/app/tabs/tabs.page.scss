@@ -1,0 +1,4242 @@
+/* ============================================================
+   CONFIGURACIÓN DE LAYOUT MANUAL
+   ============================================================ */
+
+/* Área de contenido principal - RESPONSIVE DINÁMICO */
+.content-area {
+  position: fixed;
+  top: 0;
+  left: 60px;
+  bottom: 0;
+  right: 0;
+  background: #f8f9fa;
+  z-index: 0; /* Base layer - no debe bloquear nada */
+  overflow: hidden; /* Eliminar scroll - lo maneja ion-content de cada página */
+  transition: right 0.3s ease;
+  pointer-events: auto;
+
+  /* Ocultar ion-tab-bar */
+  .hidden-tab-bar {
+    display: none;
+  }
+
+  /* Móviles y tablets pequeñas - Sin panel */
+  @media (max-width: 767px) {
+    right: 0;
+    left: 60px;
+  }
+
+  /* Tablets medianas - Panel reducido */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    right: clamp(240px, 25vw, 300px);
+    left: 60px;
+  }
+
+  /* Desktop pequeño - Sidebar más ancho */
+  @media (min-width: 769px) and (max-width: 1023px) {
+    left: 90px;
+  }
+
+  /* Desktop medio */
+  @media (min-width: 1024px) and (max-width: 1399px) {
+    right: clamp(280px, 22vw, 380px);
+    left: 90px;
+  }
+
+  /* Desktop grande */
+  @media (min-width: 1400px) and (max-width: 1599px) {
+    right: clamp(320px, 20vw, 400px);
+    left: 90px;
+  }
+
+  /* Pantallas muy grandes */
+  @media (min-width: 1600px) and (max-width: 2559px) {
+    right: clamp(350px, 18vw, 490px);
+    left: 90px;
+  }
+
+  /* Pantallas ultra anchas */
+  @media (min-width: 2560px) {
+    right: clamp(400px, 15vw, 520px);
+    left: 90px;
+  }
+
+  /* Ensure ion-tabs takes full space and allows interaction */
+  ion-tabs {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Sin scroll interno */
+  }
+
+  /* ion-router-outlet must be visible and interactive */
+  ion-router-outlet {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%; /* Ocupa todo el espacio disponible */
+    min-height: 100%;
+    overflow: visible; /* Permite que el contenido fluya naturalmente */
+  }
+
+  /* Components rendered inside ion-router-outlet */
+  ion-router-outlet>* {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important; /* Permite que el contenido se muestre completo */
+  }
+}
+
+/* Componentes de páginas - Visibilidad garantizada SIN z-index bloqueante */
+app-inicio,
+app-cursos,
+app-gestion-cursos,
+app-rubricas,
+app-calificaciones,
+app-sistema {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  overflow: visible !important; /* Permite contenido completo */
+}
+
+/* ion-content dentro de páginas */
+ion-content {
+  --background: #f8f9fa;
+}
+
+/* NOTE: Critical pointer-events fix for ion-tabs/ion-router-outlet
+   is now in global.scss for proper global scope without view encapsulation */
+
+// ========================================
+// TAB BAR PERSONALIZADO - SIDEBAR IZQUIERDO
+// ========================================
+.custom-tab-bar.sidebar-left {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background: var(--azul-oscuro);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  padding: 8px;
+  gap: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+
+  // Estilos para botones de navegación
+  .sidebar-tab {
+    --padding-start: 0;
+    --padding-end: 0;
+    width: auto;
+    height: auto;
+    min-height: unset;
+    margin: 0;
+
+    &.active {
+      background: rgba(31, 178, 222, 0.2);
+
+      ion-icon {
+        color: var(--azul-claro, #1fb2de);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  // RESPONSIVE: Desktop - sidebar más ancho
+  @media (min-width: 769px) {
+    width: 90px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 95px;
+  }
+
+  // RESPONSIVE: Móviles - sidebar más estrecho
+  @media (max-width: 768px) {
+    width: 70px;
+    padding: 12px 4px;
+  }
+
+  @media (max-width: 480px) {
+    width: 60px;
+    padding: 10px 2px;
+  }
+}
+
+// ========================================
+// BARRA DE BÚSQUEDA FLOTANTE
+// ========================================
+.floating-search-container {
+  position: fixed;
+  top: 20px;
+  left: 100px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--azul-oscuro);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  animation: slideInFromLeft 0.3s ease-out;
+
+  @media (max-width: 768px) {
+    left: 80px;
+  }
+
+  @media (max-width: 480px) {
+    left: 70px;
+    right: 10px;
+  }
+}
+
+.floating-searchbar {
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 6px;
+  --box-shadow: none;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// ========================================
+// LOGO EN SIDEBAR
+// ========================================
+.sidebar-logo-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+
+  .sidebar-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 12px 0 8px 0;
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 0 8px 0;
+
+    .sidebar-logo {
+      width: 36px;
+      height: 36px;
+    }
+  }
+}
+
+// ========================================
+// SIDEBAR NAVEGACIÓN
+// ========================================
+.sidebar-nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  margin-top: 0;
+  flex: 1;
+}
+
+.sidebar-tab {
+  --width: 56px;
+  --height: 56px;
+  --min-height: 56px;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: transparent;
+  transition: all 0.2s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 6px auto;
+
+  ion-icon {
+    font-size: 31.2px;
+    color: rgba(255, 255, 255, 0.65);
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+
+    ion-icon {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  &.tab-selected,
+  &.active {
+    background: #ffffff;
+    border-radius: 8px;
+
+    ion-icon {
+      color: var(--azul-claro);
+      transform: scale(1.05);
+    }
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+.sidebar-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-control-button {
+  width: 100%;
+  height: 44px;
+  --padding-start: 0;
+  --padding-end: 0;
+
+  ion-icon {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  &:hover ion-icon {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+// ========================================
+
+
+// ========================================
+// LOGO CONTAINER (Legacy)
+// ========================================
+.logo-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  width: 100%;
+  padding: 8px 0;
+  flex-shrink: 0;
+  order: 0;
+
+
+  .app-logo {
+    width: 48px;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  @media (max-width: 768px) {
+    padding: 3px 0;
+  }
+}
+
+// ========================================
+// LOGO
+// ========================================
+.app-logo {
+  height: 50px;
+  width: 95px;
+  object-fit: contain;
+
+  @media (max-width: 768px) and (min-width: 481px) {
+    height: 40px;
+    width: 75px;
+  }
+
+  @media (max-width: 480px) {
+    height: 28px;
+    width: 55px;
+  }
+
+  @media (max-width: 960px) and (orientation: landscape) {
+    height: 24px;
+    width: 48px;
+  }
+}
+
+// ========================================
+// ION-CONTENT & ION-HEADER
+// ========================================
+ion-content {
+  --padding-top: 0;
+  --offset-top: 0;
+}
+
+ion-header {
+  position: relative;
+  z-index: 10;
+}
+
+
+
+
+
+// ========================================
+// CONFIGURATION SEGMENT TABS IN HEADER
+// ========================================
+.config-segment {
+  --background: transparent;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  min-height: 96.6px;
+  position: relative;
+  left: auto;
+  margin-left: auto;
+  z-index: 5;
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 60%;
+  order: 3;
+
+  /* Mejora progresiva: ocultar scrollbar en navegadores compatibles */
+  /* Webkit browsers (Safari, Chrome, Edge) */
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Fallback: IE and very old browsers */
+  -ms-overflow-style: none;
+
+  /* Additional webkit fallback for iOS Safari */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  // RESPONSIVE: Pantallas muy grandes
+  @media (min-width: 1920px) {
+    left: 480px;
+    max-width: calc(100vw - 500px);
+  }
+
+  // RESPONSIVE: Pantallas grandes
+  @media (max-width: 1919px) and (min-width: 1600px) {
+    left: 480px;
+    gap: 4px;
+    max-width: calc(100vw - 500px);
+  }
+
+  // RESPONSIVE: Pantallas medianas-grandes
+  @media (max-width: 1599px) and (min-width: 1200px) {
+    left: 480px;
+    gap: 3px;
+    max-width: calc(100vw - 500px);
+  }
+
+  // RESPONSIVE: Tabletas - Mostrar con scroll
+  @media (max-width: 1199px) and (min-width: 768px) {
+    left: 320px;
+    gap: 2px;
+    max-width: calc(100vw - 340px);
+    flex-wrap: nowrap; // No envolver
+  }
+
+  // RESPONSIVE: MÓVILES EN LANDSCAPE PERMANENTE
+  // Ajuste dinámico de íconos para pantallas móviles
+  @media (max-width: 1023px) {
+    position: fixed;
+    top: 96.6px; // Justo debajo del header
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: 50px; // Reducido para landscape
+    background: var(--azul-oscuro);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3.8px 7.6px; // Reducido 5%: 4px → 3.8px, 8px → 7.6px
+    z-index: 50; /* Reducido - solo debe estar sobre contenido, no bloquear */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    gap: 4px;
+  }
+
+  // RESPONSIVE: Pantallas muy pequeñas (landscape móvil típico)
+  @media (max-width: 800px) {
+    min-height: 48px;
+    padding: 2.85px 5.7px; // Reducido 5%: 3px → 2.85px, 6px → 5.7px
+  }
+
+  ion-segment-button {
+    --color: #ffffff;
+    --color-checked: #ffffff;
+    --color-hover: #ffffff;
+    --background: transparent;
+    --background-checked: transparent;
+    --background-hover: transparent;
+    --border-radius: 0;
+    --padding-start: 2px;
+    --padding-end: 2px;
+    --padding-top: 2px;
+    --padding-bottom: 2px;
+    --indicator-height: 0;
+    margin: 2px;
+    padding: 2px;
+    width: 140px; // Aumentado para que quepa "Calificaciones"
+    min-width: 140px;
+    max-width: 140px;
+    height: 96.6px;
+    min-height: 96.6px;
+    max-height: 96.6px;
+    border: none;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+
+    // RESPONSIVE: Pantallas medianas-grandes
+    @media (max-width: 1599px) and (min-width: 1400px) {
+      width: 135px; // Aumentado
+      min-width: 135px;
+      max-width: 135px;
+    }
+
+    // RESPONSIVE: Tabletas grandes
+    @media (max-width: 1399px) and (min-width: 1200px) {
+      width: 125px; // Aumentado
+      min-width: 125px;
+      max-width: 125px;
+    }
+
+    // RESPONSIVE: Tabletas medianas
+    @media (max-width: 1199px) and (min-width: 1024px) {
+      width: 115px; // Aumentado
+      min-width: 115px;
+      max-width: 115px;
+    }
+
+    // RESPONSIVE: Tabletas pequeñas
+    @media (max-width: 1023px) and (min-width: 768px) {
+      width: 105px; // Aumentado
+      min-width: 105px;
+      max-width: 105px;
+    }
+
+    // RESPONSIVE: MÓVILES LANDSCAPE PERMANENTE
+    // Ajuste dinámico según ancho de pantalla
+    @media (max-width: 767px) {
+      width: calc((100vw - 32px) / 4); // Distribuir en 4 columnas dinámicamente
+      min-width: 60px;
+      max-width: 100px;
+      height: 48px; // Reducido para landscape
+      min-height: 48px;
+      max-height: 48px;
+    }
+
+    // RESPONSIVE: Pantallas muy pequeñas (landscape móvil típico)
+    @media (max-width: 800px) and (min-width: 600px) {
+      width: calc((100vw - 40px) / 4);
+      min-width: 70px;
+      max-width: 110px;
+    }
+
+    // RESPONSIVE: Pantallas ultra pequeñas
+    @media (max-width: 599px) {
+      width: calc((100vw - 24px) / 4);
+      min-width: 55px;
+      max-width: 90px;
+      height: 46px;
+      min-height: 46px;
+      max-height: 46px;
+    }
+
+    ion-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.18rem; // Reducido 10% adicional: 0.2 * 0.9 = 0.18rem
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      white-space: nowrap; // Sin saltos de línea
+      line-height: 1.1;
+      max-width: 100%;
+      overflow: visible;
+
+      // RESPONSIVE: Desktop grande
+      @media (min-width: 1400px) {
+        font-size: 0.2025rem; // Reducido 10% adicional: 0.225 * 0.9 = 0.2025rem
+      }
+
+      // RESPONSIVE: Reducir fuente en pantallas más pequeñas
+      @media (max-width: 1199px) and (min-width: 1024px) {
+        font-size: 0.171rem; // Reducido 10% adicional: 0.19 * 0.9 = 0.171rem
+      }
+
+      @media (max-width: 1023px) and (min-width: 768px) {
+        font-size: 0.1575rem; // Reducido 10% adicional: 0.175 * 0.9 = 0.1575rem
+      }
+
+      // RESPONSIVE: MÓVILES LANDSCAPE - Fuentes ajustadas
+      @media (max-width: 767px) {
+        font-size: 0.55rem;
+        gap: 2px;
+        font-weight: 600;
+        line-height: 1;
+      }
+
+      @media (max-width: 599px) {
+        font-size: 0.5rem;
+        gap: 2px;
+      }
+
+      ion-icon {
+        font-size: 0.3384rem; // Reducido 40%: 0.564 * 0.6 = 0.3384rem
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 10.64px; // Reducido 40%: 17.74 * 0.6 = 10.64px
+        height: 10.64px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        padding: 2.18px; // Reducido 40%: 3.63 * 0.6 = 2.18px
+        margin: 0;
+
+        // RESPONSIVE: Desktop extra grande (1920px+) - Círculos más grandes
+        @media (min-width: 1920px) {
+          width: 13.2px; // Reducido 40%: 22 * 0.6 = 13.2px
+          height: 13.2px;
+          font-size: 0.42rem; // Reducido 40%: 0.7 * 0.6 = 0.42rem
+          padding: 2.7px; // Reducido 40%: 4.5 * 0.6 = 2.7px
+        }
+
+        // RESPONSIVE: Desktop grande (1400-1919px) - Círculos grandes
+        @media (min-width: 1400px) and (max-width: 1919px) {
+          width: 12px; // Reducido 40%: 20 * 0.6 = 12px
+          height: 12px;
+          font-size: 0.384rem; // Reducido 40%: 0.64 * 0.6 = 0.384rem
+          padding: 2.52px; // Reducido 40%: 4.2 * 0.6 = 2.52px
+        }
+
+        // RESPONSIVE: Desktop medio (1200-1399px) - Círculos medianos-grandes
+        @media (min-width: 1200px) and (max-width: 1399px) {
+          width: 11.4px; // Reducido 40%: 19 * 0.6 = 11.4px
+          height: 11.4px;
+          font-size: 0.3648rem; // Reducido 40%: 0.608 * 0.6 = 0.3648rem
+          padding: 2.4px; // Reducido 40%: 4 * 0.6 = 2.4px
+        }
+
+        // RESPONSIVE: Desktop compacto (1024-1199px) - Círculos medianos
+        @media (min-width: 1024px) and (max-width: 1199px) {
+          width: 10.8px; // Reducido 40%: 18 * 0.6 = 10.8px
+          height: 10.8px;
+          font-size: 0.3456rem; // Reducido 40%: 0.576 * 0.6 = 0.3456rem
+          padding: 2.28px; // Reducido 40%: 3.8 * 0.6 = 2.28px
+        }
+
+        // RESPONSIVE: Tabletas (768-1023px) - Círculos reducidos
+        @media (min-width: 768px) and (max-width: 1023px) {
+          width: 9.6px; // Reducido 40%: 16 * 0.6 = 9.6px
+          height: 9.6px;
+          font-size: 0.3072rem; // Reducido 40%: 0.512 * 0.6 = 0.3072rem
+          padding: 2.04px; // Reducido 40%: 3.4 * 0.6 = 2.04px
+        }
+
+        // RESPONSIVE: MÓVILES LANDSCAPE - Íconos compactos
+        @media (max-width: 767px) {
+          font-size: 0.6rem; // Reducido 40%: 1 * 0.6 = 0.6rem
+          width: 19.2px; // Reducido 40%: 32 * 0.6 = 19.2px
+          height: 19.2px;
+          padding: 3.6px; // Reducido 40%: 6 * 0.6 = 3.6px
+        }
+
+        @media (max-width: 599px) {
+          font-size: 0.51rem; // Reducido 40%: 0.85 * 0.6 = 0.51rem
+          width: 15.6px; // Reducido 40%: 26 * 0.6 = 15.6px
+          height: 15.6px;
+          padding: 2.7px; // Reducido 40%: 4.5 * 0.6 = 2.7px
+        }
+
+        // RESPONSIVE: Móviles muy pequeños (<400px) - Círculos mínimos
+        @media (max-width: 399px) {
+          font-size: 0.45rem; // Reducido 40%: 0.75 * 0.6 = 0.45rem
+          width: 14.4px; // Reducido 40%: 24 * 0.6 = 14.4px
+          height: 14.4px;
+          padding: 2.4px; // Reducido 40%: 4 * 0.6 = 2.4px
+        }
+      }
+    }
+
+    &:hover:not(.segment-button-checked) {
+      ion-label ion-icon {
+        transform: scale(1.1);
+      }
+    }
+
+    &.segment-button-checked {
+      ion-label ion-icon {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  // Colores específicos para cada tab
+  ion-segment-button[value="nuevo"] ion-label ion-icon {
+    background: var(--azul-claro);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(31, 178, 222, 0.4);
+    }
+  }
+
+  ion-segment-button[value="nuevo"].segment-button-checked ion-label ion-icon {
+    box-shadow: 0 4px 16px rgba(31, 178, 222, 0.6);
+  }
+
+  ion-segment-button[value="herramientas"] ion-label ion-icon {
+    background: var(--verde);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(166, 206, 56, 0.4);
+    }
+  }
+
+  ion-segment-button[value="herramientas"].segment-button-checked ion-label ion-icon {
+    box-shadow: 0 4px 16px rgba(166, 206, 56, 0.6);
+  }
+
+  ion-segment-button[value="calificaciones"] ion-label ion-icon {
+    background: var(--naranja);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(251, 175, 23, 0.4);
+    }
+  }
+
+  ion-segment-button[value="calificaciones"].segment-button-checked ion-label ion-icon {
+    box-shadow: 0 4px 16px rgba(251, 175, 23, 0.6);
+  }
+
+  ion-segment-button[value="sistema"] ion-label ion-icon {
+    background: var(--magenta);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(236, 6, 119, 0.4);
+    }
+  }
+
+  ion-segment-button[value="sistema"].segment-button-checked ion-label ion-icon {
+    box-shadow: 0 4px 16px rgba(236, 6, 119, 0.6);
+  }
+}
+
+// Estilo para los botones de tab circulares - Botón Home MEJORADO CON TAMAÑO DE CONFIGURACIÓN
+ion-tab-button.circular-tab {
+  --color: #ffffff;
+  --color-selected: #ffffff;
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: auto;
+  width: auto;
+  padding: 0;
+  margin: 0;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  overflow: visible;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  // Botón de Inicio - CUADRADO PERFECTO con círculo completo
+  &.inicio-tab {
+    position: relative;
+    margin-left: 4px;
+    margin-top: 0;
+    order: 2;
+    flex-basis: auto;
+    display: flex;
+    align-self: center;
+    margin-bottom: 0;
+    z-index: 100; /* Reducido - solo para hover sobre otros botones */
+    flex-shrink: 0;
+    margin-right: 12px;
+
+    // DIMENSIONES BASE: CUADRADO PERFECTO MÁS GRANDE
+    width: 56px !important; // Aumentado significativamente (+40%)
+    height: 56px !important; // Forzar alto igual al ancho
+    min-width: 56px !important;
+    min-height: 56px !important;
+    max-width: 56px !important;
+    max-height: 56px !important;
+
+    padding: 6px; // Más espacio para el círculo
+    border-radius: 12px; // Esquinas redondeadas proporcionales
+    gap: 0;
+    box-sizing: border-box !important;
+
+    // NUEVO: Borde cuadrado visible alrededor del círculo
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    // RESPONSIVE: Desktop base - Cuadrado perfecto MÁS GRANDE
+    @media (min-width: 769px) {
+      width: 60px !important; // +36% más grande
+      height: 60px !important;
+      min-width: 60px !important;
+      min-height: 60px !important;
+      max-width: 60px !important;
+      max-height: 60px !important;
+      padding: 6px;
+      margin-left: 6px;
+      margin-right: 12px;
+      margin-top: 0;
+    }
+
+    // RESPONSIVE: Desktop medio (1024-1199px)
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      width: 64px !important; // +39% más grande
+      height: 64px !important;
+      min-width: 64px !important;
+      min-height: 64px !important;
+      max-width: 64px !important;
+      max-height: 64px !important;
+      padding: 7px;
+      margin-left: 6px;
+      margin-right: 14px;
+    }
+
+    // RESPONSIVE: Desktop grande (1200-1399px)
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      width: 68px !important; // +42% más grande
+      height: 68px !important;
+      min-width: 68px !important;
+      min-height: 68px !important;
+      max-width: 68px !important;
+      max-height: 68px !important;
+      padding: 8px;
+      margin-left: 8px;
+      margin-right: 16px;
+    }
+
+    // RESPONSIVE: Desktop extra grande (1400-1919px)
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      width: 72px !important; // +44% más grande
+      height: 72px !important;
+      min-width: 72px !important;
+      min-height: 72px !important;
+      max-width: 72px !important;
+      max-height: 72px !important;
+      padding: 8px;
+      margin-left: 8px;
+      margin-right: 18px;
+    }
+
+    // RESPONSIVE: Desktop ultra grande (1920px+)
+    @media (min-width: 1920px) {
+      width: 76px !important; // +46% más grande
+      height: 76px !important;
+      min-width: 76px !important;
+      min-height: 76px !important;
+      max-width: 76px !important;
+      max-height: 76px !important;
+      padding: 9px;
+      margin-left: 10px;
+      margin-right: 20px;
+    }
+
+    // RESPONSIVE: Tabletas (481-768px)
+    @media (max-width: 768px) and (min-width: 481px) {
+      width: 52px !important; // +37% más grande
+      height: 52px !important;
+      min-width: 52px !important;
+      min-height: 52px !important;
+      max-width: 52px !important;
+      max-height: 52px !important;
+      padding: 6px;
+      margin-left: 4px;
+      margin-right: 4px;
+      margin-top: 0;
+    }
+
+    // RESPONSIVE: Móviles (max-width: 480px)
+    @media (max-width: 480px) {
+      width: 48px !important; // +33% más grande
+      height: 48px !important;
+      min-width: 48px !important;
+      min-height: 48px !important;
+      max-width: 48px !important;
+      max-height: 48px !important;
+      padding: 5px;
+      margin-left: 3px;
+      margin-right: 3px;
+      margin-top: 0;
+    }
+
+    // RESPONSIVE: Móviles pequeños (max-width: 360px)
+    @media (max-width: 360px) {
+      width: 44px !important; // +29% más grande
+      height: 44px !important;
+      min-width: 44px !important;
+      min-height: 44px !important;
+      max-width: 44px !important;
+      max-height: 44px !important;
+      padding: 5px;
+      margin-left: 2px;
+      margin-right: 2px;
+      margin-top: 0;
+    }
+
+    // RESPONSIVE: Landscape móvil - Ultra compacto
+    @media (max-width: 960px) and (orientation: landscape) {
+      width: 46px !important; // +35% más grande
+      height: 46px !important;
+      min-width: 46px !important;
+      min-height: 46px !important;
+      max-width: 46px !important;
+      max-height: 46px !important;
+      padding: 5px;
+      margin-left: 3px;
+      margin-right: 3px;
+      margin-top: 0;
+    }
+
+    // Efectos hover - Mejorar el borde cuadrado
+    &:hover {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.10));
+      border-color: rgba(255, 255, 255, 0.6); // Borde más visible en hover
+      transform: scale(1.02);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    &.tab-selected {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.14));
+      border-color: rgba(255, 255, 255, 0.8); // Borde muy visible cuando está seleccionado
+      transform: scale(1.04);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  .button-inner {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0; // Sin padding
+    display: flex;
+    gap: 0; // Sin gap
+    height: 100%;
+    width: 100%;
+
+    // RESPONSIVE: Desktop - Sin gap
+    @media (min-width: 769px) {
+      gap: 0;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  ion-icon {
+    margin: 0;
+    flex-shrink: 0;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+    // RESPONSIVE: Desktop base (769-1023px)
+    @media (min-width: 769px) and (max-width: 1023px) {
+      font-size: 1.2rem; // Reducido
+      width: 38px; // Círculo más pequeño en cuadrado de 60px
+      height: 38px;
+      padding: 8px;
+    }
+
+    // RESPONSIVE: Desktop medio (1024-1199px)
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      font-size: 1.3rem; // Reducido
+      width: 40px; // Círculo más pequeño en cuadrado de 64px
+      height: 40px;
+      padding: 9px;
+    }
+
+    // RESPONSIVE: Desktop grande (1200-1399px)
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      font-size: 1.4rem; // Reducido
+      width: 42px; // Círculo más pequeño en cuadrado de 68px
+      height: 42px;
+      padding: 10px;
+    }
+
+    // RESPONSIVE: Desktop extra grande (1400-1919px)
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      font-size: 1.5rem; // Reducido
+      width: 44px; // Círculo más pequeño en cuadrado de 72px
+      height: 44px;
+      padding: 11px;
+    }
+
+    // RESPONSIVE: Desktop ultra grande (1920px+)
+    @media (min-width: 1920px) {
+      font-size: 1.6rem; // Reducido
+      width: 46px; // Círculo más pequeño en cuadrado de 76px
+      height: 46px;
+      padding: 12px;
+    }
+
+    // RESPONSIVE: Tabletas (481-768px)
+    @media (max-width: 768px) and (min-width: 481px) {
+      font-size: 1rem; // Reducido
+      width: 32px; // Círculo más pequeño en cuadrado de 52px
+      height: 32px;
+      padding: 7px;
+    }
+
+    // RESPONSIVE: Móviles (max-width: 480px)
+    @media (max-width: 480px) {
+      font-size: 0.9rem; // Reducido
+      width: 30px; // Círculo más pequeño en cuadrado de 48px
+      height: 30px;
+      padding: 6px;
+    }
+
+    // RESPONSIVE: Móviles pequeños (max-width: 360px)
+    @media (max-width: 360px) {
+      font-size: 0.8rem; // Reducido
+      width: 26px; // Círculo más pequeño en cuadrado de 44px
+      height: 26px;
+      padding: 5px;
+    }
+
+    // RESPONSIVE: Landscape móvil - Compacto
+    @media (max-width: 960px) and (orientation: landscape) {
+      font-size: 0.9rem; // Reducido
+      width: 28px; // Círculo más pequeño en cuadrado de 46px
+      height: 28px;
+      padding: 6px;
+    }
+  }
+
+  .home-label {
+    display: block;
+    color: #ffffff;
+    font-weight: 500; // Igual que configuración
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: none;
+    transition: all 0.3s ease;
+
+    @media (min-width: 769px) {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 0.55rem;
+      line-height: 1.0;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.5rem;
+    }
+
+    @media (max-width: 360px) {
+      font-size: 0.45rem;
+    }
+
+    @media (max-width: 960px) and (orientation: landscape) {
+      font-size: 0.45rem;
+    }
+  }
+}
+
+// ========================================
+// LÓGICA DE COLORES PARA TABS CIRCULARES
+// ========================================
+ion-tab-button[tab="inicio"].circular-tab {
+  ion-icon {
+    background: var(--magenta);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  &:hover ion-icon {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+  }
+
+  &.tab-selected ion-icon {
+    transform: scale(1.05);
+    filter: brightness(1.15);
+  }
+}
+
+// ========================================
+// CONTENEDOR DE BÚSQUEDA DESPLEGABLE - DEBAJO DEL CUSTOM-TAB-BAR
+// ========================================
+.search-container {
+  display: flex;
+  align-items: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  order: 4; // Posicionado después del config-options-container
+  flex-shrink: 0; // No se contrae cuando se expande
+
+  // Estado inicial: solo muestra el botón de lupa
+  background: transparent;
+  border: none;
+  box-shadow: none;
+
+  // RESPONSIVE: Animaciones optimizadas según dispositivo
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  // RESPONSIVE: Optimización para dispositivos táctiles
+  @media (hover: none) and (pointer: coarse) {
+    // Área táctil mínima recomendada
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  // RESPONSIVE: Desktop - Como elemento independiente en el tab-bar
+  @media (min-width: 769px) {
+    display: flex;
+    visibility: visible;
+    margin-left: 16px; // Espaciado desde el config-options-container
+    position: relative; // Posicionamiento relativo para la expansión
+  }
+
+  @media (min-width: 1024px) {
+    margin-left: 20px;
+  }
+
+  @media (min-width: 1200px) {
+    margin-left: 24px;
+  }
+
+  @media (min-width: 1400px) {
+    margin-left: 28px;
+  }
+
+  @media (min-width: 1920px) {
+    margin-left: 32px;
+  }
+
+  // RESPONSIVE: Móviles - ocultar en el desktop menu, se mostrará en el sidebar móvil
+  @media (max-width: 768px) {
+    display: none; // Ocultar en móviles dentro del desktop-menu
+  }
+
+  .search-button {
+    --background: linear-gradient(145deg, var(--azul-claro), #1a8cb8);
+    --color: white;
+    --border-radius: 50%;
+    --box-shadow: 0 6px 18px rgba(31, 178, 222, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+    --ripple-color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+
+    // RESPONSIVE: Tamaños base y móvil
+    height: 44px; // Tamaño mínimo táctil
+    width: 44px;
+
+    // RESPONSIVE: Desktop base
+    @media (min-width: 769px) and (max-width: 1023px) {
+      height: 52px;
+      width: 52px;
+    }
+
+    // RESPONSIVE: Desktop medio
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      height: 56px;
+      width: 56px;
+    }
+
+    // RESPONSIVE: Desktop grande
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      height: 60px;
+      width: 60px;
+    }
+
+    // RESPONSIVE: Desktop extra grande
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      height: 64px;
+      width: 64px;
+    }
+
+    // RESPONSIVE: Desktop ultra grande
+    @media (min-width: 1920px) {
+      height: 68px;
+      width: 68px;
+    }
+
+    ion-icon {
+      transition: transform 0.3s ease;
+      font-size: 22px; // Base responsive
+
+      // RESPONSIVE: Móvil pequeño
+      @media (max-width: 480px) {
+        font-size: 20px;
+      }
+
+      // RESPONSIVE: Tabletas
+      @media (min-width: 481px) and (max-width: 768px) {
+        font-size: 24px;
+      }
+
+      // RESPONSIVE: Desktop base
+      @media (min-width: 769px) and (max-width: 1023px) {
+        font-size: 26px;
+      }
+
+      // RESPONSIVE: Desktop medio
+      @media (min-width: 1024px) and (max-width: 1199px) {
+        font-size: 28px;
+      }
+
+      // RESPONSIVE: Desktop grande
+      @media (min-width: 1200px) and (max-width: 1399px) {
+        font-size: 30px;
+      }
+
+      // RESPONSIVE: Desktop extra grande
+      @media (min-width: 1400px) and (max-width: 1919px) {
+        font-size: 32px;
+      }
+
+      // RESPONSIVE: Desktop ultra grande
+      @media (min-width: 1920px) {
+        font-size: 34px;
+      }
+
+      // RESPONSIVE: Animaciones reducidas
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    &:hover {
+      --background: linear-gradient(145deg, #0ea5e9, var(--azul-oscuro));
+      --box-shadow: 0 8px 24px rgba(31, 178, 222, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.4);
+      transform: scale(1.12);
+      border-color: rgba(255, 255, 255, 0.8);
+
+      ion-icon {
+        transform: rotate(90deg);
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    // En móvil
+    @media (max-width: 768px) {
+      height: 44px;
+      width: 44px;
+      --background: transparent;
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+  }
+
+  .header-searchbar {
+    --background: rgba(255, 255, 255, 0.9);
+    --color: var(--azul-oscuro);
+    --placeholder-color: rgba(15, 56, 90, 0.7);
+    --border-radius: 20px;
+    --box-shadow: 0 2px 8px rgba(31, 178, 222, 0.2);
+    --icon-color: var(--azul-claro);
+    --clear-button-color: var(--azul-claro);
+    border: 1px solid rgba(31, 178, 222, 0.2);
+
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-left: 0;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: none;
+
+    // RESPONSIVE: Base height
+    height: 36px;
+
+    // RESPONSIVE: Tabletas
+    @media (min-width: 481px) and (max-width: 768px) {
+      height: 38px;
+      margin-left: 6px;
+    }
+
+    // RESPONSIVE: Desktop base
+    @media (min-width: 769px) and (max-width: 1023px) {
+      height: 40px;
+      margin-left: 8px;
+    }
+
+    // RESPONSIVE: Desktop medio
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      height: 44px;
+      margin-left: 10px;
+    }
+
+    // RESPONSIVE: Desktop grande
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      height: 48px;
+      margin-left: 12px;
+    }
+
+    // RESPONSIVE: Desktop extra grande
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      height: 52px;
+      margin-left: 14px;
+    }
+
+    // RESPONSIVE: Desktop ultra grande
+    @media (min-width: 1920px) {
+      height: 56px;
+      margin-left: 16px;
+    }
+
+    // RESPONSIVE: Móviles pequeños
+    @media (max-width: 480px) {
+      height: 32px;
+      margin-left: 4px;
+    }
+
+    // RESPONSIVE: Animaciones reducidas
+    @media (prefers-reduced-motion: reduce) {
+      transition: width 0.2s ease, opacity 0.2s ease;
+    }
+
+    // Estilos internos del searchbar
+    .searchbar-input-container {
+      @media (min-width: 769px) {
+        height: 46px;
+      }
+
+      @media (min-width: 1200px) {
+        height: 50px;
+      }
+
+      @media (min-width: 1400px) {
+        height: 54px;
+      }
+
+      @media (max-width: 768px) {
+        height: 36px;
+      }
+    }
+
+    .searchbar-input {
+      --padding-start: 20px;
+      --padding-end: 20px;
+      font-weight: 500;
+      text-align: left !important;
+      letter-spacing: 0.2px;
+
+      // RESPONSIVE: Tipografía escalada
+      @media (min-width: 769px) {
+        font-size: 15px;
+      }
+
+      @media (min-width: 1200px) {
+        font-size: 16px;
+        --padding-start: 24px;
+        --padding-end: 24px;
+      }
+
+      @media (min-width: 1400px) {
+        font-size: 17px;
+        --padding-start: 28px;
+        --padding-end: 28px;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+      }
+
+      &::placeholder {
+        font-style: italic;
+        opacity: 0.6;
+        font-weight: 400;
+      }
+
+      /* Asegurar alineación izquierda al recibir foco */
+      &:focus {
+        text-align: left !important;
+      }
+    }
+
+    /* Estilo directo para el input nativo */
+    input {
+      text-align: left !important;
+      direction: ltr !important;
+    }
+
+    .searchbar-search-icon {
+      color: var(--azul-claro) !important;
+    }
+
+    &:hover {
+      --background: rgba(255, 255, 255, 1);
+      --box-shadow: 0 4px 16px rgba(31, 178, 222, 0.3);
+      border-color: var(--azul-claro);
+      transform: translateY(-1px);
+    }
+
+    &:focus-within {
+      --background: rgba(255, 255, 255, 1);
+      --box-shadow: 0 0 0 3px rgba(31, 178, 222, 0.2), 0 4px 16px rgba(31, 178, 222, 0.3);
+      border-color: var(--azul-claro);
+    }
+  }
+
+  // Estado expandido: muestra el cuadro de búsqueda desplegable
+  &.expanded {
+
+    // RESPONSIVE: Desktop - expansión como elemento independiente
+    @media (min-width: 769px) {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: clamp(300px, 35vw, 400px);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+      -webkit-backdrop-filter: blur(25px);
+      backdrop-filter: blur(25px);
+      border: 2px solid rgba(31, 178, 222, 0.3);
+      box-shadow: 0 8px 32px rgba(31, 178, 222, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      border-radius: 25px;
+      z-index: 200; /* Reducido - modal debe estar sobre contenido pero no bloquear fuera */
+    }
+
+    @media (min-width: 1024px) {
+      width: clamp(320px, 38vw, 450px);
+      border-radius: 26px;
+      box-shadow: 0 10px 35px rgba(31, 178, 222, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.6);
+    }
+
+    @media (min-width: 1200px) {
+      width: clamp(360px, 40vw, 500px);
+      border-radius: 27px;
+      box-shadow: 0 12px 40px rgba(31, 178, 222, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.7);
+    }
+
+    @media (min-width: 1400px) {
+      width: clamp(400px, 42vw, 550px);
+      border-radius: 28px;
+      box-shadow: 0 14px 45px rgba(31, 178, 222, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.8);
+    }
+
+    @media (min-width: 1920px) {
+      width: clamp(450px, 45vw, 600px);
+      border-radius: 30px;
+      box-shadow: 0 16px 50px rgba(31, 178, 222, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.9);
+    }
+
+    // RESPONSIVE: Móviles - expansión horizontal centrada
+    @media (max-width: 768px) {
+      width: clamp(280px, 85vw, 360px);
+      background: linear-gradient(145deg, rgba(31, 178, 222, 0.25), rgba(31, 178, 222, 0.15));
+      box-shadow: 0 6px 20px rgba(31, 178, 222, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
+      transform: translateX(-50%);
+      border: 2px solid rgba(31, 178, 222, 0.4);
+    }
+
+    @media (max-width: 480px) {
+      width: clamp(240px, 90vw, 320px);
+    }
+
+    @media (max-width: 360px) {
+      width: clamp(200px, 95vw, 280px);
+    }
+
+    .search-button {
+      --background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.8));
+      border: 2px solid var(--azul-claro);
+
+      ion-icon {
+        transform: rotate(90deg);
+        color: var(--azul-oscuro) !important;
+        filter: drop-shadow(0 1px 2px rgba(31, 178, 222, 0.3));
+      }
+    }
+
+    .header-searchbar {
+      width: auto; // Toma el espacio disponible
+      opacity: 1;
+      flex: 1; // Ocupa el espacio restante
+      --background: transparent;
+      --box-shadow: none;
+      border: none;
+
+      @media (max-width: 768px) {
+        width: 200px;
+      }
+
+      @media (max-width: 480px) {
+        width: 160px;
+      }
+
+      @media (max-width: 360px) {
+        width: 120px;
+      }
+    }
+
+    // En móvil muy pequeño, mover el contenedor más hacia la izquierda
+    @media (max-width: 480px) {
+      left: 140px;
+    }
+
+    @media (max-width: 360px) {
+      left: 120px;
+    }
+  }
+}
+
+// ========================================
+// CONTENEDOR DE OPCIONES DE CONFIGURACIÓN - CON MENÚ HAMBURGUESA
+// ========================================
+.config-options-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  order: 3; // Después del botón inicio (order: 2)
+  margin-left: 8px; // Espaciado desde el botón inicio
+  z-index: 1000;
+  flex-shrink: 1; // Permite contraerse si es necesario
+
+  // RESPONSIVE: Asegurar que se mantenga el flujo horizontal
+  @media (min-width: 769px) {
+    flex-wrap: nowrap;
+    gap: 0; // Sin gap entre elementos para control preciso
+  }
+
+  // RESPONSIVE: Alineación y espaciado completo
+  @media (min-width: 769px) and (max-width: 1023px) {
+    margin-left: 10px; // Espaciado base desktop
+  }
+
+  @media (min-width: 1024px) and (max-width: 1199px) {
+    margin-left: 12px; // Desktop medio
+  }
+
+  @media (min-width: 1200px) and (max-width: 1399px) {
+    margin-left: 16px; // Desktop grande
+  }
+
+  @media (min-width: 1400px) and (max-width: 1919px) {
+    margin-left: 20px; // Desktop extra grande
+  }
+
+  @media (min-width: 1920px) {
+    margin-left: 24px; // Desktop ultra grande
+  }
+
+  // RESPONSIVE: Móvil - Posicionamiento específico
+  @media (max-width: 768px) and (min-width: 481px) {
+    margin-left: 6px; // Tabletas
+    margin-right: 8px;
+  }
+
+  @media (max-width: 480px) {
+    margin-left: 4px; // Móviles pequeños
+    margin-right: 6px;
+  }
+
+  // RESPONSIVE: Landscape móvil
+  @media (max-width: 960px) and (orientation: landscape) {
+    margin-left: 6px;
+    margin-right: 4px;
+  }
+
+  // Botón del menú hamburguesa - RESPONSIVE COMPLETO
+  .mobile-menu-button {
+    --background: transparent;
+    --color: white;
+    --border-radius: 8px;
+    --box-shadow: none;
+    --ripple-color: rgba(255, 255, 255, 0.3);
+    height: 48px;
+    width: 48px;
+    margin: 0;
+    display: none; // Oculto por defecto
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 24px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      --background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+
+    // RESPONSIVE: Mostrar en móviles con tamaños específicos
+    @media (max-width: 768px) and (min-width: 481px) {
+      display: flex;
+      height: 52px; // Ligeramente más grande en tabletas
+      width: 52px;
+
+      ion-icon {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      display: flex;
+      height: 44px; // Más compacto en móviles pequeños
+      width: 44px;
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+
+    // RESPONSIVE: Landscape móvil - muy compacto
+    @media (max-width: 960px) and (orientation: landscape) {
+      display: flex;
+      height: 40px;
+      width: 40px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  // Overlay del menú móvil
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 140; /* Reducido - overlay no debe bloquear contenido de página */
+    cursor: pointer;
+
+    // Solo visible en móviles
+    @media (min-width: 769px) {
+      display: none;
+    }
+  }
+}
+
+// ========================================
+// SEGMENTO DE CONFIGURACIÓN EN EL HEADER - DESKTOP Y MÓVIL SEPARADOS
+// ========================================
+.config-segment-header {
+  --background: transparent;
+  display: flex;
+  gap: 12px; // Reducido para mejor distribución en Desktop
+  margin: 0;
+  align-items: flex-start;
+
+  // RESPONSIVE: Espaciado progresivo y completo
+  @media (min-width: 769px) and (max-width: 1023px) {
+    gap: 18px; // Desktop base - espaciado cómodo
+  }
+
+  @media (min-width: 1024px) and (max-width: 1199px) {
+    gap: 20px; // Desktop medio - más espacio
+  }
+
+  @media (min-width: 1200px) and (max-width: 1399px) {
+    gap: 24px; // Desktop grande - espacioso
+  }
+
+  @media (min-width: 1400px) and (max-width: 1919px) {
+    gap: 28px; // Desktop extra grande - muy espacioso
+  }
+
+  @media (min-width: 1920px) {
+    gap: 32px; // Desktop ultra grande - máximo espacio
+  }
+
+  // RESPONSIVE: Pantallas ultrawide (21:9, 32:9)
+  @media (min-width: 2560px) {
+    gap: 36px; // Espaciado extra para pantallas muy anchas
+    max-width: 80%; // Limitar ancho para mejor usabilidad
+  }
+
+  // RESPONSIVE: Pantallas 4K y superiores
+  @media (min-width: 3840px) {
+    gap: 40px;
+    font-size: 1.1em; // Texto ligeramente más grande
+    max-width: 70%; // Aún más limitado en pantallas enormes
+  }
+
+  // RESPONSIVE: Móvil - gaps específicos
+  @media (max-width: 768px) {
+    gap: 8px; // Compacto para móviles
+    flex-wrap: wrap; // Permitir wrap si es necesario
+  }
+
+  // RESPONSIVE: Landscape móvil - ultra compacto
+  @media (max-width: 960px) and (orientation: landscape) {
+    gap: 6px;
+    align-items: center;
+  }
+
+  // RESPONSIVE: Zoom del sistema (150%+)
+  @media (min-resolution: 1.5dppx) {
+    gap: calc(var(--gap-base, 20px) * 0.85); // Reduce gap en zoom alto
+  }
+
+  // RESPONSIVE: Preferencia por contraste alto
+  @media (prefers-contrast: high) {
+    filter: contrast(1.2);
+  }
+
+  // RESPONSIVE: Modo oscuro del sistema
+  @media (prefers-color-scheme: dark) {
+    // Ya tenemos modo oscuro, pero podemos optimizar
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  // RESPONSIVE: Desktop - Layout horizontal alineado a la derecha del botón inicio
+  &.desktop-menu {
+    @media (min-width: 769px) {
+      position: relative;
+      flex-direction: row; // Mantener horizontal
+      height: auto;
+      padding: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center; // Centrar verticalmente con el botón inicio
+      gap: 18px; // Espaciado base desktop optimizado
+    }
+
+    // RESPONSIVE: Desktop medio optimizado
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      gap: 20px; // Espaciado medio
+    }
+
+    // RESPONSIVE: Pantallas grandes
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      gap: 24px; // Espaciado grande
+    }
+
+    // RESPONSIVE: Pantallas extra grandes
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      gap: 28px; // Espaciado extra grande
+    }
+
+    // RESPONSIVE: Pantallas ultra grandes
+    @media (min-width: 1920px) {
+      gap: 32px; // Espaciado máximo
+    }
+
+    // RESPONSIVE: Móvil - Ocultar con transiciones suaves
+    @media (max-width: 768px) {
+      display: none !important;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    // RESPONSIVE: Landscape móvil - también ocultar
+    @media (max-width: 960px) and (orientation: landscape) {
+      display: none !important;
+    }
+
+    // RESPONSIVE: Mostrar con transición en desktop
+    @media (min-width: 769px) {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    // RESPONSIVE: Optimización para dispositivos con movimiento reducido
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+      animation: none !important;
+    }
+
+    // RESPONSIVE: Mejor rendimiento en dispositivos de gama media
+    @media (max-width: 1024px) {
+      will-change: opacity, visibility;
+      backface-visibility: hidden;
+    }
+  }
+
+  .config-tab-button {
+    --color: #ffffff;
+    --color-selected: #ffffff;
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --indicator-height: 0;
+    background: transparent;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px;
+    overflow: visible;
+    flex-shrink: 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    // RESPONSIVE: Desktop - RECTÁNGULOS REDUCIDOS 20% (era 135px)
+    @media (min-width: 769px) {
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: 108px !important; // Reducido 20% de 135px
+      height: 90px !important; // Altura se mantiene
+      min-width: 108px !important;
+      min-height: 90px !important;
+      max-width: 108px !important;
+      max-height: 90px !important;
+      padding: 9px 10px !important; // Padding ajustado
+      border-radius: 18px !important;
+      border: 2px solid rgba(255, 255, 255, 0.5) !important;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+      box-sizing: border-box !important;
+    }
+
+    // RESPONSIVE: Desktop medio (1024-1199px) - REDUCIDO 20%
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      width: 115px !important; // Reducido 20% de 144px
+      height: 96px !important; // Altura se mantiene
+      min-width: 115px !important;
+      min-height: 96px !important;
+      max-width: 115px !important;
+      max-height: 96px !important;
+      padding: 10px 12px !important; // Padding ajustado
+      border-radius: 19px !important;
+    }
+
+    // RESPONSIVE: Desktop grande (1200-1399px) - REDUCIDO 20%
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      width: 122px !important; // Reducido 20% de 153px
+      height: 102px !important; // Altura se mantiene
+      min-width: 122px !important;
+      min-height: 102px !important;
+      max-width: 122px !important;
+      max-height: 102px !important;
+      padding: 12px 14px !important; // Padding ajustado
+      border-radius: 20px !important;
+    }
+
+    // RESPONSIVE: Desktop extra grande (1400-1919px) - REDUCIDO 20%
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      width: 130px !important; // Reducido 20% de 162px
+      height: 108px !important; // Altura se mantiene
+      min-width: 130px !important;
+      min-height: 108px !important;
+      max-width: 130px !important;
+      max-height: 108px !important;
+      padding: 12px 16px !important; // Padding ajustado
+      border-radius: 22px !important;
+    }
+
+    // RESPONSIVE: Desktop ultra grande (1920px+) - REDUCIDO 20%
+    @media (min-width: 1920px) {
+      width: 137px !important; // Reducido 20% de 171px
+      height: 114px !important; // Altura se mantiene
+      min-width: 137px !important;
+      min-height: 114px !important;
+      max-width: 137px !important;
+      max-height: 114px !important;
+      padding: 14px 18px !important; // Padding ajustado
+      border-radius: 24px !important;
+    }
+
+    // RESPONSIVE: Móvil - 50% MÁS ANCHO
+    @media (max-width: 768px) and (min-width: 481px) {
+      width: 117px !important; // 50% más ancho que 78px
+      height: 78px !important; // Altura se mantiene
+      min-width: 117px !important;
+      min-height: 78px !important;
+      max-width: 117px !important;
+      max-height: 78px !important;
+      padding: 8px 12px !important; // Más padding horizontal
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      border-radius: 15px !important;
+      border: 2px solid rgba(255, 255, 255, 0.4) !important;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    // RESPONSIVE: Móvil pequeño (≤480px) - 50% más ancho
+    @media (max-width: 480px) {
+      width: 108px !important; // 50% más ancho que 72px
+      height: 72px !important; // Altura se mantiene
+      min-width: 108px !important;
+      min-height: 72px !important;
+      max-width: 108px !important;
+      max-height: 72px !important;
+      padding: 6px 10px !important; // Más padding horizontal
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      border-radius: 12px !important;
+      border: 2px solid rgba(255, 255, 255, 0.4) !important;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    // Íconos con círculos aumentados 30%
+    ion-icon {
+      font-size: 1.3rem; // Aumentado 30% de 1rem
+      color: #ffffff;
+      background: var(--ion-color-primary);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+      // Dimensiones base del círculo del ícono - AUMENTADO 30%
+      width: 31px;
+      height: 31px;
+      padding: 6px;
+
+      // RESPONSIVE: Desktop base - Círculo aumentado 30%
+      @media (min-width: 769px) {
+        font-size: 1.3rem; // 30% más de 1rem
+        width: 36px; // 30% más de 28px
+        height: 36px;
+        padding: 8px; // Padding proporcional
+      }
+
+      // RESPONSIVE: Desktop medio - Aumentado 30%
+      @media (min-width: 1024px) and (max-width: 1199px) {
+        font-size: 1.43rem; // 30% más de 1.1rem
+        width: 39px; // 30% más de 30px
+        height: 39px;
+        padding: 9px; // Padding proporcional
+      }
+
+      // RESPONSIVE: Desktop grande - Aumentado 30%
+      @media (min-width: 1200px) and (max-width: 1399px) {
+        font-size: 1.56rem; // 30% más de 1.2rem
+        width: 42px; // 30% más de 32px
+        height: 42px;
+        padding: 10px; // Padding proporcional
+      }
+
+      // RESPONSIVE: Desktop extra grande - Aumentado 30%
+      @media (min-width: 1400px) and (max-width: 1919px) {
+        font-size: 1.69rem; // 30% más de 1.3rem
+        width: 44px; // 30% más de 34px
+        height: 44px;
+        padding: 11px; // Padding proporcional
+      }
+
+      // RESPONSIVE: Desktop ultra grande - Aumentado 30%
+      @media (min-width: 1920px) {
+        font-size: 1.82rem; // 30% más de 1.4rem
+        width: 47px; // 30% más de 36px
+        height: 47px;
+        padding: 12px; // Padding proporcional
+      }
+
+      // RESPONSIVE: Móvil - Círculo aumentado 30%
+      @media (max-width: 768px) and (min-width: 481px) {
+        font-size: 1.17rem; // 30% más de 0.9rem
+        width: 29px; // 30% más de 22px
+        height: 29px;
+        padding: 6px; // Padding proporcional
+      }
+
+      // RESPONSIVE: Móvil pequeño - Aumentado 30%
+      @media (max-width: 480px) {
+        font-size: 1.04rem; // 30% más de 0.8rem
+        width: 26px; // 30% más de 20px
+        height: 26px;
+        padding: 5px; // Padding proporcional
+      }
+    }
+
+    // Etiquetas para botones más grandes - texto reducido 50%
+    ion-label {
+      font-size: 0.375rem; // Reducido 50% de 0.75rem
+      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.1; // Ligero aumento para mejor legibilidad
+      margin: 0;
+      margin-top: 3px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: visible; // Permitir que se vea el texto completo
+      text-overflow: clip; // Sin ellipsis
+      max-width: 100%;
+      transition: all 0.3s ease;
+
+      // RESPONSIVE: Desktop - Texto reducido 50% en botones de 135px ancho
+      @media (min-width: 769px) {
+        font-size: 0.45rem; // Reducido 50% de 0.9rem
+        font-weight: 700;
+        line-height: 1.1;
+        margin-top: 3px;
+        max-width: 125px; // Casi todo el ancho del botón (135px)
+        word-wrap: break-word;
+      }
+
+      // RESPONSIVE: Desktop medio - Texto reducido 50% en botones de 144px ancho
+      @media (min-width: 1024px) and (max-width: 1199px) {
+        font-size: 0.475rem; // Reducido 50% de 0.95rem
+        max-width: 130px; // Casi todo el ancho del botón (144px)
+        line-height: 1.2;
+      }
+
+      // RESPONSIVE: Desktop grande - Texto reducido 50% en botones de 153px ancho
+      @media (min-width: 1200px) and (max-width: 1399px) {
+        font-size: 0.5rem; // Reducido 50% de 1rem
+        max-width: 140px; // Casi todo el ancho del botón (153px)
+        line-height: 1.2;
+      }
+
+      // RESPONSIVE: Desktop extra grande - Texto reducido 50% en botones de 162px ancho
+      @media (min-width: 1400px) and (max-width: 1919px) {
+        font-size: 0.525rem; // Reducido 50% de 1.05rem
+        max-width: 150px; // Casi todo el ancho del botón (162px)
+        line-height: 1.2;
+      }
+
+      // RESPONSIVE: Desktop ultra grande - Texto reducido 50% en botones de 171px ancho
+      @media (min-width: 1920px) {
+        font-size: 0.55rem; // Reducido 50% de 1.1rem
+        max-width: 160px; // Casi todo el ancho del botón (171px)
+        line-height: 1.2;
+      }
+
+      // RESPONSIVE: Móvil - MOSTRAR ETIQUETAS en botones de 117px ancho
+      @media (max-width: 768px) and (min-width: 481px) {
+        display: block; // Mostrar ya que los botones son de 117px ancho
+        font-size: 0.4rem; // Reducido 50% de 0.8rem
+        max-width: 105px; // Casi todo el ancho del botón (117px)
+        line-height: 1.1;
+        margin-top: 2px;
+      }
+
+      // RESPONSIVE: Móvil pequeño - botones de 108px ancho
+      @media (max-width: 480px) {
+        display: block; // Mostrar ya que los botones son de 108px ancho
+        font-size: 0.375rem; // Reducido 50% de 0.75rem
+        max-width: 95px; // Casi todo el ancho del botón (108px)
+        line-height: 1.1;
+        margin-top: 2px;
+      }
+    }
+
+    // Colores para cada opción
+    &[value="nuevo"] ion-icon {
+      background: var(--azul-claro);
+    }
+
+    &[value="herramientas"] ion-icon {
+      background: var(--verde);
+    }
+
+    &[value="calificaciones"] ion-icon {
+      background: var(--naranja);
+    }
+
+    &[value="sistema"] ion-icon {
+      background: var(--magenta);
+    }
+
+    // Efectos hover optimizados para botones cuadrados como el inicio
+    &:hover {
+      transform: scale(1.02); // Efecto sutil en todo el botón
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 6px 18px rgba(0, 0, 0, 0.3);
+
+      ion-icon {
+        filter: brightness(1.15);
+        transform: scale(1.05);
+      }
+    }
+
+    // Estado seleccionado optimizado
+    &.segment-button-checked {
+      transform: scale(1.01);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), 0 8px 22px rgba(0, 0, 0, 0.4);
+
+      ion-icon {
+        filter: brightness(1.25);
+        transform: scale(1.03);
+      }
+    }
+
+    // RESPONSIVE: Optimizaciones adicionales para dispositivos específicos
+    @media (hover: none) and (pointer: coarse) {
+
+      // Dispositivos táctiles - mejor feedback táctil
+      &:hover {
+        transform: none !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+      }
+
+      &:active {
+        background: rgba(255, 255, 255, 0.3) !important;
+        transform: scale(0.95) !important;
+        transition: all 0.1s ease !important;
+      }
+    }
+
+    // RESPONSIVE: Dispositivos con hover preciso (ratón)
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+    }
+
+    // RESPONSIVE: Optimización para conexiones lentas
+    @media (prefers-reduced-data: reduce) {
+      box-shadow: none !important;
+      text-shadow: none !important;
+
+      ion-icon {
+        box-shadow: none !important;
+      }
+    }
+
+    // RESPONSIVE: Dispositivos con animaciones reducidas
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+      animation: none !important;
+
+      ion-icon {
+        transition: none !important;
+      }
+
+      ion-label {
+        transition: none !important;
+      }
+    }
+
+    // RESPONSIVE: Pantallas de alta densidad
+    @media (-webkit-min-device-pixel-ratio: 2),
+    (min-resolution: 192dpi) {
+      transform: translateZ(0); // Aceleración hardware
+      backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+
+      ion-icon {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+    }
+  }
+}
+
+// ========================================
+// BARRA LATERAL MÓVIL
+// ========================================
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100vh;
+  background: var(--azul-oscuro);
+  z-index: 1001;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.3);
+
+  // Safe areas
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-right: env(safe-area-inset-right);
+
+  // Estado expandido
+  &.expanded {
+    transform: translateX(0);
+  }
+
+  // Solo visible en móviles
+  @media (min-width: 769px) {
+    display: none;
+  }
+
+  .mobile-sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+  }
+
+  .mobile-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    h3 {
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .close-button {
+      --color: #ffffff;
+      --background: transparent;
+      --border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .mobile-sidebar-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .sidebar-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: 1px solid transparent;
+
+    ion-icon {
+      font-size: 24px;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    span {
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(-4px);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--azul-claro);
+
+      ion-icon {
+        color: var(--azul-claro);
+      }
+
+      span {
+        color: var(--azul-claro);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Overlay para la barra lateral
+.mobile-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.expanded {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+.config-tab-button {
+  --color: #ffffff;
+  --color-selected: #ffffff;
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --indicator-height: 0;
+  background: transparent;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px;
+  overflow: visible;
+  flex-shrink: 0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  // RESPONSIVE: Desktop - Layout vertical CON ÍCONOS MÁS GRANDES
+  @media (min-width: 769px) {
+    flex-direction: column !important;
+    justify-content: center !important;
+    height: 120px !important; // Aumentado para acomodar íconos más grandes
+    min-height: 120px !important;
+    max-height: 120px !important;
+    width: 110px !important; // Aumentado para acomodar íconos más grandes
+    min-width: 110px !important;
+    max-width: 110px !important;
+    padding: 10px !important;
+  }
+
+  // RESPONSIVE: Móvil - Layout horizontal con íconos más grandes
+  @media (max-width: 768px) {
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    height: 56px !important; // Aumentado para acomodar íconos más grandes
+    width: 100% !important;
+    padding: 10px 14px !important; // Padding aumentado
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    gap: 10px; // Gap aumentado
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(2px); // Movimiento más sutil
+    }
+
+    &.segment-button-checked {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // RESPONSIVE: Móviles pequeños - Aún más compacto
+  @media (max-width: 480px) {
+    height: 44px !important;
+    padding: 6px 10px !important;
+    gap: 6px;
+  }
+
+  // RESPONSIVE: Pantallas muy pequeñas
+  @media (max-width: 360px) {
+    height: 40px !important;
+    padding: 5px 8px !important;
+    gap: 5px;
+  }
+
+  // RESPONSIVE: Tablet
+  @media (max-width: 1024px) {
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+  }
+
+  // RESPONSIVE: Móvil
+  @media (max-width: 768px) {
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+    gap: 4px;
+  }
+
+  // RESPONSIVE: Móvil pequeño
+  @media (max-width: 480px) {
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+    height: 84.7px !important;
+    min-height: 84.7px !important;
+    max-height: 84.7px !important;
+    gap: 3px;
+  }
+
+  // RESPONSIVE: Móvil muy pequeño
+  @media (max-width: 360px) {
+    width: 65px !important;
+    min-width: 65px !important;
+    max-width: 65px !important;
+    gap: 2px;
+  }
+
+  // RESPONSIVE: Landscape móvil
+  @media (max-width: 960px) and (orientation: landscape) {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    height: 72.6px !important;
+    min-height: 72.6px !important;
+    max-height: 72.6px !important;
+    gap: 2px;
+  }
+
+  ion-icon {
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+
+    // RESPONSIVE: Desktop base - MISMO TAMAÑO QUE INICIO
+    @media (min-width: 769px) {
+      font-size: 1.4rem;
+      width: 40px;
+      height: 40px;
+      padding: 10px;
+    }
+
+    // RESPONSIVE: Desktop medio
+    @media (min-width: 1024px) and (max-width: 1199px) {
+      font-size: 1.5rem;
+      width: 42px;
+      height: 42px;
+      padding: 11px;
+    }
+
+    // RESPONSIVE: Desktop grande
+    @media (min-width: 1200px) and (max-width: 1399px) {
+      font-size: 1.6rem;
+      width: 44px;
+      height: 44px;
+      padding: 12px;
+    }
+
+    // RESPONSIVE: Desktop extra grande
+    @media (min-width: 1400px) and (max-width: 1919px) {
+      font-size: 1.7rem;
+      width: 46px;
+      height: 46px;
+      padding: 13px;
+    }
+
+    // RESPONSIVE: Desktop ultra grande
+    @media (min-width: 1920px) {
+      font-size: 1.8rem;
+      width: 48px;
+      height: 48px;
+      padding: 14px;
+    }
+
+    // RESPONSIVE: Móvil - Íconos MÁS GRANDES
+    @media (max-width: 768px) {
+      font-size: 1.2rem; // Aumentado para mejor visibilidad
+      width: 40px !important; // Más grande
+      height: 40px !important;
+      min-width: 40px !important;
+      min-height: 40px !important;
+      max-width: 40px !important;
+      max-height: 40px !important;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2); // Borde sutil
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); // Sombra sutil
+    }
+
+    // RESPONSIVE: Móviles pequeños - Íconos muy compactos
+    @media (max-width: 480px) {
+      font-size: 0.9rem; // Tamaño fijo más controlado
+      width: 28px;
+      height: 28px;
+      padding: 4px;
+    }
+
+    // RESPONSIVE: Pantallas muy pequeñas - Ultra compacto
+    @media (max-width: 360px) {
+      font-size: 0.8rem;
+      width: 24px;
+      height: 24px;
+      padding: 3px;
+    }
+
+    // RESPONSIVE: Landscape móvil - Muy compacto
+    @media (max-width: 960px) and (orientation: landscape) {
+      font-size: 0.85rem;
+      width: 26px;
+      height: 26px;
+      padding: 4px;
+    }
+  }
+
+  ion-label {
+    color: #ffffff;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    text-transform: none;
+    transition: all 0.3s ease;
+
+    // RESPONSIVE: Desktop - Layout vertical centrado
+    @media (min-width: 769px) {
+      font-size: 0.55rem;
+      text-align: center;
+      line-height: 1.2;
+      display: block;
+      max-width: 90px;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      margin-bottom: 2px;
+      padding: 0 2px;
+    }
+
+    // RESPONSIVE: Móvil - Layout horizontal con fuente optimizada
+    @media (max-width: 768px) {
+      font-size: 0.75rem; // Reducido para evitar desbordamiento
+      text-align: left;
+      line-height: 1.2;
+      display: block;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: none;
+    }
+
+    // RESPONSIVE: Móviles pequeños - Fuente muy compacta
+    @media (max-width: 480px) {
+      font-size: 0.65rem; // Fuente fija más pequeña para mejor control
+      line-height: 1.1;
+    }
+
+    // RESPONSIVE: Pantallas muy pequeñas - Ultra compacto
+    @media (max-width: 360px) {
+      font-size: 0.6rem; // Fuente mínima para pantallas muy pequeñas
+      line-height: 1.0;
+    }
+
+    // RESPONSIVE: Landscape móvil - Fuente compacta
+    @media (max-width: 960px) and (orientation: landscape) {
+      font-size: 0.65rem;
+      line-height: 1.0;
+    }
+  }
+
+  // Colores para cada opción
+  &[value="nuevo"] ion-icon {
+    background: var(--azul-claro);
+  }
+
+  &[value="herramientas"] ion-icon {
+    background: var(--verde);
+  }
+
+  &[value="calificaciones"] ion-icon {
+    background: var(--naranja);
+  }
+
+  &[value="sistema"] ion-icon {
+    background: var(--magenta);
+  }
+
+  // Efectos hover optimizados para botones cuadrados
+  &:hover {
+    transform: scale(1.02); // Efecto sutil en todo el botón
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 6px 18px rgba(0, 0, 0, 0.3);
+
+    ion-icon {
+      filter: brightness(1.15);
+      transform: scale(1.05);
+    }
+  }
+
+  // Estado seleccionado optimizado
+  &.segment-button-checked {
+    transform: scale(1.01);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), 0 8px 22px rgba(0, 0, 0, 0.4);
+
+    ion-icon {
+      filter: brightness(1.25);
+      transform: scale(1.03);
+    }
+  }
+}
+
+// ========================================
+// LAYOUT PRINCIPAL CON PANEL DE SEGUIMIENTO
+// ========================================
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 18%); // Panel REDUCIDO 30%: de 510px/25% a 280px/18%
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 0;
+
+  // RESPONSIVE: Layout adaptativo para diferentes tamaños de pantalla
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr; // Solo tabs en móvil/tablet
+    width: 100vw;
+  }
+
+  // RESPONSIVE: Desktop - layout de dos columnas balanceado
+  @media (min-width: 1024px) {
+    grid-template-columns: 1fr auto; // Tab-content flexible + panel fijo
+    gap: 0; // Sin gap para aprovechar espacio
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  // RESPONSIVE: Pantallas ultra anchas - centrar contenido
+  @media (min-width: 2560px) {
+    max-width: 2400px; // Limitar ancho máximo
+    margin: 0 auto; // Centrar horizontalmente
+  }
+
+  // RESPONSIVE: Optimizar para diferentes ratios de aspecto
+  @media (min-aspect-ratio: 16/9) {
+    // Pantallas panorámicas - optimizar distribución horizontal
+    grid-template-columns: minmax(60%, 1fr) minmax(300px, 25%);
+  }
+}
+
+ion-tabs {
+  grid-column: 1;
+  position: relative;
+  background: var(--ion-background-color, #ffffff);
+  display: flex;
+  flex-direction: column;
+
+  // RESPONSIVE: Transiciones suaves al cambiar tamaño
+  transition: width 0.3s ease, max-width 0.3s ease, height 0.3s ease, margin-top 0.3s ease;
+
+  // RESPONSIVE: Scroll y overflow optimizado
+  overflow-x: hidden;
+  overflow-y: hidden; // El scroll lo maneja ion-content
+
+  /* RESPONSIVE: Altura ajustada para el custom-tab-bar fijo */
+  // Móvil portrait - altura disponible debajo del custom-tab-bar
+  height: calc(100vh - calc(75px + env(safe-area-inset-top)));
+  margin-top: calc(75px + env(safe-area-inset-top));
+
+  // Móvil landscape
+  @media (max-width: 960px) and (orientation: landscape) {
+    height: calc(100vh - calc(70px + env(safe-area-inset-top)));
+    margin-top: calc(70px + env(safe-area-inset-top));
+  }
+
+  // Desktop base
+  @media (min-width: 769px) {
+    height: calc(100vh - calc(90px + env(safe-area-inset-top)));
+    margin-top: calc(90px + env(safe-area-inset-top));
+  }
+
+  // Desktop grande
+  @media (min-width: 1200px) {
+    height: calc(100vh - calc(95px + env(safe-area-inset-top)));
+    margin-top: calc(95px + env(safe-area-inset-top));
+  }
+
+  // Desktop extra grande
+  @media (min-width: 1400px) {
+    height: calc(100vh - calc(100px + env(safe-area-inset-top)));
+    margin-top: calc(100px + env(safe-area-inset-top));
+  }
+
+  // RESPONSIVE: Ajustar ancho para compartir con panel-seguimiento-global
+  @media (min-width: 1024px) {
+    width: calc(100vw - clamp(280px, 21vw, 420px)); // Restar ancho del panel
+    max-width: calc(100vw - 280px); // Ancho mínimo disponible
+  }
+
+  @media (min-width: 1600px) {
+    width: calc(100vw - clamp(350px, 18vw, 490px)); // Panel más grande
+    max-width: calc(100vw - 350px);
+  }
+
+  // RESPONSIVE: Móvil - ancho completo (panel oculto)
+  @media (max-width: 1023px) {
+    width: 100vw;
+    max-width: 100vw;
+  }
+}
+
+.panel-seguimiento-global {
+  /* Sistema responsive moderno con safe areas y ajuste para sidebar */
+  position: fixed;
+  right: env(safe-area-inset-right);
+  top: 0;
+  bottom: env(safe-area-inset-bottom);
+  background: #f8f9fa;
+  border-left: 2px solid var(--azul-claro);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 10;
+  transition: width 0.3s ease, transform 0.3s ease;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  pointer-events: auto;
+
+  /* Ancho responsive dinámico optimizado */
+  width: clamp(280px, 21vw, 420px);
+  min-width: 280px;
+  max-width: 420px;
+  flex-shrink: 0;
+
+  /* MÓVILES: Ocultar completamente */
+  @media (max-width: 767px) {
+    display: none !important;
+  }
+
+  /* TABLETS MEDIANAS (768px - 1023px): Panel compacto */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    width: clamp(240px, 25vw, 300px);
+    min-width: 240px;
+    max-width: 300px;
+
+    .panel-seguimiento-header h3 {
+      font-size: 1rem;
+    }
+
+    .panel-seguimiento-content {
+      padding: 12px;
+    }
+  }
+
+  /* DESKTOP PEQUEÑO (1024px - 1279px): Balance entre espacio */
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    width: clamp(280px, 22vw, 340px);
+    min-width: 280px;
+    max-width: 340px;
+  }
+
+  /* DESKTOP MEDIO (1280px - 1399px): Ancho intermedio */
+  @media (min-width: 1280px) and (max-width: 1399px) {
+    width: clamp(300px, 21vw, 360px);
+    min-width: 300px;
+    max-width: 360px;
+  }
+
+  /* DESKTOP GRANDE (1400px - 1599px): Más espacio */
+  @media (min-width: 1400px) and (max-width: 1599px) {
+    width: clamp(320px, 20vw, 400px);
+    min-width: 320px;
+    max-width: 400px;
+  }
+
+  /* PANTALLAS MUY GRANDES (1600px - 2559px): Generoso */
+  @media (min-width: 1600px) and (max-width: 2559px) {
+    width: clamp(350px, 18vw, 490px);
+    min-width: 350px;
+    max-width: 490px;
+  }
+
+  /* PANTALLAS ULTRA ANCHAS (2560px+): Máximo espacio */
+  @media (min-width: 2560px) {
+    width: clamp(400px, 15vw, 520px);
+    min-width: 400px;
+    max-width: 520px;
+  }
+
+  /* LANDSCAPE: Ajuste para notch lateral */
+  @media (min-width: 1024px) and (orientation: landscape) {
+    right: max(env(safe-area-inset-right), 0px);
+  }
+
+  /* ALTURA CORTA: Reducir padding en pantallas de poca altura */
+  @media (max-height: 700px) {
+    .panel-seguimiento-header {
+      padding: 12px;
+    }
+
+    .panel-seguimiento-content {
+      padding: 12px;
+    }
+
+    .seguimiento-section {
+      margin-bottom: 12px;
+    }
+  }
+}
+
+.panel-seguimiento-global {
+  // Ionic Card wrapper - resetear estilos de card
+  --background: transparent;
+  box-shadow: none;
+  border: none;
+  border-left: 2px solid var(--azul-claro);
+  border-radius: 0;
+  margin: 0;
+
+  // Header con Ionic Card Header
+  ion-card-header.panel-seguimiento-header {
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+    border-bottom: 2px solid var(--azul-claro);
+    padding: 9.6px;
+    --background: transparent;
+
+    ion-card-title {
+      color: #ffffff;
+      margin: 0;
+      font-size: 0.66rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4.8px;
+    }
+  }
+
+  // Content con Ionic Card Content
+  ion-card-content.panel-seguimiento-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 9.6px;
+    background: #ffffff;
+  }
+
+  // Secciones del panel de seguimiento
+  .seguimiento-section {
+    margin-bottom: 12px;
+
+    // Ionic Label como section title
+    ion-label.section-title {
+      display: block;
+      font-size: 0.51rem;
+      font-weight: 700;
+      color: var(--azul-oscuro);
+      margin: 0 0 7.2px 0;
+      letter-spacing: 0.3px;
+    }
+
+    // Ionic Label como grupo info title
+    ion-label.grupo-info-title {
+      display: block;
+      font-size: 0.66rem;
+      font-weight: 600;
+      color: var(--azul-oscuro);
+      margin: 0 0 4.8px 0;
+      padding-bottom: 4.8px;
+      border-bottom: 2px solid var(--azul-claro);
+
+      // Ionic Chip como curso prefix
+      ion-chip.curso-prefix {
+        font-weight: 700;
+        margin-right: 4.8px;
+        vertical-align: middle;
+      }
+    }
+
+    // Ionic Label para comentarios
+    ion-label.comentarios-label {
+      display: flex;
+      align-items: center;
+      gap: 4.8px;
+      font-size: 0.54rem;
+      font-weight: 600;
+      color: #666;
+      margin: 0;
+    }
+
+    .comentarios-content {
+      min-height: 60px;
+      padding: 7.2px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      color: #666;
+      font-size: 0.51rem;
+      line-height: 1.4;
+    }
+  }
+
+  // Placeholder cuando no hay curso activo
+  .seguimiento-placeholder {
+    text-align: center;
+    padding: 19.2px 9.6px;
+    color: #666;
+
+    ion-icon {
+      font-size: 38.4px;
+      margin-bottom: 9.6px;
+      opacity: 0.5;
+    }
+
+    h4 {
+      font-size: 0.66rem;
+      font-weight: 600;
+      color: var(--azul-oscuro);
+      margin: 0 0 4.8px 0;
+    }
+
+    p {
+      font-size: 0.54rem;
+      line-height: 1.4;
+      margin: 0;
+      color: #666;
+
+      strong {
+        color: var(--azul-claro);
+        font-weight: 600;
+      }
+    }
+  }
+
+  // Grid de grupos con Ionic Buttons - Diseño moderno sin bordes
+  .grupos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(31.2px, 1fr));
+    gap: 6px;
+
+    // Ionic Button como grupo-btn - Usando variables CSS nativas de Ionic
+    ion-button.grupo-btn {
+      // Padding interno - Forzar consistencia en todas las vistas
+      --padding-start: 7.2px;
+      --padding-end: 7.2px;
+      --padding-top: 6px;
+      --padding-bottom: 6px;
+      padding: 0;
+
+      // Eliminar bordes completamente
+      --border-width: 0;
+      --border-style: none;
+      --border-color: transparent;
+
+      // Colores de fondo por estado - Más visibles y sólidos
+      --background: rgba(31, 178, 222, 0.18);
+      --background-hover: rgba(31, 178, 222, 0.28);
+      --background-activated: rgba(31, 178, 222, 0.35);
+      --background-focused: rgba(31, 178, 222, 0.22);
+
+      // Colores de texto por estado
+      --color: var(--azul-oscuro);
+      --color-hover: var(--azul-oscuro);
+      --color-activated: var(--azul-oscuro);
+      --color-focused: var(--azul-oscuro);
+
+      // Forma y sombra
+      --border-radius: 6px;
+      --box-shadow: 0 1px 2.4px rgba(0, 0, 0, 0.06);
+
+      // Efecto ripple
+      --ripple-color: rgba(31, 178, 222, 0.4);
+
+      // Propiedades del botón
+      font-size: 0.54rem;
+      font-weight: 600;
+      letter-spacing: 0.18px;
+      min-height: 24px;
+      height: auto;
+      margin: 0;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+
+      // Estado hover usando pseudo-clase de Ionic
+      &::part(native):hover {
+        transform: translateY(-2px) scale(1.02);
+      }
+
+      &:hover {
+        --box-shadow: 0 4px 12px rgba(31, 178, 222, 0.2);
+      }
+
+      // Estado activo (seleccionado)
+      &.active {
+        --background: var(--azul-claro);
+        --background-hover: var(--azul-oscuro);
+        --background-activated: var(--azul-oscuro);
+        --color: #ffffff;
+        --color-hover: #ffffff;
+        --color-activated: #ffffff;
+        --box-shadow: 0 4px 12px rgba(31, 178, 222, 0.35);
+        font-weight: 700;
+        transform: scale(1.03);
+      }
+
+      // Variante dashboard con color magenta
+      &.grupo-btn-dashboard {
+        --background: rgba(236, 6, 119, 0.18);
+        --background-hover: rgba(236, 6, 119, 0.28);
+        --background-activated: rgba(236, 6, 119, 0.35);
+        --background-focused: rgba(236, 6, 119, 0.22);
+        --ripple-color: rgba(236, 6, 119, 0.4);
+
+        ion-icon {
+          font-size: 0.78rem;
+          transition: transform 0.25s ease;
+        }
+
+        &:hover ion-icon {
+          transform: rotate(90deg) scale(1.1);
+        }
+
+        &.active {
+          --background: var(--magenta);
+          --background-hover: #c7055f;
+          --background-activated: #c7055f;
+          --color: #ffffff;
+          --color-hover: #ffffff;
+          --color-activated: #ffffff;
+          --box-shadow: 0 4px 12px rgba(236, 6, 119, 0.35);
+        }
+      }
+    }
+  }
+
+  // Opciones de configuración en el panel
+  .config-options-panel {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+
+    .config-segment-circular {
+      --background: transparent;
+      display: grid;
+      grid-template-columns: 1fr 1fr; // 2 columnas
+      gap: 20px; // Aumentado para mejor separación
+      padding: 16px;
+      justify-items: center;
+      align-items: start;
+
+      ion-segment-button {
+        --color: #ffffff;
+        --color-checked: #ffffff;
+        --color-hover: #ffffff;
+        --background: transparent;
+        --background-checked: transparent;
+        --background-hover: transparent;
+        --border-radius: 0;
+        --padding-start: 0;
+        --padding-end: 0;
+        --padding-top: 0;
+        --padding-bottom: 0;
+        --indicator-height: 0;
+        margin: 0;
+        border: none;
+        position: relative;
+        height: 110px; // Aumentado para mejor distribución
+        width: 100%;
+        max-width: 200px; // Limitar ancho máximo
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        ion-label {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 0.75rem;
+          text-align: center;
+          width: 100%;
+
+          ion-icon {
+            font-size: 2rem; // Aumentado para mejor visibilidad
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px; // Aumentado para círculos completos
+            height: 70px; // Aumentado para círculos completos
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            padding: 15px; // Aumentado proporcionalmente
+            margin: 0;
+            transition: all 0.3s ease;
+          }
+        }
+
+        &:hover:not(.segment-button-checked) ion-label ion-icon {
+          transform: scale(1.1);
+        }
+
+        &.segment-button-checked ion-label ion-icon {
+          transform: scale(1.05);
+        }
+      }
+
+      // Colores específicos para cada opción
+      ion-segment-button[value="nuevo"] ion-label ion-icon {
+        background: var(--azul-claro);
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(31, 178, 222, 0.4);
+        }
+      }
+
+      ion-segment-button[value="nuevo"].segment-button-checked ion-label ion-icon {
+        box-shadow: 0 4px 16px rgba(31, 178, 222, 0.6);
+      }
+
+      ion-segment-button[value="herramientas"] ion-label ion-icon {
+        background: var(--verde);
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(166, 206, 56, 0.4);
+        }
+      }
+
+      ion-segment-button[value="herramientas"].segment-button-checked ion-label ion-icon {
+        box-shadow: 0 4px 16px rgba(166, 206, 56, 0.6);
+      }
+
+      ion-segment-button[value="calificaciones"] ion-label ion-icon {
+        background: var(--naranja);
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(251, 175, 23, 0.4);
+        }
+      }
+
+      ion-segment-button[value="calificaciones"].segment-button-checked ion-label ion-icon {
+        box-shadow: 0 4px 16px rgba(251, 175, 23, 0.6);
+      }
+
+      ion-segment-button[value="sistema"] ion-label ion-icon {
+        background: var(--magenta);
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(236, 6, 119, 0.4);
+        }
+      }
+
+      ion-segment-button[value="sistema"].segment-button-checked ion-label ion-icon {
+        box-shadow: 0 4px 16px rgba(236, 6, 119, 0.6);
+      }
+    }
+  }
+
+  .panel-content-area {
+    margin-top: 20px;
+  }
+
+  .no-comentarios {
+    color: #999;
+    font-style: italic;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  // Ionic List para comentarios
+  ion-list.comentarios-lista {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  // Ionic Card para cada comentario
+  ion-card.comentario-card {
+    --background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4.8px;
+    border-left: 2px solid var(--azul-claro);
+    margin: 0 0 4.8px 0;
+    box-shadow: none;
+
+    ion-card-header {
+      --background: transparent;
+      padding: 4.8px 7.2px;
+      display: flex;
+      align-items: center;
+      gap: 4.8px;
+      flex-wrap: wrap;
+
+      ion-badge {
+        font-size: 0.42rem;
+        --padding-start: 3.6px;
+        --padding-end: 3.6px;
+        --padding-top: 1.8px;
+        --padding-bottom: 1.8px;
+
+        &[color="medium"] {
+          --background: var(--azul-claro);
+          --color: white;
+        }
+
+        &[color="primary"] {
+          --background: var(--azul-oscuro);
+          --color: white;
+        }
+      }
+    }
+
+    ion-card-content.comentario-texto {
+      --background: transparent;
+      padding: 4.8px 7.2px;
+      color: #333;
+      font-size: 0.51rem;
+      line-height: 1.3;
+      margin: 0;
+    }
+  }
+
+  .rubrica-seguimiento-area {
+    margin-top: 0.6rem;
+    padding: 0.6rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4.8px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .rubrica-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    h3 {
+      margin: 0;
+      color: var(--azul-claro);
+      font-size: 0.6rem;
+      font-weight: 600;
+    }
+
+    ion-button {
+      --color: var(--azul-claro);
+
+      &:hover {
+        --color: #fff;
+      }
+
+      .btn-label {
+        margin-left: 2.4px;
+        font-size: 0.45rem;
+      }
+    }
+  }
+
+  .evaluacion-seccion {
+    margin-bottom: 0.6rem;
+
+    &.evaluacion-grupal {
+      background: rgba(52, 152, 219, 0.05);
+      padding: 0.3rem;
+      border-radius: 3.6px;
+      border-left: 2px solid var(--azul-claro);
+    }
+
+    &.evaluacion-individual {
+      background: rgba(155, 89, 182, 0.05);
+      padding: 0.3rem;
+      border-radius: 3.6px;
+      border-left: 2px solid var(--magenta);
+    }
+
+    .evaluacion-header {
+      margin-bottom: 0.3rem;
+      padding-bottom: 0.15rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      h4 {
+        color: var(--azul-oscuro);
+        font-size: 0.51rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .timestamp {
+        display: block;
+        color: var(--azul-oscuro);
+        opacity: 0.6;
+        font-size: 0.39rem;
+        margin-top: 1.2px;
+      }
+    }
+  }
+
+  .criterio-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3.6px;
+    padding: 0.3rem;
+    margin-bottom: 0.3rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .criterio-nombre {
+      color: var(--azul-oscuro);
+      font-size: 0.48rem;
+      font-weight: 600;
+      margin: 0 0 0.24rem 0;
+    }
+  }
+
+  .niveles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    margin-bottom: 0.24rem;
+  }
+
+  .nivel-item {
+    display: flex;
+    align-items: center;
+    gap: 0.24rem;
+    padding: 0.15rem 0.18rem;
+    border-radius: 2.4px;
+    background: rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+
+    &.seleccionado {
+      background: rgba(52, 152, 219, 0.15);
+      border: 1px solid var(--azul-claro);
+      box-shadow: 0 0 2.4px rgba(52, 152, 219, 0.3);
+    }
+
+    .nivel-circulo {
+      width: 7.2px;
+      height: 7.2px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nivel-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 0.6px;
+
+      .nivel-nombre {
+        color: var(--azul-oscuro);
+        font-size: 0.42rem;
+        font-weight: 600;
+        line-height: 1.1;
+      }
+
+      .nivel-intervalo {
+        color: var(--azul-oscuro);
+        opacity: 0.7;
+        font-size: 0.39rem;
+        line-height: 1.2;
+      }
+    }
+  }
+
+  .criterio-resultado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0.4rem;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 4px;
+    margin-top: 0.3rem;
+
+    .nivel-calificado,
+    .puntos-asignados {
+      font-size: 0.7rem;
+      color: var(--azul-oscuro);
+      line-height: 1.3;
+
+      strong {
+        color: var(--azul-claro);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .criterio-comentario {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+    margin-top: 0.3rem;
+    padding: 0.3rem;
+    background: rgba(166, 206, 56, 0.1);
+    border-left: 2px solid var(--verde-esmeralda);
+    border-radius: 4px;
+
+    ion-icon {
+      color: var(--verde-esmeralda);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--azul-oscuro);
+      font-size: 0.7rem;
+      line-height: 1.3;
+      font-style: italic;
+    }
+  }
+
+  .total-combinado {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(155, 89, 182, 0.15));
+    padding: 0.6rem;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 0.75rem;
+    border: 2px solid var(--azul-claro);
+
+    h4 {
+      color: var(--azul-oscuro);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .detalle-total {
+      color: var(--azul-oscuro);
+      opacity: 0.7;
+      font-size: 0.7rem;
+      margin: 0;
+      margin-top: 2px;
+    }
+  }
+
+  // Áreas de texto para seguimiento - Estilo plano y simple
+  .texto-seguimiento-seccion {
+    margin-top: 0.45rem;
+    padding: 0.3rem;
+    background: transparent;
+    border: none;
+
+    &.texto-grupal {
+      border-left: 1.2px solid var(--azul-claro);
+    }
+
+    &.texto-individual {
+      border-left: 1.2px solid var(--magenta);
+    }
+
+    .texto-header {
+      margin-bottom: 0.3rem;
+      padding-bottom: 0;
+      border-bottom: none;
+
+      h4 {
+        color: var(--azul-oscuro);
+        font-size: 0.45rem;
+        font-weight: 500;
+        margin: 0;
+        text-transform: none;
+      }
+    }
+
+    .texto-contenido {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+
+      p {
+        color: var(--azul-oscuro);
+        font-size: 0.42rem;
+        font-weight: 400;
+        line-height: 1.4;
+        margin: 0;
+        white-space: pre-line;
+        font-family: inherit;
+        padding: 0;
+        background: transparent;
+        border: none;
+      }
+    }
+
+
+  }
+
+  .evaluacion-seccion {
+    margin-bottom: 0.6rem;
+
+    h4 {
+      color: var(--azul-oscuro);
+      font-size: 0.45rem;
+      font-weight: 500;
+      margin: 0 0 0.3rem 0;
+    }
+  }
+
+  .parrafo-evaluacion {
+    margin-bottom: 0.45rem;
+    padding-left: 0.3rem;
+    border-left: 1.2px solid rgba(15, 56, 90, 0.2);
+
+    p {
+      margin: 0;
+      color: var(--azul-oscuro);
+      font-size: 0.42rem;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .timestamp {
+      display: none; // Ocultar timestamps para estilo más limpio
+    }
+  }
+
+  // Estilos para el badge de entrega con Ionic Chip
+  .entrega-badge-container {
+    margin: 0.3rem 0;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  // Ionic Chip como badge de entrega
+  ion-chip.entrega-badge {
+    --background: var(--ion-color-tertiary);
+    --color: white;
+    margin: 0;
+    font-size: 0.48rem;
+    font-weight: 600;
+    height: auto;
+    padding: 3.6px 7.2px;
+
+    ion-label {
+      margin: 0;
+      color: white;
+      font-size: 0.48rem;
+
+      .tipo-evaluacion {
+        margin-left: 4px;
+        font-size: 0.7rem;
+        opacity: 0.9;
+      }
+    }
+
+    &.entrega-e1 {
+      --background: linear-gradient(135deg, var(--ion-color-tertiary), var(--ion-color-tertiary-shade));
+    }
+  }
+
+  // Estilos para comentarios colapsables con Ionic Components
+  .comentarios-section {
+    margin: 0.75rem 0;
+    border: 1px solid rgba(15, 56, 90, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    // Ionic Item como header de comentarios
+    ion-item.comentarios-header {
+      --background: rgba(248, 249, 250, 0.8);
+      --background-hover: rgba(248, 249, 250, 1);
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --min-height: 44px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      ion-icon {
+        color: var(--azul-oscuro);
+        font-size: 1.1rem;
+        margin-right: 8px;
+      }
+
+      ion-label.comentarios-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #666;
+        margin: 0;
+      }
+
+      .comentarios-controls {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .collapse-icon {
+          font-size: 1rem;
+          color: var(--azul-oscuro);
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+
+    &.comentarios-fijados {
+      border-color: var(--azul-oscuro);
+      box-shadow: 0 0 0 1px rgba(15, 56, 90, 0.2);
+    }
+  }
+
+  .comentarios-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: rgba(15, 56, 90, 0.05);
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(15, 56, 90, 0.1);
+    }
+
+    .comentarios-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--azul-oscuro);
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+
+    .comentarios-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      ion-button {
+        --padding-start: 0.5rem;
+        --padding-end: 0.5rem;
+        --padding-top: 0.25rem;
+        --padding-bottom: 0.25rem;
+        height: auto;
+        min-height: 0;
+
+        ion-icon {
+          font-size: 1rem;
+        }
+      }
+
+      .collapse-icon {
+        font-size: 1.2rem;
+        color: var(--azul-oscuro);
+        transition: transform 0.3s ease;
+      }
+    }
+  }
+
+  .comentarios-content {
+    padding: 0.75rem;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    to {
+      max-height: 500px;
+      opacity: 1;
+    }
+  }
+
+  // Estilo para información del integrante
+  .integrante-info {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.3rem 0;
+    padding: 0.3rem;
+    background: rgba(15, 56, 90, 0.1);
+    border-radius: 3.6px;
+    font-size: 0.45rem;
+    color: var(--azul-oscuro);
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 0.6rem;
+      color: var(--azul-oscuro);
+    }
+  }
+}
+
+// ========================================
+// BARRA LATERAL MÓVIL
+// ========================================
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100vh;
+  background: var(--azul-oscuro);
+  z-index: 1001;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.3);
+
+  // Safe areas
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-right: env(safe-area-inset-right);
+
+  // Estado expandido
+  &.expanded {
+    transform: translateX(0);
+  }
+
+  // Solo visible en móviles
+  @media (min-width: 769px) {
+    display: none;
+  }
+
+  .mobile-sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+  }
+
+  .mobile-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    h3 {
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .close-button {
+      --color: #ffffff;
+      --background: transparent;
+      --border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .mobile-sidebar-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .sidebar-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: 1px solid transparent;
+
+    ion-icon {
+      font-size: 24px;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    span {
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(-4px);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--azul-claro);
+
+      ion-icon {
+        color: var(--azul-claro);
+      }
+
+      span {
+        color: var(--azul-claro);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Overlay para la barra lateral
+.mobile-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.expanded {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+// RESPONSIVE: Contenedor de búsqueda móvil separado (fuera del config-options-container)
+.mobile-search-container {
+  display: none; // Oculto por defecto
+
+  @media (max-width: 768px) {
+    display: flex;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(75px + env(safe-area-inset-top) + 8px);
+    background: linear-gradient(145deg, rgba(31, 178, 222, 0.2), rgba(31, 178, 222, 0.1));
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(31, 178, 222, 0.3);
+    box-shadow: 0 4px 12px rgba(31, 178, 222, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    z-index: 150; /* Reducido - sobre contenido pero no bloquea */
+    align-items: center;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    padding: 4px 8px;
+
+    // Móviles pequeños
+    @media (max-width: 480px) {
+      top: calc(75px + env(safe-area-inset-top) + 6px);
+      border-radius: 22px;
+    }
+
+    // Móviles muy pequeños
+    @media (max-width: 360px) {
+      top: calc(75px + env(safe-area-inset-top) + 4px);
+      border-radius: 20px;
+    }
+
+    // Landscape móvil - posición más compacta
+    @media (max-width: 960px) and (orientation: landscape) {
+      top: calc(70px + env(safe-area-inset-top) + 4px);
+      border-radius: 20px;
+    }
+
+    // Estado expandido móvil
+    &.expanded {
+      background: linear-gradient(145deg, rgba(31, 178, 222, 0.15), rgba(31, 178, 222, 0.08));
+      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(31, 178, 222, 0.4);
+      box-shadow:
+        0 8px 24px rgba(31, 178, 222, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      padding: 4px 8px;
+      width: auto;
+      min-width: 280px;
+
+      .search-button {
+        margin-right: 8px;
+      }
+
+      .mobile-searchbar {
+        --background: transparent;
+        --color: var(--azul-claro);
+        --placeholder-color: rgba(31, 178, 222, 0.7);
+        --icon-color: var(--azul-claro);
+        --clear-button-color: var(--azul-claro);
+        --border-radius: 0;
+        --box-shadow: none;
+        flex: 1;
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    // Estilos para el botón de búsqueda móvil
+    .search-button {
+      --color: var(--azul-claro);
+      --background: transparent;
+      --border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+
+    // Estilos para la barra de búsqueda móvil
+    .mobile-searchbar {
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --background: transparent;
+      --color: var(--azul-claro);
+      --placeholder-color: rgba(31, 178, 222, 0.5);
+      --icon-color: var(--azul-claro);
+      --clear-button-color: var(--azul-claro);
+      --border-radius: 0;
+      --box-shadow: none;
+    }
+  }
+}
+
+/* ===================================================================
+   REGLA GLOBAL SUPER AGRESIVA - FORZAR VISIBILIDAD DE TODO CONTENIDO
+   =================================================================== */
+:host {
+
+  // Forzar visibilidad de CUALQUIER componente Angular
+  app-inicio,
+  app-cursos,
+  app-gestion-cursos,
+  app-rubricas,
+  app-calificaciones,
+  app-sistema,
+  app-acerca-de {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    background: #f8f9fa !important;
+    position: relative !important;
+    /* z-index removido - NO debe bloquear interacción */
+
+    // Forzar todos los hijos a ser visibles
+    * {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    // Especialmente ion-content
+    ion-content {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      height: 100% !important;
+      --background: #f8f9fa !important;
+    }
+  }
+}
+
+// Regla adicional a nivel global fuera de :host
+app-inicio,
+app-cursos,
+app-gestion-cursos,
+app-rubricas,
+app-calificaciones,
+app-sistema,
+app-acerca-de {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+/* ============================================================
+   REGLAS FINALES ULTRA AGRESIVAS - FORZAR VISIBILIDAD TOTAL
+   ============================================================ */
+
+// Forzar TODO el contenido del router-outlet a ser visible
+.router-container,
+.content-area {
+  * {
+    max-height: none !important;
+    max-width: none !important;
+  }
+}
+
+// Asegurar que NINGÚN componente esté oculto - SIN Z-INDEX
+router-outlet~*,
+router-outlet+* {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  /* NO z-index - permite interacción natural */
+}
+
+// Componentes específicos de páginas - SIN Z-INDEX para interacción
+app-inicio,
+app-cursos,
+app-gestion-cursos,
+app-rubricas,
+app-calificaciones,
+app-sistema {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  position: relative !important;
+  background: #f8f9fa !important;
+  overflow: visible !important;
+  /* NO z-index aquí - interacción debe funcionar */
+
+  // Todo el contenido interno
+  &,
+  & * {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  // Ion-content dentro de páginas
+  ion-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    --background: #f8f9fa !important;
+
+    &,
+    & * {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+}
+
+// ========================================
+// GLOBAL SEARCH RESULTS IN TRACKING PANEL
+// ========================================
+.search-results-section {
+  margin-bottom: 20px;
+
+  .section-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .search-results-list {
+    background: transparent;
+
+    .search-result-item {
+      --background: rgba(255, 255, 255, 0.05);
+      --border-radius: 8px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.1);
+        transform: translateX(4px);
+      }
+
+      ion-label {
+        padding: 8px 0;
+
+        .student-name {
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 0.95rem;
+          margin: 0 0 4px 0;
+        }
+
+        .student-email {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.85rem;
+          margin: 0 0 8px 0;
+        }
+
+        .badges-container {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+
+          ion-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+
+            &.curso-badge {
+              --background: var(--azul-claro);
+              color: #ffffff;
+            }
+
+            &.grupo-badge {
+              --background: var(--verde);
+              color: #ffffff;
+            }
+          }
+        }
+      }
+
+      ion-icon[slot="end"] {
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+}
+
+// Rubrics buttons horizontal layout
+.rubricas-subsection {
+  margin-top: 12px;
+
+  .subsection-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+.rubricas-grid-horizontal {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  ion-button {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 0.7rem;
+    --padding-start: 4px;
+    --padding-end: 4px;
+
+    ion-icon {
+      font-size: 0.85rem;
+      margin-right: 2px;
+    }
+  }
+}

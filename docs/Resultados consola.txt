@@ -1,0 +1,1485 @@
+📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+data.service.ts:819 🔄 [updateCourseState] Actualizando estado del curso EEPM-B01-BLQ2-V-20251123: {filtroGrupo: 'G1'}
+data.service.ts:820 📁 [updateCourseState] Archivo antes: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+data.service.ts:821 📁 [updateCourseState] Archivo después: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+data.service.ts:822 🔍 [updateCourseState] ¿Updates incluye archivoCalificaciones? false
+data.service.ts:829 ✅ [updateCourseState] Archivo preservado correctamente: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+tabs.page.ts:245 🔍 [cargarIntegrantesGrupo] Curso activo: EEPM-B01-BLQ2-V-20251123
+tabs.page.ts:246 🔍 [cargarIntegrantesGrupo] Total estudiantes: 75
+tabs.page.ts:248 🔍 [cargarIntegrantesGrupo] Primer estudiante: {canvasUserId: '202816', canvasGroupId: '477359', apellidos: 'ACOSTA RUIZ', nombres: 'WILLIAM', correo: 'wfacosta@poligran.edu.co', …}
+tabs.page.ts:249 🔍 [cargarIntegrantesGrupo] Campos disponibles: (7) ['canvasUserId', 'canvasGroupId', 'apellidos', 'nombres', 'correo', 'grupo', 'groupName']
+tabs.page.ts:261 👥 [cargarIntegrantesGrupo] Integrantes del grupo 1: 5
+tabs.page.ts:263 👥 [cargarIntegrantesGrupo] Primer integrante filtrado: {canvasUserId: '202816', canvasGroupId: '477359', apellidos: 'ACOSTA RUIZ', nombres: 'WILLIAM', correo: 'wfacosta@poligran.edu.co', …}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 1', numeroGrupo: '1', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILLIAM', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MIGUEL', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'JHONATHAN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DAVID SANTIAGO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'Figueredo Cepeda Carlos', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'CAMILO', canvasUserId: '214560', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 214560 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 214560. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'CAMILO', canvasUserId: '214560', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 214560 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 214560. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'CAMILO', canvasUserId: '214560', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 214560 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 214560. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'GERMAN AUGUSTO', canvasUserId: '177389', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 177389 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 177389. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'GERMAN AUGUSTO', canvasUserId: '177389', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 177389 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 177389. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'GERMAN AUGUSTO', canvasUserId: '177389', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 177389 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 177389. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'WILSON FERNANDO', canvasUserId: '188240', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 188240 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 188240. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'WILSON FERNANDO', canvasUserId: '188240', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 188240 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 188240. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'WILSON FERNANDO', canvasUserId: '188240', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 188240 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 188240. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'DEISY JOHANA', canvasUserId: '190317', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 190317 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 190317. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'DEISY JOHANA', canvasUserId: '190317', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 190317 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 190317. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'DEISY JOHANA', canvasUserId: '190317', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 190317 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 190317. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'MARIA', canvasUserId: '211962', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 211962 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 211962. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'MARIA', canvasUserId: '211962', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 211962 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 211962. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'MARIA', canvasUserId: '211962', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 211962 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 211962. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+data.service.ts:819 🔄 [updateCourseState] Actualizando estado del curso EEPM-B01-BLQ2-V-20251123: {filtroGrupo: 'G2'}
+data.service.ts:820 📁 [updateCourseState] Archivo antes: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+data.service.ts:821 📁 [updateCourseState] Archivo después: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+data.service.ts:822 🔍 [updateCourseState] ¿Updates incluye archivoCalificaciones? false
+data.service.ts:829 ✅ [updateCourseState] Archivo preservado correctamente: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+tabs.page.ts:245 🔍 [cargarIntegrantesGrupo] Curso activo: EEPM-B01-BLQ2-V-20251123
+tabs.page.ts:246 🔍 [cargarIntegrantesGrupo] Total estudiantes: 75
+tabs.page.ts:248 🔍 [cargarIntegrantesGrupo] Primer estudiante: {canvasUserId: '202816', canvasGroupId: '477359', apellidos: 'ACOSTA RUIZ', nombres: 'WILLIAM', correo: 'wfacosta@poligran.edu.co', …}
+tabs.page.ts:249 🔍 [cargarIntegrantesGrupo] Campos disponibles: (7) ['canvasUserId', 'canvasGroupId', 'apellidos', 'nombres', 'correo', 'grupo', 'groupName']
+tabs.page.ts:261 👥 [cargarIntegrantesGrupo] Integrantes del grupo 2: 5
+tabs.page.ts:263 👥 [cargarIntegrantesGrupo] Primer integrante filtrado: {canvasUserId: '214560', canvasGroupId: '477360', apellidos: 'ALVAREZ JARAMILLO', nombres: 'CAMILO', correo: 'canalvarezj@poligran.edu.co', …}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 2', numeroGrupo: '2', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'GERMAN AUGUSTO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'WILSON FERNANDO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'DEISY JOHANA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MARIA', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'CAMILA', canvasUserId: '227817', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 227817 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 227817. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'CAMILA', canvasUserId: '227817', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 227817 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 227817. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'CAMILA', canvasUserId: '227817', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 227817 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 227817. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'MAURICIO', canvasUserId: '223686', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 223686 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 223686. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'MAURICIO', canvasUserId: '223686', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 223686 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 223686. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'MAURICIO', canvasUserId: '223686', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 223686 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 223686. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'FELIX ANDRES', canvasUserId: '180629', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 180629 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 180629. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'FELIX ANDRES', canvasUserId: '180629', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 180629 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 180629. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'FELIX ANDRES', canvasUserId: '180629', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 180629 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 180629. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'BENJAMIN', canvasUserId: '221167', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 221167 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 221167. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'BENJAMIN', canvasUserId: '221167', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 221167 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 221167. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'BENJAMIN', canvasUserId: '221167', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 221167 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 221167. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'OSCAR', canvasUserId: '202807', entrega: 'E1'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 202807 en 76 filas, columna E1 (índice 4)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 202807. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'OSCAR', canvasUserId: '202807', entrega: 'E2'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 202807 en 76 filas, columna E2 (índice 5)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 202807. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4080 📄 [obtenerCalificacionCanvas] Archivo Canvas: {existe: true, estudiante: 'OSCAR', canvasUserId: '202807', entrega: 'EF'}
+cursos.page.ts:4197 🔍 [buscarCalificacionOptimizada] Buscando canvasUserId: 202807 en 76 filas, columna EF (índice 6)
+cursos.page.ts:4211 ❌ [No encontrado] canvasUserId: 202807. IDs en CSV: (5) ['', 'WILLIAM ', 'MIGUEL ', 'JHONATHAN ', 'Figueredo Cepeda Carlos']
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+data.service.ts:819 🔄 [updateCourseState] Actualizando estado del curso EEPM-B01-BLQ2-V-20251123: {filtroGrupo: 'G3'}
+data.service.ts:820 📁 [updateCourseState] Archivo antes: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+data.service.ts:821 📁 [updateCourseState] Archivo después: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+data.service.ts:822 🔍 [updateCourseState] ¿Updates incluye archivoCalificaciones? false
+data.service.ts:829 ✅ [updateCourseState] Archivo preservado correctamente: 2025-11-22T0020_Calificaciones-SEGUNDO_BLOQUE-VIRTUAL_ÉNFASIS_EN_PROGRAMACIÓN_MÓVIL-[GRUPO_B01].csv
+tabs.page.ts:245 🔍 [cargarIntegrantesGrupo] Curso activo: EEPM-B01-BLQ2-V-20251123
+tabs.page.ts:246 🔍 [cargarIntegrantesGrupo] Total estudiantes: 75
+tabs.page.ts:248 🔍 [cargarIntegrantesGrupo] Primer estudiante: {canvasUserId: '202816', canvasGroupId: '477359', apellidos: 'ACOSTA RUIZ', nombres: 'WILLIAM', correo: 'wfacosta@poligran.edu.co', …}
+tabs.page.ts:249 🔍 [cargarIntegrantesGrupo] Campos disponibles: (7) ['canvasUserId', 'canvasGroupId', 'apellidos', 'nombres', 'correo', 'grupo', 'groupName']
+tabs.page.ts:261 👥 [cargarIntegrantesGrupo] Integrantes del grupo 3: 5
+tabs.page.ts:263 👥 [cargarIntegrantesGrupo] Primer integrante filtrado: {canvasUserId: '227817', canvasGroupId: '477361', apellidos: 'ARIAS RUIZ', nombres: 'CAMILA', correo: 'calariasr@poligran.edu.co', …}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4043 📊 [obtenerIntegrantesGrupo] Datos: {filtroGrupo: 'Grupo 3', numeroGrupo: '3', totalEstudiantes: 75, integrantesEncontrados: 5, primerosCanvasIds: Array(3)}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'CAMILA', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'MAURICIO', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'FELIX ANDRES', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'BENJAMIN', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E1', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'E2', valor: 0}
+cursos.page.ts:4073 ✅ [Cache Hit] {estudiante: 'OSCAR', entrega: 'EF', valor: 0}

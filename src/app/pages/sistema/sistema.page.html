@@ -1,0 +1,242 @@
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    <div class="containers-grid">
+      <!-- Sistema de Almacenamiento -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="server-outline"></ion-icon>
+            Sistema de Almacenamiento
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-icon
+                [name]="storageInfo.platform === 'web' ? 'desktop-outline' : 'phone-portrait-outline'"
+                slot="start"
+                [color]="storageInfo.platform === 'web' ? 'primary' : 'success'">
+              </ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Plataforma Detectada</h3>
+                <p class="text-gray-medium">{{ storageInfo.platform === 'web' ? 'Navegador Web' : 'Dispositivo Móvil' }}</p>
+              </ion-label>
+              <ion-badge
+                [color]="storageInfo.platform === 'web' ? 'primary' : 'success'"
+                slot="end">
+                {{ storageInfo.platform.toUpperCase() }}
+              </ion-badge>
+            </ion-item>
+
+            <ion-item>
+              <ion-icon name="build-outline" slot="start" color="secondary"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Motor de Almacenamiento</h3>
+                <p class="text-gray-medium">{{ storageInfo.storage === 'sqlite' ? 'SQLite Database' : 'Ionic Storage' }}</p>
+              </ion-label>
+              <ion-badge
+                [color]="storageInfo.storage === 'sqlite' ? 'warning' : 'tertiary'"
+                slot="end">
+                {{ storageInfo.storage.toUpperCase() }}
+              </ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Gestión de Base de Datos -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="server-outline"></ion-icon>
+            Gestión de Base de Datos
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="col-flex-gap-16">
+            <!-- Exportar/Importar Base de Datos Completa -->
+            <div>
+              <h3 class="h3-system-section">Respaldo y Restauración</h3>
+              <p class="text-gray-small">
+                Exporta toda la base de datos (cursos, estudiantes, calificaciones, rúbricas) a un archivo JSON para hacer respaldo o transferir entre dispositivos.
+              </p>
+              <div class="flex-gap-12-wrap">
+                <ion-button
+                  fill="solid"
+                  size="default"
+                  (click)="exportarBaseDatosCompleta()"
+                  class="button-backup-export">
+                  <ion-icon name="cloud-download-outline" slot="start"></ion-icon>
+                  Exportar DB
+                </ion-button>
+
+                <ion-button
+                  fill="solid"
+                  size="default"
+                  (click)="fileInputDB.click()"
+                  class="button-backup-import">
+                  <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                  Importar DB
+                </ion-button>
+                <input
+                  #fileInputDB
+                  type="file"
+                  accept=".json"
+                  aria-label="Importar DB"
+                  (change)="onBaseDatosFileSelected($event)"
+                  class="display-none">
+              </div>
+              <ion-list class="list-margin-top">
+                <ion-item lines="none">
+                  <ion-icon name="information-circle-outline" slot="start" color="primary"></ion-icon>
+                  <ion-label class="ion-text-wrap">
+                    <p class="text-info-blue">
+                      <strong>Móvil:</strong> El archivo se descargará en Downloads (exportar) o deberá colocarse en Documents como "backup.json" (importar).
+                    </p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+
+            <div>
+              <h3 class="h3-system-section">Limpieza de Datos</h3>
+              <p class="text-gray-small">
+                Elimina todas las evaluaciones y estados de la interfaz, manteniendo los cursos, estudiantes y rúbricas predeterminadas.
+              </p>
+              <ion-button
+                fill="solid"
+                size="default"
+                (click)="limpiarBaseDatosEstadoCero()"
+                class="button-limpiar-danger">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Limpiar Base de Datos
+              </ion-button>
+            </div>
+
+            <ion-list class="metadata-section">
+              <ion-item lines="none">
+                <ion-icon name="warning-outline" slot="start" color="warning"></ion-icon>
+                <ion-label class="ion-text-wrap">
+                  <p class="text-warning-yellow">
+                    <strong>Nota:</strong> Esta acción eliminará todas las evaluaciones guardadas. Los cursos y estudiantes no se verán afectados.
+                  </p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Acerca de la Aplicación -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Acerca de la Aplicación
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="app-info">
+            <h2 class="h2-app-title-blue">Gestor de Seguimiento de Proyectos</h2>
+            <p class="text-gray-medium"><strong>Versión:</strong> 8.0.0</p>
+            <p class="text-gray-medium"><strong>Desarrollador:</strong> Víctor Castro Pérez</p>
+            <p class="text-gray-medium"><strong>Email:</strong> vfcastro@poligran.edu.co</p>
+
+            <div class="tech-stack">
+              <h3 class="h3-stack-blue">Stack Tecnológico</h3>
+              <div class="tech-grid">
+                <div class="tech-item">
+                  <ion-icon name="logo-angular" class="icon-angular"></ion-icon>
+                  <span class="span-tech-small">Angular 18</span>
+                </div>
+                <div class="tech-item">
+                  <ion-icon name="phone-portrait-outline" class="icon-ionic"></ion-icon>
+                  <span class="span-tech-small">Ionic 8</span>
+                </div>
+                <div class="tech-item">
+                  <ion-icon name="logo-javascript" class="icon-javascript"></ion-icon>
+                  <span class="span-tech-small">TypeScript</span>
+                </div>
+                <div class="tech-item">
+                  <ion-icon name="server-outline" class="icon-sqlite"></ion-icon>
+                  <span class="span-tech-small">SQLite</span>
+                </div>
+                <div class="tech-item">
+                  <ion-icon name="cloud-outline" class="icon-pwa"></ion-icon>
+                  <span class="span-tech-small">PWA</span>
+                </div>
+                <div class="tech-item">
+                  <ion-icon name="desktop-outline" class="icon-responsive"></ion-icon>
+                  <span class="span-tech-small">Responsive</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Características Funcionales y Técnicas -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Características Funcionales y Técnicas
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list class="features-list">
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Gestión de Cursos</h3>
+                <p>Importación y administración de cursos desde Canvas LMS</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Sistema de Rúbricas</h3>
+                <p>Evaluación I/A/E con criterios personalizables y exportación</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Procesamiento CSV</h3>
+                <p>Parser personalizado para archivos Canvas (estudiantes y calificaciones)</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Seguimiento de Estudiantes</h3>
+                <p>Visualización y gestión de listas de estudiantes por curso</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Almacenamiento Local</h3>
+                <p>Datos persistentes sin conexión a internet (SQLite/Ionic Storage)</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Arquitectura Standalone</h3>
+                <p>Componentes independientes Angular 18+ sin NgModules</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon name="checkmark-circle" color="success" slot="start"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Exportación de Datos</h3>
+                <p>Generación de archivos CSV con calificaciones y rúbricas</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

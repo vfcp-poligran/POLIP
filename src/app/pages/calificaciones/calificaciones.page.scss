@@ -1,0 +1,335 @@
+// ============================================
+// CONTENEDOR PRINCIPAL
+// ============================================
+ion-content {
+  --background: #f8f9fa;
+}
+
+.page-container {
+  padding: 9.6px;
+  width: 100%;
+  height: 100%; /* Ajuste exacto sin scroll */
+
+  @media (max-width: 768px) {
+    padding: 4.8px;
+    height: auto;
+    min-height: 100%;
+  }
+}
+
+// ============================================
+// Estilos Tabla Calificaciones con Ionic
+// ============================================
+
+.tabla-calificaciones-card {
+  margin: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+
+  .tabla-content {
+    padding: 0;
+  }
+}
+
+// Header info con chips
+.tabla-header-info {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid var(--azul-claro, #4a90e2);
+
+  ion-chip {
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin: 0;
+
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+// Wrapper con scroll horizontal
+.tabla-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+  max-height: calc(100vh - 280px);
+
+  // Scrollbar personalizado
+  &::-webkit-scrollbar {
+    height: 10px;
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--azul-claro, #4a90e2);
+    border-radius: 5px;
+
+    &:hover {
+      background: var(--azul-oscuro, #0f385a);
+    }
+  }
+}
+
+// Tabla principal
+.tabla-calificaciones {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.75rem;
+
+  // Header
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-dropdown, 50);
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, var(--azul-claro, #4a90e2) 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    tr {
+      th {
+        position: sticky;
+        top: 0;
+        background: inherit;
+      }
+    }
+  }
+
+  .tabla-header {
+    padding: 10px 12px;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+    font-size: 0.7rem;
+    white-space: normal; // Permitir wrap para títulos largos
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 100px;
+    max-width: 200px;
+    vertical-align: middle;
+    line-height: 1.3;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    // Columnas numéricas más estrechas
+    &.col-numeric {
+      min-width: 80px;
+      max-width: 110px;
+      text-align: center;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-start;
+
+      .header-icon {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        flex-shrink: 0;
+      }
+
+      .header-text {
+        line-height: 1.3;
+      }
+    }
+
+    // Columnas numéricas centradas
+    &.col-numeric .header-content {
+      justify-content: center;
+    }
+  }
+
+  // Body
+  tbody {
+    tr {
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #e9ecef;
+
+      &:hover {
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      &.fila-par {
+        background-color: #ffffff;
+      }
+
+      &.fila-impar {
+        background-color: #fafbfc;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .tabla-cell {
+    padding: 8px 10px;
+    text-align: left;
+    color: #333;
+    border-right: 1px solid #e9ecef;
+    vertical-align: middle;
+    white-space: normal; // Permitir wrap en contenido largo
+    font-size: 0.7rem;
+    max-width: 200px;
+    word-wrap: break-word;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    // Celdas numéricas
+    &.cell-numeric {
+      text-align: center;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    // Calificación alta (>=90)
+    &.cell-grade-high {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 6px 8px;
+    }
+
+    // Calificación baja (<=50)
+    &.cell-grade-low {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      color: #721c24;
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 6px 8px;
+    }
+  }
+}
+
+// Animación de entrada
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabla-calificaciones tbody tr {
+  animation: fadeIn 0.3s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 30 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.015}s;
+    }
+  }
+}
+
+// Responsive: Tablet
+@media (max-width: 1024px) {
+  .tabla-calificaciones {
+    font-size: 0.7rem;
+
+    .tabla-header {
+      padding: 8px 10px;
+      font-size: 0.65rem;
+      min-width: 85px;
+
+      &.col-numeric {
+        min-width: 70px;
+      }
+    }
+
+    .tabla-cell {
+      padding: 6px 10px;
+      font-size: 0.65rem;
+    }
+  }
+}
+
+// Responsive: Móvil
+@media (max-width: 768px) {
+  .tabla-calificaciones-card {
+    margin: 4px;
+  }
+
+  .tabla-header-info {
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+
+    ion-chip {
+      font-size: 0.7rem;
+    }
+  }
+
+  .tabla-scroll-wrapper {
+    max-height: calc(100vh - 320px);
+  }
+
+  .tabla-calificaciones {
+    font-size: 0.65rem;
+
+    .tabla-header {
+      padding: 6px 8px;
+      font-size: 0.6rem;
+      min-width: 75px;
+
+      &.col-numeric {
+        min-width: 60px;
+      }
+
+      .header-content {
+        gap: 3px;
+
+        .header-icon {
+          font-size: 0.8rem;
+        }
+      }
+    }
+
+    .tabla-cell {
+      padding: 5px 8px;
+      font-size: 0.6rem;
+
+      &.cell-grade-high,
+      &.cell-grade-low {
+        padding: 4px 6px;
+      }
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .tabla-header-info {
+    display: none;
+  }
+
+  .tabla-scroll-wrapper {
+    overflow: visible;
+    max-height: none;
+  }
+
+  .tabla-calificaciones {
+    thead {
+      position: relative;
+    }
+
+    tbody tr {
+      animation: none;
+      page-break-inside: avoid;
+    }
+  }
+}

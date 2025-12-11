@@ -1,0 +1,7 @@
+{
+  "name": "gestor-proyectos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

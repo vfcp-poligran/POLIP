@@ -1,0 +1,21 @@
+{
+  "name": "gestor-proyectos",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ionic serve",
+    "build": "ionic build",
+    "build:prod": "ionic build --prod",
+    "test": "ng test",
+    "lint": "ng lint",
+    "android:sync": "npx cap sync android",
+    "android:run": "npx cap run android",
+    "android:open": "npx cap open android",
+    "ios:sync": "npx cap sync ios", 
+    "ios:run": "npx cap run ios",
+    "ios:open": "npx cap open ios",
+    "build:all": "npm run build:prod && npm run android:sync && npm run ios:sync",
+    "deploy:web": "npm run build:prod",
+    "deploy:android": "npm run build:prod && npm run android:sync && npm run android:run",
+    "deploy:ios": "npm run build:prod && npm run ios:sync && npm run ios:run"
+  }
+}

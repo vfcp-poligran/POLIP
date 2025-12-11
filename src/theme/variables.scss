@@ -1,0 +1,108 @@
+// Ionic CSS Variables Optimized
+:root {
+  /** ========================================
+      PALETA DE COLORES SRS (Base)
+      ======================================== **/
+  --azul-oscuro: #0F385A;
+  --azul-claro: #1FB2DE;
+  --naranja: #FBAF17;
+  --verde: #A6CE38;
+  --verde-claro: #E8F5D0;
+  --magenta: #EC0677;
+  --cyan: #15BECE;
+
+  /** ========================================
+      COLORES SEMANTICOS (derivados de SRS)
+      ======================================== **/
+  /* Backgrounds */
+  --bg-color: #f7f9fa;
+  --bg-card: #ffffff;
+
+  /* Textos */
+  --texto-principal: #333333;
+  --texto-secundario: #555555;
+
+  /* Bordes */
+  --border-color: #e0e0e0;
+
+  /** ========================================
+      IONIC FRAMEWORK VARIABLES
+      ======================================== **/
+  /* Primary (Azul Oscuro SRS) */
+  --ion-color-primary: var(--azul-oscuro);
+  --ion-color-primary-rgb: 15, 56, 90;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #0d314f;
+  --ion-color-primary-tint: #254462;
+
+  /* Secondary (Azul Claro SRS) */
+  --ion-color-secondary: var(--azul-claro);
+  --ion-color-secondary-rgb: 31, 178, 222;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #1ba1c7;
+  --ion-color-secondary-tint: #32bbe1;
+
+  /* Success (Verde SRS) */
+  --ion-color-success: var(--verde);
+  --ion-color-success-rgb: 166, 206, 56;
+  --ion-color-success-contrast: #000000;
+  --ion-color-success-contrast-rgb: 0, 0, 0;
+  --ion-color-success-shade: #92b731;
+  --ion-color-success-tint: #afd267;
+
+  /* Warning (Naranja SRS) */
+  --ion-color-warning: var(--naranja);
+  --ion-color-warning-rgb: 251, 175, 23;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #dd9a14;
+  --ion-color-warning-tint: #fcb639;
+
+  /* Danger (Magenta SRS) */
+  --ion-color-danger: var(--magenta);
+  --ion-color-danger-rgb: 236, 6, 119;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #d00568;
+  --ion-color-danger-tint: #ee1f7e;
+
+  /* Global Ionic Overrides */
+  --ion-background-color: var(--bg-color);
+  --ion-text-color: var(--texto-principal);
+  --ion-text-color-rgb: 51, 51, 51;
+  --ion-toolbar-background: var(--azul-oscuro);
+  --ion-toolbar-color: #ffffff;
+  --ion-card-background: var(--bg-card);
+
+  /** ========================================
+      SPACING OPTIMIZATIONS (Ionic CSS Variables)
+      ======================================== **/
+  /* Padding estándar para consistencia */
+  --ion-padding: 16px;
+  --ion-padding-sm: 8px;
+  --ion-padding-lg: 24px;
+
+  /* Margin estándar */
+  --ion-margin: 16px;
+  --ion-margin-sm: 8px;
+  --ion-margin-lg: 24px;
+
+  /* Border radius estándar */
+  --ion-border-radius: 8px;
+  --ion-border-radius-sm: 4px;
+  --ion-border-radius-lg: 12px;
+
+  /** ========================================
+      PERFORMANCE OPTIMIZATIONS
+      ======================================== **/
+  /* Transiciones optimizadas */
+  --ion-transition-duration: 0.2s;
+  --ion-transition-timing: ease;
+
+  /* Sombras optimizadas */
+  --ion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --ion-box-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --ion-box-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+}

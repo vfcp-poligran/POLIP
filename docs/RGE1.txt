@@ -1,0 +1,115 @@
+=== RGE1 ===
+CURSO: ÉNFASIS EN PROGRAMACIÓN MÓVIL
+PUNTUACIÓN_TOTAL: 75
+--
+ESCALA_CALIFICACION:
+0-30|Documento insuficiente - Requiere reelaboración significativa
+31-52|Documento aceptable - Cumple con requisitos mínimos
+53-75|Documento excelente - Supera expectativas
+---
+CRITERIO_1: Justificación
+PESO: 5
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-1
+TITULO: Insuficiente
+DESCRIPCION: El documento no incluye justificación o es muy deficiente. No explica la relevancia ni la necesidad del proyecto. Carece de argumentos que sustenten por qué se debe realizar el proyecto.
+
+NIVEL_2:
+PUNTOS: 2-3
+TITULO: Aceptable
+DESCRIPCION: El documento incluye una justificación básica. Explica de manera general la relevancia del proyecto. Los argumentos son válidos pero podrían estar mejor desarrollados o fundamentados.
+
+NIVEL_3:
+PUNTOS: 4-5
+TITULO: Excelente
+DESCRIPCION: El documento presenta una justificación clara, completa y convincente. Explica con profundidad la relevancia, necesidad e impacto del proyecto. Incluye argumentos sólidos y bien fundamentados.
+
+---
+
+CRITERIO_2: Objetivos
+PESO: 5
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-1
+TITULO: Insuficiente
+DESCRIPCION: El documento no define objetivos claros o son muy vagos e inalcanzables. No hay coherencia entre los objetivos planteados y el proyecto. Falta estructura (general y específicos).
+
+NIVEL_2:
+PUNTOS: 2-3
+TITULO: Aceptable
+DESCRIPCION: El documento define objetivos claros y alcanzables. Distingue entre objetivo general y específicos. Son medibles aunque podrían ser más precisos. Hay coherencia con el proyecto propuesto.
+
+NIVEL_3:
+PUNTOS: 4-5
+TITULO: Excelente
+DESCRIPCION: El documento define objetivos claros, específicos, medibles, alcanzables y relevantes (SMART). Excelente distinción entre objetivo general y específicos. Perfecta alineación con el proyecto.
+
+---
+
+CRITERIO_3: Requerimientos
+PESO: 35
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-1
+TITULO: Insuficiente
+DESCRIPCION: El documento no identifica los requerimientos necesarios o la lista es muy incompleta. Faltan requerimientos funcionales, no funcionales o técnicos importantes. La documentación es confusa o desorganizada.
+
+NIVEL_2:
+PUNTOS: 2-29
+TITULO: Aceptable
+DESCRIPCION: El documento identifica la mayoría de los requerimientos necesarios. Incluye requerimientos funcionales y no funcionales relevantes. La documentación es adecuada y organizada, aunque podría incluir más detalle.
+
+NIVEL_3:
+PUNTOS: 30-35
+TITULO: Excelente
+DESCRIPCION: El documento identifica exhaustivamente todos los requerimientos del proyecto. Incluye requerimientos funcionales, no funcionales, técnicos y de recursos de forma detallada. Documentación completa, clara y muy bien organizada.
+
+---
+
+CRITERIO_4: Flujo de Navegación
+PESO: 15
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-5
+TITULO: Insuficiente
+DESCRIPCION: El documento no incluye flujo de navegación o es muy confuso e incompleto. La estructura no es lógica. Faltan pantallas o conexiones importantes entre ellas. No permite comprender el recorrido del usuario.
+
+NIVEL_2:
+PUNTOS: 6-12
+TITULO: Aceptable
+DESCRIPCION: El documento incluye un flujo de navegación funcional y comprensible. La estructura es lógica. Incluye las pantallas principales y sus conexiones básicas. El recorrido del usuario es claro aunque podría estar más detallado.
+
+NIVEL_3:
+PUNTOS: 13-15
+TITULO: Excelente
+DESCRIPCION: El documento incluye un flujo de navegación completo, claro, detallado y bien estructurado. Arquitectura de información excelente. Incluye todas las pantallas, transiciones, estados y casos alternativos. El recorrido del usuario es intuitivo y está perfectamente documentado.
+
+---
+
+CRITERIO_5: Mockups
+PESO: 15
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-5
+TITULO: Insuficiente
+DESCRIPCION: El documento no incluye mockups o son muy básicos, incompletos o de baja calidad. No representan adecuadamente las interfaces. Faltan pantallas importantes. No se evidencia trabajo de diseño UI/UX.
+
+NIVEL_2:
+PUNTOS: 6-12
+TITULO: Aceptable
+DESCRIPCION: El documento incluye mockups funcionales de las pantallas principales. Representan adecuadamente las interfaces. Se comprende la propuesta visual aunque podría tener más detalle o consistencia.
+
+NIVEL_3:
+PUNTOS: 13-15
+TITULO: Excelente
+DESCRIPCION: El documento incluye mockups completos, detallados y profesionales de todas las pantallas. Excelente trabajo de diseño UI/UX. Incluye todos los elementos, componentes, estilos consistentes, paleta de colores y tipografía. Los mockups son de alta fidelidad.
+
+---
+
+=== FIN DE RÚBRICA ===

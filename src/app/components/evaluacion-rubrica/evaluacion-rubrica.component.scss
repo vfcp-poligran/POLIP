@@ -1,0 +1,156 @@
+.evaluacion-container {
+  padding: var(--spacing-xs);
+
+  /* Estilos para el scroll horizontal de niveles */
+  .niveles-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-xs);
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* Suavidad en iOS */
+
+    /* Ocultar barra de scroll pero mantener funcionalidad */
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--ion-color-medium-tint);
+      border-radius: 3px;
+    }
+  }
+
+  /* Tarjeta de nivel individual */
+  .nivel-card {
+    flex: 0 0 clamp(280px, 40vw, 320px);
+    /* Responsive width */
+    max-width: 85vw;
+    /* Evitar que sea más ancho que la pantalla en móviles muy pequeños */
+    border: 1px solid var(--ion-color-light-shade);
+    border-radius: var(--rad-sm);
+    background: white;
+    padding: var(--card-padding);
+    /* Responsive padding */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    /* Altura automática según contenido */
+    min-height: 100%;
+    /* Para que todas tengan la misma altura mínima en el flex row */
+    position: relative;
+
+    &:hover {
+      border-color: var(--ion-color-primary-tint);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      /* Sombra más pronunciada al hover */
+    }
+
+    &.selected {
+      /* Cambio a fondo CLARO para evitar "azul oscuro" */
+      border-color: var(--ion-color-primary);
+      background-color: rgba(var(--ion-color-primary-rgb), 0.08);
+      /* Fondo azul muy suave */
+      box-shadow: 0 0 0 2px var(--ion-color-primary);
+      /* Borde grueso para destacar */
+
+      /* Rest. Texto oscuro normal */
+      .nivel-titulo {
+        color: var(--ion-color-primary-shade) !important;
+        text-shadow: none;
+      }
+
+      .nivel-descripcion {
+        color: var(--ion-color-dark) !important;
+        font-weight: normal;
+      }
+
+      /* Badge estandar pero destacado */
+      .nivel-puntos ion-badge {
+        --background: var(--ion-color-primary);
+        --color: white;
+        font-weight: bold;
+        box-shadow: none;
+      }
+
+      .selection-indicator {
+        opacity: 1;
+        color: var(--ion-color-primary);
+        /* Icono en color primario */
+        filter: none;
+        font-size: 1.5rem;
+      }
+    }
+
+
+    .nivel-puntos {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+
+      ion-badge {
+        font-size: var(--fs-sm);
+        padding: var(--spacing-xs) var(--spacing-md);
+      }
+    }
+
+    .nivel-titulo {
+      font-weight: 700;
+      font-size: var(--fs-lg);
+      color: var(--ion-color-dark);
+      margin-bottom: var(--spacing-sm);
+      line-height: 1.3;
+    }
+
+    .nivel-descripcion {
+      font-size: var(--fs-md);
+      color: var(--ion-color-medium-shade);
+      line-height: 1.5;
+      margin: 0;
+      /* Eliminado scroll vertical: mostrar todo el contenido */
+      overflow: visible;
+    }
+
+    /* Indicador de selección visual */
+    .selection-indicator {
+      position: absolute;
+      top: var(--spacing-sm);
+      right: var(--spacing-sm);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    &.selected .selection-indicator {
+      opacity: 1;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  /* Contenedor general de criterios */
+  .criterios-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  ion-card {
+    margin: 0;
+    overflow: visible;
+    /* Permitir que sombras se vean */
+  }
+
+  .criterio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--ion-color-light);
+    margin-bottom: var(--spacing-sm);
+  }
+}

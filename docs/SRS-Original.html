@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRS: Gestor de Seguimiento de Proyectos</title>
+    
+    <!-- Importación de Fuentes (Open Sans como fallback para Brandon Grotesque) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Paleta de Colores */
+            --azul-oscuro: #0F385A;
+            --azul-claro: #1FB2DE;
+            --naranja: #FBAF17;
+            --verde: #A6CE38;
+            --magenta: #EC0677;
+            --cyan: #15BECE;
+            
+            /* Colores de UI */
+            --texto-principal: #333;
+            --texto-secundario: #555;
+            --bg-color: #f7f9fa;
+            --bg-card: #ffffff;
+            --border-color: #e0e0e0;
+
+            /* Tipografía */
+            /* Brandon Grotesque es una fuente premium. Usamos un fallback similar de código abierto. */
+            --font-principal: "Brandon Grotesque", "Montserrat", sans-serif;
+            --font-web: "Open Sans", sans-serif;
+
+            /* Colores KANBAN */
+            --kanban-pending-bg: rgba(251, 175, 23, 0.15); /* Naranja claro */
+            --kanban-progress-bg: rgba(21, 190, 206, 0.15); /* Cyan claro */
+            --kanban-done-bg: rgba(166, 206, 56, 0.2);   /* Verde claro */
+        }
+
+        body {
+            font-family: var(--font-web);
+            background-color: var(--bg-color);
+            color: var(--texto-principal);
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        header {
+            background-color: var(--azul-oscuro);
+            color: white;
+            padding: 2.5rem 5%;
+            text-align: center;
+            border-bottom: 5px solid var(--azul-claro);
+        }
+
+        header h1 {
+            font-family: var(--font-principal);
+            font-weight: 900;
+            font-size: 2.8rem;
+            margin: 0;
+            color: white;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--azul-claro);
+            margin: 0.5rem 0 0 0;
+        }
+
+        nav {
+            background-color: var(--bg-card);
+            padding: 0.5rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            color: var(--texto-secundario);
+            text-decoration: none;
+            font-family: var(--font-principal);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 1rem 0;
+            display: block;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--azul-claro);
+        }
+
+        nav a.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--naranja);
+        }
+
+        main {
+            max-width: 960px;
+            margin: 2.5rem auto;
+            padding: 1rem 2.5rem;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        section {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2rem;
+            scroll-margin-top: 80px; /* Offset para el nav sticky */
+        }
+
+        section:last-child {
+            border-bottom: none;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-family: var(--font-principal);
+            font-weight: 900;
+            font-size: 2rem;
+            color: var(--azul-oscuro);
+            border-bottom: 3px solid var(--azul-claro);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-family: var(--font-principal);
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--azul-claro);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            padding-left: 20px;
+            list-style-type: '✓  ';
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+        
+        ol {
+             padding-left: 25px;
+        }
+        ol li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        code {
+            background-color: #eee;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            color: var(--magenta);
+        }
+
+        strong {
+            color: var(--azul-oscuro);
+            font-weight: 700;
+        }
+
+        /* --- Estilos KANBAN --- */
+        .kanban-board-content {
+            display: flex;
+            gap: 15px;
+        }
+        .kanban-column {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            min-height: 200px;
+            transition: background-color 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        .kanban-column h6 {
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            text-align: center;
+            font-family: var(--font-principal);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        #col-pendiente { background-color: var(--kanban-pending-bg); }
+        #col-pendiente h6 { color: var(--naranja); }
+        
+        #col-progreso { background-color: var(--kanban-progress-bg); }
+        #col-progreso h6 { color: var(--cyan); }
+        
+        #col-hecho { background-color: var(--kanban-done-bg); }
+        #col-hecho h6 { color: var(--verde); }
+        
+        .kanban-column.drag-over {
+            outline: 2px dashed var(--naranja);
+            background-color: #fff;
+        }
+
+        .kanban-card {
+            background-color: var(--bg-card);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            cursor: grab;
+            font-size: 0.95em;
+            font-weight: 700;
+            border: 1px solid var(--border-color);
+        }
+        .kanban-card:last-child { margin-bottom: 0; }
+        .kanban-card.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        /* --- Fin Estilos KANBAN --- */
+
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            header p { font-size: 1rem; }
+            main { padding: 1rem 1.5rem; margin: 1.5rem 1rem; }
+            h2 { font-size: 1.8rem; }
+            h3 { font-size: 1.3rem; }
+            
+            .kanban-board-content {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Gestor de Seguimiento de Proyectos</h1>
+        <p>Especificación de Requisitos de Software (SRS)</p>
+    </header>
+
+    <nav id="nav-main">
+        <ul>
+            <li><a href="#introduccion" class="active">1. Introducción</a></li>
+            <li><a href="#descripcion">2. Descripción General</a></li>
+            <li><a href="#requisitos">3. Requisitos Específicos</a></li>
+            <li><a href="#plan">4. Plan de Desarrollo</a></li>
+            <li><a href="#kanban-tracker">5. Seguimiento</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <!-- ========================== -->
+        <!--      1. INTRODUCCIÓN       -->
+        <!-- ========================== -->
+        <section id="introduccion">
+            <h2>1. Introducción</h2>
+
+            <h3>1.1. Propósito</h3>
+            <p>El propósito de este documento es definir los requisitos para la aplicación "Gestor de Seguimiento de Proyectos". Esta aplicación <strong>multiplataforma</strong> (iOS, Android y Web/PWA), desarrollada con el framework Ionic, permitirá a los profesores gestionar listas de estudiantes y evaluar proyectos a través de tres entregas (E1, E2, EF) usando rúbricas dinámicas.</p>
+
+            <h3>1.2. Alcance</h3>
+            <p>La aplicación será una herramienta <strong>offline-first</strong> que funcionará de manera autónoma en las principales plataformas:</p>
+            <ul>
+                <li><strong>Móvil:</strong> iOS y Android.</li>
+                <li><strong>Web:</strong> Como una Progressive Web App (PWA) accesible desde navegadores modernos.</li>
+            </ul>
+            <p>Gestionará la importación, evaluación, persistencia local y exportación de datos de cursos.</p>
+
+            <h3>1.3. Definiciones y Acrónimos</h3>
+            <ul>
+                <li><strong>App:</strong> La aplicación multiplataforma a desarrollar en Ionic.</li>
+                <li><strong>Curso:</strong> Una lista de estudiantes (ej. "B01").</li>
+                <li><strong>Subgrupo (G):</strong> Un equipo de proyecto dentro de un curso (ej. "G1", "G2").</li>
+                <li><strong>Entrega:</strong> Un hito del proyecto (E1, E2, EF).</li>
+                <li><strong>PG (Puntaje Grupal):</strong> Calificación asignada al subgrupo, basada en una rúbrica grupal.</li>
+                <li><strong>PI (Puntaje Individual):</strong> Calificación asignada a un estudiante, basada en una rúbrica individual.</li>
+                <li><strong>&Sigma; (Sumatoria):</strong> El total de <code>PG + PI</code> para una entrega.</li>
+                <li><strong>Rúbrica:</strong> Conjunto de criterios de evaluación con niveles (I, A, E) y puntos.</li>
+            </ul>
+        </section>
+
+        <!-- ========================== -->
+        <!--    2. DESCRIPCIÓN GENERAL  -->
+        <!-- ========================== -->
+        <section id="descripcion">
+            <h2>2. Descripción General</h2>
+
+            <h3>2.1. Perspectiva del Producto</h3>
+            <p>La aplicación será un puerto multiplataforma autocontenido de la funcionalidad observada en el prototipo <code>appPoli.html</code>. Reemplazará el almacenamiento web (<code>localStorage</code>) por una solución de almacenamiento local persistente (Ionic Storage) y adaptará la interfaz de dos paneles a un flujo de navegación responsivo.</p>
+
+            <h3>2.2. Funciones del Producto</h3>
+            <ul>
+                <li><strong>Gestión de Cursos:</strong> Importar, renombrar y eliminar cursos.</li>
+                <li><strong>Visualización de Estudiantes:</strong> Mostrar una lista tabular de estudiantes con sus calificaciones.</li>
+                <li><strong>Filtrado y Búsqueda:</strong> Filtrar estudiantes por subgrupo y buscar por nombre.</li>
+                <li><strong>Evaluación por Rúbrica:</strong> Presentar un panel de evaluación para calificar criterios de PG y PI.</li>
+                <li><strong>Persistencia de Datos:</strong> Guardar localmente todas las evaluaciones, comentarios y rúbricas.</li>
+                <li><strong>Importación/Exportación:</strong> Realizar copias de seguridad (JSON) y exportar notas (CSV).</li>
+            </ul>
+
+            <h3>2.3. Características del Usuario</h3>
+            <p>El usuario principal es un <strong>Profesor</strong> o <strong>Instructor</strong> que necesita una herramienta móvil/web para calificar y dar seguimiento a proyectos de estudiantes, sin depender de una conexión a internet.</p>
+
+            <h3>2.4. Restricciones</h3>
+            <ul>
+                <li><strong>Plataforma:</strong> La aplicación debe ser construida usando el framework <strong>Ionic</strong>.</li>
+                <li><strong>Almacenamiento:</strong> Los datos deben persistir localmente usando <strong>Ionic Storage</strong>.</li>
+                <li><strong>Diseño (UI/UX):</strong> La interfaz debe ser responsiva y adherirse a la paleta de colores y tipografía especificadas.</li>
+                <li><strong>Paleta de Colores:</strong>
+                    <ul>
+                        <li><strong>Primarios:</strong> Azul claro (<code>#1FB2DE</code>), Azul oscuro (<code>#0F385A</code>)</li>
+                        <li><strong>Secundarios:</strong> Naranja (<code>#FBAF17</code>), Verde (<code>#A6CE38</code>), Magenta (<code>#EC0677</code>), Cyan (<code>#15BECE</code>)</li>
+                    </ul>
+                </li>
+                <li><strong>Tipografía:</strong>
+                    <ul>
+                        <li><strong>Principal (Títulos, UI):</strong> Brandon Grotesque</li>
+                        <li><strong>Web (Cuerpo de texto):</strong> Open Sans</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <!-- ========================== -->
+        <!--    3. REQUISITOS ESPECÍFICOS -->
+        <!-- ========================== -->
+        <section id="requisitos">
+            <h2>3. Requisitos Específicos</h2>
+
+            <h3>3.1. Requisitos Funcionales</h3>
+            
+            <h4>RF 1.0: Gestión de Cursos (Panel Lateral)</h4>
+            <ul>
+                <li><strong>RF 1.1:</strong> El usuario debe poder importar un curso desde un archivo <strong>CSV</strong> (<code>Apellidos</code>, <code>Nombres</code>, <code>Correo</code>, <code>Grupo</code>, <code>Subgrupo</code>).</li>
+                <li><strong>RF 1.2:</strong> El usuario debe poder exportar todos los datos (cursos, evaluaciones) a un archivo <strong>JSON</strong>.</li>
+                <li><strong>RF 1.3:</strong> El usuario debe poder importar desde un archivo JSON de copia de seguridad.</li>
+                <li><strong>RF 1.4:</strong> El usuario debe poder eliminar todos los datos con confirmación.</li>
+                <li><strong>RF 1.5:</strong> El usuario debe poder renombrar un curso existente.</li>
+            </ul>
+
+            <h4>RF 2.0: Panel de Lista de Estudiantes</h4>
+            <ul>
+                <li><strong>RF 2.1:</strong> La app debe mostrar una lista de los cursos disponibles para seleccionar.</li>
+                <li><strong>RF 2.2:</strong> Se debe mostrar una tabla/lista con los campos: Checkbox, Apellidos, Nombres, G, E1 (PG, PI, &Sigma;), E2 (PG, PI, &Sigma;), EF (PG, PI, &Sigma;).</li>
+                <li><strong>RF 2.3:</strong> El usuario debe poder filtrar la lista por Subgrupo o seleccionar "Todos".</li>
+                <li><strong>RF 2.4:</strong> Al seleccionar un estudiante, este se marca como activo para la evaluación individual (PI).</li>
+                <li><strong>RF 2.5:</strong> Al hacer clic en un encabezado (ej. "E1 - PG"), se activa el panel de seguimiento para evaluación grupal.</li>
+                <li><strong>RF 2.6:</strong> Al hacer clic en un encabezado (ej. "E1 - PI") con un estudiante seleccionado, se activa el panel de seguimiento para evaluación individual.</li>
+                <li><strong>RF 2.7:</strong> La columna &Sigma; debe calcular automáticamente <code>PG + PI</code>.</li>
+                <li><strong>RF 2.8:</strong> El usuario debe poder exportar las notas (&Sigma;) de una entrega específica a <strong>CSV</strong>.</li>
+                <li><strong>RF 2.9:</strong> Debe existir una sección de "Resumen" que muestre los detalles de la rúbrica aplicada.</li>
+            </ul>
+
+            <h4>RF 3.0: Panel de Seguimiento (Evaluación por Rúbrica)</h4>
+            <ul>
+                <li><strong>RF 3.1:</strong> El panel debe mostrar la rúbrica correspondiente al contexto (ej. "Rúbrica Grupal E1").</li>
+                <li><strong>RF 3.2:</strong> Para cada criterio, el usuario debe poder seleccionar un nivel (I, A, E) y asignar puntos.</li>
+                <li><strong>RF 3.3:</strong> El usuario debe poder sobrescribir manualmente los puntos.</li>
+                <li><strong>RF 3.4:</strong> El panel debe mostrar el "Total" de puntos sumados.</li>
+                <li><strong>RF 3.5:</strong> El usuario debe poder añadir un comentario de justificación y un "descuento" a través de un modal.</li>
+                <li><strong>RF 3.6:</strong> El usuario debe poder guardar comentarios como "frecuentes" para reutilizarlos.</li>
+                <li><strong>RF 3.7:</strong> El usuario debe poder aplicar un nivel (I, A, E) a todos los criterios de forma masiva.</li>
+                <li><strong>RF 3.8:</strong> El usuario debe poder deshacer (Undo) y rehacer (Redo) las acciones de calificación.</li>
+                <li><strong>RF 3.9:</strong> El usuario debe presionar un botón "Guardar" para persistir la evaluación.</li>
+            </ul>
+
+            <h4>RF 4.0: Lógica de Almacenamiento</h4>
+            <ul>
+                <li><strong>RF 4.1:</strong> Al guardar una evaluación "PG", la nota debe almacenarse asociada al <strong>Subgrupo</strong> y la <strong>Entrega</strong>.</li>
+                <li><strong>RF 4.2:</strong> Al guardar una evaluación "PI", la nota debe almacenarse asociada al <strong>Estudiante</strong> y la <strong>Entrega</strong>.</li>
+            </ul>
+
+            <h3>3.2. Requisitos No Funcionales</h3>
+            <ul>
+                <li><strong>RNF 1.0 (Rendimiento):</strong> La carga de un curso (< 100 estudiantes) y el cálculo de notas debe ser casi instantáneo (< 2 segundos).</li>
+                <li><strong>RNF 2.0 (Almacenamiento):</strong> La aplicación debe usar <strong>Ionic Storage</strong> (SQLite en nativo; IndexedDB en web).</li>
+                <li><strong>RNF 3.0 (Usabilidad/Diseño):</strong>
+                    <ul>
+                        <li>La aplicación debe ser completamente responsiva.</li>
+                        <li><strong>Vista Móvil:</strong> Navegación entre páginas (Lista -> Seguimiento).</li>
+                        <li><strong>Vista Amplia (Tableta/Web):</strong> Vista de dos paneles (<code>ion-split-pane</code>).</li>
+                        <li><strong>RNF 3.1 (PWA):</strong> La aplicación web debe incluir un <strong>Service Worker</strong> para habilitar capacidades offline.</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <!-- ========================== -->
+        <!--  4. PLAN DE DESARROLLO IONIC -->
+        <!-- ========================== -->
+        <section id="plan">
+            <h2>4. Plan de Desarrollo en Ionic</h2>
+            
+            <h3>Fase 1: Configuración, Modelos y Servicios</h3>
+            <ol>
+                <li><strong>Inicio del Proyecto:</strong> <code>ionic start gestorProyectos tabs --type=angular</code> (o React).</li>
+                <li><strong>Configurar PWA:</strong> Añadir <code>@angular/pwa</code> para soporte de Service Worker.</li>
+                <li><strong>Dependencias:</strong> Instalar <code>@ionic/storage-angular</code> y <code>papaparse</code>.</li>
+                <li><strong>Modelos de Datos:</strong> Crear interfaces TypeScript (<code>Curso</code>, <code>Estudiante</code>, <code>Evaluacion</code>, <code>Rubrica</code>).</li>
+                <li><strong>Servicios Core:</strong>
+                    <ul>
+                        <li><code>StorageService</code>: Wrapper para Ionic Storage.</li>
+                        <li><code>DataService</code>: Lógica de negocio (CRUD de cursos, evaluaciones).</li>
+                        <li><code>CsvService</code>: Lógica de importación/exportación CSV.</li>
+                        <li><code>BackupService</code>: Lógica de importación/exportación JSON.</li>
+                    </ul>
+                </li>
+                <li><strong>Estilos:</strong> Configurar <code>variables.scss</code> con la paleta de colores y <code>global.scss</code> para las fuentes.</li>
+            </ol>
+
+            <h3>Fase 2: Vistas de Lista y Navegación</h3>
+            <ol>
+                <li><strong>Panel Lateral:</strong> Implementar <code>ion-menu</code> con las funciones de importación/exportación.</li>
+                <li><strong>Página Principal:</strong> Usar <code>ion-split-pane</code> para gestionar las vistas móvil y tableta/web.</li>
+                <li><strong>Componente Lista de Estudiantes:</strong>
+                    <ul>
+                        <li>Usar <code>ion-segment</code> para los filtros de Subgrupo.</li>
+                        <li>Usar <code>ion-searchbar</code> para la búsqueda.</li>
+                        <li>Implementar la tabla de notas usando <code>ion-grid</code> con scroll horizontal.</li>
+                    </ul>
+                </li>
+                <li><strong>Navegación:</strong> Conectar los clics en la lista y encabezados para navegar a la página de evaluación (<code>GradingPage</code>) pasando el contexto (curso, entrega, tipo).</li>
+            </ol>
+
+            <h3>Fase 3: Módulo de Evaluación (Seguimiento)</h3>
+            <ol>
+                <li><strong>Página de Evaluación:</strong>
+                    <ul>
+                        <li>Recibirá el contexto por parámetros de ruta.</li>
+                        <li>Cargará y renderizará la Rúbrica correspondiente desde <code>DataService</code>.</li>
+                    </ul>
+                </li>
+                <li><strong>Componentes de Evaluación:</strong>
+                    <ul>
+                        <li>Usar <code>ion-segment</code> para los niveles (I, A, E).</li>
+                        <li>Implementar <code>ion-modal</code> para el modal de Comentario/Descuento.</li>
+                        <li>Implementar la lógica de Undo/Redo.</li>
+                    </ul>
+                </li>
+                <li><strong>Guardado:</strong> El botón "Guardar" llamará a <code>DataService.saveEvaluation()</code>, que persistirá en Ionic Storage.</li>
+            </ol>
+
+            <h3>Fase 4: Pruebas y Despliegue</h3>
+            <ol>
+                <li><strong>Pruebas de Flujo:</strong> Probar el ciclo completo (Importar -> Evaluar PG/PI -> Verificar &Sigma; -> Exportar).</li>
+                <li><strong>Pruebas de Almacenamiento:</strong> Verificar la persistencia cerrando la app/navegador y volviendo a abrir. Probar en IndexedDB (Web), SQLite (Android) y SQLite (iOS).</li>
+                <li><strong>Compilación:</strong>
+                    <ul>
+                        <li><strong>Web (PWA):</strong> <code>ionic build --prod</code> y desplegar la carpeta <code>www</code>.</li>
+                        <li><strong>Android:</strong> <code>ionic cap run android</code>.</li>
+                        <li><strong>iOS:</strong> <code>ionic cap run ios</code>.</li>
+                    </ul>
+                </li>
+            </ol>
+        </section>
+        
+        <!-- ========================== -->
+        <!--      5. SEGUIMIENTO KANBAN   -->
+        <!-- ========================== -->
+        <section id="kanban-tracker">
+            <h2>5. Seguimiento del Proyecto (Kanban)</h2>
+            <p>Arrastra las fases del plan de desarrollo para actualizar el estado del proyecto. El progreso se guardará localmente en tu navegador.</p>
+            <div class="kanban-board-content">
+                <div class="kanban-column" id="col-pendiente">
+                    <h6>Pendiente</h6>
+                </div>
+                <div class="kanban-column" id="col-progreso">
+                    <h6>En Progreso</h6>
+                </div>
+                <div class="kanban-column" id="col-hecho">
+                    <h6>Hecho</h6>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Documento SRS generado por Gemini. Octubre 2025.</p>
+    </footer>
+
+    <script>
+        // --- Lógica de Navegación (Scrollspy) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+
+            const activateLink = (id) => {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${id}`) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        activateLink(entry.target.id);
+                    }
+                });
+            }, { rootMargin: '-30% 0px -70% 0px', threshold: 0 }); 
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            if (window.scrollY < 100) {
+                 activateLink('introduccion');
+            }
+        });
+
+        // --- Lógica KANBAN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const KANBAN_STORAGE_KEY = 'srsKanbanState';
+            let currentDraggedCard = null;
+
+            const cardData = [
+                { id: 'fase-1', text: 'Fase 1: Configuración, Modelos y Servicios' },
+                { id: 'fase-2', text: 'Fase 2: Vistas de Lista y Navegación' },
+                { id: 'fase-3', text: 'Fase 3: Módulo de Evaluación (Seguimiento)' },
+                { id: 'fase-4', text: 'Fase 4: Pruebas y Despliegue' }
+            ];
+
+            function renderKanbanBoard() {
+                const colPendiente = document.getElementById('col-pendiente');
+                const colProgreso = document.getElementById('col-progreso');
+                const colHecho = document.getElementById('col-hecho');
+                
+                [colPendiente, colProgreso, colHecho].forEach(col => {
+                    while (col.children.length > 1) { // Dejar el <h6>
+                        col.removeChild(col.lastChild);
+                    }
+                });
+
+                let kanbanState = JSON.parse(localStorage.getItem(KANBAN_STORAGE_KEY));
+                
+                if (!kanbanState) {
+                    kanbanState = {
+                        'fase-1': 'col-pendiente',
+                        'fase-2': 'col-pendiente',
+                        'fase-3': 'col-pendiente',
+                        'fase-4': 'col-pendiente'
+                    };
+                    localStorage.setItem(KANBAN_STORAGE_KEY, JSON.stringify(kanbanState));
+                }
+                
+                cardData.forEach(data => {
+                    const card = document.createElement('div');
+                    card.id = data.id;
+                    card.className = 'kanban-card';
+                    card.draggable = true;
+                    card.textContent = data.text;
+                    
+                    const targetColumnId = kanbanState[data.id] || 'col-pendiente';
+                    document.getElementById(targetColumnId).appendChild(card);
+                });
+
+                initKanbanDragDrop();
+            }
+
+            function saveKanbanState() {
+                const newState = {};
+                document.querySelectorAll('.kanban-column').forEach(col => {
+                    col.querySelectorAll('.kanban-card').forEach(card => {
+                        newState[card.id] = col.id;
+                    });
+                });
+                localStorage.setItem(KANBAN_STORAGE_KEY, JSON.stringify(newState));
+            }
+
+            function initKanbanDragDrop() {
+                const cards = document.querySelectorAll('.kanban-card');
+                const columns = document.querySelectorAll('.kanban-column');
+
+                cards.forEach(card => {
+                    card.addEventListener('dragstart', () => {
+                        card.classList.add('dragging');
+                        currentDraggedCard = card;
+                    });
+                    card.addEventListener('dragend', () => {
+                        card.classList.remove('dragging');
+                        currentDraggedCard = null;
+                        saveKanbanState();
+                    });
+                });
+
+                columns.forEach(column => {
+                    column.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        if (!column.contains(currentDraggedCard)) {
+                            column.classList.add('drag-over');
+                        }
+                    });
+
+                    column.addEventListener('dragleave', () => {
+                        column.classList.remove('drag-over');
+                    });
+
+                    column.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        column.classList.remove('drag-over');
+                        if (currentDraggedCard) {
+                            column.appendChild(currentDraggedCard);
+                        }
+                    });
+                });
+            }
+
+            renderKanbanBoard();
+        });
+    </script>
+</body>
+</html>

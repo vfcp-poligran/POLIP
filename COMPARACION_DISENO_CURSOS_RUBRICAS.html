@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparación de Diseño - Cursos vs Rúbricas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: #f5f7fa;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0F385A;
+            border-bottom: 4px solid #1FB2DE;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #1FB2DE;
+            margin-top: 30px;
+            padding-left: 15px;
+            border-left: 5px solid #1FB2DE;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .page-column {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+
+        .page-column h3 {
+            color: #0F385A;
+            margin-top: 0;
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #0F385A 0%, #0d2e47 100%);
+            color: white;
+            border-radius: 6px;
+        }
+
+        .image-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: #0F385A;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .difference {
+            background: #fff3cd;
+            border-left: 4px solid #FBAF17;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .similarity {
+            background: #d1ecf1;
+            border-left: 4px solid #1FB2DE;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge-cursos {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-rubricas {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-same {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        ul {
+            line-height: 1.8;
+        }
+
+        .recommendation {
+            background: #e8f5e9;
+            border-left: 4px solid #A6CE38;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📊 Comparación de Diseño: Cursos vs Rúbricas</h1>
+
+        <div class="image-container">
+            <h3>Imágenes de Referencia</h3>
+            <div class="comparison-grid">
+                <div>
+                    <h4>Página de Cursos</h4>
+                    <img src="file:///C:/Users/vfcp1/.gemini/antigravity/brain/a40f7dc7-371c-45cf-ae22-9e3ac04b9fd9/uploaded_image_1_1765387764347.png"
+                        alt="Cursos">
+                </div>
+                <div>
+                    <h4>Página de Rúbricas</h4>
+                    <img src="file:///C:/Users/vfcp1/.gemini/antigravity/brain/a40f7dc7-371c-45cf-ae22-9e3ac04b9fd9/uploaded_image_0_1765387764347.png"
+                        alt="Rúbricas">
+                </div>
+            </div>
+        </div>
+
+        <h2>🎨 Diferencias de Diseño Visual</h2>
+
+        <div class="comparison-grid">
+            <div class="page-column">
+                <h3>Cursos <span class="badge badge-cursos">PÁGINA 1</span></h3>
+                <ul>
+                    <li><strong>Header:</strong> Fondo azul oscuro con título "Cursos" centrado</li>
+                    <li><strong>Botón principal:</strong> "⊕ Nuevo Curso" - botón redondeado con borde</li>
+                    <li><strong>Card principal:</strong> Card blanca con borde redondeado</li>
+                    <li><strong>Estado vacío:</strong> Icono de documento gris + texto "No hay cursos disponibles"</li>
+                    <li><strong>Espaciado:</strong> Card con margen superior visible</li>
+                    <li><strong>Iconos laterales:</strong> Barra lateral con iconos adicionales (fullscreen, search)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="page-column">
+                <h3>Rúbricas <span class="badge badge-rubricas">PÁGINA 2</span></h3>
+                <ul>
+                    <li><strong>Header:</strong> Fondo azul oscuro con título "Rúbricas" alineado a la izquierda</li>
+                    <li><strong>Botón principal:</strong> "⊕ Nueva Rúbrica" - botón redondeado con borde</li>
+                    <li><strong>Card principal:</strong> Card blanca ocupando todo el espacio</li>
+                    <li><strong>Estado vacío:</strong> Icono de documentos gris + texto "No hay rúbricas guardadas" +
+                        subtexto</li>
+                    <li><strong>Espaciado:</strong> Card sin margen superior, pegada al header</li>
+                    <li><strong>Iconos laterales:</strong> Solo iconos de navegación básicos</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>📐 Diferencias Estructurales</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Elemento</th>
+                    <th>Cursos</th>
+                    <th>Rúbricas</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Alineación del título</strong></td>
+                    <td>Centrado</td>
+                    <td>Izquierda</td>
+                    <td><span class="badge badge-cursos">DIFERENTE</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Margen superior de card</strong></td>
+                    <td>Con margen (~20px)</td>
+                    <td>Sin margen (0px)</td>
+                    <td><span class="badge badge-cursos">DIFERENTE</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Texto del estado vacío</strong></td>
+                    <td>Una línea</td>
+                    <td>Dos líneas (título + subtexto)</td>
+                    <td><span class="badge badge-cursos">DIFERENTE</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Iconos en sidebar</strong></td>
+                    <td>6 iconos (incluye fullscreen, search)</td>
+                    <td>5 iconos (básicos)</td>
+                    <td><span class="badge badge-cursos">DIFERENTE</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Color del header</strong></td>
+                    <td>Azul oscuro (#0F385A)</td>
+                    <td>Azul oscuro (#0F385A)</td>
+                    <td><span class="badge badge-same">IGUAL</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Estilo del botón</strong></td>
+                    <td>Redondeado con borde</td>
+                    <td>Redondeado con borde</td>
+                    <td><span class="badge badge-same">IGUAL</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Icono de estado vacío</strong></td>
+                    <td>Gris claro</td>
+                    <td>Gris claro</td>
+                    <td><span class="badge badge-same">IGUAL</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>📝 Diferencias de Contenido</h2>
+
+        <div class="difference">
+            <h4>🔸 Mensajes de Estado Vacío</h4>
+            <ul>
+                <li><strong>Cursos:</strong> "No hay cursos disponibles" (simple y directo)</li>
+                <li><strong>Rúbricas:</strong> "No hay rúbricas guardadas" + "Importa un archivo de rúbrica para
+                    comenzar" (más descriptivo y guía al usuario)</li>
+            </ul>
+        </div>
+
+        <div class="difference">
+            <h4>🔸 Funcionalidad del Sidebar</h4>
+            <ul>
+                <li><strong>Cursos:</strong> Incluye iconos de fullscreen y búsqueda en la parte inferior</li>
+                <li><strong>Rúbricas:</strong> Solo tiene los iconos de navegación principales</li>
+            </ul>
+        </div>
+
+        <h2>✅ Similitudes</h2>
+
+        <div class="similarity">
+            <h4>Elementos Consistentes</h4>
+            <ul>
+                <li>✓ Paleta de colores (azul oscuro #0F385A)</li>
+                <li>✓ Estilo de botones principales (redondeados con icono ⊕)</li>
+                <li>✓ Cards blancas con bordes redondeados</li>
+                <li>✓ Iconos de estado vacío (gris claro)</li>
+                <li>✓ Barra lateral de navegación (azul oscuro)</li>
+                <li>✓ Logo en la parte superior izquierda</li>
+            </ul>
+        </div>
+
+        <h2>🎯 Recomendaciones de Estandarización</h2>
+
+        <div class="recommendation">
+            <h4>Para lograr consistencia total:</h4>
+            <ol>
+                <li><strong>Alineación de títulos:</strong> Decidir si todos los títulos van centrados o a la izquierda
+                    <ul>
+                        <li>Opción A: Todos centrados (como Cursos)</li>
+                        <li>Opción B: Todos a la izquierda (como Rúbricas) ← <strong>Recomendado</strong></li>
+                    </ul>
+                </li>
+                <li><strong>Margen superior de cards:</strong> Estandarizar el espaciado
+                    <ul>
+                        <li>Opción A: Sin margen (como Rúbricas) - aprovecha mejor el espacio</li>
+                        <li>Opción B: Con margen (como Cursos) - más respiración visual</li>
+                    </ul>
+                </li>
+                <li><strong>Mensajes de estado vacío:</strong> Usar formato de dos líneas en todas las páginas
+                    <ul>
+                        <li>Título principal + texto de ayuda/guía</li>
+                        <li>Ejemplo para Cursos: "No hay cursos disponibles" + "Vaya a Gestión de Cursos para crear uno"
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Iconos del sidebar:</strong> Decidir qué iconos son necesarios en cada página
+                    <ul>
+                        <li>Mantener solo los iconos esenciales</li>
+                        <li>O agregar fullscreen/search a todas las páginas</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <h2>📊 Resumen Ejecutivo</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Aspecto</th>
+                    <th>Estado Actual</th>
+                    <th>Impacto en UX</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alineación de títulos</td>
+                    <td>Inconsistente</td>
+                    <td>⚠️ Medio - Afecta la percepción de consistencia</td>
+                </tr>
+                <tr>
+                    <td>Espaciado de cards</td>
+                    <td>Inconsistente</td>
+                    <td>⚠️ Bajo - Diferencia sutil pero notable</td>
+                </tr>
+                <tr>
+                    <td>Mensajes de ayuda</td>
+                    <td>Inconsistente</td>
+                    <td>⚠️ Alto - Rúbricas es más útil para el usuario</td>
+                </tr>
+                <tr>
+                    <td>Paleta de colores</td>
+                    <td>Consistente</td>
+                    <td>✅ Excelente - Identidad visual clara</td>
+                </tr>
+                <tr>
+                    <td>Estilo de botones</td>
+                    <td>Consistente</td>
+                    <td>✅ Excelente - Experiencia uniforme</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</body>
+
+</html>

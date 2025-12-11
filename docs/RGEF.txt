@@ -1,0 +1,136 @@
+=== RGEF ===
+CURSO: ÉNFASIS EN PROGRAMACIÓN MÓVIL
+PUNTUACIÓN_TOTAL: 100
+--
+ESCALA_CALIFICACION:
+0-40|Proyecto insuficiente - Requiere reelaboración significativa
+41-69|Proyecto aceptable - Cumple con requisitos mínimos
+70-100|Proyecto excelente - Supera expectativas
+---
+CRITERIO_1: Funcionalidad Completa
+PESO: 30
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-10
+TITULO: Insuficiente
+DESCRIPCION: La aplicación no funciona correctamente o no cumple con los requisitos funcionales establecidos. Muchas características no están implementadas o presentan errores graves. El proyecto está incompleto.
+
+NIVEL_2:
+PUNTOS: 11-20
+TITULO: Aceptable
+DESCRIPCION: La aplicación funciona correctamente en su mayoría. Implementa los requisitos funcionales principales del proyecto. Puede tener algunos errores menores que no afectan la funcionalidad principal.
+
+NIVEL_3:
+PUNTOS: 21-30
+TITULO: Excelente
+DESCRIPCION: La aplicación funciona perfectamente. Implementa todos los requisitos funcionales de forma completa y correcta. No presenta errores. La funcionalidad es robusta, completa y bien probada.
+
+---
+
+CRITERIO_2: Diseño UI/UX y Navegación
+PESO: 20
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-6
+TITULO: Insuficiente
+DESCRIPCION: La interfaz es confusa, desorganizada o difícil de usar. No sigue principios de diseño. La navegación es poco intuitiva. No hay consistencia visual. El diseño no es apropiado para un proyecto final.
+
+NIVEL_2:
+PUNTOS: 7-13
+TITULO: Aceptable
+DESCRIPCION: La interfaz es funcional y usable. Sigue principios básicos de diseño UI/UX. La navegación es clara y lógica. Tiene consistencia visual adecuada. El diseño es apropiado para un proyecto final.
+
+NIVEL_3:
+PUNTOS: 14-20
+TITULO: Excelente
+DESCRIPCION: La interfaz es profesional, intuitiva y atractiva. Excelente aplicación de principios de diseño UI/UX. Navegación fluida e intuitiva. Consistencia visual perfecta con paleta de colores coherente. Diseño de nivel profesional.
+
+---
+
+CRITERIO_3: Gestión de Datos (Base de Datos/Storage)
+PESO: 20
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-6
+TITULO: Insuficiente
+DESCRIPCION: La aplicación no gestiona datos correctamente o la implementación es muy básica. No usa base de datos o storage de forma adecuada. Hay problemas de persistencia de datos o manejo de información.
+
+NIVEL_2:
+PUNTOS: 7-13
+TITULO: Aceptable
+DESCRIPCION: La aplicación gestiona datos de forma funcional. Implementa base de datos o storage adecuadamente. La persistencia de datos funciona correctamente. El modelo de datos es coherente.
+
+NIVEL_3:
+PUNTOS: 14-20
+TITULO: Excelente
+DESCRIPCION: La aplicación gestiona datos de forma profesional y eficiente. Excelente implementación de base de datos o storage. Manejo robusto de datos con validaciones, relaciones y optimización. El modelo de datos es completo y bien diseñado.
+
+---
+
+CRITERIO_4: Calidad del Código y Arquitectura
+PESO: 15
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-5
+TITULO: Insuficiente
+DESCRIPCION: El código es desorganizado, difícil de leer o mantener. No sigue buenas prácticas. Falta documentación. La arquitectura es deficiente. No usa componentes y servicios de forma adecuada.
+
+NIVEL_2:
+PUNTOS: 6-10
+TITULO: Aceptable
+DESCRIPCION: El código está organizado y es legible. Sigue buenas prácticas básicas. Tiene documentación básica. La arquitectura es adecuada. Usa componentes y servicios de forma apropiada.
+
+NIVEL_3:
+PUNTOS: 11-15
+TITULO: Excelente
+DESCRIPCION: El código es limpio, bien estructurado y fácil de mantener. Sigue todas las buenas prácticas. Documentación completa. Arquitectura profesional con excelente uso de componentes, servicios y patrones de diseño.
+
+---
+
+CRITERIO_5: Documentación del Proyecto
+PESO: 10
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-3
+TITULO: Insuficiente
+DESCRIPCION: La documentación es incompleta o muy básica. Falta información técnica importante. No incluye manual de usuario o guía de instalación. El documento final es deficiente.
+
+NIVEL_2:
+PUNTOS: 4-6
+TITULO: Aceptable
+DESCRIPCION: La documentación es adecuada. Incluye información técnica relevante, manual de usuario básico y guía de instalación. El documento final cumple con los requisitos mínimos.
+
+NIVEL_3:
+PUNTOS: 7-10
+TITULO: Excelente
+DESCRIPCION: La documentación es completa, clara y profesional. Incluye información técnica detallada, manual de usuario completo, guía de instalación, diagramas y capturas de pantalla. El documento final es de excelente calidad.
+
+---
+
+CRITERIO_6: Innovación y Complejidad
+PESO: 5
+NIVELES: 3
+
+NIVEL_1:
+PUNTOS: 0-1
+TITULO: Insuficiente
+DESCRIPCION: El proyecto es muy básico y no muestra innovación. Solo cumple con lo mínimo requerido. No hay características que lo diferencien o muestren complejidad técnica.
+
+NIVEL_2:
+PUNTOS: 2-3
+TITULO: Aceptable
+DESCRIPCION: El proyecto muestra cierta creatividad e innovación. Incluye características que agregan valor. Demuestra complejidad técnica adecuada para el nivel del curso.
+
+NIVEL_3:
+PUNTOS: 4-5
+TITULO: Excelente
+DESCRIPCION: El proyecto demuestra alta creatividad, innovación y complejidad técnica. Incluye características únicas y avanzadas. Sobresale significativamente en diseño, implementación y soluciones técnicas.
+
+---
+
+=== FIN DE RÚBRICA ===

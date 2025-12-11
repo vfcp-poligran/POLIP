@@ -1,0 +1,241 @@
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    <div class="grid-principal-responsive">
+
+      <!-- Lista de Cursos -->
+      <ion-card class="cuadrante-card">
+        <ion-card-header>
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-align-items-start">
+              <!-- Sección izquierda: Título -->
+              <ion-col size="12" size-md="8" class="ion-align-self-start">
+                <ion-card-title class="title-no-margin">
+                  Cursos
+                </ion-card-title>
+              </ion-col>
+
+              <!-- Secciones de Importar antes de los botones -->
+              @if (modoEdicion) {
+              <ion-col size="12" size-md="12" class="ion-padding-vertical">
+                <div class="import-container">
+                  <!-- Personas -->
+                  <div class="import-item" [class.has-file]="estudiantesFileName"
+                    (click)="estudiantesFileInput.click()">
+                    <input #estudiantesFileInput type="file" accept=".csv" aria-label="Personas"
+                      (change)="onEstudiantesFileSelected($event)" class="display-none">
+                    <div class="import-top">
+                      <ion-icon name="people-outline"></ion-icon>
+                      <span>Personas</span>
+                      <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
+                    </div>
+                    <div class="import-bottom">
+                      @if (estudiantesFileName) {
+                      <span class="filename">{{ estudiantesFileName }}</span>
+                      <ion-icon name="close-circle" (click)="desvincularArchivoEstudiantes(); $event.stopPropagation()"
+                        class="close-icon-small"></ion-icon>
+                      } @else {
+                      <span class="no-file">Cargar Archivo</span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Calificaciones -->
+                  <div class="import-item"
+                    [class.has-file]="calificacionesFileName || (codigoCursoEnEdicion && obtenerNombreArchivoCalificaciones(codigoCursoEnEdicion))"
+                    (click)="calificacionesFileInput.click()">
+                    <input #calificacionesFileInput type="file" accept=".csv" aria-label="Calificaciones"
+                      (change)="onCalificacionesFileSelected($event)" class="display-none">
+                    <div class="import-top">
+                      <ion-icon name="stats-chart-outline"></ion-icon>
+                      <span>Calificaciones</span>
+                      <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
+                    </div>
+                    <div class="import-bottom">
+                      @if (calificacionesFileName) {
+                      <span class="filename">{{ calificacionesFileName }}</span>
+                      <ion-icon name="close-circle"
+                        (click)="desvincularArchivoCalificaciones(); $event.stopPropagation()"
+                        class="close-icon-small"></ion-icon>
+                      } @else if (codigoCursoEnEdicion && obtenerNombreArchivoCalificaciones(codigoCursoEnEdicion)) {
+                      <span class="filename saved">{{ obtenerNombreArchivoCalificaciones(codigoCursoEnEdicion) }}</span>
+                      <ion-badge color="success">Guardado</ion-badge>
+                      <ion-icon name="close-circle"
+                        (click)="eliminarArchivoCalificacionesGuardado(); $event.stopPropagation()"
+                        class="close-icon-small"></ion-icon>
+                      } @else {
+                      <span class="no-file">Cargar Archivo</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </ion-col>
+              }
+
+              <!-- Barra de acciones a la derecha -->
+              <ion-col size="12" size-md="4" class="ion-align-self-center ion-text-end">
+                <div class="action-bar">
+                  @if (!modoEdicion) {
+                  <ion-button class="action-btn-square" (click)="iniciarCreacionCurso()">
+                    <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                    Crear
+                  </ion-button>
+                  } @else {
+                  <ion-button class="action-btn-square" color="medium" (click)="deseleccionarCurso()">
+                    <ion-icon slot="start" name="close-outline"></ion-icon>
+                    Cancelar
+                  </ion-button>
+                  <ion-button class="action-btn-square" color="success" (click)="guardarCurso()">
+                    <ion-icon slot="start" name="save-outline"></ion-icon>
+                    Guardar
+                  </ion-button>
+                  }
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-header>
+
+        <ion-card-content class="card-content-full-flex">
+          <div class="cursos-scroll-container">
+            @if (cursosDisponibles.length === 0) {
+            <div class="empty-state">
+              <p>No hay cursos disponibles</p>
+            </div>
+            } @else {
+            <ion-list lines="full">
+              @for (curso of cursosDisponibles; track curso.codigo) {
+              <ion-item-sliding>
+                <ion-item [class.item-selected]="cursoSeleccionado === curso.codigo" button
+                  (click)="seleccionarCurso(curso.codigo)">
+                  <ion-label>
+                    <div class="curso-info-wrapper">
+                      <div class="curso-main-info">
+                        <h2>{{ curso.nombre }}</h2>
+                        <p class="curso-code">
+                          <strong>{{ curso.codigo }}</strong>
+                        </p>
+                      </div>
+                      <div class="curso-meta-row">
+                        <p class="curso-fecha">
+                          <ion-icon name="calendar-outline" size="small"></ion-icon>
+                          {{ curso.fechaCreacion | date: 'dd/MM/yyyy' }}
+                        </p>
+                        @if (curso.tieneCalificaciones) {
+                        <ion-badge color="success">Con calificaciones</ion-badge>
+                        }
+                      </div>
+                    </div>
+                  </ion-label>
+                </ion-item>
+
+                <ion-item-options side="end">
+                  <ion-item-option color="warning" (click)="seleccionarCurso(curso.codigo); editarCursoSeleccionado()">
+                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                  </ion-item-option>
+                  <ion-item-option color="danger" (click)="eliminarCurso(curso, $event)">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+              }
+            </ion-list>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Formulario de Curso -->
+      @if (cursoSeleccionado || modoEdicion) {
+      <ion-card class="cuadrante-card">
+        <ion-card-content>
+          <!-- Rúbricas Asociadas -->
+          @if (cursoSeleccionado && !modoEdicion && rubricasAsociadas.length > 0) {
+          <div class="rubricas-asociadas-section">
+            <div class="section-header-custom">
+              <ion-icon name="document-text-outline" color="primary"></ion-icon>
+              <h4>Rúbricas Asociadas</h4>
+              <ion-badge color="primary" class="count-badge">{{ rubricasAsociadas.length }}</ion-badge>
+            </div>
+
+            <ion-list class="rubricas-list-ionic" lines="full">
+              @for (rubrica of rubricasAsociadas; track rubrica.id) {
+              <ion-item class="rubrica-item-custom">
+                <ion-icon name="ribbon-outline" slot="start"
+                  [color]="rubrica.tipoRubrica === 'PG' ? 'primary' : 'secondary'"></ion-icon>
+
+                <ion-label>
+                  <div class="rubrica-item-header">
+                    <h3>{{ rubrica.nombre }}</h3>
+                    <ion-badge color="success" class="puntos-badge">
+                      {{ rubrica.puntuacionTotal }} pts
+                    </ion-badge>
+                  </div>
+
+                  <div class="rubrica-item-details">
+                    @if (rubrica.cursoAsociado) {
+                    <ion-chip class="rubrica-chip" color="warning">
+                      <ion-icon name="school" slot="start"></ion-icon>
+                      <ion-label>{{ rubrica.cursoAsociado }}</ion-label>
+                    </ion-chip>
+                    }
+
+                    <ion-chip class="rubrica-chip" [color]="rubrica.tipoRubrica === 'PG' ? 'primary' : 'secondary'">
+                      <ion-icon [name]="rubrica.tipoRubrica === 'PG' ? 'people' : 'person'" slot="start"></ion-icon>
+                      <ion-label>{{ rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }}</ion-label>
+                    </ion-chip>
+
+                    <ion-chip class="rubrica-chip" color="tertiary">
+                      <ion-icon name="calendar" slot="start"></ion-icon>
+                      <ion-label>{{ rubrica.tipoEntrega || 'Sin especificar' }}</ion-label>
+                    </ion-chip>
+                  </div>
+                </ion-label>
+              </ion-item>
+              }
+            </ion-list>
+
+            <hr class="metadata-divider">
+          </div>
+          }
+
+          <!-- Información del Curso -->
+          @if (cursoParseado) {
+          <div class="metadata-section">
+            <hr class="metadata-divider">
+
+            <h4 class="metadata-header">
+              <ion-icon name="school-outline"></ion-icon>
+              Información del Curso
+            </h4>
+
+            <div class="metadata-container">
+              <div class="metadata-grid">
+                <div>
+                  <span class="metadata-label">Bloque:</span>
+                  <strong>{{ cursoParseado.bloque || 'No detectado' }}</strong>
+                </div>
+
+                <div>
+                  <span class="metadata-label">Código:</span>
+                  <strong>{{ cursoParseado.codigo || 'No detectado' }}</strong>
+                </div>
+
+                <div>
+                  <span class="metadata-label">Nombre:</span>
+                  <strong>{{ cursoParseado.nombre || 'No detectado' }}</strong>
+                </div>
+
+                <div>
+                  <span class="metadata-label">Estudiantes:</span>
+                  <strong>{{ estudiantesCargados.length }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+        </ion-card-content>
+      </ion-card>
+      }
+    </div>
+  </div>
+</ion-content>
