@@ -3,6 +3,13 @@
    Layout simple: ion-menu (móvil) + ion-card sidebar (desktop)
    ============================================================ */
 
+/* Host element debe ocupar todo el espacio disponible */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 /* Desktop sidebar como ion-card fija */
 .desktop-sidebar {
   position: fixed;
@@ -80,6 +87,10 @@
 
 /* ion-tabs - contenido principal */
 ion-tabs#main-content {
+  /* Posicionamiento - debe ocupar el espacio restante y ser interactivo */
+  position: relative;
+  z-index: 1;
+
   /* Sin sidebar en móvil */
   margin-left: 0;
   margin-right: 0;
@@ -2614,18 +2625,8 @@ ion-tab-button[tab="inicio"].circular-tab {
 }
 
 // ========================================
-// LAYOUT PRINCIPAL - USANDO ION-SPLIT-PANE
+// PANEL DE SEGUIMIENTO - ESTILOS
 // ========================================
-:host {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-// ion-split-pane ocupa todo el espacio
-ion-split-pane {
-  height: 100%;
-}
 
 // Panel de seguimiento - position fixed a la derecha
 .panel-seguimiento-global {
