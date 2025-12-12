@@ -8,6 +8,52 @@ ion-split-pane {
   --side-max-width: 300px;
   --side-min-width: 250px;
   --border: none;
+
+  /* 🔧 FIX: Asegurar que el contenido principal reciba eventos de clic */
+  &.split-pane-visible {
+    /* El main-content debe ser completamente interactivo */
+    #main-content {
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    /* El menú lateral no debe tener backdrop visible */
+    ion-menu {
+      /* Backdrop desactivado cuando split-pane está activo */
+      --backdrop-opacity: 0;
+    }
+  }
+}
+
+/* 🔧🔧🔧 FIX CRÍTICO: Clase .menu-content-open bloquea eventos 🔧🔧🔧 */
+/* Ionic aplica esta clase cuando el menú está "abierto" lo cual */
+/* en modo split-pane significa siempre - debemos desactivar el bloqueo */
+:host ::ng-deep {
+  .menu-content-open,
+  .menu-content.menu-content-open {
+    pointer-events: auto;
+    z-index: 0;
+  }
+
+  /* ion-backdrop del menú debe estar siempre oculto en split-pane */
+  ion-backdrop {
+    display: none;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* El contenedor del ion-tabs debe ser interactivo */
+  .tabs-wrapper,
+  ion-tabs,
+  ion-router-outlet {
+    pointer-events: auto;
+  }
+
+  /* Todas las páginas dentro del router deben ser clickeables */
+  ion-router-outlet .ion-page {
+    pointer-events: auto;
+  }
 }
 
 /* Menú lateral - estilos nativos */
