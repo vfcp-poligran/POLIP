@@ -22,7 +22,6 @@ import {
   IonTabButton,
   IonMenu,
   IonMenuToggle,
-  IonMenuButton,
   IonHeader,
   IonToolbar,
   IonTitle,
@@ -30,7 +29,6 @@ import {
   IonFooter,
   IonAvatar,
   IonContent,
-  IonSplitPane,
   MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -72,15 +70,13 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonTabButton,
     IonMenu,
     IonMenuToggle,
-    IonMenuButton,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonButtons,
     IonFooter,
     IonAvatar,
-    IonContent,
-    IonSplitPane
+    IonContent
   ],
   animations: [
     trigger('slideInOut', [

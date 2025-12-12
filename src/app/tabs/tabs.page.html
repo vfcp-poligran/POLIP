@@ -1,111 +1,142 @@
-<!-- Layout con ion-split-pane - Componente nativo de Ionic para sidebar permanente -->
-<ion-split-pane contentId="main-content" [when]="isDesktop">
+<!-- Layout sin ion-split-pane - Usando ion-menu estándar de Ionic -->
 
-  <!-- Sidebar usando ion-menu nativo de Ionic -->
-  <ion-menu contentId="main-content" type="push" side="start" menuId="mainMenu" class="sidebar-menu">
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-avatar slot="start" class="sidebar-logo-avatar">
-          <img
-            src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
-            alt="Logo Politécnico Grancolombiano" />
-        </ion-avatar>
-        <ion-title>Navegación</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<!-- Sidebar usando ion-menu -->
+<ion-menu contentId="main-content" type="overlay" side="start" menuId="mainMenu" class="sidebar-menu" [disabled]="isDesktop">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-avatar slot="start" class="sidebar-logo-avatar">
+        <img
+          src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
+          alt="Logo Politécnico Grancolombiano" />
+      </ion-avatar>
+      <ion-title>Navegación</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-content>
-      <ion-list lines="none" class="sidebar-nav-list">
-        <!-- Navegación Principal -->
-        <!-- ion-menu-toggle solo activo en móvil (auto-hide=true cierra menú solo cuando está como overlay) -->
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="home-outline"></ion-icon>
-            <ion-label>Inicio</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+  <ion-content>
+    <ion-list lines="none" class="sidebar-nav-list">
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="document-text-outline"></ion-icon>
-            <ion-label>Cursos</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          <ion-label>Cursos</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="list-outline"></ion-icon>
-            <ion-label>Rúbricas</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="list-outline"></ion-icon>
+          <ion-label>Rúbricas</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="analytics-outline"></ion-icon>
-            <ion-label>Calificaciones</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="analytics-outline"></ion-icon>
+          <ion-label>Calificaciones</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-            <ion-label>Sistema</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+          <ion-label>Sistema</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
 
-    <ion-footer>
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-button fill="clear" (click)="toggleFullscreen()" aria-label="Pantalla completa">
-            <ion-icon slot="icon-only" name="expand-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button fill="clear" (click)="toggleSearch()" [attr.aria-label]="searchExpanded ? 'Cerrar búsqueda' : 'Abrir búsqueda'">
-            <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-footer>
-  </ion-menu>
+  <ion-footer>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-button fill="clear" (click)="toggleFullscreen()" aria-label="Pantalla completa">
+          <ion-icon slot="icon-only" name="expand-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="toggleSearch()" [attr.aria-label]="searchExpanded ? 'Cerrar búsqueda' : 'Abrir búsqueda'">
+          <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+</ion-menu>
 
-  <!-- Contenido principal - IMPORTANTE: atributo 'main' requerido por ion-split-pane -->
-  <div id="main-content" class="ion-page" main>
-    <!-- Header móvil -->
-    <ion-header class="mobile-header">
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Gestor de Proyectos</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="toggleSearch()">
-            <ion-icon slot="icon-only" name="search-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+<!-- Sidebar permanente para desktop - sin ion-split-pane -->
+<ion-card class="desktop-sidebar" *ngIf="isDesktop">
+  <ion-card-header>
+    <ion-avatar class="sidebar-logo-avatar">
+      <img
+        src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
+        alt="Logo Politécnico Grancolombiano" />
+    </ion-avatar>
+    <ion-card-title>Navegación</ion-card-title>
+  </ion-card-header>
 
-    <!-- Wrapper para ion-tabs con margen para el panel -->
-    <div class="tabs-wrapper">
-      <ion-tabs>
-        <ion-router-outlet></ion-router-outlet>
-        <ion-tab-bar slot="bottom" class="hidden-tab-bar">
-          <ion-tab-button tab="inicio" href="/tabs/inicio"></ion-tab-button>
-          <ion-tab-button tab="cursos" href="/tabs/cursos"></ion-tab-button>
-          <ion-tab-button tab="rubricas" href="/tabs/rubricas"></ion-tab-button>
-          <ion-tab-button tab="calificaciones" href="/tabs/calificaciones"></ion-tab-button>
-          <ion-tab-button tab="sistema" href="/tabs/sistema"></ion-tab-button>
-        </ion-tab-bar>
-      </ion-tabs>
-    </div>
-  </div>
+  <ion-card-content class="desktop-sidebar-content">
+    <ion-list lines="none" class="desktop-nav-list">
+      <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
+        <ion-icon slot="start" name="home-outline"></ion-icon>
+        <ion-label>Inicio</ion-label>
+      </ion-item>
 
-</ion-split-pane>
+      <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        <ion-label>Cursos</ion-label>
+      </ion-item>
 
-<!-- Panel de Seguimiento - COMPLETAMENTE FUERA del split-pane, posición fija -->
+      <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
+        <ion-icon slot="start" name="list-outline"></ion-icon>
+        <ion-label>Rúbricas</ion-label>
+      </ion-item>
+
+      <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
+        <ion-icon slot="start" name="analytics-outline"></ion-icon>
+        <ion-label>Calificaciones</ion-label>
+      </ion-item>
+
+      <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
+        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-label>Sistema</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+
+  <ion-footer>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button fill="clear" (click)="toggleFullscreen()">
+          <ion-icon slot="icon-only" name="expand-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button fill="clear" (click)="toggleSearch()">
+          <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+</ion-card>
+
+<!-- Contenido principal -->
+<ion-tabs id="main-content">
+  <ion-router-outlet></ion-router-outlet>
+  <ion-tab-bar slot="bottom" class="hidden-tab-bar">
+    <ion-tab-button tab="inicio" href="/tabs/inicio"></ion-tab-button>
+    <ion-tab-button tab="cursos" href="/tabs/cursos"></ion-tab-button>
+    <ion-tab-button tab="rubricas" href="/tabs/rubricas"></ion-tab-button>
+    <ion-tab-button tab="calificaciones" href="/tabs/calificaciones"></ion-tab-button>
+    <ion-tab-button tab="sistema" href="/tabs/sistema"></ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
+
+<!-- Panel de Seguimiento - posición fija a la derecha -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">
         <ion-card-header class="panel-seguimiento-header">
           <ion-card-title>📋 Seguimiento</ion-card-title>

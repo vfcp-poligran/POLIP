@@ -1,62 +1,112 @@
 /* ============================================================
-   CONFIGURACIÓN DE LAYOUT CON ION-SPLIT-PANE
+   CONFIGURACIÓN DE LAYOUT SIN ION-SPLIT-PANE
+   Layout simple: ion-menu (móvil) + ion-card sidebar (desktop)
    ============================================================ */
 
-/* ion-split-pane - Layout nativo de Ionic */
-ion-split-pane {
-  --side-width: 280px;
-  --side-max-width: 300px;
-  --side-min-width: 250px;
-  --border: none;
+/* Desktop sidebar como ion-card fija */
+.desktop-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  margin: 0;
+  border-radius: 0;
+  z-index: 99;
+  background: var(--azul-oscuro, #0f385a);
+  display: flex;
+  flex-direction: column;
 
-  /* 🔧 FIX: Asegurar que el contenido principal reciba eventos de clic */
-  &.split-pane-visible {
-    /* El main-content debe ser completamente interactivo */
-    #main-content {
-      pointer-events: auto;
-      z-index: 1;
+  ion-card-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: var(--azul-oscuro, #0f385a);
+
+    .sidebar-logo-avatar {
+      width: 40px;
+      height: 40px;
+      margin-right: 12px;
     }
 
-    /* El menú lateral no debe tener backdrop visible */
-    ion-menu {
-      /* Backdrop desactivado cuando split-pane está activo */
-      --backdrop-opacity: 0;
+    ion-card-title {
+      color: white;
+      font-size: 1.1rem;
     }
+  }
+
+  .desktop-sidebar-content {
+    flex: 1;
+    padding: 0;
+    background: var(--azul-oscuro, #0f385a);
+  }
+
+  .desktop-nav-list {
+    background: transparent;
+    padding: 0 8px;
+
+    ion-item {
+      --background: transparent;
+      --color: rgba(255, 255, 255, 0.85);
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --inner-border-width: 0;
+      --min-height: 48px;
+      margin: 4px 0;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active-menu-item {
+        --background: var(--verde, #339966);
+        --color: white;
+      }
+
+      ion-icon {
+        color: inherit;
+        margin-right: 12px;
+      }
+    }
+  }
+
+  ion-footer ion-toolbar {
+    --background: var(--azul-oscuro, #0f385a);
+    --color: white;
   }
 }
 
-/* 🔧🔧🔧 FIX CRÍTICO: Clase .menu-content-open bloquea eventos 🔧🔧🔧 */
-/* Ionic aplica esta clase cuando el menú está "abierto" lo cual */
-/* en modo split-pane significa siempre - debemos desactivar el bloqueo */
-:host ::ng-deep {
-  .menu-content-open,
-  .menu-content.menu-content-open {
-    pointer-events: auto;
-    z-index: 0;
+/* ion-tabs - contenido principal */
+ion-tabs#main-content {
+  /* Sin sidebar en móvil */
+  margin-left: 0;
+  margin-right: 0;
+
+  /* Con sidebar izquierda y panel derecho en desktop */
+  @media (min-width: 992px) {
+    margin-left: 280px;
+    margin-right: 350px;
   }
 
-  /* ion-backdrop del menú debe estar siempre oculto en split-pane */
-  ion-backdrop {
-    display: none;
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    margin-left: 280px;
+    margin-right: 320px;
   }
 
-  /* El contenedor del ion-tabs debe ser interactivo */
-  .tabs-wrapper,
-  ion-tabs,
-  ion-router-outlet {
-    pointer-events: auto;
+  @media (min-width: 1280px) and (max-width: 1599px) {
+    margin-left: 280px;
+    margin-right: 380px;
   }
 
-  /* Todas las páginas dentro del router deben ser clickeables */
-  ion-router-outlet .ion-page {
-    pointer-events: auto;
+  @media (min-width: 1600px) {
+    margin-left: 280px;
+    margin-right: 420px;
   }
 }
 
-/* Menú lateral - estilos nativos */
+/* ion-menu solo visible en móvil (desktop usa .desktop-sidebar) */
 .sidebar-menu {
   --background: var(--azul-oscuro, #0f385a);
   --width: 280px;
@@ -77,157 +127,9 @@ ion-split-pane {
   }
 }
 
-/* Contenido principal */
-.ion-page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.main-content-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
-
-  ion-tabs {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-
-  /* Panel de seguimiento dentro del layout - solo desktop */
-  .panel-seguimiento-global {
-    width: 350px;
-    min-width: 280px;
-    max-width: 450px;
-    height: 100%;
-    margin: 0;
-    border-radius: 0;
-    overflow-y: auto;
-    flex-shrink: 0;
-    background: white;
-    border-left: 1px solid #e0e0e0;
-
-    @media (max-width: 991px) {
-      display: none;
-    }
-  }
-}
-
-/* Header móvil solo visible en pantallas pequeñas */
-.mobile-header {
-  display: none;
-
-  @media (max-width: 991px) {
-    display: block;
-  }
-
-  ion-toolbar {
-    --background: var(--azul-oscuro);
-    --color: white;
-  }
-}
-
 /* Ocultar ion-tab-bar */
 .hidden-tab-bar {
   display: none;
-}
-
-/* NOTE: Critical pointer-events fix for ion-tabs/ion-router-outlet
-   is now in global.scss for proper global scope without view encapsulation */
-
-// ========================================
-// ION-MENU SIDEBAR - COMPONENTE NATIVO
-// ========================================
-.sidebar-menu {
-  --width: 250px;
-  --min-width: 250px;
-  --max-width: 300px;
-
-  // Variables de Ionic para deshabilitar animaciones del menú
-  --ion-menu-animation-duration: 0ms;
-  --ion-menu-animation-easing: none;
-
-  ion-toolbar {
-    --background: var(--azul-oscuro);
-    --color: white;
-    --padding-start: 12px;
-    --padding-end: 12px;
-  }
-
-  .sidebar-logo-avatar {
-    width: 40px;
-    height: 40px;
-    margin-right: 8px;
-  }
-
-  ion-content {
-    --background: var(--azul-oscuro);
-  }
-
-  .sidebar-nav-list {
-    background: transparent;
-
-    ion-item {
-      --background: transparent;
-      --color: rgba(255, 255, 255, 0.8);
-      --padding-start: 16px;
-      --padding-end: 16px;
-      --inner-padding-end: 8px;
-      --inner-border-width: 0;
-      --min-height: 48px;
-      margin: 4px 8px;
-      border-radius: 8px;
-
-      &:hover {
-        --background: rgba(31, 178, 222, 0.15);
-        --color: white;
-      }
-
-      &.active-menu-item {
-        --background: rgba(31, 178, 222, 0.25);
-        --color: var(--azul-claro, #1fb2de);
-        font-weight: 600;
-
-        ion-icon {
-          color: var(--azul-claro, #1fb2de);
-        }
-      }
-
-      ion-icon {
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 1.5rem;
-        margin-right: 12px;
-      }
-
-      ion-label {
-        font-size: 0.95rem;
-      }
-    }
-  }
-
-  ion-footer {
-    ion-toolbar {
-      --background: rgba(0, 0, 0, 0.1);
-      --border-width: 1px 0 0 0;
-      --border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    ion-button {
-      --color: white;
-      --color-hover: var(--azul-claro);
-    }
-  }
-
-  // NOTA: ion-split-pane maneja automáticamente la visibilidad del menú
-  // Ya no se necesitan estilos de position: fixed porque ion-split-pane
-  // controla el layout de manera nativa
-
-  @media (min-width: 1200px) {
-    --width: 300px;
-  }
 }
 
 // ========================================
@@ -2723,64 +2625,6 @@ ion-tab-button[tab="inicio"].circular-tab {
 // ion-split-pane ocupa todo el espacio
 ion-split-pane {
   height: 100%;
-}
-
-// Contenido principal dentro del split-pane
-#main-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-}
-
-// Wrapper de tabs con margen para el panel
-.tabs-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: visible; // Cambiado de hidden a visible
-  position: relative;
-
-  @media (min-width: 992px) {
-    margin-right: 350px; // Espacio para el panel
-  }
-
-  @media (min-width: 1024px) and (max-width: 1279px) {
-    margin-right: 320px;
-  }
-
-  @media (min-width: 1280px) and (max-width: 1599px) {
-    margin-right: 380px;
-  }
-
-  @media (min-width: 1600px) {
-    margin-right: 420px;
-  }
-}
-
-// ion-tabs y router-outlet - asegurar que sean clickeables
-ion-tabs {
-  flex: 1;
-  height: 100%;
-  width: 100%;
-  position: relative;
-
-  ion-router-outlet {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    .ion-page {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      contain: layout size style;
-    }
-  }
 }
 
 // Panel de seguimiento - position fixed a la derecha

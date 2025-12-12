@@ -26,7 +26,7 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /* ============================================================
-   LAYOUT LIMPIO SIN !important
+   LAYOUT SIMPLE SIN ion-split-pane
    ============================================================ */
 
 /* Componentes de página - display block estándar */
@@ -35,129 +35,6 @@ app-rubricas, app-calificaciones, app-sistema {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-/* ion-split-pane layout nativo de Ionic */
-ion-split-pane {
-  --side-width: 280px;
-  --side-max-width: 300px;
-  --side-min-width: 250px;
-}
-
-/* ============================================================
-   🔧 FIX CRÍTICO: ion-split-pane + ion-menu interactividad
-   Cuando split-pane está activo, el backdrop del menú debe
-   ser invisible y no bloquear clics al contenido principal.
-   ============================================================ */
-
-/* Cuando split-pane está activo (modo desktop), desactivar backdrop del menú */
-ion-split-pane.split-pane-visible {
-  /* El menú está visible permanentemente - no necesita backdrop */
-  ion-menu {
-    /* Desactivar backdrop completamente en modo split-pane */
-    --backdrop-opacity: 0 !important;
-
-    /* Asegurar que el menú no bloquee interacción fuera de él */
-    &::part(backdrop) {
-      display: none !important;
-      pointer-events: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-
-    /* El contenedor del menú no debe capturar eventos fuera de su área */
-    &::part(container) {
-      pointer-events: auto;
-    }
-  }
-
-  /* FIX CRÍTICO: El contenido principal debe tener z-index correcto */
-  > #main-content,
-  > [main] {
-    z-index: 1 !important;
-    position: relative;
-  }
-}
-
-/* FIX AGRESIVO: ion-menu backdrop global - NUNCA debe bloquear cuando split-pane visible */
-ion-split-pane.split-pane-visible ~ ion-backdrop,
-ion-split-pane.split-pane-visible ion-backdrop,
-ion-menu.menu-pane-visible ~ ion-backdrop {
-  display: none !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-}
-
-/* 🔧 FIX ULTRA-CRÍTICO: ion-menu overlay invisible que bloquea clics */
-/* Ionic crea un elemento .menu-content-push que puede tener transform y bloquear eventos */
-ion-split-pane.split-pane-visible .menu-content-push,
-ion-split-pane.split-pane-visible .menu-content-reveal,
-ion-split-pane.split-pane-visible .menu-content-overlay {
-  pointer-events: auto !important;
-  transform: none !important;
-}
-
-/* FIX: ion-backdrop global - asegurar que no bloquee cuando no es necesario */
-ion-backdrop {
-  /* Por defecto visible solo cuando está activo */
-  &:not(.show-backdrop) {
-    pointer-events: none !important;
-  }
-}
-
-/* FIX: Asegurar que el contenido del split-pane sea interactivo */
-ion-split-pane.split-pane-visible > [main],
-ion-split-pane.split-pane-visible > #main-content {
-  pointer-events: auto !important;
-
-  /* Todos los elementos interactivos deben funcionar */
-  ion-button,
-  ion-fab-button,
-  ion-item[button],
-  button,
-  a,
-  ion-segment-button,
-  ion-input,
-  ion-select,
-  ion-checkbox,
-  ion-toggle,
-  ion-searchbar {
-    pointer-events: auto !important;
-    cursor: pointer;
-  }
-}
-
-/* ============================================================
-   🔧 FIX CRÍTICO: .menu-content-open bloquea clics
-   Cuando ion-menu marca el contenido como "abierto", puede
-   bloquear pointer-events. En split-pane, esto NO debe ocurrir.
-   ============================================================ */
-.menu-content-open {
-  /* En modo split-pane, el contenido siempre debe ser interactivo */
-  pointer-events: auto !important;
-
-  /* Asegurar que los hijos también reciban eventos */
-  > * {
-    pointer-events: auto !important;
-  }
-}
-
-/* FIX: El ion-menu en modo split-pane debe permitir clics en el contenido */
-ion-menu.menu-pane-visible {
-  /* El menú visible como panel debe tener pointer-events para su contenido interno */
-  pointer-events: auto;
-
-  /* El contenedor del menú solo ocupa su espacio definido por --width */
-  &::part(container) {
-    pointer-events: auto;
-  }
-
-  /* El backdrop debe estar completamente desactivado */
-  &::part(backdrop) {
-    display: none !important;
-    pointer-events: none !important;
-  }
 }
 
 /* FIX: Asegurar que ion-router-outlet funcione correctamente */
@@ -191,10 +68,9 @@ ion-router-outlet .ion-page.ion-page-hidden {
   display: none;
 }
 
-/* FIX: Asegurar interactividad de botones y controles */
-ion-button, ion-item[button], ion-fab-button, button {
-  position: relative;
-  z-index: 1;
+/* Estilos de interactividad - cursor pointer para elementos clickeables */
+ion-button, ion-item[button], ion-fab-button {
+  cursor: pointer;
 }
 
 ion-content {
