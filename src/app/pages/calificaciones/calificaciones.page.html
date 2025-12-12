@@ -2,26 +2,37 @@
   <div class="page-container">
     <div class="tab-content calificaciones-tab-content">
 
-      <!-- Header superior: Selector de curso -->
-      <div class="header-selector-cursos">
-        <div class="selector-left">
-          <span class="selector-label">Curso:</span>
-          @if (cursosConCalificaciones.length > 0) {
-            <select class="curso-select"
-              [value]="cursoCalificacionesSeleccionado || ''"
-              (change)="seleccionarCursoCalificaciones($any($event.target).value)">
-              <option value="" disabled>Seleccionar curso...</option>
-              @for (curso of cursosConCalificaciones; track curso.codigo) {
-                <option [value]="curso.codigo">{{ curso.nombre }} ({{ curso.codigo }})</option>
-              }
-            </select>
-          } @else {
-            <span class="no-cursos">Sin archivos cargados</span>
+      <!-- Barra de botones de cursos -->
+      <div class="cursos-botones-bar">
+        @if (cursosConCalificaciones.length > 0) {
+          @for (curso of cursosConCalificaciones; track curso.codigo) {
+            <ion-button
+              class="curso-btn"
+              [class.curso-btn-active]="cursoCalificacionesSeleccionado === curso.codigo"
+              (click)="seleccionarCursoCalificaciones(curso.codigo)">
+              <ion-icon name="school-outline" slot="start"></ion-icon>
+              {{ curso.codigo }}
+            </ion-button>
           }
-        </div>
-        @if (cursoCalificacionesSeleccionado && csvCalificacionesTabla) {
+        } @else {
+          <div class="no-cursos-msg">
+            <ion-icon name="folder-outline"></ion-icon>
+            <span>No hay archivos de calificaciones cargados</span>
+          </div>
+        }
+      </div>
+
+      <!-- Header con info del archivo y acciones -->
+      @if (cursoCalificacionesSeleccionado && filasCalificaciones.length > 0) {
+        <div class="header-selector-cursos">
+          <div class="selector-left">
+            <span class="selector-label">{{ obtenerNombreCursoSeleccionado() }}</span>
+          </div>
           <div class="selector-right">
-            <span class="archivo-nombre">{{ archivoCalificacionesVisualizacion?.nombre }}</span>
+            <span class="archivo-nombre">
+              <ion-icon name="document-text-outline"></ion-icon>
+              {{ archivoCalificacionesVisualizacion?.nombre }}
+            </span>
             <span class="archivo-fecha">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
             <ion-button size="small" fill="solid" color="success"
               (click)="exportarCalificaciones(cursoCalificacionesSeleccionado)">
@@ -34,19 +45,21 @@
               Eliminar
             </ion-button>
           </div>
-        }
-      </div>
+        </div>
+      }
 
       <!-- Área principal: Tabla de calificaciones -->
       <div class="tabla-area">
-        @if (cursoCalificacionesSeleccionado && csvCalificacionesTabla) {
+        @if (cursoCalificacionesSeleccionado && filasCalificaciones.length > 0) {
           <!-- Info de conteo -->
           <div class="tabla-info-bar">
             <ion-chip color="primary" class="chip-info">
-              <ion-label>{{ csvCalificacionesTabla.filas.length }} estudiantes</ion-label>
+              <ion-icon name="people-outline"></ion-icon>
+              <ion-label>{{ filasCalificaciones.length }} estudiantes</ion-label>
             </ion-chip>
-            <ion-chip color="secondary" class="chip-info">
-              <ion-label>{{ csvCalificacionesTabla.headers.length }} columnas</ion-label>
+            <ion-chip color="tertiary" class="chip-info">
+              <ion-icon name="create-outline"></ion-icon>
+              <ion-label>Clic en celda para editar</ion-label>
             </ion-chip>
           </div>
 
@@ -55,25 +68,101 @@
             <table class="tabla-calificaciones">
               <thead>
                 <tr>
-                  @for (header of csvCalificacionesTabla.headers; track $index) {
-                    <th class="tabla-header" [class.col-numeric]="esColumnaNumerico(header)">
-                      {{ header }}
-                    </th>
-                  }
+                  <th class="tabla-header col-estudiante">Estudiante</th>
+                  <th class="tabla-header col-grupo">Grupo</th>
+                  <th class="tabla-header col-numeric col-editable">Entrega 1</th>
+                  <th class="tabla-header col-numeric col-editable">Entrega 2</th>
+                  <th class="tabla-header col-numeric col-editable">Entrega Final</th>
+                  <th class="tabla-header col-numeric col-editable">Tareas Final</th>
                 </tr>
               </thead>
               <tbody>
-                @for (fila of csvCalificacionesTabla.filas; track $index; let isOdd = $odd) {
+                @for (fila of filasCalificaciones; track fila.studentId; let i = $index; let isOdd = $odd) {
                   <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
-                    @for (celda of fila; track celdaIndex; let celdaIndex = $index) {
-                      <td
-                        class="tabla-cell"
-                        [class.cell-numeric]="esNumerico(celda)"
-                        [class.cell-grade-high]="esCalificacionAlta(celda)"
-                        [class.cell-grade-low]="esCalificacionBaja(celda)">
-                        {{ celda || '-' }}
-                      </td>
-                    }
+                    <!-- Estudiante (no editable) -->
+                    <td class="tabla-cell col-estudiante">
+                      {{ fila.student || '-' }}
+                    </td>
+                    <!-- Grupo (no editable) -->
+                    <td class="tabla-cell col-grupo">
+                      <span class="grupo-badge">{{ fila.grupo }}</span>
+                    </td>
+                    <!-- Entrega 1 (editable) -->
+                    <td class="tabla-cell cell-numeric col-editable"
+                        [class.cell-grade-high]="esCalificacionAlta(fila.e1)"
+                        [class.cell-grade-low]="esCalificacionBaja(fila.e1)"
+                        [class.editing]="estaEditando(i, 'e1')"
+                        (click)="iniciarEdicion(i, 'e1')">
+                      @if (estaEditando(i, 'e1')) {
+                        <input type="text"
+                               class="edit-input"
+                               placeholder="Nota"
+                               title="Editar calificación Entrega 1"
+                               [(ngModel)]="valorEditando"
+                               (blur)="guardarEdicion()"
+                               (keydown)="onKeyDown($event)"
+                               autofocus />
+                      } @else {
+                        {{ fila.e1 || '-' }}
+                      }
+                    </td>
+                    <!-- Entrega 2 (editable) -->
+                    <td class="tabla-cell cell-numeric col-editable"
+                        [class.cell-grade-high]="esCalificacionAlta(fila.e2)"
+                        [class.cell-grade-low]="esCalificacionBaja(fila.e2)"
+                        [class.editing]="estaEditando(i, 'e2')"
+                        (click)="iniciarEdicion(i, 'e2')">
+                      @if (estaEditando(i, 'e2')) {
+                        <input type="text"
+                               class="edit-input"
+                               placeholder="Nota"
+                               title="Editar calificación Entrega 2"
+                               [(ngModel)]="valorEditando"
+                               (blur)="guardarEdicion()"
+                               (keydown)="onKeyDown($event)"
+                               autofocus />
+                      } @else {
+                        {{ fila.e2 || '-' }}
+                      }
+                    </td>
+                    <!-- Entrega Final (editable) -->
+                    <td class="tabla-cell cell-numeric col-editable"
+                        [class.cell-grade-high]="esCalificacionAlta(fila.ef)"
+                        [class.cell-grade-low]="esCalificacionBaja(fila.ef)"
+                        [class.editing]="estaEditando(i, 'ef')"
+                        (click)="iniciarEdicion(i, 'ef')">
+                      @if (estaEditando(i, 'ef')) {
+                        <input type="text"
+                               class="edit-input"
+                               placeholder="Nota"
+                               title="Editar calificación Entrega Final"
+                               [(ngModel)]="valorEditando"
+                               (blur)="guardarEdicion()"
+                               (keydown)="onKeyDown($event)"
+                               autofocus />
+                      } @else {
+                        {{ fila.ef || '-' }}
+                      }
+                    </td>
+                    <!-- Tareas Final (editable) -->
+                    <td class="tabla-cell cell-numeric col-editable"
+                        [class.cell-grade-high]="esCalificacionAlta(fila.tareasFinal)"
+                        [class.cell-grade-low]="esCalificacionBaja(fila.tareasFinal)"
+                        [class.editing]="estaEditando(i, 'tareasFinal')"
+                        (click)="iniciarEdicion(i, 'tareasFinal')">
+                      @if (estaEditando(i, 'tareasFinal')) {
+                        <input type="text"
+                               class="edit-input"
+                               placeholder="Nota"
+                               title="Editar Tareas Final"
+                               [(ngModel)]="valorEditando"
+                               (blur)="guardarEdicion()"
+                               (keydown)="onKeyDown($event)"
+                               autofocus />
+                      } @else {
+                        {{ fila.tareasFinal || '-' }}
+                      }
+                    </td>
                   </tr>
                 }
               </tbody>
@@ -83,7 +172,7 @@
           <!-- Empty state -->
           <div class="empty-state">
             <ion-icon name="bar-chart-outline"></ion-icon>
-            <p>Selecciona un curso para ver sus calificaciones</p>
+            <p>Selecciona un curso para ver sus calificaciones de Canvas</p>
           </div>
         }
       </div>

@@ -179,19 +179,38 @@
           <!-- Sección de Grupos - Solo visible cuando hay curso activo -->
           @if (mostrarGrupos) {
           <div class="seguimiento-section grupos-section-compact">
+            <div class="grupos-header">
+              <ion-label class="section-title">GRUPOS</ion-label>
+              @if (selectedGrupo > 0) {
+                <ion-badge color="primary" class="grupo-seleccionado-badge">
+                  <ion-icon name="people-outline"></ion-icon>
+                  Grupo {{ selectedGrupo }}
+                </ion-badge>
+              }
+            </div>
             <div class="grupos-grid">
-              <ion-button fill="solid" class="grupo-btn grupo-btn-dashboard" [class.active]="selectedGrupo === 0"
-                (click)="selectGrupo('todos')" title="Ver todos los grupos">
-                <ion-icon name="list-outline"></ion-icon>
+              <ion-button
+                [fill]="selectedGrupo === 0 ? 'solid' : 'outline'"
+                [color]="selectedGrupo === 0 ? 'danger' : 'medium'"
+                class="grupo-btn grupo-btn-dashboard"
+                [class.active]="selectedGrupo === 0"
+                (click)="selectGrupo('todos')"
+                title="Ver todos los grupos"
+                size="small">
+                <ion-icon name="apps-outline" slot="icon-only"></ion-icon>
               </ion-button>
-              @for (grupo of grupos; track grupo) {
-              <ion-button fill="solid" class="grupo-btn" [class.active]="selectedGrupo === parseInt(grupo)"
-                (click)="selectGrupo(grupo)">
+              @for (grupo of grupos; track grupo; let i = $index) {
+              <ion-button
+                [fill]="selectedGrupo === parseInt(grupo) ? 'solid' : 'outline'"
+                [color]="selectedGrupo === parseInt(grupo) ? 'primary' : 'medium'"
+                class="grupo-btn"
+                [class.active]="selectedGrupo === parseInt(grupo)"
+                (click)="selectGrupo(grupo)"
+                size="small">
                 {{ grupo }}
               </ion-button>
               }
             </div>
-
           </div>
           }
 
@@ -247,32 +266,68 @@
                     <td class="col-nombre">
                       <span class="nombre-estudiante">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
                     </td>
-                    <td class="col-entrega">
-                      <span class="calificacion-badge"
-                        [class.success]="obtenerCalificacionEstudiante(integrante, 'E1') >= 4.0"
-                        [class.warning]="obtenerCalificacionEstudiante(integrante, 'E1') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E1') < 4.0"
-                        [class.danger]="obtenerCalificacionEstudiante(integrante, 'E1') > 0 && obtenerCalificacionEstudiante(integrante, 'E1') < 3.0"
-                        [class.empty]="obtenerCalificacionEstudiante(integrante, 'E1') === 0">
-                        {{ obtenerCalificacionEstudiante(integrante, 'E1') || '-' }}
-                      </span>
+                    <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'E1', $event)">
+                      @if (estaEditandoCalificacion(integrante, 'E1')) {
+                        <input type="text"
+                               class="edit-input-inline"
+                               placeholder="Nota"
+                               title="Editar E1"
+                               [(ngModel)]="valorCalificacionEditando"
+                               (blur)="guardarCalificacionInicio()"
+                               (keydown)="onKeyDownCalificacion($event)"
+                               autofocus />
+                      } @else {
+                        <span class="calificacion-badge"
+                          [class.canvas]="tieneCalificacionCanvas(integrante, 'E1')"
+                          [class.success]="obtenerCalificacionEstudiante(integrante, 'E1') >= 4.0"
+                          [class.warning]="obtenerCalificacionEstudiante(integrante, 'E1') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E1') < 4.0"
+                          [class.danger]="obtenerCalificacionEstudiante(integrante, 'E1') > 0 && obtenerCalificacionEstudiante(integrante, 'E1') < 3.0"
+                          [class.empty]="obtenerCalificacionEstudiante(integrante, 'E1') === 0">
+                          {{ obtenerCalificacionEstudiante(integrante, 'E1') || '-' }}
+                        </span>
+                      }
                     </td>
-                    <td class="col-entrega">
-                      <span class="calificacion-badge"
-                        [class.success]="obtenerCalificacionEstudiante(integrante, 'E2') >= 4.0"
-                        [class.warning]="obtenerCalificacionEstudiante(integrante, 'E2') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E2') < 4.0"
-                        [class.danger]="obtenerCalificacionEstudiante(integrante, 'E2') > 0 && obtenerCalificacionEstudiante(integrante, 'E2') < 3.0"
-                        [class.empty]="obtenerCalificacionEstudiante(integrante, 'E2') === 0">
-                        {{ obtenerCalificacionEstudiante(integrante, 'E2') || '-' }}
-                      </span>
+                    <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'E2', $event)">
+                      @if (estaEditandoCalificacion(integrante, 'E2')) {
+                        <input type="text"
+                               class="edit-input-inline"
+                               placeholder="Nota"
+                               title="Editar E2"
+                               [(ngModel)]="valorCalificacionEditando"
+                               (blur)="guardarCalificacionInicio()"
+                               (keydown)="onKeyDownCalificacion($event)"
+                               autofocus />
+                      } @else {
+                        <span class="calificacion-badge"
+                          [class.canvas]="tieneCalificacionCanvas(integrante, 'E2')"
+                          [class.success]="obtenerCalificacionEstudiante(integrante, 'E2') >= 4.0"
+                          [class.warning]="obtenerCalificacionEstudiante(integrante, 'E2') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E2') < 4.0"
+                          [class.danger]="obtenerCalificacionEstudiante(integrante, 'E2') > 0 && obtenerCalificacionEstudiante(integrante, 'E2') < 3.0"
+                          [class.empty]="obtenerCalificacionEstudiante(integrante, 'E2') === 0">
+                          {{ obtenerCalificacionEstudiante(integrante, 'E2') || '-' }}
+                        </span>
+                      }
                     </td>
-                    <td class="col-entrega">
-                      <span class="calificacion-badge"
-                        [class.success]="obtenerCalificacionEstudiante(integrante, 'EF') >= 4.0"
-                        [class.warning]="obtenerCalificacionEstudiante(integrante, 'EF') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'EF') < 4.0"
-                        [class.danger]="obtenerCalificacionEstudiante(integrante, 'EF') > 0 && obtenerCalificacionEstudiante(integrante, 'EF') < 3.0"
-                        [class.empty]="obtenerCalificacionEstudiante(integrante, 'EF') === 0">
-                        {{ obtenerCalificacionEstudiante(integrante, 'EF') || '-' }}
-                      </span>
+                    <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'EF', $event)">
+                      @if (estaEditandoCalificacion(integrante, 'EF')) {
+                        <input type="text"
+                               class="edit-input-inline"
+                               placeholder="Nota"
+                               title="Editar EF"
+                               [(ngModel)]="valorCalificacionEditando"
+                               (blur)="guardarCalificacionInicio()"
+                               (keydown)="onKeyDownCalificacion($event)"
+                               autofocus />
+                      } @else {
+                        <span class="calificacion-badge"
+                          [class.canvas]="tieneCalificacionCanvas(integrante, 'EF')"
+                          [class.success]="obtenerCalificacionEstudiante(integrante, 'EF') >= 4.0"
+                          [class.warning]="obtenerCalificacionEstudiante(integrante, 'EF') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'EF') < 4.0"
+                          [class.danger]="obtenerCalificacionEstudiante(integrante, 'EF') > 0 && obtenerCalificacionEstudiante(integrante, 'EF') < 3.0"
+                          [class.empty]="obtenerCalificacionEstudiante(integrante, 'EF') === 0">
+                          {{ obtenerCalificacionEstudiante(integrante, 'EF') || '-' }}
+                        </span>
+                      }
                     </td>
                     <td class="col-total">
                       <span class="total-badge">

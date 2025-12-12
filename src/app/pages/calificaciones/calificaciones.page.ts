@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import {
   IonContent,
-  IonCard,
-  IonCardContent,
   IonButton,
   IonIcon,
   IonChip,
@@ -39,13 +37,30 @@ import {
   keyOutline,
   peopleOutline,
   documentAttachOutline,
-  micOutline
-} from 'ionicons/icons';
+  micOutline, createOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 
 interface CsvTabla {
   headers: string[];
   filas: string[][];
+  indicesOriginales: number[]; // Para mapear a columnas originales del CSV
+  indiceIdOriginal: number; // Índice de la columna ID en el CSV original
+}
+
+interface FilaCalificacion {
+  studentId: string; // ID de Canvas
+  student: string;
+  grupo: string; // Obtenido del curso
+  e1: string;
+  e2: string;
+  ef: string;
+  tareasFinal: string;
+  // Índices originales para actualizar CSV
+  indiceE1: number;
+  indiceE2: number;
+  indiceEF: number;
+  indiceTareasFinal: number;
+  filaOriginalIndex: number; // Índice de la fila en el CSV original
 }
 
 interface ArchivoCalificacionesVisualizacion {
@@ -69,8 +84,6 @@ interface ArchivoCalificacionesVisualizacion {
     CommonModule,
     FormsModule,
     IonContent,
-    IonCard,
-    IonCardContent,
     IonButton,
     IonIcon,
     IonChip,
@@ -86,11 +99,26 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
   csvCalificacionesTabla: CsvTabla | null = null;
   archivoCalificacionesVisualizacion: ArchivoCalificacionesVisualizacion | null = null;
 
+  // Tabla de calificaciones estructurada para edición
+  filasCalificaciones: FilaCalificacion[] = [];
+
+  // Headers personalizados para la vista
+  headersVista: string[] = ['Estudiante', 'Grupo', 'Entrega 1', 'Entrega 2', 'Entrega Final', 'Tareas Final'];
+
+  // Para edición inline
+  celdaEditando: { filaIndex: number; campo: string } | null = null;
+  valorEditando: string = '';
+
+  // Datos del CSV original para mantener estructura al exportar
+  csvOriginalLineas: string[] = [];
+  csvOriginalHeaders: string[] = [];
+
   // Caché de cursos con calificaciones (optimización)
   cursosConCalificaciones: Array<{
     codigo: string;
     nombre: string;
     bloque: string;
+    codigoUnico: string;
     archivoCalificaciones: {
       nombre: string;
       fechaCarga: string;
@@ -109,32 +137,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
   private isInitialized = false;
 
   constructor() {
-    addIcons({
-      folderOutline,
-      schoolOutline,
-      checkmarkCircle,
-      documentTextOutline,
-      calendarOutline,
-      downloadOutline,
-      trashOutline,
-      documentOutline,
-      analyticsOutline,
-      refreshOutline,
-      barChartOutline,
-      listOutline,
-      personOutline,
-      mailOutline,
-      trophyOutline,
-      ribbonOutline,
-      fingerPrintOutline,
-      starOutline,
-      gridOutline,
-      eyeOffOutline,
-      keyOutline,
-      peopleOutline,
-      documentAttachOutline,
-      micOutline
-    });
+    addIcons({schoolOutline,folderOutline,documentTextOutline,downloadOutline,trashOutline,peopleOutline,createOutline,barChartOutline,checkmarkCircle,calendarOutline,documentOutline,analyticsOutline,refreshOutline,listOutline,personOutline,mailOutline,trophyOutline,ribbonOutline,fingerPrintOutline,starOutline,gridOutline,eyeOffOutline,keyOutline,documentAttachOutline,micOutline});
   }
 
   ngOnInit() {
@@ -169,6 +172,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
         codigo: state.metadata?.codigo || nombreCurso,
         nombre: state.metadata?.nombre || nombreCurso,
         bloque: state.metadata?.bloque || '',
+        codigoUnico: nombreCurso, // El nombre clave del curso (código único)
         archivoCalificaciones: state.archivoCalificaciones!
       }));
   }
@@ -190,61 +194,108 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
     if (!cursoEntry || !cursoEntry[1].archivoCalificaciones) {
       this.csvCalificacionesTabla = null;
       this.archivoCalificacionesVisualizacion = null;
+      this.filasCalificaciones = [];
       return;
     }
 
-    this.archivoCalificacionesVisualizacion = cursoEntry[1].archivoCalificaciones;
+    const [codigoUnico, courseState] = cursoEntry;
 
-    // Parsear CSV original para construir tabla
-    const contenido = cursoEntry[1].archivoCalificaciones.contenidoOriginal;
-    const lineas = contenido.split('\n').filter((l: string) => l.trim());
-
-    if (lineas.length > 0) {
-      // Parser CSV que respeta comillas
-      const parsearLineaCSV = (linea: string): string[] => {
-        const resultado: string[] = [];
-        let dentroComillas = false;
-        let valorActual = '';
-
-        for (let i = 0; i < linea.length; i++) {
-          const char = linea[i];
-          if (char === '"') {
-            dentroComillas = !dentroComillas;
-          } else if (char === ',' && !dentroComillas) {
-            resultado.push(valorActual.trim());
-            valorActual = '';
-          } else {
-            valorActual += char;
-          }
-        }
-        resultado.push(valorActual.trim());
-        return resultado;
-      };
-
-      const headersCompletos = parsearLineaCSV(lineas[0]);
-      const filasCompletas = lineas.slice(1).map((linea: string) => parsearLineaCSV(linea));
-
-      // Filtrar columnas según criterios
-      const indicesColumnasMostrar: number[] = [];
-      const headersFiltrados: string[] = [];
-
-      headersCompletos.forEach((header: string, index: number) => {
-        if (this.debesMostrarColumna(header)) {
-          indicesColumnasMostrar.push(index);
-          headersFiltrados.push(header);
-        }
-      });
-
-      // Filtrar filas
-      const filasFiltradas = filasCompletas.map((fila: string[]) =>
-        indicesColumnasMostrar.map((index: number) => fila[index] || '')
-      );
-
-      this.csvCalificacionesTabla = {
-        headers: headersFiltrados,
-        filas: filasFiltradas
-      };
+    // Verificar que existe archivo de calificaciones
+    if (!courseState.archivoCalificaciones) {
+      this.csvCalificacionesTabla = null;
+      this.archivoCalificacionesVisualizacion = null;
+      this.filasCalificaciones = [];
+      return;
     }
+
+    this.archivoCalificacionesVisualizacion = courseState.archivoCalificaciones;
+
+    // Obtener estudiantes del curso para mapear grupos
+    const estudiantesCurso = this.dataService.getCurso(codigoUnico) || [];
+    const mapaGrupos = new Map<string, string>();
+    estudiantesCurso.forEach(est => {
+      if (est.canvasUserId) {
+        mapaGrupos.set(est.canvasUserId, est.grupo || '-');
+      }
+    });
+
+    // Parsear CSV original
+    const contenido = courseState.archivoCalificaciones.contenidoOriginal;
+    this.csvOriginalLineas = contenido.split('\n');
+
+    if (this.csvOriginalLineas.length === 0) {
+      this.filasCalificaciones = [];
+      return;
+    }
+
+    // Parser CSV que respeta comillas
+    const parsearLineaCSV = (linea: string): string[] => {
+      const resultado: string[] = [];
+      let dentroComillas = false;
+      let valorActual = '';
+
+      for (let i = 0; i < linea.length; i++) {
+        const char = linea[i];
+        if (char === '"') {
+          dentroComillas = !dentroComillas;
+        } else if (char === ',' && !dentroComillas) {
+          resultado.push(valorActual.trim());
+          valorActual = '';
+        } else {
+          valorActual += char;
+        }
+      }
+      resultado.push(valorActual.trim());
+      return resultado;
+    };
+
+    this.csvOriginalHeaders = parsearLineaCSV(this.csvOriginalLineas[0]);
+
+    // Encontrar índices de columnas importantes
+    const indiceStudent = this.csvOriginalHeaders.findIndex(h => h === 'Student');
+    const indiceId = this.csvOriginalHeaders.findIndex(h => h === 'ID');
+    const indiceE1 = this.csvOriginalHeaders.findIndex(h =>
+      h.toLowerCase().includes('entrega proyecto 1') || h.toLowerCase().includes('escenario 3'));
+    const indiceE2 = this.csvOriginalHeaders.findIndex(h =>
+      h.toLowerCase().includes('entrega proyecto 2') || h.toLowerCase().includes('escenario 5'));
+    const indiceEF = this.csvOriginalHeaders.findIndex(h =>
+      h.toLowerCase().includes('entrega final') || h.toLowerCase().includes('escenario 7'));
+    const indiceTareasFinal = this.csvOriginalHeaders.findIndex(h =>
+      h.toLowerCase().includes('tareas') && h.toLowerCase().includes('final points'));
+
+    // Construir filas de calificaciones (omitir fila 1 que es "Points Possible")
+    this.filasCalificaciones = [];
+
+    for (let i = 2; i < this.csvOriginalLineas.length; i++) {
+      const linea = this.csvOriginalLineas[i];
+      if (!linea.trim()) continue;
+
+      const valores = parsearLineaCSV(linea);
+      const studentId = valores[indiceId] || '';
+
+      this.filasCalificaciones.push({
+        studentId,
+        student: valores[indiceStudent] || '',
+        grupo: mapaGrupos.get(studentId) || '-',
+        e1: indiceE1 >= 0 ? (valores[indiceE1] || '') : '',
+        e2: indiceE2 >= 0 ? (valores[indiceE2] || '') : '',
+        ef: indiceEF >= 0 ? (valores[indiceEF] || '') : '',
+        tareasFinal: indiceTareasFinal >= 0 ? (valores[indiceTareasFinal] || '') : '',
+        indiceE1,
+        indiceE2,
+        indiceEF,
+        indiceTareasFinal,
+        filaOriginalIndex: i
+      });
+    }
+
+    // Compatibilidad con vista anterior
+    this.csvCalificacionesTabla = {
+      headers: this.headersVista,
+      filas: this.filasCalificaciones.map(f => [f.student, f.grupo, f.e1, f.e2, f.ef, f.tareasFinal]),
+      indicesOriginales: [indiceStudent, -1, indiceE1, indiceE2, indiceEF, indiceTareasFinal],
+      indiceIdOriginal: indiceId
+    };
   }
 
   formatearFecha(fecha: string | undefined): string {
@@ -275,13 +326,15 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       const curso = this.cursosConCalificaciones.find(c => c.codigo === codigo);
       if (!curso) return;
 
-      // Exportar CSV original idéntico para compatibilidad total con Canvas
-      const csvContent = curso.archivoCalificaciones.contenidoOriginal;
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      // Reconstruir el CSV con valores actualizados
+      const csvActualizado = this.reconstruirCSVConValoresActualizados();
+
+      const blob = new Blob([csvActualizado], { type: 'text/csv;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `calificaciones_${codigo}.csv`;
+      // Usar el mismo nombre del archivo original para fácil reimportación
+      a.download = curso.archivoCalificaciones.nombre || `calificaciones_${codigo}.csv`;
       a.click();
       window.URL.revokeObjectURL(url);
 
@@ -305,6 +358,195 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       });
       await toast.present();
     }
+  }
+
+  /**
+   * Reconstruye el CSV original con los valores actualizados de calificaciones
+   */
+  private reconstruirCSVConValoresActualizados(): string {
+    if (this.csvOriginalLineas.length === 0) return '';
+
+    const lineasActualizadas = [...this.csvOriginalLineas];
+
+    // Parser CSV
+    const parsearLineaCSV = (linea: string): string[] => {
+      const resultado: string[] = [];
+      let dentroComillas = false;
+      let valorActual = '';
+
+      for (let i = 0; i < linea.length; i++) {
+        const char = linea[i];
+        if (char === '"') {
+          dentroComillas = !dentroComillas;
+        } else if (char === ',' && !dentroComillas) {
+          resultado.push(valorActual);
+          valorActual = '';
+        } else {
+          valorActual += char;
+        }
+      }
+      resultado.push(valorActual);
+      return resultado;
+    };
+
+    // Reconstruir línea CSV respetando comillas
+    const reconstruirLineaCSV = (valores: string[]): string => {
+      return valores.map(v => {
+        // Si el valor contiene coma o comillas, envolverlo en comillas
+        if (v.includes(',') || v.includes('"') || v.includes('\n')) {
+          return `"${v.replace(/"/g, '""')}"`;
+        }
+        return v;
+      }).join(',');
+    };
+
+    // Actualizar cada fila con los valores editados
+    for (const fila of this.filasCalificaciones) {
+      if (fila.filaOriginalIndex < lineasActualizadas.length) {
+        const valoresOriginales = parsearLineaCSV(lineasActualizadas[fila.filaOriginalIndex]);
+
+        // Actualizar valores de calificaciones
+        if (fila.indiceE1 >= 0 && fila.indiceE1 < valoresOriginales.length) {
+          valoresOriginales[fila.indiceE1] = fila.e1;
+        }
+        if (fila.indiceE2 >= 0 && fila.indiceE2 < valoresOriginales.length) {
+          valoresOriginales[fila.indiceE2] = fila.e2;
+        }
+        if (fila.indiceEF >= 0 && fila.indiceEF < valoresOriginales.length) {
+          valoresOriginales[fila.indiceEF] = fila.ef;
+        }
+        if (fila.indiceTareasFinal >= 0 && fila.indiceTareasFinal < valoresOriginales.length) {
+          valoresOriginales[fila.indiceTareasFinal] = fila.tareasFinal;
+        }
+
+        lineasActualizadas[fila.filaOriginalIndex] = reconstruirLineaCSV(valoresOriginales);
+      }
+    }
+
+    return lineasActualizadas.join('\n');
+  }
+
+  // ============================================
+  // MÉTODOS DE EDICIÓN INLINE
+  // ============================================
+
+  /**
+   * Inicia la edición de una celda
+   */
+  iniciarEdicion(filaIndex: number, campo: string): void {
+    const fila = this.filasCalificaciones[filaIndex];
+    if (!fila) return;
+
+    // Solo permitir editar columnas de calificación
+    if (!['e1', 'e2', 'ef', 'tareasFinal'].includes(campo)) return;
+
+    this.celdaEditando = { filaIndex, campo };
+    this.valorEditando = (fila as any)[campo] || '';
+  }
+
+  /**
+   * Guarda el valor editado
+   */
+  async guardarEdicion(): Promise<void> {
+    if (!this.celdaEditando) return;
+
+    const { filaIndex, campo } = this.celdaEditando;
+    const fila = this.filasCalificaciones[filaIndex];
+
+    if (fila) {
+      // Actualizar valor en la fila
+      (fila as any)[campo] = this.valorEditando;
+
+      // Actualizar también en el archivo de calificaciones almacenado
+      await this.actualizarCalificacionEnStorage(fila);
+
+      const toast = await this.toastController.create({
+        message: 'Calificación actualizada',
+        duration: 1500,
+        color: 'success',
+        position: 'top'
+      });
+      await toast.present();
+    }
+
+    this.cancelarEdicion();
+  }
+
+  /**
+   * Cancela la edición actual
+   */
+  cancelarEdicion(): void {
+    this.celdaEditando = null;
+    this.valorEditando = '';
+  }
+
+  /**
+   * Verifica si una celda está siendo editada
+   */
+  estaEditando(filaIndex: number, campo: string): boolean {
+    return this.celdaEditando?.filaIndex === filaIndex && this.celdaEditando?.campo === campo;
+  }
+
+  /**
+   * Maneja teclas especiales durante edición
+   */
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.guardarEdicion();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelarEdicion();
+    }
+  }
+
+  /**
+   * Actualiza la calificación en el storage
+   */
+  private async actualizarCalificacionEnStorage(fila: FilaCalificacion): Promise<void> {
+    if (!this.cursoCalificacionesSeleccionado) return;
+
+    const curso = this.cursosConCalificaciones.find(c => c.codigo === this.cursoCalificacionesSeleccionado);
+    if (!curso) return;
+
+    // Reconstruir el CSV actualizado
+    const csvActualizado = this.reconstruirCSVConValoresActualizados();
+
+    // Actualizar las calificaciones procesadas también
+    const calificacionesActualizadas = curso.archivoCalificaciones.calificaciones.map(cal => {
+      if (cal.id === fila.studentId) {
+        return {
+          ...cal,
+          e1: fila.e1,
+          e2: fila.e2,
+          ef: fila.ef
+        };
+      }
+      return cal;
+    });
+
+    // Actualizar en el CourseState
+    await this.dataService.updateCourseState(curso.codigoUnico, {
+      archivoCalificaciones: {
+        ...curso.archivoCalificaciones,
+        contenidoOriginal: csvActualizado,
+        calificaciones: calificacionesActualizadas
+      }
+    });
+  }
+
+  /**
+   * Obtiene el valor de una celda para mostrar
+   */
+  obtenerValorCelda(fila: FilaCalificacion, campo: string): string {
+    return (fila as any)[campo] || '-';
+  }
+
+  /**
+   * Verifica si un campo es editable
+   */
+  esEditable(campo: string): boolean {
+    return ['e1', 'e2', 'ef', 'tareasFinal'].includes(campo);
   }
 
   async eliminarArchivoCalificacionesCurso(codigo: string) {

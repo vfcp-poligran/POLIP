@@ -118,6 +118,10 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Integrantes del grupo seleccionado
   integrantesGrupoActual: any[] = [];
 
+  // Para edición inline de calificaciones en el panel de seguimiento
+  editandoCalificacion: { estudiante: any; entrega: string } | null = null;
+  valorCalificacionEditando: string = '';
+
   // Resultados de búsqueda global
   searchResults: Array<{
     estudiante: any;
@@ -382,15 +386,165 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }
 
   /**
+   * Obtiene la calificación de Canvas para un estudiante y entrega específica
+   * Busca en el archivo de calificaciones cargado usando canvasUserId
+   */
+  obtenerCalificacionCanvas(estudiante: any, entrega: string): number {
+    if (!this.cursoActivo) return 0;
+
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (!courseState?.archivoCalificaciones?.calificaciones) return 0;
+
+    // Buscar por canvasUserId del estudiante
+    const calificacion = courseState.archivoCalificaciones.calificaciones.find(
+      (cal: any) => cal.id === estudiante.canvasUserId
+    );
+
+    if (!calificacion) return 0;
+
+    // Obtener el valor según la entrega
+    let valor: string = '';
+    switch (entrega) {
+      case 'E1': valor = calificacion.e1; break;
+      case 'E2': valor = calificacion.e2; break;
+      case 'EF': valor = calificacion.ef; break;
+    }
+
+    // Parsear el valor (puede ser vacío, número o texto)
+    const num = parseFloat(valor);
+    return isNaN(num) ? 0 : num;
+  }
+
+  /**
    * Obtiene la calificación (PG + PI) para un estudiante y entrega específica
+   * Ahora prioriza las calificaciones del archivo Canvas si están disponibles
    */
   obtenerCalificacionEstudiante(estudiante: any, entrega: string): number {
     if (!this.cursoActivo) return 0;
 
+    // Primero intentar obtener de archivo Canvas (prioridad)
+    const canvasCalif = this.obtenerCalificacionCanvas(estudiante, entrega);
+    if (canvasCalif > 0) {
+      return canvasCalif;
+    }
+
+    // Fallback: calcular desde evaluaciones de rúbricas (PG + PI)
     const pg = this.dataService.getEvaluacion(this.cursoActivo, entrega, 'PG', estudiante.grupo)?.puntosTotales || 0;
     const pi = this.dataService.getEvaluacion(this.cursoActivo, entrega, 'PI', estudiante.correo)?.puntosTotales || 0;
 
     return pg + pi;
+  }
+
+  /**
+   * Verifica si hay calificaciones de Canvas disponibles para el estudiante
+   */
+  tieneCalificacionCanvas(estudiante: any, entrega: string): boolean {
+    return this.obtenerCalificacionCanvas(estudiante, entrega) > 0;
+  }
+
+  // ============================================
+  // EDICIÓN INLINE DE CALIFICACIONES
+  // ============================================
+
+  /**
+   * Inicia la edición de una calificación en el panel de seguimiento
+   */
+  iniciarEdicionCalificacion(estudiante: any, entrega: string, event: Event): void {
+    event.stopPropagation();
+    // Solo permitir edición si hay archivo de calificaciones cargado
+    if (!this.cursoActivo) return;
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (!courseState?.archivoCalificaciones?.calificaciones) return;
+
+    this.editandoCalificacion = { estudiante, entrega };
+    const valorActual = this.obtenerCalificacionCanvas(estudiante, entrega);
+    this.valorCalificacionEditando = valorActual > 0 ? valorActual.toString() : '';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si se está editando una calificación específica
+   */
+  estaEditandoCalificacion(estudiante: any, entrega: string): boolean {
+    return this.editandoCalificacion?.estudiante?.correo === estudiante.correo &&
+           this.editandoCalificacion?.entrega === entrega;
+  }
+
+  /**
+   * Guarda la calificación editada
+   */
+  guardarCalificacionInicio(): void {
+    if (!this.editandoCalificacion || !this.cursoActivo) return;
+
+    const { estudiante, entrega } = this.editandoCalificacion;
+    const nuevoValor = this.valorCalificacionEditando.trim();
+
+    // Actualizar en el archivo de calificaciones
+    this.actualizarCalificacionEnArchivo(estudiante, entrega, nuevoValor);
+
+    this.editandoCalificacion = null;
+    this.valorCalificacionEditando = '';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Cancela la edición
+   */
+  cancelarEdicionCalificacion(): void {
+    this.editandoCalificacion = null;
+    this.valorCalificacionEditando = '';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Maneja teclas durante la edición
+   */
+  onKeyDownCalificacion(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.guardarCalificacionInicio();
+    } else if (event.key === 'Escape') {
+      this.cancelarEdicionCalificacion();
+    }
+  }
+
+  /**
+   * Actualiza la calificación en el archivo cargado en DataService
+   */
+  private actualizarCalificacionEnArchivo(estudiante: any, entrega: string, nuevoValor: string): void {
+    if (!this.cursoActivo) return;
+
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (!courseState?.archivoCalificaciones?.calificaciones) return;
+
+    // Buscar la calificación del estudiante
+    const calificaciones = [...courseState.archivoCalificaciones.calificaciones];
+    const index = calificaciones.findIndex((cal: any) => cal.id === estudiante.canvasUserId);
+
+    if (index === -1) return;
+
+    // Actualizar el valor según la entrega
+    const calificacion = { ...calificaciones[index] };
+    switch (entrega) {
+      case 'E1': calificacion.e1 = nuevoValor; break;
+      case 'E2': calificacion.e2 = nuevoValor; break;
+      case 'EF': calificacion.ef = nuevoValor; break;
+    }
+
+    calificaciones[index] = calificacion;
+
+    // Actualizar el courseState
+    const nuevoArchivoCalificaciones = {
+      ...courseState.archivoCalificaciones,
+      calificaciones
+    };
+
+    // Guardar en DataService
+    this.dataService.updateCourseState(this.cursoActivo, {
+      archivoCalificaciones: nuevoArchivoCalificaciones
+    });
+
+    console.log(`✅ Calificación actualizada: ${estudiante.nombres} ${estudiante.apellidos} - ${entrega}: ${nuevoValor}`);
   }
 
   /**
