@@ -2902,6 +2902,168 @@ ion-tab-button[tab="inicio"].circular-tab {
     }
   }
 
+  // Tabla de integrantes con calificaciones - Estilo Ionic List
+  .integrantes-table-container {
+    margin-top: 10px;
+    padding: 0;
+    border-top: 1px solid rgba(31, 178, 222, 0.15);
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 280px;
+
+    .integrantes-calificaciones-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+
+      thead {
+        tr {
+          background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+          position: sticky;
+          top: 0;
+          z-index: 1;
+
+          th {
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 600;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.65rem;
+
+            &.col-nombre {
+              text-align: left;
+              padding-left: 12px;
+            }
+
+            &.col-entrega {
+              width: 42px;
+              min-width: 42px;
+            }
+
+            &.col-total {
+              width: 48px;
+              min-width: 48px;
+
+              ion-icon {
+                font-size: 0.85rem;
+                color: var(--amarillo);
+              }
+            }
+          }
+        }
+      }
+
+      tbody {
+        .integrante-row {
+          transition: all 0.2s ease;
+          cursor: pointer;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+          &:hover {
+            background-color: rgba(31, 178, 222, 0.08);
+          }
+
+          &:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.015);
+          }
+
+          td {
+            padding: 10px 6px;
+            text-align: center;
+            vertical-align: middle;
+
+            &.col-nombre {
+              text-align: left;
+              padding-left: 12px;
+
+              .nombre-estudiante {
+                display: block;
+                font-weight: 500;
+                color: var(--azul-oscuro);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 140px;
+                line-height: 1.4;
+                font-size: 0.75rem;
+              }
+            }
+
+            &.col-entrega {
+              .calificacion-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 32px;
+                height: 26px;
+                padding: 4px 8px;
+                border-radius: 6px;
+                font-weight: 700;
+                font-size: 0.7rem;
+
+                // Estilo por defecto (sin calificación) - Magenta/Rosa como en la imagen
+                &.empty {
+                  background-color: #ec0677;
+                  color: #ffffff;
+                }
+
+                &.success {
+                  background-color: #28a745;
+                  color: #ffffff;
+                }
+
+                &.warning {
+                  background-color: #ffc107;
+                  color: #1a3a50;
+                }
+
+                &.danger {
+                  background-color: #dc3545;
+                  color: #ffffff;
+                }
+              }
+            }
+
+            &.col-total {
+              .total-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                height: 26px;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-weight: 700;
+                font-size: 0.75rem;
+                background: transparent;
+                color: var(--azul-claro);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Responsive: Ajustar ancho del nombre según el tamaño del panel
+    @media (min-width: 1280px) {
+      .integrantes-calificaciones-table {
+        tbody .integrante-row td.col-nombre .nombre-estudiante {
+          max-width: 160px;
+        }
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .integrantes-calificaciones-table {
+        tbody .integrante-row td.col-nombre .nombre-estudiante {
+          max-width: 180px;
+        }
+      }
+    }
+  }
+
   // Opciones de configuración en el panel
   .config-options-panel {
     margin-bottom: 0;

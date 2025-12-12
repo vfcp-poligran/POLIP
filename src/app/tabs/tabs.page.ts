@@ -12,7 +12,6 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  IonChip,
   IonBadge,
   IonSegment,
   IonSegmentButton,
@@ -35,7 +34,7 @@ import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
-import { homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, menuOutline, chevronForwardOutline, expandOutline } from 'ionicons/icons';
+import { homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, menuOutline, chevronForwardOutline, expandOutline, trophyOutline } from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
 import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo } from '../services/seguimiento.service';
@@ -58,7 +57,6 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonList,
     IonItem,
     IonLabel,
-    IonChip,
     IonBadge,
     IonSegment,
     IonSegmentButton,
@@ -117,6 +115,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Control de curso activo
   cursoActivo: string | null = null;
 
+  // Integrantes del grupo seleccionado
+  integrantesGrupoActual: any[] = [];
+
   // Resultados de búsqueda global
   searchResults: Array<{
     estudiante: any;
@@ -127,7 +128,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   searchTerm: string = '';
 
   constructor() {
-    addIcons({ homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline });
+    addIcons({ homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline });
 
     // Suscribirse al seguimiento actual con cleanup
     this.subscriptions.push(
@@ -140,10 +141,12 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
     // Suscribirse al grupo seleccionado con cleanup
     this.subscriptions.push(
-      this.seguimientoService.grupoSeleccionado$.pipe(
-        distinctUntilChanged()
-      ).subscribe((grupo: number) => {
+      this.seguimientoService.grupoSeleccionado$.subscribe((grupo: number) => {
         this.selectedGrupo = grupo;
+        // Actualizar integrantes cuando cambia el grupo seleccionado
+        this.actualizarIntegrantesGrupo();
+        // Forzar detección de cambios para actualizar la UI
+        this.cdr.detectChanges();
       })
     );
 
@@ -177,9 +180,13 @@ export class TabsPage implements OnDestroy, AfterViewInit {
               this.seguimientoService.setGrupoSeleccionado(0);
             }
           }
+
+          // Actualizar integrantes del grupo
+          this.actualizarIntegrantesGrupo();
         } else {
           this.grupos = [];
           this.selectedGrupo = 0;
+          this.integrantesGrupoActual = [];
         }
       })
     );
@@ -325,6 +332,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     this.selectedGrupo = grupoNum;
     this.seguimientoService.setGrupoSeleccionado(grupoNum);
 
+    // Actualizar integrantes del grupo
+    this.actualizarIntegrantesGrupo();
+
     // Guardar en CourseState para persistencia por curso
     if (this.cursoActivo) {
       const grupoStr = grupoNum === 0 ? 'todos' : `G${grupoNum} `;
@@ -337,6 +347,69 @@ export class TabsPage implements OnDestroy, AfterViewInit {
         });
       }
     }
+  }
+
+  /**
+   * Obtiene los integrantes del grupo actualmente seleccionado
+   */
+  private actualizarIntegrantesGrupo(): void {
+    if (!this.cursoActivo || this.selectedGrupo === 0) {
+      this.integrantesGrupoActual = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const estudiantes = this.dataService.getCurso(this.cursoActivo);
+    if (!estudiantes || estudiantes.length === 0) {
+      this.integrantesGrupoActual = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // Filtrar por grupo seleccionado
+    // El grupo del estudiante puede ser "1", "G1", "Grupo 1", etc.
+    const grupoNum = this.selectedGrupo;
+    const grupoNumStr = String(grupoNum);
+
+    this.integrantesGrupoActual = estudiantes.filter(e => {
+      if (!e.grupo) return false;
+      // Extraer solo el número del campo grupo del estudiante
+      const estudianteGrupoNum = e.grupo.toString().replace(/\D/g, '');
+      return estudianteGrupoNum === grupoNumStr;
+    });
+
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Obtiene la calificación (PG + PI) para un estudiante y entrega específica
+   */
+  obtenerCalificacionEstudiante(estudiante: any, entrega: string): number {
+    if (!this.cursoActivo) return 0;
+
+    const pg = this.dataService.getEvaluacion(this.cursoActivo, entrega, 'PG', estudiante.grupo)?.puntosTotales || 0;
+    const pi = this.dataService.getEvaluacion(this.cursoActivo, entrega, 'PI', estudiante.correo)?.puntosTotales || 0;
+
+    return pg + pi;
+  }
+
+  /**
+   * Obtiene el total de todas las entregas para un estudiante
+   */
+  obtenerTotalEstudiante(estudiante: any): number {
+    const e1 = this.obtenerCalificacionEstudiante(estudiante, 'E1');
+    const e2 = this.obtenerCalificacionEstudiante(estudiante, 'E2');
+    const ef = this.obtenerCalificacionEstudiante(estudiante, 'EF');
+    return e1 + e2 + ef;
+  }
+
+  /**
+   * Obtiene el color del badge según el valor de la calificación
+   */
+  obtenerColorCalificacion(valor: number): string {
+    if (valor >= 4.0) return 'success';
+    if (valor >= 3.0) return 'warning';
+    return 'danger';
   }
 
   /**

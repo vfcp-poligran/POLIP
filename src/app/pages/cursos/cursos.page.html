@@ -109,10 +109,20 @@
 
         <!-- Panel General -->
         <ion-card class="dashboard-options">
-          <ion-card-header>
+          <ion-card-header class="header-con-toggle">
             <ion-card-title>
               Información Curso
             </ion-card-title>
+            <!-- Toggle para modo de selección de encabezado -->
+            @if (filtroGrupo === 'todos') {
+            <div class="modo-vista-toggle">
+              <ion-icon name="eye-outline" [color]="modoMantenerVistaMatriz ? 'primary' : 'medium'"
+                        title="Solo ver integrantes"></ion-icon>
+              <ion-toggle [(ngModel)]="modoMantenerVistaMatriz" mode="ios"></ion-toggle>
+              <ion-icon name="enter-outline" [color]="!modoMantenerVistaMatriz ? 'primary' : 'medium'"
+                        title="Navegar al grupo"></ion-icon>
+            </div>
+            }
           </ion-card-header>
           <ion-card-content>
 
@@ -125,7 +135,9 @@
                   <tr>
                     <th class="header-entrega">Entrega</th>
                     @for (grupo of gruposDisponibles; track grupo) {
-                    <th class="header-grupo">{{ grupo }}</th>
+                    <th class="header-grupo header-clickable"
+                        (click)="onClickEncabezadoGrupo(grupo)"
+                        [title]="modoMantenerVistaMatriz ? 'Ver integrantes del Grupo ' + grupo : 'Ir a detalles del Grupo ' + grupo">{{ grupo }}</th>
                     }
                   </tr>
                 </thead>
@@ -154,46 +166,18 @@
             <ion-card>
               <ion-card-content class="no-padding">
                 @if (obtenerIntegrantesGrupo().length > 0) {
-                <!-- Tabla de calificaciones con diseño Ionic -->
-                <ion-list class="estudiantes-list" lines="none">
-                  <!-- Header -->
-                  <ion-item class="list-header">
-                    <ion-label class="header-label" slot="start">ESTUDIANTE</ion-label>
-                    <ion-label class="header-label ion-text-center header-e1">E1</ion-label>
-                    <ion-label class="header-label ion-text-center header-e2">E2</ion-label>
-                    <ion-label class="header-label ion-text-center header-ef">EF</ion-label>
-                    <ion-label class="header-label ion-text-center header-total">TOTAL</ion-label>
-                  </ion-item>
-
-                  <!-- Filas de estudiantes -->
-                  @for (integrante of obtenerIntegrantesGrupo(); track integrante.correo) {
-                  <ion-item class="student-row" [class.selected]="integrante.correo === estudianteSeleccionado" button
-                    (click)="seleccionarEstudiante(integrante.correo)">
-                    <ion-label slot="start" class="student-info-label">
-                      <div class="student-name">{{ integrante.apellidos }}, {{ integrante.nombres }}</div>
-                    </ion-label>
-
-                    <ion-badge slot="end" [color]="obtenerColorCalificacion(obtenerCalificacionPanel(integrante, 'E1'))"
-                      class="grade-badge">
-                      {{ obtenerCalificacionPanel(integrante, 'E1') || '-' }}
-                    </ion-badge>
-
-                    <ion-badge slot="end" [color]="obtenerColorCalificacion(obtenerCalificacionPanel(integrante, 'E2'))"
-                      class="grade-badge">
-                      {{ obtenerCalificacionPanel(integrante, 'E2') || '-' }}
-                    </ion-badge>
-
-                    <ion-badge slot="end" [color]="obtenerColorCalificacion(obtenerCalificacionPanel(integrante, 'EF'))"
-                      class="grade-badge">
-                      {{ obtenerCalificacionPanel(integrante, 'EF') || '-' }}
-                    </ion-badge>
-
-                    <ion-chip slot="end" color="warning" class="total-chip">
-                      <ion-label>{{ obtenerTotalCalificaciones(integrante) }}</ion-label>
-                    </ion-chip>
-                  </ion-item>
-                  }
-                </ion-list>
+                <!-- Mensaje indicando ver panel de seguimiento -->
+                <div class="grupo-info-panel">
+                  <div class="grupo-header-info">
+                    <ion-icon name="people-outline" color="primary"></ion-icon>
+                    <span class="grupo-titulo">Grupo {{ filtroGrupo }}</span>
+                    <ion-badge color="primary">{{ obtenerIntegrantesGrupo().length }} integrantes</ion-badge>
+                  </div>
+                  <p class="grupo-instruccion">
+                    <ion-icon name="arrow-forward-outline"></ion-icon>
+                    Ver calificaciones en el panel <strong>Seguimiento</strong>
+                  </p>
+                </div>
 
                 <!-- Información adicional -->
                 @if (!tieneArchivoCanvas()) {

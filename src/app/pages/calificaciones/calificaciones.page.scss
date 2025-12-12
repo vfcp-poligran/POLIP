@@ -6,66 +6,331 @@ ion-content {
 }
 
 .page-container {
-  padding: 9.6px;
+  padding: 3px;
   width: 100%;
-  height: 100%; /* Ajuste exacto sin scroll */
+  height: 100%;
 
   @media (max-width: 768px) {
-    padding: 4.8px;
+    padding: 2px;
     height: auto;
     min-height: 100%;
   }
 }
 
 // ============================================
-// Estilos Tabla Calificaciones con Ionic
+// GRID LAYOUT - DOS COLUMNAS
 // ============================================
+.grid-calificaciones {
+  display: grid;
+  grid-template-columns: 105px 1fr;
+  gap: 3px;
+  height: calc(100vh - 110px);
+  // DEBUG: Borde para identificar grid
+  border: 2px dashed #ff6b6b;
 
-.tabla-calificaciones-card {
-  margin: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
+  @media (max-width: 1024px) {
+    grid-template-columns: 90px 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+
+// ============================================
+// SIDEBAR - Lista de cursos compacta (COLUMNA 1)
+// ============================================
+.sidebar-calificaciones {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow-y: auto;
+  max-height: calc(100vh - 115px);
+  // DEBUG: Borde para identificar sidebar
+  border: 2px solid #4ecdc4;
+
+  .sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.48rem;
+    font-weight: 700;
+    color: var(--azul-oscuro, #0f385a);
+    margin: 0 0 3px 0;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--azul-claro, #4a90e2);
+
+    ion-icon {
+      font-size: 0.52rem;
+    }
+  }
+}
+
+// Mini cards de curso
+.curso-card-mini {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  padding: 2px 3px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: #e9ecef;
+    border-color: var(--azul-claro, #4a90e2);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a4a6e 100%);
+    border-color: var(--azul-oscuro, #0f385a);
+
+    .curso-nombre,
+    .curso-codigo {
+      color: #ffffff;
+    }
+
+    .check-icon {
+      color: #4caf50;
+    }
+  }
+
+  .curso-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+  }
+
+  .curso-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .curso-nombre {
+    font-size: 0.42rem;
+    font-weight: 600;
+    color: var(--azul-oscuro, #0f385a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.15;
+  }
+
+  .curso-codigo {
+    font-size: 0.36rem;
+    color: #6c757d;
+    line-height: 1.15;
+  }
+
+  .check-icon {
+    font-size: 0.52rem;
+    flex-shrink: 0;
+  }
+}
+
+.empty-state-mini {
+  text-align: center;
+  padding: 6px 3px;
+  color: #6c757d;
+
+  ion-icon {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+
+  p {
+    font-size: 0.42rem;
+    margin: 0;
+  }
+}
+
+// ============================================
+// PANEL PRINCIPAL - Vista de calificaciones (COLUMNA 2)
+// ============================================
+.panel-calificaciones {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 115px);
   overflow: hidden;
+  // DEBUG: Borde para identificar panel principal
+  border: 2px solid #45b7d1;
+}
+
+// Header del panel
+.header-panel-calificaciones {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 3px;
+  padding: 3px 5px;
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a4a6e 100%);
+  border-radius: 3px 3px 0 0;
+  color: #ffffff;
+  flex-shrink: 0;
+  // DEBUG: Borde para identificar header
+  border: 2px solid #f9ca24;
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .curso-titulo {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    font-size: 0.48rem;
+    font-weight: 700;
+    color: #ffffff;
+
+    ion-icon {
+      font-size: 0.52rem;
+      flex-shrink: 0;
+    }
+
+    .curso-codigo-header {
+      font-size: 0.39rem;
+      font-weight: 500;
+      opacity: 0.85;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1px 3px;
+      border-radius: 2px;
+      margin-left: 2px;
+    }
+  }
+
+  .archivo-info {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.36rem;
+    color: rgba(255, 255, 255, 0.85);
+
+    ion-icon {
+      font-size: 0.42rem;
+      flex-shrink: 0;
+    }
+
+    .fecha-carga {
+      opacity: 0.7;
+      margin-left: 3px;
+
+      &::before {
+        content: '•';
+        margin-right: 3px;
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+
+    ion-button {
+      --padding-start: 3px;
+      --padding-end: 3px;
+      font-size: 0.36rem;
+      font-weight: 600;
+      height: 18px;
+
+      ion-icon {
+        font-size: 0.45rem;
+      }
+    }
+  }
+}
+
+// Empty state del panel
+.empty-state-panel-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #adb5bd;
+  text-align: center;
+  padding: 9px;
+
+  .icon-barchart-large {
+    font-size: 1.5rem;
+    opacity: 0.3;
+  }
+}
+
+// ============================================
+// TABLA DE CALIFICACIONES
+// ============================================
+.tabla-calificaciones-card {
+  margin: 0;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  // DEBUG: Borde para identificar card de tabla
+  border: 2px solid #6c5ce7;
 
   .tabla-content {
     padding: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 }
 
 // Header info con chips
 .tabla-header-info {
   display: flex;
-  gap: 8px;
-  padding: 12px;
+  gap: 2px;
+  padding: 2px 3px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-bottom: 2px solid var(--azul-claro, #4a90e2);
+  border-bottom: 1px solid #dee2e6;
+  flex-shrink: 0;
+  // DEBUG: Borde para identificar header info
+  border: 2px solid #fd79a8;
 
-  ion-chip {
+  .chip-small {
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.33rem;
+    height: 15px;
     margin: 0;
 
     ion-icon {
-      margin-right: 4px;
+      font-size: 0.39rem;
+      margin-right: 2px;
     }
   }
 }
 
-// Wrapper con scroll horizontal
+// Wrapper con scroll
 .tabla-scroll-wrapper {
-  overflow-x: auto;
-  overflow-y: visible;
-  max-height: calc(100vh - 280px);
+  overflow: auto;
+  flex: 1;
+  // DEBUG: Borde para identificar área de scroll
+  border: 2px solid #00b894;
 
-  // Scrollbar personalizado
   &::-webkit-scrollbar {
-    height: 10px;
+    width: 6px;
+    height: 6px;
     background: #f1f1f1;
   }
 
   &::-webkit-scrollbar-thumb {
     background: var(--azul-claro, #4a90e2);
-    border-radius: 5px;
+    border-radius: 3px;
 
     &:hover {
       background: var(--azul-oscuro, #0f385a);
@@ -78,81 +343,73 @@ ion-content {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.75rem;
+  font-size: 0.33rem;
 
-  // Header
   thead {
     position: sticky;
     top: 0;
-    z-index: var(--z-dropdown, 50);
+    z-index: 10;
     background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, var(--azul-claro, #4a90e2) 100%);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
 
-    tr {
-      th {
-        position: sticky;
-        top: 0;
-        background: inherit;
-      }
+    tr th {
+      position: sticky;
+      top: 0;
+      background: inherit;
     }
   }
 
   .tabla-header {
-    padding: 10px 12px;
+    padding: 2px 3px;
     text-align: left;
     color: white;
     font-weight: 600;
-    font-size: 0.7rem;
-    white-space: normal; // Permitir wrap para títulos largos
+    font-size: 0.3rem;
+    white-space: normal;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 100px;
-    max-width: 200px;
+    min-width: 36px;
+    max-width: 82px;
     vertical-align: middle;
-    line-height: 1.3;
+    line-height: 1.15;
 
     &:last-child {
       border-right: none;
     }
 
-    // Columnas numéricas más estrechas
     &.col-numeric {
-      min-width: 80px;
-      max-width: 110px;
+      min-width: 30px;
+      max-width: 52px;
       text-align: center;
     }
 
     .header-content {
       display: flex;
       align-items: center;
-      gap: 4px;
-      justify-content: flex-start;
+      gap: 2px;
 
       .header-icon {
-        font-size: 0.9rem;
+        font-size: 0.36rem;
         opacity: 0.9;
         flex-shrink: 0;
       }
 
       .header-text {
-        line-height: 1.3;
+        line-height: 1.15;
       }
     }
 
-    // Columnas numéricas centradas
     &.col-numeric .header-content {
       justify-content: center;
     }
   }
 
-  // Body
   tbody {
     tr {
-      transition: all 0.2s ease;
+      transition: background-color 0.1s ease;
       border-bottom: 1px solid #e9ecef;
 
       &:hover {
-        background-color: #f8f9fa;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        background-color: rgba(74, 144, 226, 0.05);
       }
 
       &.fila-par {
@@ -170,45 +427,39 @@ ion-content {
   }
 
   .tabla-cell {
-    padding: 8px 10px;
+    padding: 2px 3px;
     text-align: left;
     color: #333;
     border-right: 1px solid #e9ecef;
     vertical-align: middle;
-    white-space: normal; // Permitir wrap en contenido largo
-    font-size: 0.7rem;
-    max-width: 200px;
+    white-space: normal;
+    font-size: 0.3rem;
+    max-width: 82px;
     word-wrap: break-word;
+    line-height: 1.15;
 
     &:last-child {
       border-right: none;
     }
 
-    // Celdas numéricas
     &.cell-numeric {
       text-align: center;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
 
-    // Calificación alta (>=90)
     &.cell-grade-high {
       background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
       color: #155724;
       font-weight: 700;
-      border-radius: 3px;
-      padding: 6px 8px;
     }
 
-    // Calificación baja (<=50)
     &.cell-grade-low {
       background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
       color: #721c24;
       font-weight: 700;
-      border-radius: 3px;
-      padding: 6px 8px;
     }
   }
 }
@@ -217,7 +468,7 @@ ion-content {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(3px);
   }
   to {
     opacity: 1;
@@ -226,87 +477,68 @@ ion-content {
 }
 
 .tabla-calificaciones tbody tr {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.15s ease-out;
   animation-fill-mode: both;
 
-  @for $i from 1 through 30 {
+  @for $i from 1 through 20 {
     &:nth-child(#{$i}) {
-      animation-delay: #{$i * 0.015}s;
+      animation-delay: #{$i * 0.008}s;
     }
   }
 }
 
-// Responsive: Tablet
+// ============================================
+// RESPONSIVE
+// ============================================
 @media (max-width: 1024px) {
-  .tabla-calificaciones {
-    font-size: 0.7rem;
+  .header-panel-calificaciones {
+    flex-wrap: wrap;
 
-    .tabla-header {
-      padding: 8px 10px;
-      font-size: 0.65rem;
-      min-width: 85px;
-
-      &.col-numeric {
-        min-width: 70px;
-      }
-    }
-
-    .tabla-cell {
-      padding: 6px 10px;
-      font-size: 0.65rem;
+    .header-actions {
+      width: 100%;
+      justify-content: flex-end;
+      margin-top: 3px;
     }
   }
 }
 
-// Responsive: Móvil
 @media (max-width: 768px) {
-  .tabla-calificaciones-card {
-    margin: 4px;
+  .grid-calificaciones {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 
-  .tabla-header-info {
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px;
+  .sidebar-calificaciones {
+    max-height: 120px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: flex-start;
 
-    ion-chip {
-      font-size: 0.7rem;
+    .sidebar-title {
+      width: 100%;
+    }
+
+    .curso-card-mini {
+      flex: 1 1 calc(50% - 3px);
+      min-width: 90px;
+      margin-bottom: 0;
     }
   }
 
-  .tabla-scroll-wrapper {
-    max-height: calc(100vh - 320px);
+  .panel-calificaciones {
+    height: calc(100vh - 200px);
   }
 
-  .tabla-calificaciones {
-    font-size: 0.65rem;
+  .header-panel-calificaciones {
+    padding: 3px;
 
-    .tabla-header {
-      padding: 6px 8px;
-      font-size: 0.6rem;
-      min-width: 75px;
-
-      &.col-numeric {
-        min-width: 60px;
-      }
-
-      .header-content {
-        gap: 3px;
-
-        .header-icon {
-          font-size: 0.8rem;
-        }
-      }
+    .curso-titulo {
+      font-size: 0.42rem;
     }
 
-    .tabla-cell {
-      padding: 5px 8px;
-      font-size: 0.6rem;
-
-      &.cell-grade-high,
-      &.cell-grade-low {
-        padding: 4px 6px;
-      }
+    .archivo-info {
+      font-size: 0.33rem;
     }
   }
 }

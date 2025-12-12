@@ -178,8 +178,7 @@
 
           <!-- Sección de Grupos - Solo visible cuando hay curso activo -->
           @if (mostrarGrupos) {
-          <div class="seguimiento-section">
-            <ion-label class="section-title">GRUPOS</ion-label>
+          <div class="seguimiento-section grupos-section-compact">
             <div class="grupos-grid">
               <ion-button fill="solid" class="grupo-btn grupo-btn-dashboard" [class.active]="selectedGrupo === 0"
                 (click)="selectGrupo('todos')" title="Ver todos los grupos">
@@ -192,7 +191,9 @@
               </ion-button>
               }
             </div>
+
           </div>
+          }
 
           <!-- Sección de Rúbricas - Solo visible cuando hay grupo seleccionado -->
           @if (selectedGrupo > 0) {
@@ -224,33 +225,72 @@
                 EF
               </ion-button>
             </div>
+
+            <!-- Tabla de integrantes con calificaciones -->
+            @if (integrantesGrupoActual.length > 0) {
+            <div class="integrantes-table-container">
+              <table class="integrantes-calificaciones-table">
+                <thead>
+                  <tr>
+                    <th class="col-nombre">Estudiante</th>
+                    <th class="col-entrega">E1</th>
+                    <th class="col-entrega">E2</th>
+                    <th class="col-entrega">EF</th>
+                    <th class="col-total">
+                      <ion-icon name="trophy-outline"></ion-icon>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (integrante of integrantesGrupoActual; track integrante.correo) {
+                  <tr class="integrante-row">
+                    <td class="col-nombre">
+                      <span class="nombre-estudiante">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
+                    </td>
+                    <td class="col-entrega">
+                      <span class="calificacion-badge"
+                        [class.success]="obtenerCalificacionEstudiante(integrante, 'E1') >= 4.0"
+                        [class.warning]="obtenerCalificacionEstudiante(integrante, 'E1') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E1') < 4.0"
+                        [class.danger]="obtenerCalificacionEstudiante(integrante, 'E1') > 0 && obtenerCalificacionEstudiante(integrante, 'E1') < 3.0"
+                        [class.empty]="obtenerCalificacionEstudiante(integrante, 'E1') === 0">
+                        {{ obtenerCalificacionEstudiante(integrante, 'E1') || '-' }}
+                      </span>
+                    </td>
+                    <td class="col-entrega">
+                      <span class="calificacion-badge"
+                        [class.success]="obtenerCalificacionEstudiante(integrante, 'E2') >= 4.0"
+                        [class.warning]="obtenerCalificacionEstudiante(integrante, 'E2') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E2') < 4.0"
+                        [class.danger]="obtenerCalificacionEstudiante(integrante, 'E2') > 0 && obtenerCalificacionEstudiante(integrante, 'E2') < 3.0"
+                        [class.empty]="obtenerCalificacionEstudiante(integrante, 'E2') === 0">
+                        {{ obtenerCalificacionEstudiante(integrante, 'E2') || '-' }}
+                      </span>
+                    </td>
+                    <td class="col-entrega">
+                      <span class="calificacion-badge"
+                        [class.success]="obtenerCalificacionEstudiante(integrante, 'EF') >= 4.0"
+                        [class.warning]="obtenerCalificacionEstudiante(integrante, 'EF') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'EF') < 4.0"
+                        [class.danger]="obtenerCalificacionEstudiante(integrante, 'EF') > 0 && obtenerCalificacionEstudiante(integrante, 'EF') < 3.0"
+                        [class.empty]="obtenerCalificacionEstudiante(integrante, 'EF') === 0">
+                        {{ obtenerCalificacionEstudiante(integrante, 'EF') || '-' }}
+                      </span>
+                    </td>
+                    <td class="col-total">
+                      <span class="total-badge">
+                        {{ obtenerTotalEstudiante(integrante) || '-' }}
+                      </span>
+                    </td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            }
           </div>
           }
 
-          <!-- Información del Grupo Seleccionado -->
-          <div class="seguimiento-section">
-            <ion-label class="grupo-info-title">
-              @if (cursoPrefix) {
-              <ion-chip class="curso-prefix" color="primary" outline="true">{{ cursoPrefix }}</ion-chip>
-              }
-              {{ selectedGrupo === 0 ? 'Todos los Grupos' : 'Grupo ' + selectedGrupo }}
-            </ion-label>
-
-            <!-- Badge de Entrega -->
-            @if (mostrarEntregaBadge) {
-            <div class="entrega-badge-container">
-              <ion-chip class="entrega-badge entrega-e1" color="tertiary">
-                <ion-label>
-                  {{ entregaBadgeText }}
-                  @if (tipoEvaluacionText) {
-                  <span class="tipo-evaluacion">- {{ tipoEvaluacionText }}</span>
-                  }
-                </ion-label>
-              </ion-chip>
-            </div>
-            }
-
-            <!-- Comentarios del grupo -->
+          <!-- Comentarios del grupo -->
+          @if (mostrarGrupos) {
+          <div class="seguimiento-section comentarios-section-wrapper">
             <div class="comentarios-section" [class.comentarios-fijados]="comentariosFijados">
               <ion-item class="comentarios-header" button (click)="toggleComentarios()" lines="none">
                 <ion-icon name="chatbox-outline" slot="start"></ion-icon>

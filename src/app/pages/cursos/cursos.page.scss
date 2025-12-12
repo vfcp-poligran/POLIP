@@ -953,6 +953,64 @@ ion-chip {
   font-size: var(--fs-sm);
 }
 
+/* Panel de información del grupo seleccionado */
+.grupo-info-panel {
+  padding: 16px;
+  text-align: center;
+
+  .grupo-header-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+
+    .grupo-titulo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--azul-oscuro);
+    }
+
+    ion-badge {
+      font-size: 0.75rem;
+    }
+  }
+
+  .grupo-instruccion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--azul-claro);
+    font-size: 0.85rem;
+    margin: 0;
+
+    ion-icon {
+      font-size: 1rem;
+      animation: pulse-arrow 1.5s ease-in-out infinite;
+    }
+
+    strong {
+      color: var(--azul-oscuro);
+    }
+  }
+}
+
+@keyframes pulse-arrow {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(4px);
+    opacity: 0.7;
+  }
+}
+
 /* Estilos para lista de estudiantes */
 .estudiantes-list {
   .student-row {
@@ -3174,6 +3232,40 @@ ion-badge {
     }
   }
 
+  // Header con toggle integrado
+  .header-con-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px !important;
+  }
+
+  // Toggle para modo de vista de encabezado de grupo
+  .modo-vista-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+
+    ion-icon {
+      font-size: 0.75rem;
+      transition: color 0.2s ease;
+      cursor: help;
+    }
+
+    ion-toggle {
+      --track-background: rgba(200, 200, 200, 0.4);
+      --track-background-checked: rgba(31, 178, 222, 0.4);
+      --handle-background: #888;
+      --handle-background-checked: var(--azul-claro);
+      height: 18px;
+      width: 32px;
+      padding: 0;
+    }
+  }
+
   // Estilos para tabla matricial de entregas
   .entregas-matrix-container {
     overflow-x: auto;
@@ -3211,6 +3303,16 @@ ion-badge {
 
       .header-grupo {
         min-width: 60px;
+
+        &.header-clickable {
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+          }
+        }
       }
 
       th:last-child {

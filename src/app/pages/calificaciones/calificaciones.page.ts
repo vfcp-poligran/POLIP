@@ -5,9 +5,6 @@ import { Subscription } from 'rxjs';
 import {
   IonContent,
   IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
   IonCardContent,
   IonButton,
   IonIcon,
@@ -73,9 +70,6 @@ interface ArchivoCalificacionesVisualizacion {
     FormsModule,
     IonContent,
     IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
     IonCardContent,
     IonButton,
     IonIcon,
@@ -253,8 +247,27 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
     }
   }
 
-  formatearFecha(fecha: string): string {
-    return new Date(fecha).toLocaleString('es-ES');
+  formatearFecha(fecha: string | undefined): string {
+    if (!fecha) return '';
+    return new Date(fecha).toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  obtenerNombreCursoSeleccionado(): string {
+    if (!this.cursoCalificacionesSeleccionado) return '';
+    const curso = this.cursosConCalificaciones.find(c => c.codigo === this.cursoCalificacionesSeleccionado);
+    return curso?.nombre || '';
+  }
+
+  obtenerCodigoCursoSeleccionado(): string {
+    if (!this.cursoCalificacionesSeleccionado) return '';
+    const curso = this.cursosConCalificaciones.find(c => c.codigo === this.cursoCalificacionesSeleccionado);
+    return curso?.codigo || '';
   }
 
   async exportarCalificaciones(codigo: string) {

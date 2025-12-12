@@ -22,10 +22,10 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonList,
   IonItem,
   IonToolbar,
   IonTitle,
+  IonToggle,
   MenuController,
   AlertController,
   ToastController,
@@ -65,8 +65,7 @@ import {
   ellipsisVerticalOutline,
   ellipsisVertical,
   arrowForwardOutline,
-  arrowBackOutline, checkmarkCircleOutline, arrowUndoOutline, arrowRedoOutline, peopleOutline, linkOutline, cloudUploadOutline, eyeOutline, informationCircleOutline, notificationsOutline, checkmarkDoneOutline, timeOutline, cubeOutline, alertCircleOutline, clipboardOutline, documentOutline, trophyOutline, personCircleOutline
-} from 'ionicons/icons';
+  arrowBackOutline, checkmarkCircleOutline, arrowUndoOutline, arrowRedoOutline, peopleOutline, linkOutline, cloudUploadOutline, eyeOutline, informationCircleOutline, notificationsOutline, checkmarkDoneOutline, timeOutline, cubeOutline, alertCircleOutline, clipboardOutline, documentOutline, trophyOutline, personCircleOutline, listOutline, enterOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado } from '../../services/seguimiento.service';
 import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
@@ -100,10 +99,10 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonFab,
     IonFabButton,
     IonFabList,
-    IonList,
     IonItem,
     IonToolbar,
     IonTitle,
+    IonToggle,
     EvaluacionRubricaComponent
   ]
 })
@@ -160,6 +159,11 @@ export class InicioPage implements OnInit, OnDestroy {
   cursoParaCambiarColor: string | null = null;
   colorSeleccionado: string | null = null;
   colorPopoverEvent: Event | null = null;
+
+  // Modo de selección de encabezado de grupo en la matriz
+  // true = mantener en vista matriz (solo mostrar integrantes en panel seguimiento)
+  // false = navegar a detalles del grupo
+  modoMantenerVistaMatriz: boolean = true;
 
   coloresDisponibles: string[] = [
     '#d32f2f', // Rojo
@@ -307,7 +311,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ ellipsisVerticalOutline, arrowBackOutline, arrowForwardOutline, createOutline, saveOutline, closeOutline, trashOutline, copyOutline, ellipsisVertical, checkmarkCircle, personOutline, analyticsOutline, checkmarkCircleOutline, cubeOutline, timeOutline, alertCircleOutline, documentTextOutline, peopleOutline, documentOutline, trophyOutline, personCircleOutline, informationCircleOutline, arrowUndoOutline, arrowRedoOutline, chevronBackOutline, chevronForwardOutline, clipboardOutline, checkmarkOutline, notificationsOutline, checkmarkDoneOutline, linkOutline, downloadOutline, cloudUploadOutline, refreshOutline, eyeOutline, addCircleOutline, chatbubblesOutline, closeCircleOutline, pencilOutline, people, person, layersOutline, menuOutline, save, chatboxOutline, add });
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,ellipsisVertical,closeOutline,checkmarkCircle,documentTextOutline,eyeOutline,enterOutline,informationCircleOutline,alertCircleOutline,listOutline,createOutline,saveOutline,trashOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,clipboardOutline,checkmarkOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,people,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -942,6 +946,47 @@ export class InicioPage implements OnInit, OnDestroy {
       const numB = parseInt(b.grupo) || 0;
       return numA - numB;
     });
+  }
+
+  /**
+   * Maneja el clic en el encabezado del grupo según el modo configurado
+   * - modoMantenerVistaMatriz = true: Solo muestra integrantes en panel de seguimiento
+   * - modoMantenerVistaMatriz = false: Navega a la vista detallada del grupo
+   */
+  onClickEncabezadoGrupo(grupo: string) {
+    if (this.modoMantenerVistaMatriz) {
+      // ACTIVO: Mantener vista matriz, solo mostrar integrantes en panel de seguimiento
+      this.seleccionarGrupoParaSeguimiento(grupo);
+    } else {
+      // INACTIVO: Navegar a los detalles del grupo
+      this.navegarAGrupo(grupo);
+    }
+  }
+
+  /**
+   * Selecciona un grupo para mostrar en el panel de seguimiento
+   * SIN cambiar la vista actual (mantiene la matriz visible)
+   */
+  seleccionarGrupoParaSeguimiento(grupo: string) {
+    // Extraer número del grupo - puede venir como "G1", "1", "Grupo 1", etc.
+    const grupoNum = parseInt(grupo.replace(/\D/g, '')) || 0;
+
+    if (grupoNum === 0) return;
+
+    // Actualizar seguimiento sin cambiar filtroGrupo (mantiene la matriz)
+    this.grupoSeguimientoActivo = grupo;
+
+    // Forzar la actualización del servicio
+    // Si es el mismo grupo, reseteamos primero para que el observable emita
+    const grupoActual = this.seguimientoService.getGrupoSeleccionado();
+    if (grupoActual === grupoNum) {
+      this.seguimientoService.setGrupoSeleccionado(0);
+    }
+
+    // Establecer el grupo con un pequeño delay para asegurar que el reset se procese
+    setTimeout(() => {
+      this.seguimientoService.setGrupoSeleccionado(grupoNum);
+    }, 25);
   }
 
   /**

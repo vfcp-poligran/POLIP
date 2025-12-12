@@ -286,6 +286,31 @@ export class DataService {
 
   // === GESTIÓN DE CURSOS ===
 
+  /**
+   * Extrae el código base de un código de curso
+   * Ejemplo: "EPM-B01-BLQ2-V" -> "EPM"
+   * Ejemplo: "SO-B09-BLQ2" -> "SO"
+   * Ejemplo: "BD-B05" -> "BD"
+   *
+   * El código base son las primeras letras antes del primer guión seguido de número
+   * @param codigoCurso Código completo del curso
+   * @returns Código base (ej: EPM, SO, BD)
+   */
+  private extraerCodigoBaseCurso(codigoCurso: string): string {
+    if (!codigoCurso) return '';
+
+    // Buscar el patrón: letras iniciales antes de "-B" o "-" seguido de número
+    // Ejemplos: EPM-B01 -> EPM, SO-B09 -> SO, PROG-B01 -> PROG
+    const match = codigoCurso.match(/^([A-Za-z]+)(?:-[Bb]\d|$|-\d)/);
+    if (match) {
+      return match[1].toUpperCase();
+    }
+
+    // Fallback: tomar todo hasta el primer guión
+    const primeraParteMatch = codigoCurso.match(/^([A-Za-z]+)/);
+    return primeraParteMatch ? primeraParteMatch[1].toUpperCase() : codigoCurso.toUpperCase();
+  }
+
   async loadCursos(): Promise<void> {
     const cursos = await this.storage.get(this.STORAGE_KEYS.CURSOS) || {};
     this.cursosSubject.next(cursos);
@@ -372,6 +397,40 @@ export class DataService {
         [nombreClave]: estudiantes
       };
 
+      // === HERENCIA DE RÚBRICAS ===
+      // Buscar cursos relacionados (mismo código base) para heredar rúbricas
+      let rubricasHeredadas: CourseState['rubricasAsociadas'] | undefined;
+
+      // Extraer código base (primera parte antes de "-B" o los primeros 3+ caracteres)
+      const codigoBase = this.extraerCodigoBaseCurso(cursoData.codigo);
+      console.log(`🔍 [crearCurso] Buscando rúbricas de cursos relacionados con código base: "${codigoBase}"`);
+
+      // Buscar otros cursos con el mismo código base que tengan rúbricas asociadas
+      const cursosRelacionados = Object.entries(courseStates).filter(([key, state]) => {
+        if (!state.metadata?.codigo) return false;
+        const codigoBaseCurso = this.extraerCodigoBaseCurso(state.metadata.codigo);
+        return codigoBaseCurso === codigoBase && state.rubricasAsociadas;
+      });
+
+      if (cursosRelacionados.length > 0) {
+        // Usar las rúbricas del primer curso relacionado que tenga asociaciones
+        const [cursoRelacionadoKey, cursoRelacionadoState] = cursosRelacionados[0];
+        const rubricasOrigen = cursoRelacionadoState.rubricasAsociadas;
+        if (rubricasOrigen) {
+          rubricasHeredadas = {
+            entrega1: rubricasOrigen.entrega1 ?? null,
+            entrega1Individual: rubricasOrigen.entrega1Individual ?? null,
+            entrega2: rubricasOrigen.entrega2 ?? null,
+            entrega2Individual: rubricasOrigen.entrega2Individual ?? null,
+            entregaFinal: rubricasOrigen.entregaFinal ?? null,
+            entregaFinalIndividual: rubricasOrigen.entregaFinalIndividual ?? null
+          };
+        }
+        console.log(`✅ [crearCurso] Heredando rúbricas del curso relacionado: "${cursoRelacionadoKey}"`, rubricasHeredadas);
+      } else {
+        console.log('📋 [crearCurso] No se encontraron cursos relacionados con rúbricas, el curso se creará sin asociaciones');
+      }
+
       // INMUTABILIDAD: Crear copia del UI State con el nuevo curso
       const courseStateData: CourseState = {
         activeStudent: null,
@@ -389,7 +448,9 @@ export class DataService {
           bloque: cursoData.bloque,
           fechaCreacion: cursoData.fechaCreacion,
           profesor: cursoData.profesor || ''
-        }
+        },
+        // Heredar rúbricas si existen cursos relacionados
+        ...(rubricasHeredadas && { rubricasAsociadas: rubricasHeredadas })
       }
 
       const uiState: UIState = {
@@ -412,8 +473,9 @@ export class DataService {
       await this.saveUIState();
 
       // Log de éxito
+      const rubricasInfo = rubricasHeredadas ? '(con rúbricas heredadas)' : '(sin rúbricas)';
       console.log(
-        `✅ Curso creado exitosamente:\n` +
+        `✅ Curso creado exitosamente ${rubricasInfo}:\n` +
         `   • Nombre completo: "${cursoData.nombre}"\n` +
         `   • Código abreviado: "${cursoData.codigo}"\n` +
         `   • Código único: "${codigoUnico}"\n` +
