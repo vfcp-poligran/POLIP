@@ -1,7 +1,7 @@
 <!-- Layout sin ion-split-pane - Usando ion-menu estándar de Ionic -->
 
-<!-- Sidebar usando ion-menu -->
-<ion-menu contentId="main-content" type="overlay" side="start" menuId="mainMenu" class="sidebar-menu" [disabled]="isDesktop">
+<!-- Sidebar usando ion-menu - SOLO en móvil -->
+<ion-menu *ngIf="!isDesktop" contentId="main-content" type="overlay" side="start" menuId="mainMenu" class="sidebar-menu">
   <ion-header>
     <ion-toolbar color="primary">
       <ion-avatar slot="start" class="sidebar-logo-avatar">
@@ -9,7 +9,6 @@
           src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
           alt="Logo Politécnico Grancolombiano" />
       </ion-avatar>
-      <ion-title>Navegación</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -18,35 +17,30 @@
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="home-outline"></ion-icon>
-          <ion-label>Inicio</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="document-text-outline"></ion-icon>
-          <ion-label>Cursos</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="list-outline"></ion-icon>
-          <ion-label>Rúbricas</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="analytics-outline"></ion-icon>
-          <ion-label>Calificaciones</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-          <ion-label>Sistema</ion-label>
         </ion-item>
       </ion-menu-toggle>
     </ion-list>
@@ -76,34 +70,28 @@
         src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
         alt="Logo Politécnico Grancolombiano" />
     </ion-avatar>
-    <ion-card-title>Navegación</ion-card-title>
   </ion-card-header>
 
   <ion-card-content class="desktop-sidebar-content">
     <ion-list lines="none" class="desktop-nav-list">
       <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
         <ion-icon slot="start" name="home-outline"></ion-icon>
-        <ion-label>Inicio</ion-label>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
         <ion-icon slot="start" name="document-text-outline"></ion-icon>
-        <ion-label>Cursos</ion-label>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
         <ion-icon slot="start" name="list-outline"></ion-icon>
-        <ion-label>Rúbricas</ion-label>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
         <ion-icon slot="start" name="analytics-outline"></ion-icon>
-        <ion-label>Calificaciones</ion-label>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
         <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label>Sistema</ion-label>
       </ion-item>
     </ion-list>
   </ion-card-content>
@@ -124,17 +112,21 @@
   </ion-footer>
 </ion-card>
 
-<!-- Contenido principal -->
-<ion-tabs id="main-content">
+<!-- Contenido principal - SOLO ion-router-outlet sin ion-tabs -->
+<div id="main-content" class="main-content-area">
   <ion-router-outlet></ion-router-outlet>
-  <ion-tab-bar slot="bottom" class="hidden-tab-bar">
+</div>
+
+<!-- Hidden navigation helper (para mantener compatibilidad con rutas) -->
+<div class="hidden-navigation-helper">
+  <ion-tab-bar class="hidden-tab-bar">
     <ion-tab-button tab="inicio" href="/tabs/inicio"></ion-tab-button>
     <ion-tab-button tab="cursos" href="/tabs/cursos"></ion-tab-button>
     <ion-tab-button tab="rubricas" href="/tabs/rubricas"></ion-tab-button>
     <ion-tab-button tab="calificaciones" href="/tabs/calificaciones"></ion-tab-button>
     <ion-tab-button tab="sistema" href="/tabs/sistema"></ion-tab-button>
   </ion-tab-bar>
-</ion-tabs>
+</div>
 
 <!-- Panel de Seguimiento - posición fija a la derecha -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">

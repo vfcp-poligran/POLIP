@@ -223,6 +223,11 @@ ion-card {
   &.dashboard-options {
     border: 2px solid var(--azul-claro);
     border-radius: 8px;
+
+    ion-card-content {
+      --padding-start: 2px;
+      --padding-end: 2px;
+    }
   }
 }
 
@@ -230,9 +235,9 @@ ion-card {
 .estudiantes-section {
   border: 2px solid var(--naranja);
   border-radius: 8px;
-  padding: 12px;
+  padding: 2px;
   background: rgba(255, 255, 255, 0.5);
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 /* Layout principal - Sistema simplificado */
@@ -489,15 +494,15 @@ ion-segment.course-segment {
     --indicator-color: transparent;
     --indicator-height: 0;
     --border-radius: 8px;
-    --padding-top: var(--spacing-sm);
-    --padding-bottom: var(--spacing-sm);
-    --padding-start: var(--spacing-md);
-    --padding-end: var(--spacing-md);
+    --padding-top: 3px;
+    --padding-bottom: 3px;
+    --padding-start: 6px;
+    --padding-end: 6px;
 
-    /* Tamaños responsive con clamp */
-    min-width: clamp(140px, 28vw, 180px);
-    max-width: clamp(220px, 35vw, 280px);
-    min-height: clamp(52px, 12vw, 64px);
+    /* Tamaños responsive con clamp - OPTIMIZADO */
+    min-width: clamp(80px, 16vw, 112px);
+    max-width: clamp(144px, 22vw, 176px);
+    min-height: clamp(36px, 8vw, 48px);
 
     flex: 0 0 auto;
     margin: 0;
@@ -507,16 +512,16 @@ ion-segment.course-segment {
 
     /* Móviles: Botones más compactos */
     @media (max-width: 767px) {
-      min-width: clamp(130px, 32vw, 160px);
-      max-width: clamp(200px, 40vw, 240px);
-      min-height: clamp(48px, 11vw, 56px);
-      --padding-start: var(--spacing-sm);
-      --padding-end: var(--spacing-sm);
+      min-width: clamp(76px, 19vw, 104px);
+      max-width: clamp(136px, 26vw, 160px);
+      min-height: clamp(34px, 7vw, 42px);
+      --padding-start: 5px;
+      --padding-end: 5px;
     }
 
     @media (max-width: 480px) {
-      min-width: clamp(120px, 35vw, 150px);
-      min-height: clamp(44px, 10vw, 52px);
+      min-width: clamp(72px, 21vw, 96px);
+      min-height: clamp(32px, 6vw, 38px);
     }
 
     /* Estado normal con fondo de color sólido siempre */
@@ -526,10 +531,14 @@ ion-segment.course-segment {
       transition: all 0.3s ease;
     }
 
-    /* Textos siempre en blanco */
+/* Código del curso - Compacto */
     .course-tab-code,
     .course-tab-name {
       color: #ffffff;
+      font-size: 0.55rem;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.1;
     }
 
     /* Estado hover */
@@ -544,34 +553,34 @@ ion-segment.course-segment {
       }
     }
 
-    /* Estado checked - solo agrega triángulo inferior */
+    /* Estado checked - Indicador moderno con borde inferior */
     &.segment-button-checked {
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
 
       &::part(native) {
         background: var(--border-color);
         border: 2px solid var(--border-color);
-        filter: brightness(1.05);
+        filter: brightness(1.1);
       }
 
-      /* Círculo blanco superior para indicar curso seleccionado */
+      /* Borde inferior azul oscuro para indicar selección */
       &::after {
         content: '';
         position: absolute;
-        top: -14px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 24px;
-        height: 24px;
-        background: #ffffff;
-        border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        bottom: -3px;
+        left: 10%;
+        right: 10%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+        border-radius: 2px 2px 0 0;
+        box-shadow: 0 2px 6px rgba(15, 56, 90, 0.6);
         z-index: 10;
       }
 
       .course-tab-code {
-        font-weight: 700;
+        font-weight: 800;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       }
     }
 
@@ -632,8 +641,8 @@ ion-segment.course-segment {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 4px;
-  padding: 8px 12px;
+  gap: 1px;
+  padding: 4px 6px;
   pointer-events: auto;
   width: 100%;
   position: relative;
@@ -642,29 +651,30 @@ ion-segment.course-segment {
 .course-name-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   width: 100%;
+  padding-right: 22px; /* Espacio para el botón de 3 puntos (20px + 2px margen) */
 }
 
 /* Botón del menú de 3 puntos */
 .course-menu-btn {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 1px;
+  right: 1px;
   pointer-events: auto;
-  --padding-start: 4px;
-  --padding-end: 4px;
-  --padding-top: 4px;
-  --padding-bottom: 4px;
+  --padding-start: 2px;
+  --padding-end: 2px;
+  --padding-top: 2px;
+  --padding-bottom: 2px;
   --background: transparent;
   --background-hover: rgba(0, 0, 0, 0.05);
   --background-activated: rgba(0, 0, 0, 0.1);
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   margin: 0;
 
   ion-icon {
-    font-size: 18px;
+    font-size: 14px;
     color: var(--azul-oscuro);
     opacity: 0.7;
   }
@@ -697,21 +707,22 @@ ion-segment.course-segment {
   }
 }
 
-/* Nombre del curso - Completo y destacado */
-ion-segment-button .course-label .course-tab-name {
-  font-size: var(--fs-lg);
-  font-weight: 600;
+/* Código del curso - Compacto y centrado */
+ion-segment-button .course-label .course-tab-name,
+ion-segment-button .course-label .course-tab-code {
+  font-size: 0.55rem;
+  font-weight: 700;
   color: var(--azul-oscuro);
   text-align: left;
-  line-height: 1.4;
-  font-family: var(--font-secundaria, 'Open Sans', sans-serif);
+  line-height: 1.1;
+  font-family: var(--font-principal, 'Montserrat', sans-serif);
   word-wrap: break-word;
   white-space: normal;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding-left: 2px;
 }
 
 /* Icono de selector de color con especificidad mejorada */
@@ -3163,28 +3174,208 @@ ion-badge {
     }
   }
 
+  // Estilos para tabla matricial de entregas
+  .entregas-matrix-container {
+    overflow-x: auto;
+    margin: 8px 0;
+    padding: 4px;
+  }
+
+  .entregas-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+
+    thead {
+      background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+      color: white;
+
+      .header-entrega,
+      .header-grupo {
+        padding: 10px 12px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.7rem;
+        letter-spacing: 0.3px;
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .header-entrega {
+        text-align: left;
+        padding-left: 16px;
+        min-width: 80px;
+      }
+
+      .header-grupo {
+        min-width: 60px;
+      }
+
+      th:last-child {
+        border-right: none;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid #e9ecef;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: rgba(15, 56, 90, 0.02);
+        }
+      }
+
+      .label-entrega {
+        text-align: left;
+        padding: 12px 16px;
+        font-weight: 700;
+        color: var(--azul-oscuro);
+        background-color: #f8f9fa;
+        cursor: default;
+        font-size: 0.8rem;
+        border-right: 1px solid #dee2e6;
+      }
+
+      .cell-estado {
+        padding: 10px 8px;
+        text-align: center;
+        border-right: 1px solid #e9ecef;
+        transition: all 0.25s ease;
+        cursor: pointer;
+        position: relative;
+        min-height: 45px;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        // Estados con colores
+        &.estado-pendiente {
+          background-color: #ffe5e5;
+
+          &:hover {
+            background-color: #ffd0d0;
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(196, 30, 58, 0.2);
+          }
+
+          .estado-indicator::before {
+            content: '●';
+            color: #c41e3a;
+            font-size: 1.2rem;
+            font-weight: 600;
+          }
+        }
+
+        &.estado-parcial {
+          background-color: #fff9e5;
+
+          &:hover {
+            background-color: #fff3d0;
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(204, 136, 0, 0.2);
+          }
+
+          .estado-indicator::before {
+            content: '◐';
+            color: #cc8800;
+            font-size: 1.2rem;
+            font-weight: 600;
+          }
+        }
+
+        &.estado-completo {
+          background-color: #e5f9f0;
+
+          &:hover {
+            background-color: #d0f5e5;
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(51, 153, 102, 0.2);
+          }
+
+          .estado-indicator::before {
+            content: '✓';
+            color: var(--verde);
+            font-size: 1.3rem;
+            font-weight: 700;
+          }
+        }
+      }
+
+      .estado-indicator {
+        display: inline-block;
+      }
+    }
+
+    // Responsive
+    @media (max-width: 768px) {
+      font-size: 0.65rem;
+
+      thead {
+        .header-entrega,
+        .header-grupo {
+          padding: 6px 8px;
+          font-size: 0.6rem;
+        }
+
+        .header-entrega {
+          min-width: 60px;
+        }
+
+        .header-grupo {
+          min-width: 45px;
+        }
+      }
+
+      tbody {
+        .label-entrega {
+          padding: 8px 10px;
+          font-size: 0.7rem;
+        }
+
+        .cell-estado {
+          padding: 8px 6px;
+          min-height: 38px;
+
+          .estado-indicator::before {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+
   // Estilos para las nuevas secciones del panel general con Ionic
   .panel-section-card {
     margin-bottom: 0;
     height: 100%;
+    max-height: 450px;
+    display: flex;
+    flex-direction: column;
 
     .section-header-ionic {
-      padding: 7.2px;
+      padding: 6px;
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-left: 2.4px solid var(--azul-claro);
+      border-left: 2px solid var(--azul-claro);
 
       ion-card-subtitle {
         display: flex;
         align-items: center;
-        gap: 4.8px;
+        gap: 4px;
         margin: 0;
         padding: 0;
-        font-size: 0.54rem;
+        font-size: 0.52rem;
         font-weight: 600;
         color: var(--azul-oscuro);
 
         ion-icon {
-          font-size: 0.78rem;
+          font-size: 0.75rem;
           flex-shrink: 0;
         }
 
@@ -3195,7 +3386,7 @@ ion-badge {
 
         ion-badge {
           font-weight: 700;
-          font-size: 0.48rem;
+          font-size: 0.46rem;
         }
       }
     }
@@ -3203,6 +3394,10 @@ ion-badge {
     ion-card-content {
       background: var(--ion-color-light, #f4f5f8);
       min-height: 60px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 8px;
+      flex: 1;
 
       .grupos-list,
       .casos-especiales-list {
@@ -3211,20 +3406,20 @@ ion-badge {
 
         .placeholder-item {
           --background: white;
-          --border-radius: 4.8px;
-          --padding-start: 9.6px;
-          --padding-end: 9.6px;
+          --border-radius: 4px;
+          --padding-start: 8px;
+          --padding-end: 8px;
           margin-bottom: 0;
           box-shadow: 0 0.6px 1.8px rgba(0, 0, 0, 0.05);
 
           ion-icon {
-            font-size: 1.08rem;
+            font-size: 1rem;
           }
 
           ion-label {
             p {
-              margin: 1.2px 0;
-              font-size: 0.51rem;
+              margin: 1px 0;
+              font-size: 0.5rem;
               line-height: 1.3;
 
               &:first-child {
@@ -3529,12 +3724,12 @@ ion-badge {
   // Versión compacta
   &.compact {
     .grupo-item {
-      --min-height: var(--list-item-compact);
-      --padding-start: var(--spacing-sm);
-      --padding-end: var(--spacing-sm);
-      --padding-top: var(--spacing-xs);
-      --padding-bottom: var(--spacing-xs);
-      margin-bottom: var(--spacing-xs);
+      --min-height: 32px;
+      --padding-start: 6px;
+      --padding-end: 6px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      margin-bottom: 4px;
 
       &:hover {
         --background: #f8f9fa;
@@ -3547,20 +3742,20 @@ ion-badge {
       .grupo-header {
         display: flex;
         align-items: center;
-        gap: var(--spacing-sm);
-        font-size: var(--fs-sm);
+        gap: 6px;
+        font-size: 0.5rem;
 
         .grupo-numero {
           font-weight: 700;
           color: var(--azul-oscuro);
-          min-width: clamp(24px, 5vw, 28px);
-          font-size: var(--fs-md);
+          min-width: 22px;
+          font-size: 0.55rem;
         }
 
         .grupo-integrantes {
-          font-size: var(--fs-xs);
+          font-size: 0.48rem;
           color: #6c757d;
-          min-width: clamp(20px, 4vw, 24px);
+          min-width: 18px;
         }
 
         .entregas-inline {

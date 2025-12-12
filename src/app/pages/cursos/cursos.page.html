@@ -33,7 +33,7 @@
               <ion-label>
                 <div class="course-label">
                   <div class="course-name-wrapper">
-                    <span class="course-tab-name">{{ getCursoMetadataForCourse(curso)?.nombre || curso }}</span>
+                    <span class="course-tab-code">{{ getCursoMetadataForCourse(curso)?.codigo || curso }}</span>
                   </div>
                   <ion-button fill="clear" size="small" class="course-menu-btn"
                     (click)="abrirMenuColor($event, curso); $event.stopPropagation()">
@@ -111,134 +111,44 @@
         <ion-card class="dashboard-options">
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="analytics-outline"></ion-icon>
-              Panel General
+              Información Curso
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
 
             <!-- Vista: Todos los grupos -->
             @if (filtroGrupo === 'todos') {
-            <ion-grid>
-              <ion-row>
-                <!-- Columna 1: Grupos Calificados -->
-                <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
-                  <ion-card class="panel-section-card compact">
-                    <ion-card-header class="section-header-ionic">
-                      <ion-card-subtitle>
-                        <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
-                        <ion-text color="dark">Calificados</ion-text>
-                        <ion-badge color="success">{{ getEstadisticasResumidas().calificados }}</ion-badge>
-                      </ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <ion-list class="grupos-list compact">
-                        @if (getGruposCalificados().length > 0) {
-                        @for (grupoInfo of getGruposCalificados(); track grupoInfo.grupo) {
-                        <ion-item button (click)="navegarAGrupo(grupoInfo.grupo)" lines="none" class="grupo-item">
-                          <ion-label>
-                            <div class="grupo-header">
-                              <span class="grupo-numero">G{{ grupoInfo.grupo }}</span>
-                              <span class="grupo-integrantes">({{ grupoInfo.integrantes }})</span>
-                              <div class="entregas-inline">
-                                <ion-badge [color]="grupoInfo.entregas.E1 ? 'success' : 'medium'"
-                                  class="mini-badge">E1</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.E2 ? 'success' : 'medium'"
-                                  class="mini-badge">E2</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.EF ? 'success' : 'medium'"
-                                  class="mini-badge">EF</ion-badge>
-                              </div>
-                              <ion-badge [color]="grupoInfo.porcentaje === 100 ? 'success' : 'warning'"
-                                class="porcentaje-badge">
-                                {{ grupoInfo.porcentaje }}%
-                              </ion-badge>
-                            </div>
-                          </ion-label>
-                        </ion-item>
-                        }
-                        } @else {
-                        <ion-item lines="none" class="placeholder-item compact">
-                          <ion-label color="medium" class="ion-text-center">
-                            <p>Sin grupos calificados</p>
-                          </ion-label>
-                        </ion-item>
-                        }
-                      </ion-list>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
-
-                <!-- Columna 2: Grupos Por Calificar -->
-                <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
-                  <ion-card class="panel-section-card compact">
-                    <ion-card-header class="section-header-ionic">
-                      <ion-card-subtitle>
-                        <ion-icon name="time-outline" color="warning"></ion-icon>
-                        <ion-text color="dark">Pendientes</ion-text>
-                        <ion-badge color="warning">{{ getEstadisticasResumidas().pendientes }}</ion-badge>
-                      </ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <ion-list class="grupos-list compact">
-                        @if (getGruposPendientes().length > 0) {
-                        @for (grupoInfo of getGruposPendientes(); track grupoInfo.grupo) {
-                        <ion-item button (click)="navegarAGrupo(grupoInfo.grupo)" lines="none" class="grupo-item">
-                          <ion-label>
-                            <div class="grupo-header">
-                              <span class="grupo-numero">G{{ grupoInfo.grupo }}</span>
-                              <span class="grupo-integrantes">({{ grupoInfo.integrantes }})</span>
-                              <div class="entregas-inline">
-                                <ion-badge [color]="grupoInfo.entregas.E1 ? 'success' : 'danger'"
-                                  class="mini-badge">E1</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.E2 ? 'success' : 'danger'"
-                                  class="mini-badge">E2</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.EF ? 'success' : 'danger'"
-                                  class="mini-badge">EF</ion-badge>
-                              </div>
-                              <ion-badge color="danger" class="porcentaje-badge">
-                                {{ grupoInfo.totalPendientes }}
-                              </ion-badge>
-                            </div>
-                          </ion-label>
-                        </ion-item>
-                        }
-                        } @else {
-                        <ion-item lines="none" class="placeholder-item compact">
-                          <ion-label color="success" class="ion-text-center">
-                            <p>¡Todos calificados!</p>
-                          </ion-label>
-                        </ion-item>
-                        }
-                      </ion-list>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
-
-                <!-- Columna 3: Casos Especiales -->
-                <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
-                  <ion-card class="panel-section-card">
-                    <ion-card-header class="section-header-ionic">
-                      <ion-card-subtitle>
-                        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
-                        <ion-text color="dark">Casos Especiales (Novelas)</ion-text>
-                        <ion-badge color="danger">0</ion-badge>
-                      </ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <ion-list class="casos-especiales-list">
-                        <ion-item lines="none" class="placeholder-item">
-                          <ion-icon name="document-text-outline" slot="start" color="medium"></ion-icon>
-                          <ion-label color="medium">
-                            <p>Funcionalidad en desarrollo</p>
-                            <p class="ion-text-wrap">Aquí se mostrarán casos especiales</p>
-                          </ion-label>
-                        </ion-item>
-                      </ion-list>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
+            <!-- Tabla matricial de entregas por grupo -->
+            <div class="entregas-matrix-container">
+              <table class="entregas-matrix">
+                <thead>
+                  <tr>
+                    <th class="header-entrega">Entrega</th>
+                    @for (grupo of gruposDisponibles; track grupo) {
+                    <th class="header-grupo">{{ grupo }}</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entrega of ['E1', 'E2', 'EF']; track entrega) {
+                  <tr>
+                    <td class="label-entrega">{{ entrega }}</td>
+                    @for (grupo of gruposDisponibles; track grupo) {
+                    <td
+                      class="cell-estado"
+                      [class.estado-completo]="getEstadoEntregaGrupo(entrega, grupo) === 'completo'"
+                      [class.estado-parcial]="getEstadoEntregaGrupo(entrega, grupo) === 'parcial'"
+                      [class.estado-pendiente]="getEstadoEntregaGrupo(entrega, grupo) === 'pendiente'"
+                      (click)="navegarAGrupoEntrega(grupo, entrega)"
+                      [title]="getTituloEstado(entrega, grupo)">
+                      <span class="estado-indicator"></span>
+                    </td>
+                    }
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
             } @else {
             <!-- Vista: Grupo específico seleccionado -->
             <ion-card>

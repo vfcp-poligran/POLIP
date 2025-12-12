@@ -9,7 +9,6 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
   IonButton,
   IonButtons,
   IonIcon,
@@ -25,10 +24,6 @@ import {
   IonFabList,
   IonList,
   IonItem,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonText,
   IonToolbar,
   IonTitle,
   MenuController,
@@ -92,7 +87,6 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonCardSubtitle,
     IonButton,
     IonButtons,
     IonIcon,
@@ -108,10 +102,6 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonFabList,
     IonList,
     IonItem,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonText,
     IonToolbar,
     IonTitle,
     EvaluacionRubricaComponent
@@ -364,21 +354,11 @@ export class InicioPage implements OnInit, OnDestroy {
 
         this.cursosData = cursos;
 
-        // 🚨 FIX CRÍTICO: Solo cargar si NO tiene cache y estudiantes vacíos
-        const uiState = this.dataService.getUIState();
-        if (uiState.cursoActivo && cursos[uiState.cursoActivo]) {
-          const estudiantesEnData = cursos[uiState.cursoActivo].length;
-          const yaEnCache = this._estudiantesCargadosPorCurso.has(uiState.cursoActivo);
-
-          // Solo cargar si NO está en cache Y estudiantesActuales está vacío
-          if (estudiantesEnData > 0 && this.estudiantesActuales.length === 0 && !yaEnCache) {
-            console.log(`🔥[cursos$.subscribe] Cargando ${estudiantesEnData} estudiantes`);
-            this.cursoActivo = uiState.cursoActivo;
-            this.estudiantesActuales = cursos[uiState.cursoActivo];
-            this._estudiantesCargadosPorCurso.set(uiState.cursoActivo, true);
-            this.actualizarGrupos();
-            this.aplicarFiltros();
-          }
+        // Actualizar cursosOrdenados cuando cambian los cursos disponibles
+        const cursosActuales = Object.keys(cursos);
+        if (this.cursosOrdenados.length !== cursosActuales.length) {
+          console.log(`🔄 Actualizando cursosOrdenados: ${this.cursosOrdenados.length} -> ${cursosActuales.length}`);
+          this.cursosOrdenados = [...cursosActuales].sort();
         }
 
         // Si el curso activo fue eliminado, limpiar estado
@@ -386,8 +366,35 @@ export class InicioPage implements OnInit, OnDestroy {
           console.log('⚠️ [InicioPage] Curso activo eliminado:', this.cursoActivo);
           this.cursoActivo = null;
           this.estudiantesActuales = [];
+          this.gruposDisponibles = [];
+          this.aplicarFiltros();
         }
+
         this.cdr.detectChanges();
+      })
+    );
+
+    // Suscribirse a cambios en el estado de UI (incluyendo cursoActivo)
+    this.subscriptions.push(
+      this.dataService.uiState$.pipe(
+        distinctUntilChanged((prev, curr) => {
+          // Solo emitir si cambió el curso activo
+          return prev.cursoActivo === curr.cursoActivo;
+        })
+      ).subscribe(uiState => {
+        // Si cambió el curso activo, cargar sus estudiantes
+        if (uiState.cursoActivo && uiState.cursoActivo !== this.cursoActivo) {
+          console.log(`🔄[uiState$.subscribe] Curso activo cambió a:`, uiState.cursoActivo);
+
+          // Asegurar que cursosData esté actualizado antes de seleccionar
+          const cursosActuales = this.dataService.getCursos();
+          if (Object.keys(cursosActuales).length > Object.keys(this.cursosData).length) {
+            console.log(`📥 Actualizando cursosData desde DataService`);
+            this.cursosData = cursosActuales;
+          }
+
+          this.seleccionarCurso(uiState.cursoActivo);
+        }
       })
     );
 
@@ -704,19 +711,8 @@ export class InicioPage implements OnInit, OnDestroy {
     const cambio = resultado.length !== this.estudiantesFiltrados.length ||
       !resultado.every((est, i) => est.correo === this.estudiantesFiltrados[i]?.correo);
 
-    console.log('🔍 [aplicarFiltros]', {
-      estudiantesBase: inicioLength,
-      filtroGrupo: filtroEfectivo,
-      busqueda: this.busquedaGeneral ? 'SÍ' : 'NO',
-      resultadoFinal: resultado.length,
-      cambioDetectado: cambio
-    });
-
     if (cambio) {
       this.estudiantesFiltrados = resultado;
-      console.log('✅ [aplicarFiltros] Estudiantes filtrados actualizados:', resultado.length);
-    } else {
-      console.log('⚡ [aplicarFiltros] Sin cambios, manteniendo array actual');
     }
   }
 
@@ -952,6 +948,11 @@ export class InicioPage implements OnInit, OnDestroy {
    * Navega a un grupo específico desde las listas del panel general
    */
   navegarAGrupo(numeroGrupo: string) {
+    // 🛡️ GUARDIA: No hacer nada si ya es el grupo activo
+    if (this.filtroGrupo === numeroGrupo) {
+      return;
+    }
+
     this.filtroGrupo = numeroGrupo;
     this.grupoSeguimientoActivo = numeroGrupo;
 
@@ -971,7 +972,104 @@ export class InicioPage implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Obtiene el estado de una entrega para un grupo específico
+   * @returns 'completo' (verde), 'parcial' (amarillo), 'pendiente' (rojo)
+   */
+  getEstadoEntregaGrupo(entrega: string, grupo: string): 'completo' | 'parcial' | 'pendiente' {
+    if (!this.cursoActivo) {
+      return 'pendiente';
+    }
 
+    const evaluaciones = this.dataService.getAllEvaluaciones();
+    const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo}`;
+
+    // Obtener integrantes del grupo
+    const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo);
+
+    if (integrantes.length === 0) {
+      return 'pendiente'; // Sin estudiantes = rojo
+    }
+
+    // Verificar evaluación grupal (PG)
+    const hayPG = !!evaluaciones[keyPG];
+
+    // Contar evaluaciones individuales (PI)
+    let evaluadosPI = 0;
+    integrantes.forEach(est => {
+      const keyPI = `${this.cursoActivo}_${entrega}_PI_${est.correo}`;
+      if (evaluaciones[keyPI]) {
+        evaluadosPI++;
+      }
+    });
+
+    // Lógica de estados
+    const totalIntegrantes = integrantes.length;
+
+    if (hayPG && evaluadosPI === totalIntegrantes) {
+      return 'completo'; // Verde: PG + todos PI evaluados
+    } else if (hayPG || evaluadosPI > 0) {
+      return 'parcial'; // Amarillo: al menos algo evaluado
+    } else {
+      return 'pendiente'; // Rojo: nada evaluado
+    }
+  }
+
+  /**
+   * Obtiene el texto del tooltip para una celda de estado
+   */
+  getTituloEstado(entrega: string, grupo: string): string {
+    if (!this.cursoActivo) {
+      return '';
+    }
+
+    const estado = this.getEstadoEntregaGrupo(entrega, grupo);
+    const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo);
+    const totalIntegrantes = integrantes.length;
+
+    const evaluaciones = this.dataService.getAllEvaluaciones();
+    const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo}`;
+    const hayPG = !!evaluaciones[keyPG];
+
+    let evaluadosPI = 0;
+    integrantes.forEach(est => {
+      const keyPI = `${this.cursoActivo}_${entrega}_PI_${est.correo}`;
+      if (evaluaciones[keyPI]) {
+        evaluadosPI++;
+      }
+    });
+
+    if (estado === 'completo') {
+      return `Grupo ${grupo} - ${entrega}: ✅ Completo (PG + ${totalIntegrantes}/${totalIntegrantes} PI)`;
+    } else if (estado === 'parcial') {
+      const pg = hayPG ? 'PG ✓' : 'PG ✗';
+      return `Grupo ${grupo} - ${entrega}: ⚠️ Parcial (${pg} + ${evaluadosPI}/${totalIntegrantes} PI)`;
+    } else {
+      return `Grupo ${grupo} - ${entrega}: ❌ Pendiente (0/${totalIntegrantes} evaluados)`;
+    }
+  }
+
+  /**
+   * Navega a un grupo y entrega específica desde la matriz
+   */
+  navegarAGrupoEntrega(grupo: string, entrega: string) {
+    if (!this.cursoActivo) return;
+
+    // Cambiar al grupo seleccionado
+    this.navegarAGrupo(grupo);
+
+    // Actualizar entrega activa en el estado del curso
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (courseState) {
+      courseState.activeDelivery = entrega as 'E1' | 'E2' | 'EF';
+      this.dataService.updateCourseState(this.cursoActivo, courseState);
+    }
+
+    console.log(`📍 Navegando a Grupo ${grupo} - ${entrega}`);
+
+    // Trigger change detection para actualizar UI
+    this.cdr.detectChanges();
+  }
 
 
 

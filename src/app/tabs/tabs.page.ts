@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
@@ -17,14 +17,12 @@ import {
   IonSegment,
   IonSegmentButton,
   IonRouterOutlet,
-  IonTabs,
   IonTabBar,
   IonTabButton,
   IonMenu,
   IonMenuToggle,
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonButtons,
   IonFooter,
   IonAvatar,
@@ -65,14 +63,12 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonSegment,
     IonSegmentButton,
     IonRouterOutlet,
-    IonTabs,
     IonTabBar,
     IonTabButton,
     IonMenu,
     IonMenuToggle,
     IonHeader,
     IonToolbar,
-    IonTitle,
     IonButtons,
     IonFooter,
     IonAvatar,
@@ -90,24 +86,26 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     ])
   ]
 })
-export class TabsPage implements OnDestroy {
+export class TabsPage implements OnDestroy, AfterViewInit {
   public environmentInjector = inject(EnvironmentInjector);
   private router = inject(Router);
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);
   public fullscreenService = inject(FullscreenService);
   private menuCtrl = inject(MenuController);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   @ViewChild('searchBar', { read: ElementRef }) searchbarRef!: ElementRef;
 
-
+  private resizeHandler: (() => void) | null = null;
   private subscriptions: Subscription[] = [];
   globalSearch: string = '';
   selectedGrupo: number = 0;
   searchExpanded: boolean = false;
-  isDesktop: boolean = window.innerWidth >= 992; // 992px es el breakpoint de ion-split-pane
-  grupos: string[] = []; // Grupos dinámicos desde estudiantes
-  tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG'; // Toggle para tipo de rúbrica
+  isDesktop: boolean = window.innerWidth >= 992;
+  grupos: string[] = [];
+  tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG';
 
   // Seguimiento actual
   seguimientoActual: SeguimientoGrupo | null = null;
@@ -130,9 +128,6 @@ export class TabsPage implements OnDestroy {
 
   constructor() {
     addIcons({ homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline });
-
-    // Abrir menú automáticamente en desktop
-    this.setupMenuBehavior();
 
     // Suscribirse al seguimiento actual con cleanup
     this.subscriptions.push(
@@ -169,14 +164,18 @@ export class TabsPage implements OnDestroy {
           if (courseState?.filtroGrupo && courseState.filtroGrupo !== 'todos') {
             // Extraer número del grupo (G1 -> 1, G2 -> 2, etc.)
             const grupoNum = parseInt(courseState.filtroGrupo.replace(/\D/g, ''));
-            if (grupoNum > 0) {
+
+            // 🛡️ GUARDIA: Solo restaurar si es diferente al actual
+            if (grupoNum > 0 && this.selectedGrupo !== grupoNum) {
               this.selectedGrupo = grupoNum;
               this.seguimientoService.setGrupoSeleccionado(grupoNum);
             }
           } else {
             // Resetear a "Todos" si no hay grupo guardado
-            this.selectedGrupo = 0;
-            this.seguimientoService.setGrupoSeleccionado(0);
+            if (this.selectedGrupo !== 0) {
+              this.selectedGrupo = 0;
+              this.seguimientoService.setGrupoSeleccionado(0);
+            }
           }
         } else {
           this.grupos = [];
@@ -214,10 +213,67 @@ export class TabsPage implements OnDestroy {
         // Navegación completada silenciosamente
       })
     );
-  } ngOnDestroy(): void {
+  }
+
+  ngAfterViewInit(): void {
+    // Configurar layout inicial y listener de resize optimizado
+    this.updateDesktopState();
+    this.setupResizeListener();
+  }
+
+  ngOnDestroy(): void {
     // Limpiar todas las subscripciones para prevenir memory leaks
     this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
     this.subscriptions = [];
+
+    // Limpiar resize listener
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
+  }
+
+  /** Actualiza isDesktop solo si cambió - evita detecciones innecesarias */
+  private updateDesktopState(): void {
+    const newIsDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== newIsDesktop) {
+      this.isDesktop = newIsDesktop;
+      this.handleMenuState();
+      this.cdr.detectChanges();
+    }
+  }
+
+  /** Configura el resize listener fuera de Angular zone para mejor performance */
+  private setupResizeListener(): void {
+    this.ngZone.runOutsideAngular(() => {
+      let resizeTimeout: ReturnType<typeof setTimeout>;
+
+      this.resizeHandler = () => {
+        // Debounce de 150ms para evitar múltiples actualizaciones
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          this.ngZone.run(() => this.updateDesktopState());
+        }, 150);
+      };
+
+      window.addEventListener('resize', this.resizeHandler);
+    });
+  }
+
+  /** Maneja el estado del menú según desktop/mobile */
+  private async handleMenuState(): Promise<void> {
+    if (!this.isDesktop) {
+      // En móvil: habilitar menú con swipe
+      await this.menuCtrl.enable(true, 'mainMenu');
+      await this.menuCtrl.swipeGesture(true, 'mainMenu');
+    } else {
+      // En desktop: deshabilitar menú (no existe en el DOM)
+      try {
+        await this.menuCtrl.enable(false, 'mainMenu');
+      } catch (e) {
+        // El menú puede no existir, ignorar
+      }
+    }
   }
 
   onGlobalSearch(event: any): void {
@@ -260,15 +316,26 @@ export class TabsPage implements OnDestroy {
 
   selectGrupo(grupo: string | 'todos'): void {
     const grupoNum = grupo === 'todos' ? 0 : parseInt(grupo) || 0;
+
+    // 🛡️ GUARDIA: Evitar actualizaciones si ya es el grupo seleccionado
+    if (this.selectedGrupo === grupoNum) {
+      return;
+    }
+
     this.selectedGrupo = grupoNum;
     this.seguimientoService.setGrupoSeleccionado(grupoNum);
 
     // Guardar en CourseState para persistencia por curso
     if (this.cursoActivo) {
       const grupoStr = grupoNum === 0 ? 'todos' : `G${grupoNum} `;
-      this.dataService.updateCourseState(this.cursoActivo, {
-        filtroGrupo: grupoStr
-      });
+
+      // 🛡️ GUARDIA: Solo actualizar si el valor cambió
+      const courseState = this.dataService.getCourseState(this.cursoActivo);
+      if (courseState?.filtroGrupo !== grupoStr) {
+        this.dataService.updateCourseState(this.cursoActivo, {
+          filtroGrupo: grupoStr
+        });
+      }
     }
   }
 
@@ -505,24 +572,13 @@ export class TabsPage implements OnDestroy {
 
   // Actualizar grupos disponibles desde los estudiantes del curso activo
   actualizarGruposDisponibles(): void {
-    console.log('🔍 [tabs] actualizarGruposDisponibles()');
-    console.log('   cursoActivo:', this.cursoActivo);
-
     if (!this.cursoActivo) {
       this.grupos = [];
-      console.log('   ⚠️ No hay curso activo, grupos = []');
       return;
     }
 
     const cursosData = this.dataService.getCursos();
-    console.log('   Cursos disponibles:', Object.keys(cursosData));
-
     const estudiantes = cursosData[this.cursoActivo] || [];
-    console.log('   Total estudiantes en curso:', estudiantes.length);
-
-    if (estudiantes.length > 0) {
-      console.log('   Primer estudiante:', estudiantes[0]);
-    }
 
     // Extraer grupos únicos de los estudiantes usando groupName o grupo
     const gruposSet = new Set<string>();
@@ -540,22 +596,16 @@ export class TabsPage implements OnDestroy {
       }
     });
 
-    console.log('   Grupos extraídos del Set:', Array.from(gruposSet));
-
     // Convertir a array y ordenar numéricamente
     this.grupos = Array.from(gruposSet).sort((a, b) => {
       const numA = parseInt(a) || 0;
       const numB = parseInt(b) || 0;
       return numA - numB;
     });
-
-    console.log('📊 [tabs] Grupos disponibles actualizados:', this.grupos);
-    console.log('📋 [tabs] Mapa de grupos:', Array.from(gruposMap.entries()));
   }
 
   // Método para navegación programática si es necesario
   navigateToTab(tab: string) {
-    console.log('Navegando a tab:', tab);
     this.router.navigate(['/tabs', tab]);
   }
 
@@ -585,32 +635,5 @@ export class TabsPage implements OnDestroy {
   getDescripcionNivel(criterio: CriterioEvaluado): string {
     const nivel = criterio.niveles.find(n => n.nombre === criterio.nivelSeleccionado);
     return nivel?.descripcion || criterio.comentario || '';
-  }
-
-  /**
-   * Configurar comportamiento del menú: fijo en desktop (via ion-split-pane), overlay en móvil
-   */
-  private async setupMenuBehavior(): Promise<void> {
-    const checkScreenSize = async () => {
-      this.isDesktop = window.innerWidth >= 992; // 992px es el breakpoint estándar de ion-split-pane
-
-      if (this.isDesktop) {
-        // En desktop: ion-split-pane maneja el menú automáticamente
-        // El menú debe estar habilitado para que split-pane lo muestre
-        await this.menuCtrl.enable(true, 'mainMenu');
-        await this.menuCtrl.swipeGesture(false, 'mainMenu'); // Sin swipe en desktop
-      } else {
-        // En móvil: habilitar menú con swipe
-        await this.menuCtrl.enable(true, 'mainMenu');
-        await this.menuCtrl.swipeGesture(true, 'mainMenu');
-        await this.menuCtrl.close('mainMenu');
-      }
-    };
-
-    // Ejecutar al cargar
-    await checkScreenSize();
-
-    // Escuchar cambios de tamaño de ventana
-    window.addEventListener('resize', () => checkScreenSize());
   }
 }

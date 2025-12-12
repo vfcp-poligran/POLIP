@@ -64,11 +64,9 @@ export class SeguimientoService {
   setGrupoSeleccionado(grupo: number): void {
     // 🛡️ GUARDIA: No emitir si es el mismo valor
     if (this.grupoSeleccionadoSubject.value === grupo) {
-      console.log(`⚡ [SeguimientoService] Skipped - grupo ya es ${grupo}`);
       return;
     }
 
-    console.log(`📍 [SeguimientoService] Cambiando grupo: ${this.grupoSeleccionadoSubject.value} → ${grupo}`);
     this.grupoSeleccionadoSubject.next(grupo);
   }
 
