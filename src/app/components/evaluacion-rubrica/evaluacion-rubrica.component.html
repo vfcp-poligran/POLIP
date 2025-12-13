@@ -24,14 +24,14 @@
       </div>
       @for (nivel of criterio.nivelesDetalle; track nivel.titulo; let j = $index) {
       <div class="rubrica-cell nivel-card"
-        [class.selected]="calificaciones[criterio.titulo] === obtenerPuntosNivel(nivel.puntos)"
+        [class.selected]="estaEnRangoNivel(criterio.titulo, nivel.puntos)"
         [class.nivel-insuficiente]="j === 0"
         [class.nivel-aceptable]="j === 1"
         [class.nivel-excelente]="j >= 2"
         (click)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))">
         <div class="nivel-header">
           <ion-badge mode="ios">{{ nivel.puntos }} pts</ion-badge>
-          @if (calificaciones[criterio.titulo] === obtenerPuntosNivel(nivel.puntos)) {
+          @if (estaEnRangoNivel(criterio.titulo, nivel.puntos)) {
           <span class="check-icon">✓</span>
           }
         </div>

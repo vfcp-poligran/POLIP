@@ -52,14 +52,17 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
       changes['rubrica'].currentValue?.id !== changes['rubrica'].previousValue?.id;
     const evaluacionChanged = changes['evaluacionExistente'];
 
-    // Logging optimizado solo en cambios significativos
-    if (grupoChanged || entregaChanged) {
-      console.log('🔄 [EvaluacionRubrica] Cambio de contexto:', {
-        grupo: this.grupoId,
-        entrega: this.entregaActual,
-        tieneEvaluacion: !!this.evaluacionExistente
-      });
-    }
+    // Logging detallado para debugging
+    console.log('🔄 [EvaluacionRubrica] ngOnChanges:', {
+      grupoChanged,
+      entregaChanged,
+      rubricaChanged,
+      evaluacionChanged: !!evaluacionChanged,
+      grupoId: this.grupoId,
+      entrega: this.entregaActual,
+      evaluacionExistente: this.evaluacionExistente ? 'SÍ tiene' : 'null',
+      evaluacionPuntos: this.evaluacionExistente?.puntosTotales
+    });
 
     // Re-inicializar solo si realmente cambió algo relevante
     if (grupoChanged || entregaChanged || rubricaChanged || evaluacionChanged) {
@@ -125,6 +128,24 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
       return parseInt(partes[1].trim());
     }
     return parseInt(puntos);
+  }
+
+  /**
+   * Verifica si los puntos actuales del criterio están dentro del rango del nivel
+   * Esta función es usada por el template para marcar el nivel correcto como seleccionado
+   */
+  estaEnRangoNivel(criterioTitulo: string, puntosNivel: string): boolean {
+    const puntosActuales = this.calificaciones[criterioTitulo] || 0;
+
+    if (puntosNivel.includes('-')) {
+      const partes = puntosNivel.split('-').map(p => parseInt(p.trim()));
+      const min = partes[0];
+      const max = partes[1];
+      return puntosActuales >= min && puntosActuales <= max;
+    } else {
+      const puntoExacto = parseInt(puntosNivel);
+      return puntosActuales === puntoExacto;
+    }
   }
 
   obtenerNivelSeleccionado(criterio: CriterioRubrica): any {

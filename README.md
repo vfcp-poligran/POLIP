@@ -35,7 +35,7 @@ Una aplicación Ionic multiplataforma para la gestión y evaluación de estudian
 
 ## 🎨 Diseño
 
-- **Paleta de colores SRS**: 
+- **Paleta de colores SRS**:
   - Azul claro: #1FB2DE
   - Azul oscuro: #0F385A
   - Naranja: #FBAF17
@@ -50,11 +50,13 @@ Una aplicación Ionic multiplataforma para la gestión y evaluación de estudian
 ## 🚀 Instalación y Ejecución
 
 ### Requisitos Previos
+
 - Node.js 18+
 - npm o yarn
 - Ionic CLI: `npm install -g @ionic/cli`
 
 ### Instalación
+
 ```bash
 # Clonar e instalar dependencias
 cd gestor-proyectos
@@ -70,6 +72,7 @@ ionic build
 ### Compilación para Móviles
 
 #### Android
+
 ```bash
 # Sincronizar código
 npx cap sync android
@@ -82,6 +85,7 @@ npx cap run android
 ```
 
 #### iOS
+
 ```bash
 # Sincronizar código
 npx cap sync ios
@@ -118,18 +122,21 @@ src/
 ## 🎯 Funcionalidades Principales
 
 ### 1. Gestión de Cursos
+
 - Tabla de estudiantes con calificaciones
 - Filtros por curso y estado
 - Cálculo automático: PG + PI = Σ
 - Importación masiva via CSV
 
 ### 2. Sistema de Evaluación
+
 - Evaluación basada en rúbricas
 - Niveles: Iniciado (I), Avanzado (A), Experto (E)
 - Guardado automático
 - Historial de evaluaciones
 
 ### 3. Configuración
+
 - Información de la aplicación
 - Guías de uso
 - Gestión de datos
@@ -137,6 +144,7 @@ src/
 ## 📊 Formato de Datos
 
 ### CSV de Estudiantes
+
 ```csv
 nombre,apellido,curso,pg,pi
 Juan,Pérez,Matemáticas,8.5,7.2
@@ -144,6 +152,7 @@ María,González,Historia,9.0,8.8
 ```
 
 ### Estructura de Rúbricas
+
 ```typescript
 interface RubricaDefinicion {
   id: string;
@@ -175,6 +184,7 @@ export default {
 ## 🤝 Desarrollo
 
 ### Scripts disponibles
+
 ```bash
 npm start          # Servidor de desarrollo
 npm run build      # Construcción de producción
@@ -183,6 +193,7 @@ npm run lint       # Linter de código
 ```
 
 ### Para contribuir
+
 1. Fork del repositorio
 2. Crear rama de feature: `git checkout -b feature/nueva-funcionalidad`
 3. Commit de cambios: `git commit -am 'Añadir nueva funcionalidad'`
@@ -196,6 +207,7 @@ Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](L
 ## 🎉 Estado del Proyecto
 
 ✅ **COMPLETADO** - Proyecto Ionic multiplataforma funcional
+
 - ✅ Configuración inicial y PWA
 - ✅ Modelos y servicios
 - ✅ Interfaz de usuario completa

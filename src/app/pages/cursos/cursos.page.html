@@ -195,17 +195,23 @@
                         </ion-button>
                       </div>
                       <div class="rubrica-content-full">
-                        <app-evaluacion-rubrica [rubrica]="rubricaActual"
+                        <app-evaluacion-rubrica
+                          [rubrica]="rubricaActual"
                           [estudianteId]="estudianteSeleccionado || 'grupal'"
                           [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
                           [evaluacionExistente]="evaluacionActual"
-                          [grupoId]="getGrupoIdActual()"
+                          [grupoId]="filtroGrupo"
                           [entregaActual]="entregaEvaluando || ''"
                           (puntuacionChange)="puntosRubricaTotales = $event"
                           (calificacionesChange)="onCalificacionesChange($event)"
                           (evaluacionGuardada)="onEvaluacionGuardada($event)">
                         </app-evaluacion-rubrica>
                       </div>
+                    </div>
+                    } @else if (mostrarRubrica && rubricaActual) {
+                    <!-- Mostrar loading mientras se actualiza -->
+                    <div class="rubrica-container-full loading">
+                      <p>Cargando evaluación...</p>
                     </div>
                     } @else {
                     <div class="rubrica-placeholder">
