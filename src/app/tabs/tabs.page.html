@@ -16,31 +16,31 @@
     <ion-list lines="none" class="sidebar-nav-list">
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="home-outline"></ion-icon>
+          <ion-icon slot="start" name="home"></ion-icon>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          <ion-icon slot="start" name="library"></ion-icon>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="list-outline"></ion-icon>
+          <ion-icon slot="start" name="clipboard"></ion-icon>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="analytics-outline"></ion-icon>
+          <ion-icon slot="start" name="ribbon"></ion-icon>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+          <ion-icon slot="start" name="settings"></ion-icon>
         </ion-item>
       </ion-menu-toggle>
     </ion-list>
@@ -75,23 +75,23 @@
   <ion-card-content class="desktop-sidebar-content">
     <ion-list lines="none" class="desktop-nav-list">
       <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
-        <ion-icon slot="start" name="home-outline"></ion-icon>
+        <ion-icon slot="start" name="home"></ion-icon>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
-        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        <ion-icon slot="start" name="library"></ion-icon>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
-        <ion-icon slot="start" name="list-outline"></ion-icon>
+        <ion-icon slot="start" name="clipboard"></ion-icon>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
-        <ion-icon slot="start" name="analytics-outline"></ion-icon>
+        <ion-icon slot="start" name="ribbon"></ion-icon>
       </ion-item>
 
       <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
-        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-icon slot="start" name="settings"></ion-icon>
       </ion-item>
     </ion-list>
   </ion-card-content>
@@ -131,7 +131,7 @@
 <!-- Panel de Seguimiento - posición fija a la derecha -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">
         <ion-card-header class="panel-seguimiento-header">
-          <ion-card-title>📋 Seguimiento</ion-card-title>
+          <ion-card-title><ion-icon name="book"></ion-icon> Seguimiento</ion-card-title>
         </ion-card-header>
         <ion-card-content class="panel-seguimiento-content">
 
@@ -161,7 +161,7 @@
           </div>
           } @else if (searchTerm && searchResults.length === 0) {
           <div class="seguimiento-placeholder">
-            <ion-icon name="search-outline" size="large" color="medium"></ion-icon>
+            <ion-icon name="search" size="large" color="medium"></ion-icon>
             <h4>Sin resultados</h4>
             <p>No se encontraron estudiantes con "{{searchTerm}}"</p>
           </div>
@@ -170,7 +170,7 @@
           <!-- Mensaje cuando no hay curso activo -->
           @if (!mostrarGrupos && !searchTerm) {
           <div class="seguimiento-placeholder">
-            <ion-icon name="school-outline" size="large" color="medium"></ion-icon>
+            <ion-icon name="school" size="large" color="medium"></ion-icon>
             <h4>Sin curso activo</h4>
             <p>Seleccione un curso en la pestaña <strong>"Cursos"</strong> para ver el seguimiento de grupos.</p>
           </div>
@@ -181,56 +181,59 @@
           <div class="seguimiento-section grupos-section-compact">
             <div class="grupos-header">
               <ion-label class="section-title">GRUPOS</ion-label>
-              @if (selectedGrupo > 0) {
+              @if (grupoVisualizado > 0 && selectedGrupo !== grupoVisualizado) {
+                <!-- Badge especial cuando se visualiza un grupo diferente al seleccionado -->
+                <ion-badge color="warning" class="grupo-seleccionado-badge grupo-visualizado-badge">
+                  <ion-icon name="eye"></ion-icon>
+                  Viendo G{{ grupoVisualizado }}
+                </ion-badge>
+              } @else if (grupoVisualizado > 0) {
                 <ion-badge color="primary" class="grupo-seleccionado-badge">
-                  <ion-icon name="people-outline"></ion-icon>
-                  Grupo {{ selectedGrupo }}
+                  <ion-icon name="people"></ion-icon>
+                  Grupo {{ grupoVisualizado }}
                 </ion-badge>
               }
             </div>
             <div class="grupos-grid">
-              <ion-button
-                [fill]="selectedGrupo === 0 ? 'solid' : 'outline'"
-                [color]="selectedGrupo === 0 ? 'danger' : 'medium'"
+              <button
+                type="button"
                 class="grupo-btn grupo-btn-dashboard"
-                [class.active]="selectedGrupo === 0"
+                [class.activo]="selectedGrupo === 0"
                 (click)="selectGrupo('todos')"
-                title="Ver todos los grupos"
-                size="small">
-                <ion-icon name="apps-outline" slot="icon-only"></ion-icon>
-              </ion-button>
+                title="Ver todos los grupos">
+                <ion-icon name="grid"></ion-icon>
+              </button>
               @for (grupo of grupos; track grupo; let i = $index) {
-              <ion-button
-                [fill]="selectedGrupo === parseInt(grupo) ? 'solid' : 'outline'"
-                [color]="selectedGrupo === parseInt(grupo) ? 'primary' : 'medium'"
+              <button
+                type="button"
                 class="grupo-btn"
-                [class.active]="selectedGrupo === parseInt(grupo)"
-                (click)="selectGrupo(grupo)"
-                size="small">
+                [class.activo]="selectedGrupo === parseInt(grupo)"
+                (click)="selectGrupo(grupo)">
                 {{ grupo }}
-              </ion-button>
+              </button>
               }
             </div>
           </div>
           }
 
-          <!-- Sección de Rúbricas - Solo visible cuando hay grupo seleccionado -->
-          @if (selectedGrupo > 0) {
-          <div class="seguimiento-section">
-            <ion-label class="section-title">EVALUAR CON RÚBRICA</ion-label>
-
-            <!-- Toggle PG/PI -->
-            <ion-segment [(ngModel)]="tipoRubricaSeleccionado" mode="md" class="rubrica-toggle">
-              <ion-segment-button value="PG">
-                <ion-label>PG</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="PI">
-                <ion-label>PI</ion-label>
-              </ion-segment-button>
-            </ion-segment>
+          <!-- Sección de Puntos/Rúbricas - Visible cuando hay grupo visualizado -->
+          @if (grupoVisualizado > 0) {
+          <div class="seguimiento-section puntos-section">
+            <div class="puntos-header">
+              <ion-label class="section-title">PUNTOS</ion-label>
+              <!-- Toggle compacto Grupal/Individual -->
+              <ion-segment [(ngModel)]="tipoRubricaSeleccionado" mode="ios" class="puntos-toggle-compact">
+                <ion-segment-button value="PG">
+                  <ion-label>Grupal</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="PI">
+                  <ion-label>Individual</ion-label>
+                </ion-segment-button>
+              </ion-segment>
+            </div>
 
             <!-- Botones de Entregas -->
-            <div class="rubricas-grid-horizontal ion-margin-top">
+            <div class="rubricas-grid-horizontal">
               <ion-button size="small" fill="outline" color="medium"
                 (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)">
                 E1
@@ -244,19 +247,22 @@
                 EF
               </ion-button>
             </div>
+          </div>
+          }
 
-            <!-- Tabla de integrantes con calificaciones -->
-            @if (integrantesGrupoActual.length > 0) {
+          <!-- Tabla de integrantes - Visible cuando hay grupo visualizado -->
+          @if (grupoVisualizado > 0 && integrantesGrupoActual.length > 0) {
+          <div class="seguimiento-section integrantes-section">
             <div class="integrantes-table-container">
-              <table class="integrantes-calificaciones-table">
+              <table class="integrantes-calificaciones-table responsive-table">
                 <thead>
                   <tr>
-                    <th class="col-nombre">Estudiante</th>
+                    <th class="col-nombre">ESTUDIANTE</th>
                     <th class="col-entrega">E1</th>
                     <th class="col-entrega">E2</th>
                     <th class="col-entrega">EF</th>
                     <th class="col-total">
-                      <ion-icon name="trophy-outline"></ion-icon>
+                      <ion-icon name="trophy"></ion-icon>
                     </th>
                   </tr>
                 </thead>
@@ -264,7 +270,7 @@
                   @for (integrante of integrantesGrupoActual; track integrante.correo) {
                   <tr class="integrante-row">
                     <td class="col-nombre">
-                      <span class="nombre-estudiante">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
+                      <span class="nombre-estudiante" [title]="integrante.apellidos + ', ' + integrante.nombres">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
                     </td>
                     <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'E1', $event)">
                       @if (estaEditandoCalificacion(integrante, 'E1')) {
@@ -339,7 +345,6 @@
                 </tbody>
               </table>
             </div>
-            }
           </div>
           }
 
@@ -348,7 +353,7 @@
           <div class="seguimiento-section comentarios-section-wrapper">
             <div class="comentarios-section" [class.comentarios-fijados]="comentariosFijados">
               <ion-item class="comentarios-header" button (click)="toggleComentarios()" lines="none">
-                <ion-icon name="chatbox-outline" slot="start"></ion-icon>
+                <ion-icon name="chatbubble" slot="start"></ion-icon>
                 <ion-label class="comentarios-label">Comentarios</ion-label>
                 <div class="comentarios-controls" slot="end">
                   <ion-button fill="clear" size="small" (click)="toggleFijarComentarios(); $event.stopPropagation()"
@@ -426,7 +431,7 @@
                 <h4>Calificación Individual</h4>
                 @if (integranteSeleccionado) {
                 <p class="integrante-info">
-                  <ion-icon name="person-outline"></ion-icon>
+                  <ion-icon name="person"></ion-icon>
                   {{ integranteSeleccionado.nombres }} {{ integranteSeleccionado.apellidos }}
                 </p>
                 }

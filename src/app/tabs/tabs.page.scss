@@ -2699,11 +2699,16 @@ ion-tab-button[tab="inicio"].circular-tab {
     ion-card-title {
       color: #ffffff;
       margin: 0;
-      font-size: 0.66rem;
+      font-size: 0.72rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 4.8px;
+      gap: 6px;
+
+      ion-icon {
+        font-size: 1rem;
+        color: #ffffff;
+      }
     }
   }
 
@@ -2834,6 +2839,20 @@ ion-tab-button[tab="inicio"].circular-tab {
         font-size: 0.75rem;
       }
     }
+
+    // Badge especial para cuando se visualiza un grupo diferente al seleccionado
+    .grupo-visualizado-badge {
+      animation: blink-soft 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink-soft {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
   }
 
   @keyframes pulseIn {
@@ -2850,130 +2869,116 @@ ion-tab-button[tab="inicio"].circular-tab {
     }
   }
 
-  // Grid de grupos con Ionic Buttons - Diseño moderno Ionic
+  // Grid de grupos con Ionic Buttons - Usando variables CSS nativas de Ionic
   .grupos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(31.2px, 1fr));
     gap: 6px;
 
-    // Ionic Button como grupo-btn - Usando variables CSS nativas de Ionic
-    ion-button.grupo-btn {
-      // Dimensiones compactas para grid
-      --padding-start: 4px;
-      --padding-end: 4px;
-      --padding-top: 4px;
-      --padding-bottom: 4px;
+    // Botón nativo grupo-btn - Estandarizado con _seguimiento.scss
+    .grupo-btn {
+      // Reset de botón nativo
+      border: none;
+      outline: none;
+      cursor: pointer;
+
+      // Centrado del contenido (números e iconos)
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      // Dimensiones compactas
+      padding: 6px 7.2px;
       margin: 0;
+      min-height: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 6px;
 
-      // Forma redondeada Ionic
-      --border-radius: 8px;
-      --border-width: 2px;
+      // Colores base
+      background: transparent;
+      color: var(--azul-oscuro);
 
-      // Tamaño de fuente
-      font-size: 0.7rem;
+      // Tipografía
+      font-family: inherit;
+      font-size: 0.72rem;
       font-weight: 600;
-      letter-spacing: 0.2px;
-      min-height: 32px;
-      height: 32px;
-      min-width: 32px;
+      letter-spacing: 0.3px;
+      line-height: 1;
 
       // Transiciones suaves
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
 
-      // Efecto ripple Ionic
-      --ripple-color: rgba(var(--ion-color-primary-rgb), 0.3);
-
-      // Estado hover
-      &:hover:not(.active) {
-        transform: translateY(-1px);
-        --box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+      // Estados hover/active
+      &:hover {
+        background: rgba(15, 56, 90, 0.08);
       }
 
-      // Estado activo (seleccionado) - Destacado
-      &.active {
-        --border-width: 0;
-        --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
-        font-weight: 700;
-        transform: scale(1.08);
-        z-index: 2;
-        position: relative;
+      &:active {
+        background: rgba(15, 56, 90, 0.12);
+        transform: scale(0.98);
+      }
 
-        // Indicador visual de selección
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 6px;
-          height: 6px;
-          background: var(--ion-color-primary);
-          border-radius: 50%;
-          animation: dotPulse 1.5s infinite ease-in-out;
+      // Estado activo (seleccionado) - Azul oscuro sólido
+      &.activo {
+        background: var(--azul-oscuro);
+        color: #ffffff;
+        font-weight: 700;
+        transform: scale(1.03);
+        box-shadow: 0 2px 8px rgba(15, 56, 90, 0.25);
+
+        &:hover {
+          background: #0d2e47;
         }
       }
 
-      // Variante dashboard con color danger/magenta
+      // Variante dashboard con color magenta
       &.grupo-btn-dashboard {
-        --ripple-color: rgba(var(--ion-color-danger-rgb), 0.3);
+        color: var(--magenta, #ec0677);
 
         ion-icon {
-          font-size: 1rem;
+          font-size: 0.78rem;
           transition: transform 0.25s ease;
         }
 
-        &:hover:not(.active) ion-icon {
-          transform: rotate(90deg);
-        }
-
-        &.active {
-          --box-shadow: 0 4px 12px rgba(var(--ion-color-danger-rgb), 0.4);
-
-          &::after {
-            background: var(--ion-color-danger);
-          }
+        &:hover {
+          background: rgba(236, 6, 119, 0.08);
 
           ion-icon {
-            animation: iconPulse 1s infinite ease-in-out;
+            transform: rotate(90deg) scale(1.1);
+          }
+        }
+
+        &.activo {
+          background: var(--magenta);
+          color: #ffffff;
+
+          &:hover {
+            background: #c7055f;
           }
         }
       }
-    }
-  }
-
-  @keyframes dotPulse {
-    0%, 100% {
-      opacity: 1;
-      transform: translateX(-50%) scale(1);
-    }
-    50% {
-      opacity: 0.6;
-      transform: translateX(-50%) scale(1.3);
-    }
-  }
-
-  @keyframes iconPulse {
-    0%, 100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
     }
   }
 
   // Tabla de integrantes con calificaciones - Estilo Ionic List
   .integrantes-table-container {
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 0;
     border-top: 1px solid rgba(31, 178, 222, 0.15);
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 280px;
+    max-height: 260px;
 
+    // Tabla responsive con texto reducido 20%
     .integrantes-calificaciones-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.72rem;
+      font-size: 0.58rem; // Reducido 20% de 0.72rem
+
+      &.responsive-table {
+        table-layout: fixed;
+      }
 
       thead {
         tr {
@@ -2983,30 +2988,31 @@ ion-tab-button[tab="inicio"].circular-tab {
           z-index: 1;
 
           th {
-            padding: 10px 6px;
+            padding: 8px 4px;
             text-align: center;
             font-weight: 600;
             color: #ffffff;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.65rem;
+            letter-spacing: 0.3px;
+            font-size: 0.52rem; // Reducido 20% de 0.65rem
 
             &.col-nombre {
               text-align: left;
-              padding-left: 12px;
+              padding-left: 8px;
+              width: 45%;
             }
 
             &.col-entrega {
-              width: 42px;
-              min-width: 42px;
+              width: 32px;
+              min-width: 32px;
             }
 
             &.col-total {
-              width: 48px;
-              min-width: 48px;
+              width: 36px;
+              min-width: 36px;
 
               ion-icon {
-                font-size: 0.85rem;
+                font-size: 0.68rem; // Reducido 20%
                 color: var(--amarillo);
               }
             }
@@ -3029,13 +3035,13 @@ ion-tab-button[tab="inicio"].circular-tab {
           }
 
           td {
-            padding: 10px 6px;
+            padding: 6px 4px;
             text-align: center;
             vertical-align: middle;
 
             &.col-nombre {
               text-align: left;
-              padding-left: 12px;
+              padding-left: 8px;
 
               .nombre-estudiante {
                 display: block;
@@ -3044,9 +3050,9 @@ ion-tab-button[tab="inicio"].circular-tab {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 140px;
-                line-height: 1.4;
-                font-size: 0.75rem;
+                max-width: 110px;
+                line-height: 1.3;
+                font-size: 0.60rem; // Reducido 20% de 0.75rem
               }
             }
 
@@ -3066,32 +3072,30 @@ ion-tab-button[tab="inicio"].circular-tab {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                min-width: 32px;
-                height: 26px;
-                padding: 4px 8px;
-                border-radius: 6px;
+                min-width: 26px;
+                height: 22px;
+                padding: 2px 5px;
+                border-radius: 5px;
                 font-weight: 700;
-                font-size: 0.7rem;
+                font-size: 0.56rem;
+                background-color: transparent;
+                color: var(--azul-oscuro, #0f385a);
+                border: 1px solid var(--azul-oscuro, #0f385a);
 
-                // Estilo por defecto (sin calificación) - Magenta/Rosa como en la imagen
+                // Estilo vacío
                 &.empty {
-                  background-color: #ec0677;
-                  color: #ffffff;
+                  background-color: transparent;
+                  color: var(--azul-oscuro, #0f385a);
+                  border: 1px solid rgba(15, 56, 90, 0.3);
                 }
 
-                &.success {
-                  background-color: #28a745;
-                  color: #ffffff;
-                }
-
-                &.warning {
-                  background-color: #ffc107;
-                  color: #1a3a50;
-                }
-
+                // Todos los estados con mismo estilo azul oscuro
+                &.success,
+                &.warning,
                 &.danger {
-                  background-color: #dc3545;
-                  color: #ffffff;
+                  background-color: transparent;
+                  color: var(--azul-oscuro, #0f385a);
+                  border: 1px solid var(--azul-oscuro, #0f385a);
                 }
 
                 // Indicador visual de calificación desde Canvas
@@ -4196,18 +4200,63 @@ ion-tab-button[tab="inicio"].circular-tab {
   }
 }
 
+// ========================================
+// SECCIÓN DE PUNTOS (antes EVALUAR CON RÚBRICA)
+// ========================================
+.puntos-section {
+  .puntos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  // Toggle compacto Grupal/Individual
+  .puntos-toggle-compact {
+    --background: rgba(15, 56, 90, 0.1);
+    height: 24px;
+    min-width: 140px;
+    border-radius: 12px;
+
+    ion-segment-button {
+      --background-checked: var(--azul-claro);
+      --color: var(--azul-oscuro);
+      --color-checked: white;
+      --indicator-color: transparent;
+      --padding-start: 6px;
+      --padding-end: 6px;
+      min-width: 0;
+      min-height: 22px;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: none;
+      border-radius: 10px;
+      margin: 1px;
+    }
+  }
+}
+
+// Sección de integrantes con responsive
+.integrantes-section {
+  padding: 0;
+}
+
 .rubricas-grid-horizontal {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  margin-top: 6px;
 
   ion-button {
     flex: 1;
     min-width: 0;
     margin: 0;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     --padding-start: 4px;
     --padding-end: 4px;
+    height: 28px;
 
     ion-icon {
       font-size: 0.85rem;

@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true">
   <!-- Mensaje de orientación para móviles -->
   <div class="orientation-warning">
-    <ion-icon name="phone-portrait-outline"></ion-icon>
+    <ion-icon name="phone-portrait"></ion-icon>
     <p>Para una mejor visualización de las rúbricas, gira tu dispositivo a modo horizontal (landscape)</p>
   </div>
 
@@ -15,6 +15,7 @@
               <!-- Sección izquierda: Título -->
               <ion-col size="12" sizeMd="" class="ion-align-self-start">
                 <ion-card-title class="title-no-margin">
+                  <ion-icon name="clipboard"></ion-icon>
                   Rúbricas
                 </ion-card-title>
               </ion-col>
@@ -27,9 +28,9 @@
                     <input #fileInput type="file" accept=".txt,text/plain" aria-label="Importar Rúbrica"
                       (change)="onRubricaFileSelected($event)" class="display-none">
                     <div class="import-top">
-                      <ion-icon name="document-text-outline"></ion-icon>
+                      <ion-icon name="document-text"></ion-icon>
                       <span>Rúbrica</span>
-                      <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
+                      <ion-icon name="cloud-upload" class="upload-icon"></ion-icon>
                     </div>
                     <div class="import-bottom">
                       @if (rubricaFileName) {
@@ -50,17 +51,17 @@
                 <div class="action-bar">
                   @if (!modoEdicion) {
                   <ion-button class="action-btn-square" (click)="nuevaRubrica()">
-                    <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                    <ion-icon slot="start" name="add-circle"></ion-icon>
                     Crear
                   </ion-button>
                   } @else {
                   <ion-button class="action-btn-square" color="medium" (click)="cancelarEdicion()">
-                    <ion-icon slot="start" name="close-outline"></ion-icon>
+                    <ion-icon slot="start" name="close"></ion-icon>
                     Cancelar
                   </ion-button>
                   @if (rubricaSeleccionada) {
                   <ion-button class="action-btn-square" color="success" (click)="guardarRubrica(rubricaSeleccionada)">
-                    <ion-icon slot="start" name="save-outline"></ion-icon>
+                    <ion-icon slot="start" name="save"></ion-icon>
                     Guardar
                   </ion-button>
                   }
@@ -93,7 +94,7 @@
                       </div>
                       <div class="rubrica-meta-row">
                         <p class="rubrica-fecha">
-                          <ion-icon name="calendar-outline" size="small"></ion-icon>
+                          <ion-icon name="calendar" size="small"></ion-icon>
                           {{ rubrica.fechaCreacion | date: 'dd/MM/yyyy' }}
                         </p>
                         <p class="rubrica-curso">{{ obtenerNombreCursoAsociado(rubrica) }}</p>
@@ -110,10 +111,10 @@
 
                 <ion-item-options side="end">
                   <ion-item-option color="warning" (click)="seleccionarRubrica(rubrica); editarRubricaSeleccionada()">
-                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                    <ion-icon slot="icon-only" name="pencil"></ion-icon>
                   </ion-item-option>
                   <ion-item-option color="danger" (click)="eliminarRubrica(rubrica, $event)">
-                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
                   </ion-item-option>
                 </ion-item-options>
               </ion-item-sliding>
@@ -130,7 +131,7 @@
       <ion-card class="cuadrante-card detalle-rubrica-card">
         <ion-card-header>
           <ion-card-title>
-            <ion-icon name="information-circle-outline"></ion-icon>
+            <ion-icon name="information-circle"></ion-icon>
             {{ rubricaSeleccionada.nombre }}
           </ion-card-title>
         </ion-card-header>
@@ -203,9 +204,9 @@
 
             @if (cursosDisponibles.length === 0) {
             <div class="no-cursos-message">
-              <ion-icon name="school-outline" class="no-cursos-icon"></ion-icon>
+              <ion-icon name="school" class="no-cursos-icon"></ion-icon>
               <p class="no-cursos">No hay cursos disponibles.</p>
-              <p class="no-cursos-hint">Vaya a la opción de <ion-icon name="document-text-outline"></ion-icon>
+              <p class="no-cursos-hint">Vaya a la opción de <ion-icon name="library"></ion-icon>
                 <strong>Cursos</strong> para crear un nuevo curso.
               </p>
             </div>
@@ -306,7 +307,7 @@
       <ion-card class="cuadrante-card detalle-rubrica-card">
         <ion-card-header>
           <ion-card-title>
-            <ion-icon name="create-outline"></ion-icon>
+            <ion-icon name="pencil"></ion-icon>
             Editando: {{ rubricaSeleccionada.nombre }}
           </ion-card-title>
         </ion-card-header>
@@ -336,11 +337,11 @@
 
             <div class="info-stats">
               <div class="stat-item">
-                <ion-icon name="list-outline"></ion-icon>
+                <ion-icon name="list"></ion-icon>
                 <span>{{ rubricaSeleccionada.criterios.length }} criterios</span>
               </div>
               <div class="stat-item">
-                <ion-icon name="trophy-outline"></ion-icon>
+                <ion-icon name="trophy"></ion-icon>
                 <span>{{ rubricaSeleccionada.puntuacionTotal }} puntos</span>
               </div>
             </div>
@@ -352,9 +353,9 @@
 
             @if (cursosDisponibles.length === 0) {
             <div class="no-cursos-message">
-              <ion-icon name="school-outline" class="no-cursos-icon"></ion-icon>
+              <ion-icon name="school" class="no-cursos-icon"></ion-icon>
               <p class="no-cursos">No hay cursos disponibles.</p>
-              <p class="no-cursos-hint">Vaya a la opción de <ion-icon name="document-text-outline"></ion-icon>
+              <p class="no-cursos-hint">Vaya a la opción de <ion-icon name="library"></ion-icon>
                 <strong>Cursos</strong> para crear un nuevo curso.
               </p>
             </div>

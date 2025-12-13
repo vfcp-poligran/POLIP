@@ -36,6 +36,25 @@ import { RubricaDefinicion } from '../../models';
 import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/evaluacion-rubrica.component';
 import { addIcons } from 'ionicons';
 import {
+  // Iconos filled
+  phonePortrait,
+  documentText,
+  cloudUpload,
+  closeCircle,
+  addCircle,
+  close,
+  save,
+  calendar,
+  pencil,
+  trash,
+  informationCircle,
+  school,
+  library,
+  checkbox,
+  list,
+  trophy,
+  clipboard,
+  // Iconos outline
   documentTextOutline,
   cloudUploadOutline,
   createOutline,
@@ -55,7 +74,9 @@ import {
   peopleOutline,
   schoolOutline,
   trophyOutline,
-  closeCircle, documentOutline, downloadOutline, phonePortraitOutline
+  documentOutline,
+  downloadOutline,
+  phonePortraitOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -108,12 +129,15 @@ export class RubricasPage implements OnInit, ViewWillEnter {
   // Imports de iconos
   constructor() {
     addIcons({
-      documentTextOutline, cloudUploadOutline, createOutline, saveOutline,
-      closeOutline, addCircleOutline, trashOutline, documentsOutline,
-      eyeOutline, eyeOffOutline, informationCircleOutline, listOutline,
-      calendarOutline, timeOutline, barChartOutline, checkboxOutline,
-      peopleOutline, schoolOutline, trophyOutline, closeCircle,
-      documentOutline, downloadOutline, phonePortraitOutline
+      // Filled icons
+      phonePortrait, documentText, cloudUpload, closeCircle, addCircle, close, save,
+      calendar, pencil, trash, informationCircle, school, library, checkbox, list, trophy, clipboard,
+      // Outline icons
+      addCircleOutline, closeOutline, saveOutline, calendarOutline, createOutline,
+      trashOutline, informationCircleOutline, schoolOutline, documentTextOutline,
+      listOutline, cloudUploadOutline, documentsOutline, eyeOutline, eyeOffOutline,
+      timeOutline, barChartOutline, peopleOutline, trophyOutline, documentOutline,
+      downloadOutline, phonePortraitOutline, checkboxOutline
     });
   }
 

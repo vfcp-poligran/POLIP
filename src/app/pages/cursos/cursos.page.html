@@ -95,13 +95,15 @@
       </ion-card>
 
       <!-- Mensaje si no hay cursos -->
-      <div *ngIf="cursosDisponibles.length === 0" class="empty-state-fullscreen">
+      @if (cursosDisponibles.length === 0) {
+      <div class="empty-state-fullscreen">
         <div class="empty-state-content">
-          <ion-icon name="document-text-outline" size="large" color="medium"></ion-icon>
+          <ion-icon name="document-text" size="large" color="medium"></ion-icon>
           <h3>No hay cursos disponibles.</h3>
           <p>Seleccione (botón <strong>Crear</strong>)</p>
         </div>
       </div>
+      }
 
       <!-- Lista de Estudiantes -->
       @if (cursoActivo && estudiantesActuales.length > 0) {
@@ -110,17 +112,15 @@
         <!-- Panel General -->
         <ion-card class="dashboard-options">
           <ion-card-header class="header-con-toggle">
-            <ion-card-title>
-              Información Curso
-            </ion-card-title>
+            <!-- Ícono de información del panel -->
+            <div class="info-icon-header">
+              <ion-icon name="information-circle" class="header-info-icon"></ion-icon>
+            </div>
             <!-- Toggle para modo de selección de encabezado -->
             @if (filtroGrupo === 'todos') {
-            <div class="modo-vista-toggle">
-              <ion-icon name="eye-outline" [color]="modoMantenerVistaMatriz ? 'primary' : 'medium'"
-                        title="Solo ver integrantes"></ion-icon>
-              <ion-toggle [(ngModel)]="modoMantenerVistaMatriz" mode="ios"></ion-toggle>
-              <ion-icon name="enter-outline" [color]="!modoMantenerVistaMatriz ? 'primary' : 'medium'"
-                        title="Navegar al grupo"></ion-icon>
+            <div class="modo-vista-toggle" (click)="modoMantenerVistaMatriz = !modoMantenerVistaMatriz"
+                 [title]="modoMantenerVistaMatriz ? 'Vista bloqueada - Clic para desbloquear' : 'Vista libre - Clic para bloquear'">
+              <ion-icon [name]="modoMantenerVistaMatriz ? 'lock-closed' : 'lock-open'" class="lock-icon"></ion-icon>
             </div>
             }
           </ion-card-header>
@@ -133,7 +133,9 @@
               <table class="entregas-matrix">
                 <thead>
                   <tr>
-                    <th class="header-entrega">Entrega</th>
+                    <th class="header-entrega">
+                      <ion-icon name="rocket" class="header-icon"></ion-icon>
+                    </th>
                     @for (grupo of gruposDisponibles; track grupo) {
                     <th class="header-grupo header-clickable"
                         (click)="onClickEncabezadoGrupo(grupo)"
@@ -166,69 +168,52 @@
             <ion-card>
               <ion-card-content class="no-padding">
                 @if (obtenerIntegrantesGrupo().length > 0) {
-                <!-- Mensaje indicando ver panel de seguimiento -->
+                <!-- Header del grupo -->
                 <div class="grupo-info-panel">
                   <div class="grupo-header-info">
-                    <ion-icon name="people-outline" color="primary"></ion-icon>
+                    <ion-icon name="people" color="primary"></ion-icon>
                     <span class="grupo-titulo">Grupo {{ filtroGrupo }}</span>
                     <ion-badge color="primary">{{ obtenerIntegrantesGrupo().length }} integrantes</ion-badge>
                   </div>
-                  <p class="grupo-instruccion">
-                    <ion-icon name="arrow-forward-outline"></ion-icon>
-                    Ver calificaciones en el panel <strong>Seguimiento</strong>
-                  </p>
                 </div>
 
-                <!-- Información adicional -->
-                @if (!tieneArchivoCanvas()) {
-                <ion-item lines="none" class="ion-margin-top">
-                  <ion-icon name="information-circle-outline" slot="start" color="warning"></ion-icon>
-                  <ion-label color="warning">
-                    <p class="ion-text-wrap">No hay archivo de calificaciones Canvas cargado.</p>
-                  </ion-label>
-                </ion-item>
-                }
+                <!-- Área para rúbrica y anotaciones -->
+                <div class="area-anotaciones">
+                  @if (mostrarRubrica && rubricaActual) {
+                  <!-- Contenedor de Rúbrica -->
+                  <div class="rubrica-container-compact">
+                    <div class="rubrica-header-compact">
+                      <span class="rubrica-nombre">📋 {{ rubricaActual.nombre }}</span>
+                      @if (puntosRubricaTotales > 0) {
+                      <ion-chip color="success" mode="ios" class="rubrica-points-chip">
+                        <strong>{{ puntosRubricaTotales }} / {{ rubricaActual.puntuacionTotal }} pts</strong>
+                      </ion-chip>
+                      }
+                      <ion-button fill="clear" size="small" (click)="cerrarRubrica()" class="btn-cerrar-rubrica">
+                        <ion-icon name="close-outline"></ion-icon>
+                      </ion-button>
+                    </div>
+                    <div class="rubrica-content-area">
+                      <app-evaluacion-rubrica [rubrica]="rubricaActual"
+                        [estudianteId]="estudianteSeleccionado || 'grupal'"
+                        [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
+                        [evaluacionExistente]="evaluacionActual"
+                        (puntuacionChange)="puntosRubricaTotales = $event"
+                        (evaluacionGuardada)="onEvaluacionGuardada($event)">
+                      </app-evaluacion-rubrica>
+                    </div>
+                  </div>
+                  } @else {
+                  <p class="placeholder-text">Por implementar</p>
+                  }
+                </div>
                 } @else {
                 <ion-item lines="none">
-                  <ion-icon name="alert-circle-outline" slot="start" color="medium"></ion-icon>
+                  <ion-icon name="alert-circle" slot="start" color="medium"></ion-icon>
                   <ion-label color="medium">
                     <p>No hay integrantes en este grupo</p>
                   </ion-label>
                 </ion-item>
-                }
-
-                <!-- Contenedor para Rúbrica - Debajo de la lista de estudiantes -->
-                @if (mostrarRubrica && rubricaActual) {
-                <div class="rubrica-container ion-margin-top">
-                  <ion-card color="light">
-                    <ion-card-header>
-                      <ion-toolbar color="light">
-                        <ion-title class="rubrica-title">
-                          📋 {{ rubricaActual.nombre }}
-                          @if (puntosRubricaTotales > 0) {
-                          <ion-chip color="success" mode="ios" class="ion-margin-start rubrica-points-chip">
-                            <strong>{{ puntosRubricaTotales }} / {{ rubricaActual.puntuacionTotal }} pts</strong>
-                          </ion-chip>
-                          }
-                        </ion-title>
-                        <ion-buttons slot="end">
-                          <ion-button (click)="cerrarRubrica()" color="medium" size="small">
-                            ✖
-                          </ion-button>
-                        </ion-buttons>
-                      </ion-toolbar>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <!-- Componente de Evaluación de Rúbrica -->
-                      <app-evaluacion-rubrica [rubrica]="rubricaActual"
-                        [estudianteId]="estudianteSeleccionado || 'grupal'"
-                        [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
-                        [evaluacionExistente]="evaluacionActual" (puntuacionChange)="puntosRubricaTotales = $event"
-                        (evaluacionGuardada)="onEvaluacionGuardada($event)">
-                      </app-evaluacion-rubrica>
-                    </ion-card-content>
-                  </ion-card>
-                </div>
                 }
               </ion-card-content>
             </ion-card>

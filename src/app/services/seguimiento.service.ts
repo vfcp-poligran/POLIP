@@ -54,9 +54,11 @@ export interface ComentarioGrupo {
 })
 export class SeguimientoService {
   private grupoSeleccionadoSubject = new BehaviorSubject<number>(0); // 0 = todos los grupos
+  private grupoVisualizadoSubject = new BehaviorSubject<number>(0); // Grupo para mostrar integrantes (sin cambiar filtro)
   private seguimientoActualSubject = new BehaviorSubject<SeguimientoGrupo | null>(null);
 
   grupoSeleccionado$ = this.grupoSeleccionadoSubject.asObservable();
+  grupoVisualizado$ = this.grupoVisualizadoSubject.asObservable();
   seguimientoActual$ = this.seguimientoActualSubject.asObservable();
 
   constructor() { }
@@ -68,10 +70,33 @@ export class SeguimientoService {
     }
 
     this.grupoSeleccionadoSubject.next(grupo);
+    // Al cambiar el grupo seleccionado, también actualizamos el visualizado
+    this.grupoVisualizadoSubject.next(grupo);
+  }
+
+  /**
+   * Fuerza la emisión del grupo seleccionado aunque sea el mismo valor.
+   * Útil para refrescar la vista sin cambiar el grupo.
+   */
+  forceSetGrupoSeleccionado(grupo: number): void {
+    this.grupoSeleccionadoSubject.next(grupo);
+    this.grupoVisualizadoSubject.next(grupo);
+  }
+
+  /**
+   * Establece el grupo a visualizar (mostrar integrantes) SIN cambiar el filtro activo.
+   * Útil para previsualizar integrantes de un grupo manteniendo la vista "Todos".
+   */
+  setGrupoVisualizado(grupo: number): void {
+    this.grupoVisualizadoSubject.next(grupo);
   }
 
   getGrupoSeleccionado(): number {
     return this.grupoSeleccionadoSubject.value;
+  }
+
+  getGrupoVisualizado(): number {
+    return this.grupoVisualizadoSubject.value;
   }
 
   setSeguimiento(seguimiento: SeguimientoGrupo | null): void {

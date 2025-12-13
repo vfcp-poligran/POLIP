@@ -54,8 +54,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline
-} from 'ionicons/icons';
+  school, documentsOutline, calendarOutline, library } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 
 @Component({
@@ -112,7 +111,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   codigoCursoEnEdicion = '';
 
   constructor() {
-    addIcons({ peopleOutline, cloudUploadOutline, closeCircle, statsChartOutline, createOutline, save, saveOutline, closeOutline, addCircleOutline, documentsOutline, codeSlash, calendarOutline, checkmarkCircle, eyeOutline, downloadOutline, trashOutline, documentTextOutline, ribbonOutline, school, calendar, schoolOutline, ellipseOutline, documentText, star, checkmarkCircleOutline, documentOutline, listOutline, pricetagOutline, refreshOutline, people, person });
+    addIcons({library,peopleOutline,cloudUploadOutline,closeCircle,statsChartOutline,addCircleOutline,closeOutline,saveOutline,calendarOutline,createOutline,trashOutline,documentTextOutline,ribbonOutline,school,calendar,schoolOutline,save,documentsOutline,codeSlash,checkmarkCircle,eyeOutline,downloadOutline,ellipseOutline,documentText,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person});
   }
 
   private cd = inject(ChangeDetectorRef);

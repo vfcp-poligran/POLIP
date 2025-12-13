@@ -34,7 +34,41 @@ import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
-import { homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, menuOutline, chevronForwardOutline, expandOutline, trophyOutline } from 'ionicons/icons';
+import {
+  // Iconos filled
+  home,
+  library,
+  clipboard,
+  ribbon,
+  settings,
+  search,
+  school,
+  people,
+  grid,
+  trophy,
+  chatbubble,
+  person,
+  book,
+  // Iconos outline
+  homeOutline,
+  settingsOutline,
+  schoolOutline,
+  listOutline,
+  analyticsOutline,
+  informationCircleOutline,
+  copyOutline,
+  chevronDownOutline,
+  chevronUpOutline,
+  pinOutline,
+  personOutline,
+  peopleOutline,
+  searchOutline,
+  closeOutline,
+  menuOutline,
+  chevronForwardOutline,
+  expandOutline,
+  trophyOutline
+} from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
 import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo } from '../services/seguimiento.service';
@@ -99,7 +133,8 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   private resizeHandler: (() => void) | null = null;
   private subscriptions: Subscription[] = [];
   globalSearch: string = '';
-  selectedGrupo: number = 0;
+  selectedGrupo: number = 0; // Grupo seleccionado en UI (para botones)
+  grupoVisualizado: number = 0; // Grupo para mostrar integrantes (puede ser diferente)
   searchExpanded: boolean = false;
   isDesktop: boolean = window.innerWidth >= 992;
   grupos: string[] = [];
@@ -132,7 +167,14 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   searchTerm: string = '';
 
   constructor() {
-    addIcons({ homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline });
+    addIcons({
+      // Filled icons
+      home, library, clipboard, ribbon, settings, search, school, people, grid, trophy, chatbubble, person, book,
+      // Outline icons
+      homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline,
+      informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline,
+      pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline
+    });
 
     // Suscribirse al seguimiento actual con cleanup
     this.subscriptions.push(
@@ -143,11 +185,20 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       })
     );
 
-    // Suscribirse al grupo seleccionado con cleanup
+    // Suscribirse al grupo seleccionado (para UI de botones)
     this.subscriptions.push(
       this.seguimientoService.grupoSeleccionado$.subscribe((grupo: number) => {
         this.selectedGrupo = grupo;
-        // Actualizar integrantes cuando cambia el grupo seleccionado
+        // Forzar detección de cambios para actualizar la UI de botones
+        this.cdr.detectChanges();
+      })
+    );
+
+    // Suscribirse al grupo visualizado (para mostrar integrantes)
+    this.subscriptions.push(
+      this.seguimientoService.grupoVisualizado$.subscribe((grupo: number) => {
+        this.grupoVisualizado = grupo;
+        // Actualizar integrantes cuando cambia el grupo visualizado
         this.actualizarIntegrantesGrupo();
         // Forzar detección de cambios para actualizar la UI
         this.cdr.detectChanges();
@@ -354,10 +405,12 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }
 
   /**
-   * Obtiene los integrantes del grupo actualmente seleccionado
+   * Obtiene los integrantes del grupo actualmente visualizado.
+   * Usa grupoVisualizado (no selectedGrupo) para permitir previsualización
+   * de integrantes sin cambiar la selección de filtro en la UI.
    */
   private actualizarIntegrantesGrupo(): void {
-    if (!this.cursoActivo || this.selectedGrupo === 0) {
+    if (!this.cursoActivo || this.grupoVisualizado === 0) {
       this.integrantesGrupoActual = [];
       this.cdr.detectChanges();
       return;
@@ -370,9 +423,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       return;
     }
 
-    // Filtrar por grupo seleccionado
+    // Filtrar por grupo visualizado (no selectedGrupo)
     // El grupo del estudiante puede ser "1", "G1", "Grupo 1", etc.
-    const grupoNum = this.selectedGrupo;
+    const grupoNum = this.grupoVisualizado;
     const grupoNumStr = String(grupoNum);
 
     this.integrantesGrupoActual = estudiantes.filter(e => {

@@ -196,37 +196,58 @@ ion-content {
 ion-card {
   background-color: #ffffff;
   border: 1px solid rgba(15, 56, 90, 0.1);
-  box-shadow: 0 4px 12px rgba(15, 56, 90, 0.08);
+  box-shadow: 0 2px 6px rgba(15, 56, 90, 0.06);
+  margin: 0;
 
   ion-card-header {
     background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
     color: #ffffff;
+    padding: 2px 8px !important;
 
     ion-card-title {
       color: #ffffff;
       font-weight: 600;
+      font-size: 0.85rem;
     }
   }
 
   ion-card-content {
     background-color: #ffffff;
     color: #000000;
+    padding: 2px !important;
   }
 
-  // Borde para el selector de curso
+  // Selector de curso (sin borde)
   &:has(.course-segment) {
-    border: 2px solid var(--azul-oscuro);
-    border-radius: 8px;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 2px;
+
+    ion-card-content {
+      padding: 0 !important;
+      --padding-start: 0;
+      --padding-end: 0;
+      --padding-top: 0;
+      --padding-bottom: 0;
+    }
   }
 
   // Borde para panel general
   &.dashboard-options {
     border: 2px solid var(--azul-claro);
-    border-radius: 8px;
+    border-radius: 6px;
+    margin: 0;
+
+    ion-card-header {
+      padding: 2px 6px !important;
+    }
 
     ion-card-content {
+      padding: 2px !important;
       --padding-start: 2px;
       --padding-end: 2px;
+      --padding-top: 2px;
+      --padding-bottom: 2px;
     }
   }
 }
@@ -234,10 +255,10 @@ ion-card {
 /* Sección de estudiantes con borde naranja */
 .estudiantes-section {
   border: 2px solid var(--naranja);
-  border-radius: 8px;
-  padding: 2px;
+  border-radius: 6px;
+  padding: 0;
   background: rgba(255, 255, 255, 0.5);
-  margin-top: 8px;
+  margin-top: 2px;
 }
 
 /* Layout principal - Sistema simplificado */
@@ -364,16 +385,16 @@ ion-card {
 
 /* Cards responsive - no interfieren con el layout */
 .estudiantes-container ion-card {
-  margin: 8px 0;
-  /* Solo margen vertical */
+  margin: 2px 0;
+  /* Solo margen vertical - compacto */
   width: 100%;
   box-sizing: border-box;
 }
 
 /* Títulos de sección con paleta SRS */
 .section-header {
-  margin: 9.6px 0 7.2px 0;
-  padding: 0 4.8px;
+  margin: 2px 0;
+  padding: 0 2px;
 
   .section-title {
     font-size: 0.84rem;
@@ -381,7 +402,7 @@ ion-card {
     color: #0F385A;
     /* Azul oscuro SRS */
     margin: 0;
-    padding: 7.2px 9.6px;
+    padding: 4px 6px;
     background: linear-gradient(135deg, rgba(15, 56, 90, 0.08) 0%, rgba(15, 56, 90, 0.03) 100%);
     border-radius: 7.2px;
     border-left: 3.6px solid #0F385A;
@@ -955,48 +976,99 @@ ion-chip {
 
 /* Panel de información del grupo seleccionado */
 .grupo-info-panel {
-  padding: 16px;
+  padding: 8px 12px;
   text-align: center;
+  border-bottom: 1px solid rgba(15, 56, 90, 0.1);
 
   .grupo-header-info {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 8px;
 
     ion-icon {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
 
     .grupo-titulo {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: var(--azul-oscuro);
     }
 
     ion-badge {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+    }
+  }
+}
+
+/* Área para anotaciones y comentarios */
+.area-anotaciones {
+  padding: 8px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 56, 90, 0.02);
+  border-radius: 4px;
+  margin: 4px;
+
+  .placeholder-text {
+    color: var(--azul-oscuro);
+    opacity: 0.5;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: auto;
+    text-align: center;
+  }
+}
+
+/* Contenedor compacto de rúbrica */
+.rubrica-container-compact {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .rubrica-header-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+    border-radius: 4px 4px 0 0;
+
+    .rubrica-nombre {
+      flex: 1;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .rubrica-points-chip {
+      height: 20px;
+      font-size: 0.65rem;
+    }
+
+    .btn-cerrar-rubrica {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      height: 24px;
+      color: #ffffff;
+
+      ion-icon {
+        font-size: 1rem;
+      }
     }
   }
 
-  .grupo-instruccion {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    color: var(--azul-claro);
-    font-size: 0.85rem;
-    margin: 0;
-
-    ion-icon {
-      font-size: 1rem;
-      animation: pulse-arrow 1.5s ease-in-out infinite;
-    }
-
-    strong {
-      color: var(--azul-oscuro);
-    }
+  .rubrica-content-area {
+    flex: 1;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid rgba(15, 56, 90, 0.1);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    padding: 4px;
   }
 }
 
@@ -3235,50 +3307,70 @@ ion-badge {
   // Header con toggle integrado
   .header-con-toggle {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px !important;
+    justify-content: flex-start;
+    padding: 2px 8px !important;
+    gap: 6px;
+    min-height: 24px;
+
+    // Ícono de información del header
+    .info-icon-header {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      .header-info-icon {
+        font-size: 1rem;
+        color: #ffffff;
+      }
+    }
   }
 
-  // Toggle para modo de vista de encabezado de grupo
+  // Toggle para modo de vista de encabezado de grupo - Solo ícono de candado
   .modo-vista-toggle {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 2px 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 
-    ion-icon {
-      font-size: 0.75rem;
-      transition: color 0.2s ease;
-      cursor: help;
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.1);
     }
 
-    ion-toggle {
-      --track-background: rgba(200, 200, 200, 0.4);
-      --track-background-checked: rgba(31, 178, 222, 0.4);
-      --handle-background: #888;
-      --handle-background-checked: var(--azul-claro);
-      height: 18px;
-      width: 32px;
-      padding: 0;
+    &:active {
+      transform: scale(0.95);
+    }
+
+    // Ícono de candado
+    .lock-icon {
+      font-size: 0.8rem;
+      color: #ffffff;
+      transition: all 0.2s ease;
     }
   }
 
   // Estilos para tabla matricial de entregas
   .entregas-matrix-container {
     overflow-x: auto;
-    margin: 8px 0;
-    padding: 4px;
+    margin: 0;
+    padding: 0;
   }
 
   .entregas-matrix {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.75rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
+    font-size: 0.7rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
     overflow: hidden;
 
     thead {
@@ -3287,22 +3379,27 @@ ion-badge {
 
       .header-entrega,
       .header-grupo {
-        padding: 10px 12px;
+        padding: 4px 6px;
         text-align: center;
         font-weight: 600;
-        font-size: 0.7rem;
-        letter-spacing: 0.3px;
+        font-size: 0.65rem;
+        letter-spacing: 0.2px;
         border-right: 1px solid rgba(255, 255, 255, 0.15);
       }
 
       .header-entrega {
-        text-align: left;
-        padding-left: 16px;
-        min-width: 80px;
+        text-align: center;
+        padding-left: 8px;
+        min-width: 50px;
+
+        .header-icon {
+          color: #ffffff;
+          font-size: 1rem;
+        }
       }
 
       .header-grupo {
-        min-width: 60px;
+        min-width: 40px;
 
         &.header-clickable {
           cursor: pointer;
@@ -3335,23 +3432,23 @@ ion-badge {
 
       .label-entrega {
         text-align: left;
-        padding: 12px 16px;
+        padding: 6px 8px;
         font-weight: 700;
         color: var(--azul-oscuro);
         background-color: #f8f9fa;
         cursor: default;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         border-right: 1px solid #dee2e6;
       }
 
       .cell-estado {
-        padding: 10px 8px;
+        padding: 4px;
         text-align: center;
         border-right: 1px solid #e9ecef;
         transition: all 0.25s ease;
         cursor: pointer;
         position: relative;
-        min-height: 45px;
+        min-height: 28px;
 
         &:last-child {
           border-right: none;
@@ -3370,7 +3467,7 @@ ion-badge {
           .estado-indicator::before {
             content: '●';
             color: #c41e3a;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
           }
         }
@@ -3387,7 +3484,7 @@ ion-badge {
           .estado-indicator::before {
             content: '◐';
             color: #cc8800;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
           }
         }
@@ -3404,7 +3501,7 @@ ion-badge {
           .estado-indicator::before {
             content: '✓';
             color: var(--verde);
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: 700;
           }
         }
@@ -3417,17 +3514,21 @@ ion-badge {
 
     // Responsive
     @media (max-width: 768px) {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
 
       thead {
         .header-entrega,
         .header-grupo {
-          padding: 6px 8px;
-          font-size: 0.6rem;
+          padding: 3px 4px;
+          font-size: 0.55rem;
         }
 
         .header-entrega {
           min-width: 60px;
+
+          .header-icon {
+            font-size: 1rem;
+          }
         }
 
         .header-grupo {

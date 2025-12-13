@@ -8,7 +8,6 @@ import {
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonCardTitle,
   IonButton,
   IonButtons,
   IonIcon,
@@ -25,7 +24,6 @@ import {
   IonItem,
   IonToolbar,
   IonTitle,
-  IonToggle,
   MenuController,
   AlertController,
   ToastController,
@@ -65,7 +63,33 @@ import {
   ellipsisVerticalOutline,
   ellipsisVertical,
   arrowForwardOutline,
-  arrowBackOutline, checkmarkCircleOutline, arrowUndoOutline, arrowRedoOutline, peopleOutline, linkOutline, cloudUploadOutline, eyeOutline, informationCircleOutline, notificationsOutline, checkmarkDoneOutline, timeOutline, cubeOutline, alertCircleOutline, clipboardOutline, documentOutline, trophyOutline, personCircleOutline, listOutline, enterOutline } from 'ionicons/icons';
+  arrowBackOutline,
+  checkmarkCircleOutline,
+  arrowUndoOutline,
+  arrowRedoOutline,
+  peopleOutline,
+  linkOutline,
+  cloudUploadOutline,
+  eyeOutline,
+  informationCircleOutline,
+  notificationsOutline,
+  checkmarkDoneOutline,
+  timeOutline,
+  cubeOutline,
+  alertCircleOutline,
+  clipboardOutline,
+  documentOutline,
+  trophyOutline,
+  personCircleOutline,
+  listOutline,
+  enterOutline,
+  logIn,
+  // Iconos filled nuevos
+  documentText,
+  eye,
+  arrowForward,
+  informationCircle,
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado } from '../../services/seguimiento.service';
 import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
@@ -85,7 +109,6 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonCard,
     IonCardContent,
     IonCardHeader,
-    IonCardTitle,
     IonButton,
     IonButtons,
     IonIcon,
@@ -102,7 +125,6 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonItem,
     IonToolbar,
     IonTitle,
-    IonToggle,
     EvaluacionRubricaComponent
   ]
 })
@@ -311,7 +333,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,ellipsisVertical,closeOutline,checkmarkCircle,documentTextOutline,eyeOutline,enterOutline,informationCircleOutline,alertCircleOutline,listOutline,createOutline,saveOutline,trashOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,clipboardOutline,checkmarkOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,people,person,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,ellipsisVertical,closeOutline,checkmarkCircle,documentText,informationCircle,rocket,people,arrowForward,alertCircle,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,documentTextOutline,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,createOutline,saveOutline,trashOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,clipboardOutline,checkmarkOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -976,17 +998,9 @@ export class InicioPage implements OnInit, OnDestroy {
     // Actualizar seguimiento sin cambiar filtroGrupo (mantiene la matriz)
     this.grupoSeguimientoActivo = grupo;
 
-    // Forzar la actualización del servicio
-    // Si es el mismo grupo, reseteamos primero para que el observable emita
-    const grupoActual = this.seguimientoService.getGrupoSeleccionado();
-    if (grupoActual === grupoNum) {
-      this.seguimientoService.setGrupoSeleccionado(0);
-    }
-
-    // Establecer el grupo con un pequeño delay para asegurar que el reset se procese
-    setTimeout(() => {
-      this.seguimientoService.setGrupoSeleccionado(grupoNum);
-    }, 25);
+    // Usar setGrupoVisualizado para mostrar integrantes SIN cambiar el filtro activo
+    // Esto mantiene "Todos" seleccionado en el panel mientras muestra los integrantes del grupo
+    this.seguimientoService.setGrupoVisualizado(grupoNum);
   }
 
   /**
