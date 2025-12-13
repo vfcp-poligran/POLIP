@@ -21,9 +21,17 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
   @Input() estudianteId: string = '';
   @Input() nombreEstudiante: string = '';
   @Input() evaluacionExistente: Evaluacion | null = null;
+  /** Identificador único del grupo/estudiante actual - fuerza re-inicialización al cambiar */
+  @Input() grupoId: string = '';
+  /** Entrega actual (E1, E2, EF) */
+  @Input() entregaActual: string = '';
   @Output() puntuacionChange = new EventEmitter<number>();
   @Output() calificacionesChange = new EventEmitter<{ [criterio: string]: number }>();
   @Output() evaluacionGuardada = new EventEmitter<any>(); // Nuevo evento para guardar
+
+  // Tracking interno para evitar re-inicializaciones innecesarias
+  private _lastGrupoId: string = '';
+  private _lastEntrega: string = '';
 
 
   calificaciones: { [criterio: string]: number } = {};
@@ -35,9 +43,30 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Si cambia la rúbrica o la evaluación existente, reinicializar
-    if (changes['rubrica'] || changes['evaluacionExistente']) {
-      console.log('🔄 [EvaluacionRubrica] Cambios detectados - Reinicializando...');
+    // Detectar si cambió el grupo/estudiante o la entrega
+    const grupoChanged = changes['grupoId'] &&
+      changes['grupoId'].currentValue !== changes['grupoId'].previousValue;
+    const entregaChanged = changes['entregaActual'] &&
+      changes['entregaActual'].currentValue !== changes['entregaActual'].previousValue;
+    const rubricaChanged = changes['rubrica'] &&
+      changes['rubrica'].currentValue?.id !== changes['rubrica'].previousValue?.id;
+    const evaluacionChanged = changes['evaluacionExistente'];
+
+    // Logging optimizado solo en cambios significativos
+    if (grupoChanged || entregaChanged) {
+      console.log('🔄 [EvaluacionRubrica] Cambio de contexto:', {
+        grupo: this.grupoId,
+        entrega: this.entregaActual,
+        tieneEvaluacion: !!this.evaluacionExistente
+      });
+    }
+
+    // Re-inicializar solo si realmente cambió algo relevante
+    if (grupoChanged || entregaChanged || rubricaChanged || evaluacionChanged) {
+      // Actualizar tracking interno
+      this._lastGrupoId = this.grupoId;
+      this._lastEntrega = this.entregaActual;
+
       this.inicializarCalificaciones();
     }
   }

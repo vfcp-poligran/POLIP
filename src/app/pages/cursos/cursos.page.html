@@ -199,6 +199,8 @@
                           [estudianteId]="estudianteSeleccionado || 'grupal'"
                           [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
                           [evaluacionExistente]="evaluacionActual"
+                          [grupoId]="getGrupoIdActual()"
+                          [entregaActual]="entregaEvaluando || ''"
                           (puntuacionChange)="puntosRubricaTotales = $event"
                           (calificacionesChange)="onCalificacionesChange($event)"
                           (evaluacionGuardada)="onEvaluacionGuardada($event)">

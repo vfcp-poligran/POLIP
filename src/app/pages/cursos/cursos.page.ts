@@ -764,6 +764,10 @@ export class InicioPage implements OnInit, OnDestroy {
       return;
     }
 
+    // 🔄 IMPORTANTE: Limpiar evaluacionActual ANTES de cambiar el grupo
+    // Esto fuerza que el componente hijo detecte el cambio
+    this.evaluacionActual = null;
+
     this.filtroGrupo = nuevoGrupo;
     // ✅ Actualizar también grupoSeguimientoActivo para mantener sincronía
     this.grupoSeguimientoActivo = nuevoGrupo !== 'todos' ? nuevoGrupo : null;
@@ -794,6 +798,9 @@ export class InicioPage implements OnInit, OnDestroy {
     // Actualizar anotaciones del nuevo grupo
     this.actualizarAnotacionesDesdeEstados();
 
+    // Forzar detección de cambios para que el componente hijo detecte el grupoId nuevo
+    this.cdr.detectChanges();
+
     // Si hay una rúbrica activa, cargar el estado del nuevo grupo y actualizar el panel
     if (this.mostrarRubrica && this.tipoEvaluando && nuevoGrupo !== 'todos') {
       console.log('📊 [onFiltroGrupoChange] Actualizando rúbrica para grupo:', nuevoGrupo);
@@ -802,7 +809,8 @@ export class InicioPage implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       });
     } else {
-      // Si no hay rúbrica activa o es "todos", limpiar el panel
+      // Si no hay rúbrica activa o es "todos", limpiar el panel y reiniciar estado
+      this.reiniciarEstadoEvaluacion();
       this.limpiarPanelSeguimiento();
       this.cdr.detectChanges();
     }
@@ -1268,6 +1276,18 @@ export class InicioPage implements OnInit, OnDestroy {
   }
 
   // === MÉTODOS PARA LA RÚBRICA DE EVALUACIÓN ===
+
+  /**
+   * Genera un identificador único para el grupo/estudiante actual.
+   * Este ID cambia cuando se selecciona un grupo o estudiante diferente,
+   * forzando la re-inicialización del componente de rúbrica.
+   */
+  getGrupoIdActual(): string {
+    if (this.tipoEvaluando === 'PI' && this.estudianteSeleccionado) {
+      return `${this.cursoActivo}_${this.filtroGrupo}_${this.estudianteSeleccionado}`;
+    }
+    return `${this.cursoActivo}_${this.filtroGrupo}_${this.grupoSeguimientoActivo || 'none'}`;
+  }
 
   /**
    * Limpia completamente el panel de seguimiento
@@ -2103,9 +2123,27 @@ export class InicioPage implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Reinicia completamente el estado de evaluación cuando no hay evaluación previa
+   * o cuando se cambia a un grupo sin evaluación guardada.
+   */
   private reiniciarEstadoEvaluacion() {
     this.puntosRubricaTotales = 0;
     this.criteriosEvaluados = [];
+    this.nivelesSeleccionados = {};
+    this.comentariosCriterios = {};
+    this.puntosPersonalizados = {};
+    this.criterioActualIndex = 0;
+
+    // Limpiar textos de seguimiento según el tipo
+    if (this.tipoEvaluando === 'PG') {
+      this.textoSeguimientoRubricaGrupal = [];
+    } else {
+      this.textoSeguimientoRubricaIndividual = [];
+    }
+    this.timestampsSeguimiento = [];
+
+    console.log('🧹 [reiniciarEstadoEvaluacion] Estado de evaluación reiniciado');
   }
 
   get nivelSeleccionadoActual(): any {
@@ -3082,11 +3120,13 @@ export class InicioPage implements OnInit, OnDestroy {
     const indexActual = this.gruposDisponibles.indexOf(this.grupoSeguimientoActivo!);
     const grupoAnterior = this.gruposDisponibles[indexActual - 1];
 
+    // 🔄 Limpiar evaluación ANTES de cambiar grupo para forzar re-renderización
+    this.evaluacionActual = null;
+
     this.grupoSeguimientoActivo = grupoAnterior;
     this.filtroGrupo = grupoAnterior;
 
     console.log('⬅️ [retrocederGrupo] filtroGrupo actualizado a:', this.filtroGrupo);
-    console.log('⬅️ [retrocederGrupo] ¿Es todos?:', this.filtroGrupo === 'todos');
 
     // Actualizar el servicio de seguimiento
     const grupoNum = parseInt(grupoAnterior.replace(/\D/g, ''));
@@ -3094,6 +3134,9 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // OPTIMIZACIÓN: Solo cargar comentarios si realmente cambió el grupo
     this.cargarComentariosGrupo();
+
+    // Forzar detección de cambios para actualizar grupoId en el hijo
+    this.cdr.detectChanges();
 
     // Si hay una rúbrica activa, recargarla para el nuevo grupo
     if (this.mostrarRubrica && this.entregaEvaluando && this.tipoEvaluando) {
@@ -3103,6 +3146,7 @@ export class InicioPage implements OnInit, OnDestroy {
       });
     } else {
       // Si no hay rúbrica activa, limpiar el panel
+      this.reiniciarEstadoEvaluacion();
       this.limpiarPanelSeguimiento();
       this.cdr.detectChanges();
     }
@@ -3117,6 +3161,9 @@ export class InicioPage implements OnInit, OnDestroy {
     const indexActual = this.gruposDisponibles.indexOf(this.grupoSeguimientoActivo!);
     const grupoSiguiente = this.gruposDisponibles[indexActual + 1];
 
+    // 🔄 Limpiar evaluación ANTES de cambiar grupo para forzar re-renderización
+    this.evaluacionActual = null;
+
     this.grupoSeguimientoActivo = grupoSiguiente;
     this.filtroGrupo = grupoSiguiente;
 
@@ -3127,6 +3174,9 @@ export class InicioPage implements OnInit, OnDestroy {
     // OPTIMIZACIÓN: Solo cargar comentarios si realmente cambió el grupo
     this.cargarComentariosGrupo();
 
+    // Forzar detección de cambios para actualizar grupoId en el hijo
+    this.cdr.detectChanges();
+
     // Si hay una rúbrica activa, recargarla para el nuevo grupo
     if (this.mostrarRubrica && this.entregaEvaluando && this.tipoEvaluando) {
       this.cargarEvaluacionGuardada().then(() => {
@@ -3135,6 +3185,7 @@ export class InicioPage implements OnInit, OnDestroy {
       });
     } else {
       // Si no hay rúbrica activa, limpiar el panel
+      this.reiniciarEstadoEvaluacion();
       this.limpiarPanelSeguimiento();
       this.cdr.detectChanges();
     }
