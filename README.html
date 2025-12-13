@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Seguimiento de Proyectos v1.4</title>
+    <style>
+        :root {
+            --azul-claro: #1FB2DE;
+            --azul-oscuro: #0F385A;
+            --naranja: #FBAF17;
+            --verde: #A6CE38;
+            --magenta: #EC0677;
+            --cyan: #15BECE;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-claro) 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(15, 56, 90, 0.3);
+        }
+        
+        header h1 {
+            font-family: 'Brandon Grotesque', 'Segoe UI', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: var(--naranja);
+            color: var(--azul-oscuro);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        
+        section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        h2 {
+            font-family: 'Brandon Grotesque', 'Segoe UI', sans-serif;
+            color: var(--azul-oscuro);
+            border-bottom: 3px solid var(--azul-claro);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        h3 {
+            color: var(--azul-oscuro);
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        h4 {
+            color: var(--azul-claro);
+            margin: 15px 0 10px;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        ul li::before {
+            content: "▸";
+            color: var(--azul-claro);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid var(--azul-claro);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .feature-card h4 {
+            margin-top: 0;
+            color: var(--azul-oscuro);
+        }
+        
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-ionic { background: #3880ff; color: white; }
+        .badge-angular { background: #dd0031; color: white; }
+        .badge-typescript { background: #3178c6; color: white; }
+        .badge-capacitor { background: #119eff; color: white; }
+        .badge-pwa { background: #5a0fc8; color: white; }
+        .badge-storage { background: #00d084; color: white; }
+        
+        .platform-status {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .platform {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .platform .icon {
+            font-size: 1.5rem;
+        }
+        
+        .platform .status {
+            color: var(--verde);
+            font-weight: bold;
+        }
+        
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .color-item {
+            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .color-preview {
+            height: 60px;
+        }
+        
+        .color-info {
+            padding: 10px;
+            background: white;
+            font-size: 0.85rem;
+        }
+        
+        .color-info strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: var(--magenta);
+        }
+        
+        pre {
+            background: var(--azul-oscuro);
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        
+        .command {
+            color: var(--cyan);
+        }
+        
+        .comment {
+            color: #6a9955;
+        }
+        
+        .highlight {
+            color: var(--naranja);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-complete {
+            color: var(--verde);
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        footer a {
+            color: var(--azul-claro);
+            text-decoration: none;
+        }
+        
+        .emoji {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+        
+        .tree {
+            font-family: 'Consolas', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .tree .folder { color: #dcdcaa; }
+        .tree .file { color: #9cdcfe; }
+        .tree .comment { color: #6a9955; }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Gestor de Seguimiento de Proyectos</h1>
+            <p>Aplicación Ionic multiplataforma para gestión y evaluación de estudiantes basada en rúbricas</p>
+            <p><strong>Politécnico Grancolombiano</strong></p>
+            <span class="version-badge">📦 Versión 1.4</span>
+        </header>
+
+        <section>
+            <h2><span class="emoji">🆕</span>Novedades v1.4</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎯 Panel de Seguimiento Mejorado</h4>
+                    <p>Comunicación en tiempo real entre componentes de evaluación</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📐 UI de Evaluación Optimizada</h4>
+                    <p>Mejoras en el componente de rúbricas y visualización</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⚡ Rendimiento Mejorado</h4>
+                    <p>Optimización de servicios de datos y estado</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🔧 Navegación por Tabs</h4>
+                    <p>Mejoras en la navegación principal de la aplicación</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2><span class="emoji">🚀</span>Características</h2>
+            <ul>
+                <li><strong>Gestión de Cursos:</strong> Visualización de estudiantes con filtros y cálculos automáticos</li>
+                <li><strong>Sistema de Rúbricas:</strong> Gestión de criterios de evaluación I/A/E</li>
+                <li><strong>Navegación por Tabs:</strong> Interfaz moderna con pestañas independientes</li>
+                <li><strong>Importación/Exportación:</strong> Gestión de datos CSV y JSON</li>
+                <li><strong>Información del Sistema:</strong> Display completo del stack tecnológico</li>
+                <li><strong>Multiplataforma:</strong> Web PWA, Android e iOS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="emoji">🛠️</span>Tecnologías</h2>
+            <div class="tech-badges">
+                <span class="badge badge-ionic">Ionic 8</span>
+                <span class="badge badge-angular">Angular 20</span>
+                <span class="badge badge-typescript">TypeScript</span>
+                <span class="badge badge-storage">SQLite/IndexedDB</span>
+                <span class="badge badge-capacitor">Capacitor</span>
+                <span class="badge badge-pwa">PWA</span>
+            </div>
+            <ul style="margin-top: 20px;">
+                <li><strong>Ionic 8 + Angular 20:</strong> Arquitectura Standalone</li>
+                <li><strong>Ionic Storage:</strong> SQLite en móvil, IndexedDB en web</li>
+                <li><strong>PapaCSV:</strong> Procesamiento de datos CSV</li>
+                <li><strong>Capacitor:</strong> Aplicaciones nativas</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="emoji">📱</span>Plataformas Soportadas</h2>
+            <div class="platform-status">
+                <div class="platform">
+                    <span class="icon">🌐</span>
+                    <div>
+                        <strong>Web PWA</strong>
+                        <div class="status">✅ Activo</div>
+                    </div>
+                </div>
+                <div class="platform">
+                    <span class="icon">🤖</span>
+                    <div>
+                        <strong>Android</strong>
+                        <div class="status">✅ Activo</div>
+                    </div>
+                </div>
+                <div class="platform">
+                    <span class="icon">🍎</span>
+                    <div>
+                        <strong>iOS</strong>
+                        <div class="status">✅ Activo</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2><span class="emoji">🎨</span>Diseño - Paleta SRS</h2>
+            <div class="color-palette">
+                <div class="color-item">
+                    <div class="color-preview" style="background: #1FB2DE;"></div>
+                    <div class="color-info">
+                        <strong>Azul Claro</strong>
+                        <code>#1FB2DE</code>
+                    </div>
+                </div>
+                <div class="color-item">
+                    <div class="color-preview" style="background: #0F385A;"></div>
+                    <div class="color-info">
+                        <strong>Azul Oscuro</strong>
+                        <code>#0F385A</code>
+                    </div>
+                </div>
+                <div class="color-item">
+                    <div class="color-preview" style="background: #FBAF17;"></div>
+                    <div class="color-info">
+                        <strong>Naranja</strong>
+                        <code>#FBAF17</code>
+                    </div>
+                </div>
+                <div class="color-item">
+                    <div class="color-preview" style="background: #A6CE38;"></div>
+                    <div class="color-info">
+                        <strong>Verde</strong>
+                        <code>#A6CE38</code>
+                    </div>
+                </div>
+                <div class="color-item">
+                    <div class="color-preview" style="background: #EC0677;"></div>
+                    <div class="color-info">
+                        <strong>Magenta</strong>
+                        <code>#EC0677</code>
+                    </div>
+                </div>
+                <div class="color-item">
+                    <div class="color-preview" style="background: #15BECE;"></div>
+                    <div class="color-info">
+                        <strong>Cyan</strong>
+                        <code>#15BECE</code>
+                    </div>
+                </div>
+            </div>
+            <h3>Tipografía</h3>
+            <ul>
+                <li><strong>Encabezados:</strong> Brandon Grotesque</li>
+                <li><strong>Texto:</strong> Open Sans</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="emoji">💻</span>Instalación y Ejecución</h2>
+            
+            <h3>Requisitos Previos</h3>
+            <ul>
+                <li>Node.js 18+</li>
+                <li>npm o yarn</li>
+                <li>Ionic CLI: <code>npm install -g @ionic/cli</code></li>
+            </ul>
+
+            <h3>Instalación</h3>
+            <pre><code><span class="comment"># Clonar e instalar dependencias</span>
+<span class="command">cd</span> gestor-proyectos
+<span class="command">npm install</span>
+
+<span class="comment"># Ejecutar en desarrollo</span>
+<span class="command">ionic serve</span>
+
+<span class="comment"># Construir para producción</span>
+<span class="command">ionic build</span></code></pre>
+
+            <h3>Compilación para Móviles</h3>
+            
+            <h4>Android</h4>
+            <pre><code><span class="comment"># Sincronizar código</span>
+<span class="command">npx cap sync android</span>
+
+<span class="comment"># Abrir en Android Studio</span>
+<span class="command">npx cap open android</span>
+
+<span class="comment"># O construir APK directamente</span>
+<span class="command">npx cap run android</span></code></pre>
+
+            <h4>iOS</h4>
+            <pre><code><span class="comment"># Sincronizar código</span>
+<span class="command">npx cap sync ios</span>
+
+<span class="comment"># Abrir en Xcode</span>
+<span class="command">npx cap open ios</span>
+
+<span class="comment"># O construir para iOS</span>
+<span class="command">npx cap run ios</span></code></pre>
+        </section>
+
+        <section>
+            <h2><span class="emoji">📁</span>Estructura del Proyecto</h2>
+            <div class="tree">
+<span class="folder">src/</span>
+├── <span class="folder">app/</span>
+│   ├── <span class="folder">models/</span>           <span class="comment"># Interfaces TypeScript</span>
+│   │   ├── <span class="file">curso.ts</span>
+│   │   ├── <span class="file">estudiante.ts</span>
+│   │   ├── <span class="file">evaluacion.ts</span>
+│   │   └── <span class="file">index.ts</span>
+│   ├── <span class="folder">services/</span>         <span class="comment"># Servicios de negocio</span>
+│   │   ├── <span class="file">data.service.ts</span>
+│   │   ├── <span class="file">seguimiento.service.ts</span>
+│   │   ├── <span class="file">state-manager.service.ts</span>
+│   │   └── <span class="file">unified-storage.service.ts</span>
+│   ├── <span class="folder">components/</span>       <span class="comment"># Componentes reutilizables</span>
+│   │   └── <span class="folder">evaluacion-rubrica/</span>
+│   ├── <span class="folder">pages/</span>            <span class="comment"># Páginas principales</span>
+│   │   ├── <span class="folder">cursos/</span>       <span class="comment"># Gestión de estudiantes</span>
+│   │   ├── <span class="folder">evaluacion/</span>   <span class="comment"># Sistema de evaluación</span>
+│   │   └── <span class="folder">configuracion/</span>
+│   └── <span class="folder">tabs/</span>             <span class="comment"># Navegación por pestañas</span>
+            </div>
+        </section>
+
+        <section>
+            <h2><span class="emoji">🎯</span>Funcionalidades Principales</h2>
+            
+            <h3>1. Gestión de Cursos</h3>
+            <ul>
+                <li>Tabla de estudiantes con calificaciones</li>
+                <li>Filtros por curso y estado</li>
+                <li>Cálculo automático: PG + PI = Σ</li>
+                <li>Importación masiva vía CSV</li>
+            </ul>
+
+            <h3>2. Sistema de Evaluación</h3>
+            <ul>
+                <li>Evaluación basada en rúbricas</li>
+                <li>Niveles: Iniciado (I), Avanzado (A), Experto (E)</li>
+                <li>Guardado automático</li>
+                <li>Historial de evaluaciones</li>
+            </ul>
+
+            <h3>3. Tipos de Evaluación</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Entregas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>PG</strong></td>
+                        <td>Proyecto Grupal (por subgrupo)</td>
+                        <td>E1, E2, EF</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PI</strong></td>
+                        <td>Proyecto Individual (por correo)</td>
+                        <td>E1, E2, EF</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2><span class="emoji">📊</span>Formato de Datos</h2>
+            
+            <h3>CSV de Estudiantes</h3>
+            <pre><code>nombre,apellido,curso,pg,pi
+Juan,Pérez,Matemáticas,8.5,7.2
+María,González,Historia,9.0,8.8</code></pre>
+
+            <h3>Estructura de Rúbricas</h3>
+            <pre><code><span class="highlight">interface</span> RubricaDefinicion {
+  id: <span class="command">string</span>;
+  nombre: <span class="command">string</span>;
+  descripcion: <span class="command">string</span>;
+  criterios: Criterio[];
+}</code></pre>
+        </section>
+
+        <section>
+            <h2><span class="emoji">⚙️</span>Configuración</h2>
+            <p>Archivo <code>capacitor.config.ts</code>:</p>
+            <pre><code><span class="highlight">export default</span> {
+  appId: <span class="command">'com.poligran.gestorproyectos'</span>,
+  appName: <span class="command">'Gestor de Proyectos'</span>,
+  webDir: <span class="command">'www/browser'</span>,
+  bundledWebRuntime: <span class="command">false</span>
+};</code></pre>
+        </section>
+
+        <section>
+            <h2><span class="emoji">📱</span>PWA Features</h2>
+            <ul>
+                <li><strong>Instalación:</strong> Se puede instalar como app nativa en el dispositivo</li>
+                <li><strong>Offline:</strong> Funciona sin conexión usando almacenamiento local</li>
+                <li><strong>Responsive:</strong> Adaptación automática a diferentes tamaños de pantalla</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="emoji">🤝</span>Desarrollo</h2>
+            
+            <h3>Scripts disponibles</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Comando</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>npm start</code></td>
+                        <td>Servidor de desarrollo</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run build</code></td>
+                        <td>Construcción de producción</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run build:all</code></td>
+                        <td>Build + sync todas las plataformas</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run android:sync</code></td>
+                        <td>Sincronizar Android</td>
+                    </tr>
+                    <tr>
+                        <td><code>npm run ios:sync</code></td>
+                        <td>Sincronizar iOS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Para contribuir</h3>
+            <ol>
+                <li>Fork del repositorio</li>
+                <li>Crear rama de feature: <code>git checkout -b feature/nueva-funcionalidad</code></li>
+                <li>Commit de cambios: <code>git commit -am 'Añadir nueva funcionalidad'</code></li>
+                <li>Push a la rama: <code>git push origin feature/nueva-funcionalidad</code></li>
+                <li>Crear Pull Request</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2><span class="emoji">🎉</span>Estado del Proyecto</h2>
+            <p><span class="status-badge status-success">✅ COMPLETADO</span> - Proyecto Ionic multiplataforma funcional</p>
+            <ul>
+                <li>✅ Configuración inicial y PWA</li>
+                <li>✅ Modelos y servicios</li>
+                <li>✅ Interfaz de usuario completa</li>
+                <li>✅ Sistema de navegación</li>
+                <li>✅ Plataformas Android e iOS configuradas</li>
+                <li>✅ Aplicación construida y sincronizada</li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 1.2rem; color: var(--verde); font-weight: bold;">
+                🚀 ¡Listo para compilar en Android e iOS!
+            </p>
+        </section>
+
+        <footer>
+            <p><strong>Gestor de Seguimiento de Proyectos</strong> - Politécnico Grancolombiano</p>
+            <p>Rama: <code>v1.4</code> | Repositorio: <a href="https://github.com/vfcp-poligran/POLIP">vfcp-poligran/POLIP</a></p>
+            <p>Licencia MIT | Diciembre 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
+</code></pre>
