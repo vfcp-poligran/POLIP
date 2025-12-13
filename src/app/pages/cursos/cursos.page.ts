@@ -9,12 +9,10 @@ import {
   IonCardContent,
   IonCardHeader,
   IonButton,
-  IonButtons,
   IonIcon,
   IonSegment,
   IonSegmentButton,
   IonLabel,
-  IonBadge,
   IonChip,
   IonInput,
   IonPopover,
@@ -22,8 +20,8 @@ import {
   IonFabButton,
   IonFabList,
   IonItem,
-  IonToolbar,
-  IonTitle,
+  IonBadge,
+  IonText,
   MenuController,
   AlertController,
   ToastController,
@@ -31,8 +29,7 @@ import {
   PopoverController,
   ModalController,
   GestureController,
-  ViewWillEnter
-} from '@ionic/angular/standalone';
+  ViewWillEnter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   menuOutline,
@@ -89,9 +86,9 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
-import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado } from '../../services/seguimiento.service';
+import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
 import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/evaluacion-rubrica.component';
 
@@ -110,12 +107,10 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonCardContent,
     IonCardHeader,
     IonButton,
-    IonButtons,
     IonIcon,
     IonSegment,
     IonSegmentButton,
     IonLabel,
-    IonBadge,
     IonChip,
     IonInput,
     IonPopover,
@@ -123,8 +118,8 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonFabButton,
     IonFabList,
     IonItem,
-    IonToolbar,
-    IonTitle,
+    IonBadge,
+    IonText,
     EvaluacionRubricaComponent
   ]
 })
@@ -186,6 +181,11 @@ export class InicioPage implements OnInit, OnDestroy {
   // true = mantener en vista matriz (solo mostrar integrantes en panel seguimiento)
   // false = navegar a detalles del grupo
   modoMantenerVistaMatriz: boolean = true;
+
+  // === ESTADOS DE ESTUDIANTES (Ok/Solo/Ausente) ===
+  // Los estados se manejan a través del SeguimientoService para compartir con tabs.page
+  modoSeleccionEstado: 'ok' | 'solo' | 'ausente' | null = null;
+  anotacionesGrupo: string = ''; // Texto de anotaciones del grupo actual
 
   coloresDisponibles: string[] = [
     '#d32f2f', // Rojo
@@ -333,7 +333,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,ellipsisVertical,closeOutline,checkmarkCircle,documentText,informationCircle,rocket,people,arrowForward,alertCircle,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,documentTextOutline,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,createOutline,saveOutline,trashOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,clipboardOutline,checkmarkOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,ellipsisVertical,closeOutline,checkmarkCircle,documentText,informationCircle,peopleCircle,rocket,saveOutline,documentTextOutline,createOutline,gitMerge,closeCircle,people,trashOutline,alertCircle,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,clipboardOutline,checkmarkOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -765,6 +765,15 @@ export class InicioPage implements OnInit, OnDestroy {
     }
 
     this.filtroGrupo = nuevoGrupo;
+    // ✅ Actualizar también grupoSeguimientoActivo para mantener sincronía
+    this.grupoSeguimientoActivo = nuevoGrupo !== 'todos' ? nuevoGrupo : null;
+    // Limpiar modo de selección de estado
+    this.modoSeleccionEstado = null;
+
+    console.log('🔄 [onFiltroGrupoChange] Cambio de grupo:', {
+      filtroGrupo: this.filtroGrupo,
+      grupoSeguimientoActivo: this.grupoSeguimientoActivo
+    });
 
     // Guardar en CourseState para persistencia por curso
     if (this.cursoActivo) {
@@ -782,9 +791,12 @@ export class InicioPage implements OnInit, OnDestroy {
     // OPTIMIZACIÓN: aplicarFiltros solo filtra en memoria, no recarga datos
     this.aplicarFiltros();
 
+    // Actualizar anotaciones del nuevo grupo
+    this.actualizarAnotacionesDesdeEstados();
+
     // Si hay una rúbrica activa, cargar el estado del nuevo grupo y actualizar el panel
     if (this.mostrarRubrica && this.tipoEvaluando && nuevoGrupo !== 'todos') {
-      console.log('📊 [onFiltroGrupoChange] Actualizando panel para grupo:', nuevoGrupo);
+      console.log('📊 [onFiltroGrupoChange] Actualizando rúbrica para grupo:', nuevoGrupo);
       this.cargarEvaluacionGuardada().then(() => {
         this.emitToSeguimientoPanel();
         this.cdr.detectChanges();
@@ -1437,6 +1449,35 @@ export class InicioPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Maneja los cambios de calificaciones desde el componente de rúbrica hijo
+   * Sincroniza el estado local criteriosEvaluados con las selecciones del usuario
+   */
+  onCalificacionesChange(calificaciones: { [criterio: string]: number }) {
+    if (!this.rubricaActual || !this.rubricaActual.criterios) return;
+
+    // Actualizar criteriosEvaluados con las calificaciones del componente hijo
+    this.criteriosEvaluados = this.rubricaActual.criterios.map((criterio, index) => {
+      const puntos = calificaciones[criterio.titulo] || 0;
+      const nivel = this.obtenerNivelPorPuntos(criterio, puntos);
+
+      return {
+        criterioTitulo: criterio.titulo,
+        nivelSeleccionado: nivel?.titulo || '',
+        puntosObtenidos: puntos,
+        puntosPersonalizados: false,
+        comentario: this.comentariosCriterios[index] || ''
+      };
+    });
+
+    // Calcular puntos totales
+    this.puntosRubricaTotales = this.criteriosEvaluados.reduce(
+      (sum, c) => sum + (c.puntosObtenidos || 0), 0
+    );
+
+    console.log('🔄 [onCalificacionesChange] criteriosEvaluados actualizado:', this.criteriosEvaluados.length, 'criterios');
+  }
+
+  /**
    * Maneja el evento de guardado de evaluación desde el componente hijo
    */
   async onEvaluacionGuardada(evaluacionData: any) {
@@ -1772,6 +1813,10 @@ export class InicioPage implements OnInit, OnDestroy {
       // Guardar en cache
       this.guardarEnCache();
 
+      // NO actualizar this.evaluacionActual aquí para evitar que ngOnChanges
+      // del componente hijo reinicialize las calificaciones
+      // La próxima vez que se abra la rúbrica, se cargará desde el servicio
+
       // Actualizar panel de seguimiento
       this.emitToSeguimientoPanel();
 
@@ -1779,7 +1824,7 @@ export class InicioPage implements OnInit, OnDestroy {
       this.cdr.detectChanges();
 
       this.mostrarMensajeExito('Evaluación guardada correctamente');
-      this.cerrarRubrica();
+      // NO cerrar la rúbrica para mantener la vista actual
     } catch (error: any) {
       this.mostrarError('Error', 'No se pudo guardar la evaluación: ' + error.message);
     }
@@ -1841,6 +1886,9 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // Cargar evaluación guardada si existe
     await this.cargarEvaluacionGuardada();
+
+    // Actualizar anotaciones para la entrega seleccionada
+    this.actualizarAnotacionesDesdeEstados();
 
     // Forzar detección de cambios para actualizar la UI
     this.cdr.detectChanges();
@@ -1926,7 +1974,10 @@ export class InicioPage implements OnInit, OnDestroy {
 
   // Método para cargar la evaluación guardada desde el servicio
   async cargarEvaluacionGuardada() {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.grupoSeguimientoActivo) {
+    // Usar filtroGrupo si grupoSeguimientoActivo no está definido
+    const grupoActual = this.grupoSeguimientoActivo || (this.filtroGrupo !== 'todos' ? this.filtroGrupo : null);
+
+    if (!this.cursoActivo || !this.entregaEvaluando || !grupoActual) {
       console.warn('⚠️ [cargarEvaluacionGuardada] Faltan datos necesarios');
       return;
     }
@@ -1941,8 +1992,8 @@ export class InicioPage implements OnInit, OnDestroy {
         return;
       }
     } else {
-      // Para Grupal: usar ID del grupo (grupoSeguimientoActivo ya ES el ID)
-      identificador = this.grupoSeguimientoActivo;
+      // Para Grupal: usar ID del grupo
+      identificador = grupoActual;
     }
 
     console.log(`🔍[cargarEvaluacionGuardada] Buscando evaluación: `, {
@@ -1962,13 +2013,17 @@ export class InicioPage implements OnInit, OnDestroy {
 
     if (evaluacionExistente) {
       console.log(`📂[cargarEvaluacionGuardada] ✅ Evaluación recuperada para ${this.entregaEvaluando}: `, evaluacionExistente);
-      this.evaluacionActual = evaluacionExistente;
+      // Crear nueva referencia para forzar ngOnChanges en el hijo
+      this.evaluacionActual = { ...evaluacionExistente };
       this.reconstruirEstadoDesdeEvaluacion(evaluacionExistente);
     } else {
       console.log(`🆕[cargarEvaluacionGuardada] ❌ Sin evaluación previa para ${this.entregaEvaluando} `);
       this.evaluacionActual = null;
       this.reiniciarEstadoEvaluacion();
     }
+
+    // Forzar detección de cambios para actualizar el componente hijo
+    this.cdr.detectChanges();
   }
 
 
@@ -3377,6 +3432,13 @@ export class InicioPage implements OnInit, OnDestroy {
    */
   async seleccionarEstudiante(correo: string) {
     console.log('📧 Estudiante seleccionado:', correo);
+
+    // Si hay un modo de selección de estado activo, agregar/quitar estado
+    if (this.modoSeleccionEstado && this.filtroGrupo !== 'todos' && this.entregaEvaluando) {
+      this.toggleEstadoEstudiante(correo, this.modoSeleccionEstado);
+      return;
+    }
+
     this.estudianteSeleccionado = correo;
 
     // Mostrar correo en un toast
@@ -3397,6 +3459,105 @@ export class InicioPage implements OnInit, OnDestroy {
       await toast.present();
     }
 
+    this.cdr.detectChanges();
+  }
+
+  // === MÉTODOS PARA ESTADOS DE ESTUDIANTES (Ok/Solo/Ausente) ===
+
+  /**
+   * Activa/desactiva el modo de selección de estado
+   */
+  toggleModoSeleccionEstado(modo: 'ok' | 'solo' | 'ausente') {
+    if (this.modoSeleccionEstado === modo) {
+      this.modoSeleccionEstado = null;
+    } else {
+      this.modoSeleccionEstado = modo;
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Agrega o quita un estado a un estudiante (usa el servicio)
+   */
+  toggleEstadoEstudiante(correo: string, estado: 'ok' | 'solo' | 'ausente') {
+    if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return;
+
+    // Obtener estado actual
+    const estadoActual = this.seguimientoService.getEstadoEstudiante(this.filtroGrupo, this.entregaEvaluando, correo);
+
+    // Toggle: si ya tiene el estado, quitarlo; si no, ponerlo
+    const nuevoEstado: EstadoEstudiante = estadoActual === estado ? null : estado;
+    this.seguimientoService.setEstadoEstudiante(this.filtroGrupo, this.entregaEvaluando, correo, nuevoEstado);
+
+    // Actualizar anotaciones
+    this.actualizarAnotacionesDesdeEstados();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si un estudiante tiene un estado específico (usa el servicio)
+   */
+  tieneEstado(correo: string, estado: 'ok' | 'solo' | 'ausente'): boolean {
+    if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return false;
+    return this.seguimientoService.getEstadoEstudiante(this.filtroGrupo, this.entregaEvaluando, correo) === estado;
+  }
+
+  /**
+   * Obtiene el estado de un estudiante (usa el servicio)
+   */
+  getEstadoEstudiante(correo: string): EstadoEstudiante {
+    if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return null;
+    return this.seguimientoService.getEstadoEstudiante(this.filtroGrupo, this.entregaEvaluando, correo);
+  }
+
+  /**
+   * Actualiza las anotaciones basándose en los estados actuales
+   */
+  actualizarAnotacionesDesdeEstados() {
+    if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) {
+      this.anotacionesGrupo = '';
+      return;
+    }
+
+    const estados = this.seguimientoService.getEstadosGrupoEntrega(this.filtroGrupo, this.entregaEvaluando);
+    const lineas: string[] = [];
+
+    // Agregar ok (sin encabezado, solo nombres con icono)
+    estados.ok.forEach(correo => {
+      const estudiante = this.estudiantesFiltrados.find(e => e.correo === correo);
+      if (estudiante) {
+        lineas.push(`✅ ${estudiante.nombres} ${estudiante.apellidos}`);
+      }
+    });
+
+    // Agregar solos (sin encabezado, solo nombres con icono)
+    estados.solos.forEach(correo => {
+      const estudiante = this.estudiantesFiltrados.find(e => e.correo === correo);
+      if (estudiante) {
+        lineas.push(`🔀 ${estudiante.nombres} ${estudiante.apellidos}`);
+      }
+    });
+
+    // Agregar ausentes (sin encabezado, solo nombres con icono)
+    estados.ausentes.forEach(correo => {
+      const estudiante = this.estudiantesFiltrados.find(e => e.correo === correo);
+      if (estudiante) {
+        lineas.push(`❌ ${estudiante.nombres} ${estudiante.apellidos}`);
+      }
+    });
+
+    this.anotacionesGrupo = lineas.join('\n');
+  }
+
+  /**
+   * Limpia todos los estados del grupo actual (usa el servicio)
+   */
+  limpiarEstadosGrupo() {
+    if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return;
+
+    this.seguimientoService.limpiarEstadosGrupoEntrega(this.filtroGrupo, this.entregaEvaluando);
+    this.anotacionesGrupo = '';
+    this.modoSeleccionEstado = null;
     this.cdr.detectChanges();
   }
 

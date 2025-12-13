@@ -1,156 +1,199 @@
+// ====================================
+// EVALUACIÓN RÚBRICA - LAYOUT TABLA
+// ====================================
+
 .evaluacion-container {
-  padding: var(--spacing-xs);
+  --rubrica-font-size: 14px;
+  --rubrica-spacing: 4px;
+  --criterio-width: 140px;
 
-  /* Estilos para el scroll horizontal de niveles */
-  .niveles-scroll-container {
+  padding: 2px;
+  font-size: var(--rubrica-font-size);
+
+  .loading-text {
+    text-align: center;
+    color: var(--ion-color-medium);
+    padding: 20px;
+  }
+
+  // ========== TABLA DE RÚBRICA ==========
+  .rubrica-table {
     display: flex;
-    overflow-x: auto;
-    gap: var(--spacing-md);
-    padding: var(--spacing-sm) var(--spacing-xs);
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    /* Suavidad en iOS */
+    flex-direction: column;
+    gap: var(--rubrica-spacing);
+    width: 100%;
+  }
 
-    /* Ocultar barra de scroll pero mantener funcionalidad */
-    scrollbar-width: thin;
+  // ========== FILA ==========
+  .rubrica-row {
+    display: flex;
+    gap: var(--rubrica-spacing);
+    width: 100%;
+  }
 
-    &::-webkit-scrollbar {
-      height: 6px;
-    }
+  // ========== CELDA BASE ==========
+  .rubrica-cell {
+    flex: 1 1 0;
+    min-width: 0;
 
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--ion-color-medium-tint);
-      border-radius: 3px;
+    &.criterio-label,
+    &.criterio-cell {
+      flex: 0 0 var(--criterio-width);
+      max-width: var(--criterio-width);
     }
   }
 
-  /* Tarjeta de nivel individual */
-  .nivel-card {
-    flex: 0 0 clamp(280px, 40vw, 320px);
-    /* Responsive width */
-    max-width: 85vw;
-    /* Evitar que sea más ancho que la pantalla en móviles muy pequeños */
-    border: 1px solid var(--ion-color-light-shade);
-    border-radius: var(--rad-sm);
-    background: white;
-    padding: var(--card-padding);
-    /* Responsive padding */
-    cursor: pointer;
-    transition: all 0.2s ease;
+  // ========== ENCABEZADO ==========
+  .rubrica-header-row {
+    background: var(--azul-oscuro, #0f385a);
+    border-radius: 4px;
+    padding: 6px;
+
+    .criterio-label {
+      font-weight: 700;
+      color: white;
+      font-size: var(--rubrica-font-size);
+      display: flex;
+      align-items: center;
+    }
+
+    .nivel-label {
+      text-align: center;
+      font-weight: 700;
+      font-size: var(--rubrica-font-size);
+      padding: 6px 8px;
+      border-radius: 3px;
+      color: white;
+
+      &.nivel-insuficiente {
+        background: #f44336;
+      }
+
+      &.nivel-aceptable {
+        background: #ff9800;
+      }
+
+      &.nivel-excelente {
+        background: #4caf50;
+      }
+    }
+  }
+
+  // ========== FILA DE CRITERIO ==========
+  .criterio-row {
+    background: #fafafa;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    padding: 4px;
+  }
+
+  // ========== CELDA CRITERIO ==========
+  .criterio-cell {
     display: flex;
     flex-direction: column;
-    height: auto;
-    /* Altura automática según contenido */
-    min-height: 100%;
-    /* Para que todas tengan la misma altura mínima en el flex row */
-    position: relative;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 4px;
+
+    .criterio-titulo {
+      font-size: var(--rubrica-font-size);
+      font-weight: 700;
+      color: var(--azul-oscuro, #0f385a);
+      line-height: 1.2;
+    }
+
+    ion-badge {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      --padding-top: 2px;
+      --padding-bottom: 2px;
+      font-size: 10px;
+      height: 16px;
+      width: fit-content;
+    }
+  }
+
+  // ========== NIVEL CARD ==========
+  .nivel-card {
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid transparent;
+
+    // Colores por nivel
+    &.nivel-insuficiente {
+      background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+      border-color: #f44336;
+
+      .nivel-header ion-badge {
+        --background: #f44336;
+        --color: white;
+      }
+    }
+
+    &.nivel-aceptable {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      border-color: #ff9800;
+
+      .nivel-header ion-badge {
+        --background: #ff9800;
+        --color: white;
+      }
+    }
+
+    &.nivel-excelente {
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border-color: #4caf50;
+
+      .nivel-header ion-badge {
+        --background: #4caf50;
+        --color: white;
+      }
+    }
 
     &:hover {
-      border-color: var(--ion-color-primary-tint);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      /* Sombra más pronunciada al hover */
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     &.selected {
-      /* Cambio a fondo CLARO para evitar "azul oscuro" */
-      border-color: var(--ion-color-primary);
-      background-color: rgba(var(--ion-color-primary-rgb), 0.08);
-      /* Fondo azul muy suave */
-      box-shadow: 0 0 0 2px var(--ion-color-primary);
-      /* Borde grueso para destacar */
+      box-shadow: 0 0 0 3px rgba(15, 56, 90, 0.5);
+      transform: scale(1.01);
 
-      /* Rest. Texto oscuro normal */
-      .nivel-titulo {
-        color: var(--ion-color-primary-shade) !important;
-        text-shadow: none;
-      }
-
-      .nivel-descripcion {
-        color: var(--ion-color-dark) !important;
-        font-weight: normal;
-      }
-
-      /* Badge estandar pero destacado */
-      .nivel-puntos ion-badge {
-        --background: var(--ion-color-primary);
-        --color: white;
-        font-weight: bold;
-        box-shadow: none;
-      }
-
-      .selection-indicator {
-        opacity: 1;
-        color: var(--ion-color-primary);
-        /* Icono en color primario */
-        filter: none;
-        font-size: 1.5rem;
+      .check-icon {
+        display: inline-block;
       }
     }
 
-
-    .nivel-puntos {
+    .nivel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--spacing-md);
+      margin-bottom: 4px;
 
       ion-badge {
-        font-size: var(--fs-sm);
-        padding: var(--spacing-xs) var(--spacing-md);
+        --padding-start: 6px;
+        --padding-end: 6px;
+        font-size: 11px;
+        height: 18px;
+      }
+
+      .check-icon {
+        display: none;
+        color: var(--azul-oscuro, #0f385a);
+        font-weight: bold;
+        font-size: 16px;
       }
     }
 
-    .nivel-titulo {
-      font-weight: 700;
-      font-size: var(--fs-lg);
-      color: var(--ion-color-dark);
-      margin-bottom: var(--spacing-sm);
-      line-height: 1.3;
-    }
-
     .nivel-descripcion {
-      font-size: var(--fs-md);
-      color: var(--ion-color-medium-shade);
-      line-height: 1.5;
+      font-size: calc(var(--rubrica-font-size) - 2px);
+      color: #444;
+      line-height: 1.3;
       margin: 0;
-      /* Eliminado scroll vertical: mostrar todo el contenido */
-      overflow: visible;
     }
-
-    /* Indicador de selección visual */
-    .selection-indicator {
-      position: absolute;
-      top: var(--spacing-sm);
-      right: var(--spacing-sm);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    &.selected .selection-indicator {
-      opacity: 1;
-      color: var(--ion-color-primary);
-    }
-  }
-
-  /* Contenedor general de criterios */
-  .criterios-container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-  }
-
-  ion-card {
-    margin: 0;
-    overflow: visible;
-    /* Permitir que sombras se vean */
-  }
-
-  .criterio-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: var(--spacing-sm);
-    border-bottom: 1px solid var(--ion-color-light);
-    margin-bottom: var(--spacing-sm);
   }
 }

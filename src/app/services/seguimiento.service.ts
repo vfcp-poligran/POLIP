@@ -49,6 +49,14 @@ export interface ComentarioGrupo {
   autor?: string;
 }
 
+export type EstadoEstudiante = 'ok' | 'solo' | 'ausente' | null;
+
+export interface EstadosEntrega {
+  ok: Set<string>;
+  solos: Set<string>;
+  ausentes: Set<string>;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,9 +65,14 @@ export class SeguimientoService {
   private grupoVisualizadoSubject = new BehaviorSubject<number>(0); // Grupo para mostrar integrantes (sin cambiar filtro)
   private seguimientoActualSubject = new BehaviorSubject<SeguimientoGrupo | null>(null);
 
+  // Estados de estudiantes: Map<grupo, Map<entrega, EstadosEntrega>>
+  private estadosEstudiantes: Map<string, Map<string, EstadosEntrega>> = new Map();
+  private estadosEstudiantesSubject = new BehaviorSubject<Map<string, Map<string, EstadosEntrega>>>(this.estadosEstudiantes);
+
   grupoSeleccionado$ = this.grupoSeleccionadoSubject.asObservable();
   grupoVisualizado$ = this.grupoVisualizadoSubject.asObservable();
   seguimientoActual$ = this.seguimientoActualSubject.asObservable();
+  estadosEstudiantes$ = this.estadosEstudiantesSubject.asObservable();
 
   constructor() { }
 
@@ -193,6 +206,74 @@ export class SeguimientoService {
     if (seguimientoActual) {
       seguimientoActual.tipoEvaluacionActiva = tipo;
       this.seguimientoActualSubject.next({ ...seguimientoActual });
+    }
+  }
+
+  // === MÉTODOS PARA ESTADOS DE ESTUDIANTES ===
+
+  /**
+   * Obtiene los estados de un grupo y entrega específicos
+   */
+  getEstadosGrupoEntrega(grupo: string, entrega: string): EstadosEntrega {
+    if (!this.estadosEstudiantes.has(grupo)) {
+      this.estadosEstudiantes.set(grupo, new Map());
+    }
+    const grupoMap = this.estadosEstudiantes.get(grupo)!;
+
+    if (!grupoMap.has(entrega)) {
+      grupoMap.set(entrega, { ok: new Set(), solos: new Set(), ausentes: new Set() });
+    }
+    return grupoMap.get(entrega)!;
+  }
+
+  /**
+   * Establece el estado de un estudiante
+   */
+  setEstadoEstudiante(grupo: string, entrega: string, correo: string, estado: EstadoEstudiante): void {
+    const estados = this.getEstadosGrupoEntrega(grupo, entrega);
+
+    // Quitar de todos los estados
+    estados.ok.delete(correo);
+    estados.solos.delete(correo);
+    estados.ausentes.delete(correo);
+
+    // Agregar al estado correspondiente si no es null
+    if (estado === 'ok') {
+      estados.ok.add(correo);
+    } else if (estado === 'solo') {
+      estados.solos.add(correo);
+    } else if (estado === 'ausente') {
+      estados.ausentes.add(correo);
+    }
+
+    // Notificar cambio
+    this.estadosEstudiantesSubject.next(new Map(this.estadosEstudiantes));
+  }
+
+  /**
+   * Obtiene el estado de un estudiante
+   */
+  getEstadoEstudiante(grupo: string, entrega: string, correo: string): EstadoEstudiante {
+    const grupoMap = this.estadosEstudiantes.get(grupo);
+    if (!grupoMap) return null;
+
+    const estados = grupoMap.get(entrega);
+    if (!estados) return null;
+
+    if (estados.ok.has(correo)) return 'ok';
+    if (estados.solos.has(correo)) return 'solo';
+    if (estados.ausentes.has(correo)) return 'ausente';
+    return null;
+  }
+
+  /**
+   * Limpia los estados de un grupo y entrega
+   */
+  limpiarEstadosGrupoEntrega(grupo: string, entrega: string): void {
+    const grupoMap = this.estadosEstudiantes.get(grupo);
+    if (grupoMap) {
+      grupoMap.delete(entrega);
+      this.estadosEstudiantesSubject.next(new Map(this.estadosEstudiantes));
     }
   }
 }

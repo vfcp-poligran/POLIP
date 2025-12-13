@@ -26,6 +26,7 @@ import {
   IonFooter,
   IonAvatar,
   IonContent,
+  IonCheckbox,
   MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -49,6 +50,10 @@ import {
   chatbubble,
   person,
   book,
+  // Iconos de estado de estudiantes
+  checkmarkCircle,
+  gitMerge,
+  closeCircle,
   // Iconos outline
   homeOutline,
   settingsOutline,
@@ -71,7 +76,7 @@ import {
 } from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
-import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo } from '../services/seguimiento.service';
+import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo, EstadoEstudiante } from '../services/seguimiento.service';
 
 @Component({
   selector: 'app-tabs',
@@ -104,7 +109,8 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonButtons,
     IonFooter,
     IonAvatar,
-    IonContent
+    IonContent,
+    IonCheckbox
   ],
   animations: [
     trigger('slideInOut', [
@@ -166,10 +172,15 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }> = [];
   searchTerm: string = '';
 
+  // Modo de selección de estado para estudiantes
+  modoSeleccionEstado: 'ok' | 'solo' | 'ausente' | null = null;
+
   constructor() {
     addIcons({
       // Filled icons
       home, library, clipboard, ribbon, settings, search, school, people, grid, trophy, chatbubble, person, book,
+      // Estado icons
+      checkmarkCircle, gitMerge, closeCircle,
       // Outline icons
       homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline,
       informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline,
@@ -915,5 +926,97 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   getDescripcionNivel(criterio: CriterioEvaluado): string {
     const nivel = criterio.niveles.find(n => n.nombre === criterio.nivelSeleccionado);
     return nivel?.descripcion || criterio.comentario || '';
+  }
+
+  // === MÉTODOS PARA ESTADOS DE ESTUDIANTES ===
+
+  /**
+   * Obtiene el estado de un estudiante para mostrar en la tabla
+   */
+  getEstadoEstudiante(correo: string): EstadoEstudiante {
+    const grupo = this.grupoVisualizado.toString();
+    const entrega = this.seguimientoActual?.entregaActual;
+    if (!grupo || grupo === '0' || !entrega) return null;
+    return this.seguimientoService.getEstadoEstudiante(grupo, entrega, correo);
+  }
+
+  /**
+   * Obtiene el ícono para un estado
+   */
+  getIconoEstado(estado: EstadoEstudiante): string {
+    switch (estado) {
+      case 'ok': return 'checkmark-circle';
+      case 'solo': return 'git-merge';
+      case 'ausente': return 'close-circle';
+      default: return '';
+    }
+  }
+
+  /**
+   * Obtiene el color para un estado
+   */
+  getColorEstado(estado: EstadoEstudiante): string {
+    switch (estado) {
+      case 'ok': return 'success';
+      case 'solo': return 'warning';
+      case 'ausente': return 'danger';
+      default: return 'medium';
+    }
+  }
+
+  /**
+   * Activa/desactiva el modo de selección de estado
+   */
+  toggleModoSeleccionEstado(modo: 'ok' | 'solo' | 'ausente') {
+    if (this.modoSeleccionEstado === modo) {
+      this.modoSeleccionEstado = null;
+    } else {
+      this.modoSeleccionEstado = modo;
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Maneja el cambio del checkbox de un estudiante
+   */
+  onCheckboxEstadoChange(correo: string, event: any) {
+    const checked = event.detail.checked;
+    const grupo = this.grupoVisualizado.toString();
+    const entrega = this.seguimientoActual?.entregaActual;
+
+    if (!grupo || grupo === '0' || !entrega || !this.modoSeleccionEstado) return;
+
+    if (checked) {
+      // Aplicar el estado seleccionado
+      this.seguimientoService.setEstadoEstudiante(grupo, entrega, correo, this.modoSeleccionEstado);
+    } else {
+      // Quitar el estado
+      this.seguimientoService.setEstadoEstudiante(grupo, entrega, correo, null);
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si el checkbox de un estudiante debe estar marcado
+   */
+  isCheckboxChecked(correo: string): boolean {
+    if (!this.modoSeleccionEstado) return false;
+    const estado = this.getEstadoEstudiante(correo);
+    return estado === this.modoSeleccionEstado;
+  }
+
+  /**
+   * Verifica si hay una entrega activa para mostrar los controles de estado
+   */
+  hayEntregaActiva(): boolean {
+    return !!this.seguimientoActual?.entregaActual;
+  }
+
+  /**
+   * Sale del modo de selección de estados
+   */
+  salirModoSeleccion() {
+    this.modoSeleccionEstado = null;
+    this.cdr.detectChanges();
   }
 }

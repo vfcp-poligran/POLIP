@@ -733,7 +733,10 @@ export class DataService {
   }
 
   getEvaluacion(cursoNombre: string, entrega: string, tipo: string, identificador: string): Evaluacion | undefined {
-    const key = `${cursoNombre}_${entrega}_${tipo}_${identificador}`;
+    // Normalizar el nombre del curso para coincidir con generateEvaluationKey
+    const codigoCurso = this.getCourseCodeFromNameOrCode(cursoNombre);
+    const key = `${codigoCurso}_${entrega}_${tipo}_${identificador}`;
+    console.log(`🔍 [getEvaluacion] Buscando con key: ${key}`);
     return this.evaluacionesSubject.value[key];
   }
 

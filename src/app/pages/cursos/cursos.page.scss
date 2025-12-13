@@ -974,50 +974,253 @@ ion-chip {
   font-size: var(--fs-sm);
 }
 
-/* Panel de información del grupo seleccionado */
-.grupo-info-panel {
-  padding: 8px 12px;
-  text-align: center;
-  border-bottom: 1px solid rgba(15, 56, 90, 0.1);
+/* Header del grupo en ion-card-header */
+.grupo-card-header {
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a4a6e 100%);
+  padding: 12px 16px;
 
-  .grupo-header-info {
+  .grupo-card-title {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
 
     ion-icon {
-      font-size: 1.2rem;
-    }
-
-    .grupo-titulo {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--azul-oscuro);
+      font-size: 1.5rem;
+      color: var(--azul-claro, #1fb2de);
     }
 
     ion-badge {
-      font-size: 0.7rem;
+      --background: var(--azul-claro, #1fb2de);
+      --color: white;
+      font-size: 0.75rem;
+      margin-left: auto;
     }
   }
 }
 
-/* Área para anotaciones y comentarios */
-.area-anotaciones {
+/* Contenedor para vista de grupo específico */
+.grupo-detail-content {
+  padding: 0;
+}
+
+/* Layout de dos columnas: Rúbrica + Panel lateral */
+.grupo-content-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 8px;
   padding: 8px;
-  min-height: 200px;
+  min-height: 400px;
+}
+
+/* Columna de Rúbrica */
+.rubrica-column {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+}
+
+/* Placeholder cuando no hay rúbrica */
+.rubrica-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
   background: rgba(15, 56, 90, 0.02);
+  border: 1px dashed rgba(15, 56, 90, 0.2);
   border-radius: 4px;
-  margin: 4px;
+
+  ion-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+/* Columna de Anotaciones */
+.anotaciones-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Área para anotaciones y comentarios */
+.area-anotaciones {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(15, 56, 90, 0.02);
+  border: 1px solid rgba(15, 56, 90, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+
+  .anotaciones-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+
+    ion-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+    }
+  }
+
+  .estados-toolbar {
+    display: flex;
+    gap: 4px;
+    padding: 8px;
+    background: rgba(15, 56, 90, 0.05);
+    border-bottom: 1px solid rgba(15, 56, 90, 0.1);
+
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 0.75rem;
+      height: 28px;
+    }
+  }
+
+  .modo-seleccion-activo {
+    padding: 6px 12px;
+    background: rgba(255, 193, 7, 0.1);
+    border-bottom: 1px solid rgba(255, 193, 7, 0.3);
+    text-align: center;
+  }
+
+  .integrantes-lista {
+    border-bottom: 1px solid rgba(15, 56, 90, 0.1);
+
+    .integrantes-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(15, 56, 90, 0.05);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--azul-oscuro);
+
+      ion-icon {
+        font-size: 0.9rem;
+      }
+    }
+
+    .integrantes-items {
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .integrante-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(15, 56, 90, 0.05);
+
+      &:hover {
+        background: rgba(15, 56, 90, 0.05);
+      }
+
+      &.seleccionado {
+        background: rgba(59, 130, 246, 0.15);
+        border-left: 3px solid var(--ion-color-primary);
+      }
+
+      &.modo-seleccion {
+        cursor: pointer;
+        &:hover {
+          background: rgba(255, 193, 7, 0.1);
+        }
+      }
+
+      &.ok {
+        background: rgba(16, 185, 129, 0.1);
+        border-left: 3px solid var(--ion-color-success);
+      }
+
+      &.solo {
+        background: rgba(255, 193, 7, 0.1);
+        border-left: 3px solid var(--ion-color-warning);
+      }
+
+      &.ausente {
+        background: rgba(239, 68, 68, 0.1);
+        border-left: 3px solid var(--ion-color-danger);
+
+        .integrante-nombre {
+          text-decoration: line-through;
+          opacity: 0.6;
+        }
+      }
+
+      .integrante-nombre {
+        font-size: 0.8rem;
+        color: var(--azul-oscuro);
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .badge-estado {
+        font-size: 1rem;
+        margin-left: 4px;
+      }
+    }
+  }
+
+  .anotaciones-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 8px;
+    overflow-y: auto;
+
+    .anotaciones-texto {
+      font-family: monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      background: rgba(15, 56, 90, 0.05);
+      padding: 8px;
+      border-radius: 4px;
+      margin: 0;
+      flex: 1;
+      color: var(--azul-oscuro);
+    }
+
+    ion-button {
+      align-self: flex-end;
+    }
+  }
 
   .placeholder-text {
     color: var(--azul-oscuro);
     opacity: 0.5;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-style: italic;
-    margin: auto;
+    margin: 0;
     text-align: center;
   }
 }
@@ -1069,6 +1272,56 @@ ion-chip {
     border-top: none;
     border-radius: 0 0 4px 4px;
     padding: 4px;
+  }
+}
+
+/* Contenedor completo de rúbrica */
+.rubrica-container-full {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .rubrica-header-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+
+    .rubrica-nombre {
+      flex: 1;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .rubrica-points-chip {
+      height: 22px;
+      font-size: 0.7rem;
+    }
+
+    .btn-cerrar-rubrica {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      height: 26px;
+      color: #ffffff;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .rubrica-content-full {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid rgba(15, 56, 90, 0.15);
+    border-top: none;
+    padding: 4px;
+    overflow-y: auto;
   }
 }
 
@@ -3323,6 +3576,29 @@ ion-badge {
       .header-info-icon {
         font-size: 1rem;
         color: #ffffff;
+      }
+    }
+
+    // Nombre del grupo inline en el header
+    .grupo-header-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+
+      ion-icon {
+        font-size: 1.2rem;
+        color: var(--azul-claro, #1fb2de);
+      }
+
+      .grupo-nombre {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .integrantes-count {
+        font-size: 0.8rem;
+        opacity: 0.85;
       }
     }
   }

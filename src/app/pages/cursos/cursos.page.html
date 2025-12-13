@@ -116,6 +116,14 @@
             <div class="info-icon-header">
               <ion-icon name="information-circle" class="header-info-icon"></ion-icon>
             </div>
+            <!-- Nombre del grupo cuando está seleccionado -->
+            @if (filtroGrupo !== 'todos') {
+            <div class="grupo-header-inline">
+              <ion-icon name="people-circle"></ion-icon>
+              <span class="grupo-nombre">Grupo {{ filtroGrupo }}</span>
+              <span class="integrantes-count">{{ obtenerIntegrantesGrupo().length }} integrantes</span>
+            </div>
+            }
             <!-- Toggle para modo de selección de encabezado -->
             @if (filtroGrupo === 'todos') {
             <div class="modo-vista-toggle" (click)="modoMantenerVistaMatriz = !modoMantenerVistaMatriz"
@@ -165,47 +173,116 @@
             </div>
             } @else {
             <!-- Vista: Grupo específico seleccionado -->
-            <ion-card>
-              <ion-card-content class="no-padding">
+            <div class="grupo-detail-content">
                 @if (obtenerIntegrantesGrupo().length > 0) {
-                <!-- Header del grupo -->
-                <div class="grupo-info-panel">
-                  <div class="grupo-header-info">
-                    <ion-icon name="people" color="primary"></ion-icon>
-                    <span class="grupo-titulo">Grupo {{ filtroGrupo }}</span>
-                    <ion-badge color="primary">{{ obtenerIntegrantesGrupo().length }} integrantes</ion-badge>
+                <!-- Layout de dos columnas: Rúbrica + Panel lateral -->
+                <div class="grupo-content-layout">
+                  <!-- Columna izquierda: Rúbrica -->
+                  <div class="rubrica-column">
+                    @if (mostrarRubrica && rubricaActual) {
+                    <div class="rubrica-container-full">
+                      <div class="rubrica-header-compact">
+                        <span class="rubrica-nombre">📋 {{ rubricaActual.nombre }}</span>
+                        <ion-chip color="success" mode="ios" class="rubrica-points-chip">
+                          <strong>{{ puntosRubricaTotales }} / {{ rubricaActual.puntuacionTotal }} pts</strong>
+                        </ion-chip>
+                        <ion-button fill="solid" size="small" color="primary" (click)="guardarEvaluacionRubrica()" class="btn-guardar-rubrica">
+                          <ion-icon name="save-outline" slot="start"></ion-icon>
+                          Guardar
+                        </ion-button>
+                        <ion-button fill="clear" size="small" (click)="cerrarRubrica()" class="btn-cerrar-rubrica">
+                          <ion-icon name="close-outline"></ion-icon>
+                        </ion-button>
+                      </div>
+                      <div class="rubrica-content-full">
+                        <app-evaluacion-rubrica [rubrica]="rubricaActual"
+                          [estudianteId]="estudianteSeleccionado || 'grupal'"
+                          [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
+                          [evaluacionExistente]="evaluacionActual"
+                          (puntuacionChange)="puntosRubricaTotales = $event"
+                          (calificacionesChange)="onCalificacionesChange($event)"
+                          (evaluacionGuardada)="onEvaluacionGuardada($event)">
+                        </app-evaluacion-rubrica>
+                      </div>
+                    </div>
+                    } @else {
+                    <div class="rubrica-placeholder">
+                      <ion-icon name="document-text-outline" color="medium"></ion-icon>
+                      <p>Seleccione una entrega para evaluar</p>
+                    </div>
+                    }
                   </div>
-                </div>
 
-                <!-- Área para rúbrica y anotaciones -->
-                <div class="area-anotaciones">
-                  @if (mostrarRubrica && rubricaActual) {
-                  <!-- Contenedor de Rúbrica -->
-                  <div class="rubrica-container-compact">
-                    <div class="rubrica-header-compact">
-                      <span class="rubrica-nombre">📋 {{ rubricaActual.nombre }}</span>
-                      @if (puntosRubricaTotales > 0) {
-                      <ion-chip color="success" mode="ios" class="rubrica-points-chip">
-                        <strong>{{ puntosRubricaTotales }} / {{ rubricaActual.puntuacionTotal }} pts</strong>
-                      </ion-chip>
+                  <!-- Columna derecha: Panel de anotaciones -->
+                  <div class="anotaciones-column">
+                    <div class="area-anotaciones">
+                      <div class="anotaciones-header">
+                        <ion-icon name="create-outline"></ion-icon>
+                        <span>Anotaciones</span>
+                        @if (entregaEvaluando) {
+                        <ion-badge color="tertiary" mode="ios">{{ entregaEvaluando }}</ion-badge>
+                        }
+                      </div>
+
+                      <!-- Botones de estado -->
+                      <div class="estados-toolbar">
+                        <ion-button
+                          [fill]="modoSeleccionEstado === 'ok' ? 'solid' : 'outline'"
+                          size="small"
+                          color="success"
+                          (click)="toggleModoSeleccionEstado('ok')"
+                          [disabled]="!entregaEvaluando"
+                          title="Ok">
+                          <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
+                        </ion-button>
+                        <ion-button
+                          [fill]="modoSeleccionEstado === 'solo' ? 'solid' : 'outline'"
+                          size="small"
+                          color="warning"
+                          (click)="toggleModoSeleccionEstado('solo')"
+                          [disabled]="!entregaEvaluando"
+                          title="Solo">
+                          <ion-icon name="git-merge" slot="icon-only"></ion-icon>
+                        </ion-button>
+                        <ion-button
+                          [fill]="modoSeleccionEstado === 'ausente' ? 'solid' : 'outline'"
+                          size="small"
+                          color="danger"
+                          (click)="toggleModoSeleccionEstado('ausente')"
+                          [disabled]="!entregaEvaluando"
+                          title="Ausente">
+                          <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+                        </ion-button>
+                      </div>
+
+                      @if (modoSeleccionEstado) {
+                      <div class="modo-seleccion-activo">
+                        <ion-text color="medium">
+                          <small>👆 Seleccione estudiantes del panel de seguimiento</small>
+                        </ion-text>
+                      </div>
                       }
-                      <ion-button fill="clear" size="small" (click)="cerrarRubrica()" class="btn-cerrar-rubrica">
-                        <ion-icon name="close-outline"></ion-icon>
-                      </ion-button>
-                    </div>
-                    <div class="rubrica-content-area">
-                      <app-evaluacion-rubrica [rubrica]="rubricaActual"
-                        [estudianteId]="estudianteSeleccionado || 'grupal'"
-                        [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
-                        [evaluacionExistente]="evaluacionActual"
-                        (puntuacionChange)="puntosRubricaTotales = $event"
-                        (evaluacionGuardada)="onEvaluacionGuardada($event)">
-                      </app-evaluacion-rubrica>
+
+                      <!-- Texto de anotaciones generado -->
+                      <div class="anotaciones-content">
+                        @if (anotacionesGrupo) {
+                        <pre class="anotaciones-texto">{{ anotacionesGrupo }}</pre>
+                        <ion-button fill="clear" size="small" color="medium" (click)="limpiarEstadosGrupo()">
+                          <ion-icon name="trash-outline" slot="start"></ion-icon>
+                          Limpiar
+                        </ion-button>
+                        } @else {
+                        <p class="placeholder-text">
+                          @if (entregaEvaluando) {
+                          Seleccione un estado y luego los estudiantes
+                          } @else {
+                          Seleccione una entrega para hacer anotaciones
+                          }
+                        </p>
+                        }
+                      </div>
                     </div>
                   </div>
-                  } @else {
-                  <p class="placeholder-text">Por implementar</p>
-                  }
                 </div>
                 } @else {
                 <ion-item lines="none">
@@ -215,8 +292,7 @@
                   </ion-label>
                 </ion-item>
                 }
-              </ion-card-content>
-            </ion-card>
+                </div>
             }
 
           </ion-card-content>

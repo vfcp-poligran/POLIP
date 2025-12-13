@@ -22,6 +22,7 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
   @Input() nombreEstudiante: string = '';
   @Input() evaluacionExistente: Evaluacion | null = null;
   @Output() puntuacionChange = new EventEmitter<number>();
+  @Output() calificacionesChange = new EventEmitter<{ [criterio: string]: number }>();
   @Output() evaluacionGuardada = new EventEmitter<any>(); // Nuevo evento para guardar
 
 
@@ -54,15 +55,18 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
     // 2. Si hay evaluación existente, cargar sus valores
     if (this.evaluacionExistente) {
       console.log('📂 [EvaluacionRubrica] Cargando evaluación existente:', this.evaluacionExistente);
+      console.log('📂 [EvaluacionRubrica] Criterios guardados:', this.evaluacionExistente.criterios);
 
       // Cargar calificaciones desde criterios (estructura real de Evaluacion)
-      if (this.evaluacionExistente.criterios) {
+      if (this.evaluacionExistente.criterios && this.evaluacionExistente.criterios.length > 0) {
         this.evaluacionExistente.criterios.forEach(c => {
+          console.log(`   -> Cargando: ${c.criterioTitulo} = ${c.puntosObtenidos}`);
           this.calificaciones[c.criterioTitulo] = c.puntosObtenidos || 0;
         });
       }
 
       this.observaciones = this.evaluacionExistente.comentarioGeneral || '';
+      console.log('📂 [EvaluacionRubrica] Calificaciones cargadas:', this.calificaciones);
     } else {
       console.log('🆕 [EvaluacionRubrica] No hay evaluación previa, iniciando en limpio');
     }
@@ -76,6 +80,8 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
   onCalificacionChange(criterio: string, puntos: number) {
     this.calificaciones[criterio] = puntos;
     this.calcularPuntuacionTotal();
+    // Emitir calificaciones actualizadas al padre
+    this.calificacionesChange.emit({ ...this.calificaciones });
   }
 
   calcularPuntuacionTotal() {
