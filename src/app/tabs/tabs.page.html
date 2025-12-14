@@ -123,7 +123,8 @@
 </div>
 
 <!-- FAB para abrir menú y panel de seguimiento en móvil -->
-<div class="mobile-fab-container" *ngIf="!isDesktop">
+@if (!isDesktop) {
+<div class="mobile-fab-container">
   <!-- FAB para abrir menú lateral -->
   <ion-fab vertical="bottom" horizontal="start" slot="fixed" class="menu-fab">
     <ion-fab-button size="small" color="primary" (click)="openMenu()">
@@ -138,6 +139,7 @@
     </ion-fab-button>
   </ion-fab>
 </div>
+}
 
 <!-- Hidden navigation helper (para mantener compatibilidad con rutas) -->
 <div class="hidden-navigation-helper">
@@ -544,7 +546,8 @@
       </ion-card>
 
 <!-- Panel de Seguimiento Móvil - Deslizante desde abajo -->
-<div class="mobile-seguimiento-panel" [class.visible]="mobileSeguimientoVisible" *ngIf="!isDesktop">
+@if (!isDesktop) {
+<div class="mobile-seguimiento-panel" [class.visible]="mobileSeguimientoVisible">
   <div class="mobile-panel-header">
     <div class="panel-title">
       <ion-icon name="book"></ion-icon>
@@ -636,9 +639,12 @@
     }
   </div>
 </div>
+}
 
 <!-- Overlay para cerrar el panel móvil -->
-<div class="mobile-seguimiento-overlay" [class.visible]="mobileSeguimientoVisible" (click)="toggleMobileSeguimiento()" *ngIf="!isDesktop"></div>
+@if (!isDesktop) {
+<div class="mobile-seguimiento-overlay" [class.visible]="mobileSeguimientoVisible" (click)="toggleMobileSeguimiento()"></div>
+}
 
 <!-- Barra de búsqueda flotante cuando se expande -->
 @if (searchExpanded) {
