@@ -17,47 +17,52 @@
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="home"></ion-icon>
+          <ion-label>Inicio</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="library"></ion-icon>
+          <ion-label>Cursos</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="clipboard"></ion-icon>
+          <ion-label>Rúbricas</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="ribbon"></ion-icon>
+          <ion-label>Calificaciones</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="settings"></ion-icon>
+          <ion-label>Sistema</ion-label>
         </ion-item>
       </ion-menu-toggle>
     </ion-list>
   </ion-content>
 
-  <ion-footer>
-    <ion-toolbar color="primary">
-      <ion-buttons slot="start">
-        <ion-button fill="clear" (click)="toggleFullscreen()" aria-label="Pantalla completa">
-          <ion-icon slot="icon-only" name="expand-outline"></ion-icon>
+  <ion-footer class="sidebar-footer">
+    <ion-toolbar>
+      <div class="footer-actions">
+        <ion-button fill="clear" expand="block" (click)="toggleFullscreen()" class="footer-btn">
+          <ion-icon slot="start" name="expand-outline"></ion-icon>
+          <ion-label>Pantalla completa</ion-label>
         </ion-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button fill="clear" (click)="toggleSearch()" [attr.aria-label]="searchExpanded ? 'Cerrar búsqueda' : 'Abrir búsqueda'">
-          <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+        <ion-button fill="clear" expand="block" (click)="toggleSearch()" class="footer-btn">
+          <ion-icon slot="start" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+          <ion-label>{{ searchExpanded ? 'Cerrar' : 'Buscar' }}</ion-label>
         </ion-button>
-      </ion-buttons>
+      </div>
     </ion-toolbar>
   </ion-footer>
 </ion-menu>
