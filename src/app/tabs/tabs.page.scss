@@ -4333,3 +4333,377 @@ ion-tab-button[tab="inicio"].circular-tab {
     }
   }
 }
+
+// ========================================
+// ESTILOS MÓVIL - FAB Y PANEL DE SEGUIMIENTO
+// ========================================
+
+// Contenedor de FABs móvil
+.mobile-fab-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+
+  ion-fab {
+    pointer-events: auto;
+  }
+
+  .menu-fab {
+    --offset-bottom: 16px;
+    --offset-start: 16px;
+
+    ion-fab-button {
+      --background: var(--azul-oscuro);
+      --background-activated: #0d2e47;
+      --box-shadow: 0 4px 12px rgba(15, 56, 90, 0.4);
+    }
+  }
+
+  .seguimiento-fab {
+    --offset-bottom: 16px;
+    --offset-end: 16px;
+
+    ion-fab-button {
+      --background: var(--azul-claro);
+      --background-activated: #1a8cb8;
+      --box-shadow: 0 4px 12px rgba(31, 178, 222, 0.4);
+    }
+  }
+}
+
+// Overlay para cerrar el panel móvil
+.mobile-seguimiento-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 199;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Panel de seguimiento móvil - Desliza desde abajo
+.mobile-seguimiento-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 70vh;
+  min-height: 200px;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &.visible {
+    transform: translateY(0);
+  }
+
+  // Header del panel móvil
+  .mobile-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+    border-bottom: 2px solid var(--azul-claro);
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+
+    ion-button {
+      --color: #ffffff;
+      margin: 0;
+    }
+  }
+
+  // Contenido del panel móvil
+  .mobile-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// Placeholder móvil cuando no hay curso
+.seguimiento-placeholder-mobile {
+  text-align: center;
+  padding: 24px 16px;
+  color: #666;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--azul-oscuro);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+
+    strong {
+      color: var(--azul-claro);
+    }
+  }
+}
+
+// Sección de grupos móvil
+.mobile-grupos-section {
+  margin-bottom: 16px;
+
+  .grupos-header-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+    .section-title-mobile {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--azul-oscuro);
+      letter-spacing: 0.5px;
+    }
+
+    ion-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+  }
+
+  .grupos-grid-mobile {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 8px;
+
+    .grupo-btn-mobile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      min-height: 40px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(15, 56, 90, 0.08);
+      color: var(--azul-oscuro);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      &.activo {
+        background: var(--azul-oscuro);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(15, 56, 90, 0.3);
+      }
+    }
+  }
+}
+
+// Sección de puntos móvil
+.mobile-puntos-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  .puntos-header-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 12px;
+
+    .section-title-mobile {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--azul-oscuro);
+      letter-spacing: 0.5px;
+    }
+
+    .puntos-toggle-mobile {
+      --background: rgba(15, 56, 90, 0.1);
+      height: 28px;
+      min-width: 150px;
+      border-radius: 14px;
+
+      ion-segment-button {
+        --background-checked: var(--azul-claro);
+        --color: var(--azul-oscuro);
+        --color-checked: white;
+        --indicator-color: transparent;
+        min-height: 26px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: none;
+        border-radius: 12px;
+        margin: 1px;
+      }
+    }
+  }
+
+  .rubricas-grid-mobile {
+    display: flex;
+    gap: 8px;
+
+    ion-button {
+      flex: 1;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      height: 36px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  }
+}
+
+// Sección de integrantes móvil
+.mobile-integrantes-section {
+  .section-title-mobile {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--azul-oscuro);
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .integrantes-list-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .integrante-item-mobile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 3px solid transparent;
+
+    &.estado-ok {
+      border-left-color: var(--ion-color-success);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    &.estado-solo {
+      border-left-color: var(--ion-color-warning);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    &.estado-ausente {
+      border-left-color: var(--ion-color-danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .estado-icono-mobile {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .nombre-mobile {
+      flex: 1;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #333;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .calificaciones-mobile {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+
+      .cal-badge-mobile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 24px;
+        padding: 0 6px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.08);
+        color: #666;
+        font-size: 0.7rem;
+        font-weight: 600;
+
+        &.success {
+          background: rgba(16, 185, 129, 0.15);
+          color: #059669;
+        }
+      }
+    }
+  }
+}
+
+// Ajuste del contenido principal para móvil
+@media (max-width: 991px) {
+  div#main-content.main-content-area,
+  div.main-content-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+
+    ion-router-outlet {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+
+  // Ocultar sidebar desktop en móvil
+  .desktop-sidebar {
+    display: none !important;
+  }
+}

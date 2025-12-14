@@ -27,6 +27,8 @@ import {
   IonAvatar,
   IonContent,
   IonCheckbox,
+  IonFab,
+  IonFabButton,
   MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -72,7 +74,9 @@ import {
   menuOutline,
   chevronForwardOutline,
   expandOutline,
-  trophyOutline
+  trophyOutline,
+  bookOutline,
+  eyeOutline
 } from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
@@ -110,7 +114,9 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonFooter,
     IonAvatar,
     IonContent,
-    IonCheckbox
+    IonCheckbox,
+    IonFab,
+    IonFabButton
   ],
   animations: [
     trigger('slideInOut', [
@@ -175,6 +181,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Modo de selección de estado para estudiantes
   modoSeleccionEstado: 'ok' | 'solo' | 'ausente' | null = null;
 
+  // Control del panel de seguimiento móvil
+  mobileSeguimientoVisible: boolean = false;
+
   constructor() {
     addIcons({
       // Filled icons
@@ -184,7 +193,8 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       // Outline icons
       homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline,
       informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline,
-      pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline
+      pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline,
+      bookOutline, eyeOutline, menuOutline
     });
 
     // Suscribirse al seguimiento actual con cleanup
@@ -385,6 +395,21 @@ export class TabsPage implements OnDestroy, AfterViewInit {
         this.searchExpanded = false;
       }
     }, 150);
+  }
+
+  /** Abre el menú lateral en móvil */
+  async openMenu(): Promise<void> {
+    await this.menuCtrl.open('mainMenu');
+  }
+
+  /** Toggle del panel de seguimiento móvil */
+  toggleMobileSeguimiento(): void {
+    this.mobileSeguimientoVisible = !this.mobileSeguimientoVisible;
+  }
+
+  /** Helper para parseInt en template */
+  parseInt(value: string): number {
+    return parseInt(value, 10) || 0;
   }
 
   selectGrupo(grupo: string | 'todos'): void {
@@ -854,11 +879,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     }
 
     return nombreAbreviado;
-  }
-
-  // Método helper para template
-  parseInt(value: string): number {
-    return parseInt(value) || 0;
   }
 
   // Actualizar grupos disponibles desde los estudiantes del curso activo

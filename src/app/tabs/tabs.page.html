@@ -117,6 +117,23 @@
   <ion-router-outlet></ion-router-outlet>
 </div>
 
+<!-- FAB para abrir menú y panel de seguimiento en móvil -->
+<div class="mobile-fab-container" *ngIf="!isDesktop">
+  <!-- FAB para abrir menú lateral -->
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed" class="menu-fab">
+    <ion-fab-button size="small" color="primary" (click)="openMenu()">
+      <ion-icon name="menu-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- FAB para abrir panel de seguimiento -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="seguimiento-fab">
+    <ion-fab-button size="small" color="secondary" (click)="toggleMobileSeguimiento()">
+      <ion-icon [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</div>
+
 <!-- Hidden navigation helper (para mantener compatibilidad con rutas) -->
 <div class="hidden-navigation-helper">
   <ion-tab-bar class="hidden-tab-bar">
@@ -128,7 +145,7 @@
   </ion-tab-bar>
 </div>
 
-<!-- Panel de Seguimiento - posición fija a la derecha -->
+<!-- Panel de Seguimiento - posición fija a la derecha (Desktop) -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">
         <ion-card-header class="panel-seguimiento-header">
           <ion-card-title><ion-icon name="book"></ion-icon> Seguimiento</ion-card-title>
@@ -520,6 +537,103 @@
           }
         </ion-card-content>
       </ion-card>
+
+<!-- Panel de Seguimiento Móvil - Deslizante desde abajo -->
+<div class="mobile-seguimiento-panel" [class.visible]="mobileSeguimientoVisible" *ngIf="!isDesktop">
+  <div class="mobile-panel-header">
+    <div class="panel-title">
+      <ion-icon name="book"></ion-icon>
+      <span>Seguimiento</span>
+    </div>
+    <ion-button fill="clear" size="small" (click)="toggleMobileSeguimiento()">
+      <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+  <div class="mobile-panel-content">
+    <!-- Mensaje cuando no hay curso activo -->
+    @if (!mostrarGrupos && !searchTerm) {
+    <div class="seguimiento-placeholder-mobile">
+      <ion-icon name="school" size="large" color="medium"></ion-icon>
+      <h4>Sin curso activo</h4>
+      <p>Seleccione un curso en la pestaña <strong>"Cursos"</strong> para ver el seguimiento.</p>
+    </div>
+    }
+
+    <!-- Sección de Grupos Mobile -->
+    @if (mostrarGrupos) {
+    <div class="mobile-grupos-section">
+      <div class="grupos-header-mobile">
+        <span class="section-title-mobile">GRUPOS</span>
+        @if (grupoVisualizado > 0) {
+        <ion-badge color="primary">G{{ grupoVisualizado }}</ion-badge>
+        }
+      </div>
+      <div class="grupos-grid-mobile">
+        <button type="button" class="grupo-btn-mobile" [class.activo]="selectedGrupo === 0" (click)="selectGrupo('todos')" title="Ver todos los grupos">
+          <ion-icon name="grid"></ion-icon>
+        </button>
+        @for (grupo of grupos; track grupo) {
+        <button type="button" class="grupo-btn-mobile" [class.activo]="selectedGrupo === parseInt(grupo)" (click)="selectGrupo(grupo)" [title]="'Grupo ' + grupo">
+          {{ grupo }}
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Sección de Puntos Mobile -->
+    @if (grupoVisualizado > 0) {
+    <div class="mobile-puntos-section">
+      <div class="puntos-header-mobile">
+        <span class="section-title-mobile">PUNTOS</span>
+        <ion-segment [(ngModel)]="tipoRubricaSeleccionado" mode="ios" class="puntos-toggle-mobile">
+          <ion-segment-button value="PG"><ion-label>Grupal</ion-label></ion-segment-button>
+          <ion-segment-button value="PI"><ion-label>Individual</ion-label></ion-segment-button>
+        </ion-segment>
+      </div>
+      <div class="rubricas-grid-mobile">
+        <ion-button size="small" fill="outline" (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)">E1</ion-button>
+        <ion-button size="small" fill="outline" (click)="abrirRubricaEntrega('E2', tipoRubricaSeleccionado)">E2</ion-button>
+        <ion-button size="small" fill="outline" (click)="abrirRubricaEntrega('EF', tipoRubricaSeleccionado)">EF</ion-button>
+      </div>
+    </div>
+
+    <!-- Integrantes Mobile -->
+    @if (integrantesGrupoActual.length > 0) {
+    <div class="mobile-integrantes-section">
+      <span class="section-title-mobile">INTEGRANTES ({{ integrantesGrupoActual.length }})</span>
+      <div class="integrantes-list-mobile">
+        @for (integrante of integrantesGrupoActual; track integrante.correo) {
+        <div class="integrante-item-mobile" [class.estado-ok]="getEstadoEstudiante(integrante.correo) === 'ok'"
+             [class.estado-solo]="getEstadoEstudiante(integrante.correo) === 'solo'"
+             [class.estado-ausente]="getEstadoEstudiante(integrante.correo) === 'ausente'">
+          @if (getEstadoEstudiante(integrante.correo)) {
+          <ion-icon [name]="getIconoEstado(getEstadoEstudiante(integrante.correo))"
+                    [color]="getColorEstado(getEstadoEstudiante(integrante.correo))" class="estado-icono-mobile"></ion-icon>
+          }
+          <span class="nombre-mobile">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
+          <div class="calificaciones-mobile">
+            <span class="cal-badge-mobile" [class.success]="obtenerCalificacionEstudiante(integrante, 'E1') >= 4.0">
+              {{ obtenerCalificacionEstudiante(integrante, 'E1') || '-' }}
+            </span>
+            <span class="cal-badge-mobile" [class.success]="obtenerCalificacionEstudiante(integrante, 'E2') >= 4.0">
+              {{ obtenerCalificacionEstudiante(integrante, 'E2') || '-' }}
+            </span>
+            <span class="cal-badge-mobile" [class.success]="obtenerCalificacionEstudiante(integrante, 'EF') >= 4.0">
+              {{ obtenerCalificacionEstudiante(integrante, 'EF') || '-' }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+    }
+    }
+  </div>
+</div>
+
+<!-- Overlay para cerrar el panel móvil -->
+<div class="mobile-seguimiento-overlay" [class.visible]="mobileSeguimientoVisible" (click)="toggleMobileSeguimiento()" *ngIf="!isDesktop"></div>
 
 <!-- Barra de búsqueda flotante cuando se expande -->
 @if (searchExpanded) {
