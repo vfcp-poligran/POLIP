@@ -99,7 +99,7 @@ npx cap run ios
 
 ## 📁 Estructura del Proyecto
 
-```
+```text
 src/
 ├── app/
 │   ├── models/           # Interfaces TypeScript

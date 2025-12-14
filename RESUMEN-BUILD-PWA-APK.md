@@ -10,6 +10,7 @@
 ### 1. Configuración PWA Optimizada
 
 #### `ngsw-config.json`
+
 - Añadido `updateMode: "prefetch"` para assets de app
 - Configurado caché de datos con grupos:
   - `api-cache`: Estrategia freshness, TTL 1 día
@@ -18,6 +19,7 @@
 - Configurado `navigationUrls` para SPA routing
 
 #### `manifest.webmanifest`
+
 - Añadido `description` para SEO
 - Cambiado `display: "fullscreen"` → `"standalone"` (mejor UX)
 - Añadido `id` único de aplicación
@@ -25,6 +27,7 @@
 - Añadido `prefer_related_applications: false`
 
 #### `index.html`
+
 - Meta tags PWA optimizados:
   - `theme-color`
   - `mobile-web-app-capable`
@@ -38,6 +41,7 @@
 ### 2. Configuración Capacitor Mejorada
 
 #### `capacitor.config.ts`
+
 - Configuración `server` con esquemas HTTPS
 - Android:
   - `minWebViewVersion: 60`
@@ -55,6 +59,7 @@
 ### 3. Configuración Android Optimizada
 
 #### `build.gradle` (app)
+
 - `versionCode: 7`, `versionName: "7.0.0"`
 - Release build:
   - `minifyEnabled true`
@@ -63,6 +68,7 @@
 - `compileOptions` Java 17
 
 #### `proguard-rules.pro`
+
 - Reglas para Capacitor
 - Reglas para SQLCipher
 - Reglas para WebView JavaScript
@@ -85,19 +91,21 @@
 | Carpeta | Descripción |
 |---------|-------------|
 | `www/browser/` | Assets optimizados para producción |
-| Service Worker configurado con Angular PWA |
+| Service Worker | Configurado con Angular PWA |
 
 ---
 
 ## 🚀 Comandos de Despliegue
 
 ### PWA (Web)
+
 ```bash
 npm run build:prod
 # Servir desde www/browser/
 ```
 
 ### Android Debug
+
 ```bash
 npm run android:sync
 cd android && ./gradlew assembleDebug
@@ -105,6 +113,7 @@ cd android && ./gradlew assembleDebug
 ```
 
 ### Android Release (sin firmar)
+
 ```bash
 npm run android:sync
 cd android && ./gradlew assembleRelease
@@ -112,6 +121,7 @@ cd android && ./gradlew assembleRelease
 ```
 
 ### Firmar APK Release
+
 ```bash
 # 1. Generar keystore (solo una vez)
 keytool -genkey -v -keystore my-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias my-alias
