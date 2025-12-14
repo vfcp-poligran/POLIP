@@ -4,15 +4,49 @@ const config: CapacitorConfig = {
   appId: 'com.poligran.gestorproyectos',
   appName: 'Gestor de Proyectos EPM',
   webDir: 'www/browser',
-  // Forzar orientación landscape en móviles
+  // Configuración del servidor para desarrollo
+  server: {
+    androidScheme: 'https',
+    iosScheme: 'https',
+    hostname: 'localhost'
+  },
+  // Configuración Android optimizada según mejores prácticas
   android: {
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: true  // Habilitado para desarrollo
+    webContentsDebuggingEnabled: false,  // Deshabilitado para producción
+    minWebViewVersion: 60,
+    backgroundColor: '#0f385a',
+    overrideUserAgent: 'GestorProyectosEPM-Android'
   },
+  // Configuración iOS optimizada
   ios: {
     contentInset: 'automatic',
-    allowsLinkPreview: false
+    allowsLinkPreview: false,
+    backgroundColor: '#0f385a',
+    preferredContentMode: 'mobile',
+    scrollEnabled: true
+  },
+  // Plugins de Capacitor
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      launchAutoHide: true,
+      backgroundColor: '#0f385a',
+      androidSplashResourceName: 'splash',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true
+    },
+    StatusBar: {
+      style: 'DARK',
+      backgroundColor: '#0f385a'
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true
+    }
   }
 };
 
