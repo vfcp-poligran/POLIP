@@ -20,7 +20,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         </div>
 
         <!-- Nombre de la aplicación -->
-        <h1 class="app-name">Gestor de Proyectos EPM</h1>
+        <h1 class="app-name">POLIProject</h1>
         <p class="app-subtitle">Politécnico Grancolombiano</p>
 
         <!-- Indicador de carga -->

@@ -1,6 +1,6 @@
 {
-  "name": "Gestor de Proyectos EPM",
-  "short_name": "EPM Gestor",
+  "name": "POLIProject - Gestión de Proyectos",
+  "short_name": "POLIProject",
   "description": "Gestor de Seguimiento de Proyectos para evaluación educativa - Politécnico Grancolombiano",
   "display": "standalone",
   "orientation": "any",
