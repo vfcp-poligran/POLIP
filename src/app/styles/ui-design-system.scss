@@ -1,0 +1,504 @@
+/**
+ * UI Design System - Gestor de Proyectos EPM
+ * ============================================
+ * Sistema de diseño modular con componentes reutilizables
+ */
+
+/* ============================================================
+   MICRO-INTERACCIONES Y ANIMACIONES
+   ============================================================ */
+
+/* Transición suave por defecto */
+.ui-transition {
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover con elevación */
+.ui-hover-elevate {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Efecto ripple mejorado */
+.ui-ripple {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  &:active::after {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+  }
+}
+
+/* Animación de entrada */
+@keyframes ui-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ui-animate-in {
+  animation: ui-fade-in-up 0.3s ease forwards;
+}
+
+/* Skeleton loading */
+@keyframes ui-skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.ui-skeleton {
+  background: linear-gradient(90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: ui-skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   CARDS MEJORADAS
+   ============================================================ */
+
+.ui-card {
+  background: var(--bg-card, #ffffff);
+  border-radius: var(--rad-sm, 8px);
+  box-shadow: var(--shadow-light);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-medium);
+  }
+
+  &--elevated {
+    box-shadow: var(--shadow-medium);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+  }
+
+  &--interactive {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &__header {
+    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+  }
+
+  &__body {
+    padding: var(--spacing-lg);
+  }
+
+  &__footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid var(--border-color, #e0e0e0);
+  }
+}
+
+/* ============================================================
+   BADGES Y CHIPS MEJORADOS
+   ============================================================ */
+
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: var(--badge-size, 0.75rem);
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &--primary {
+    background: var(--azul-oscuro, #0f385a);
+    color: #ffffff;
+  }
+
+  &--success {
+    background: var(--verde, #a6ce38);
+    color: #000000;
+  }
+
+  &--warning {
+    background: var(--naranja, #fbaf17);
+    color: #000000;
+  }
+
+  &--danger {
+    background: var(--magenta, #ec0677);
+    color: #ffffff;
+  }
+
+  &--outline {
+    background: transparent;
+    border: 1px solid currentColor;
+  }
+}
+
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: var(--fs-sm);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.06);
+  cursor: default;
+  transition: background 0.2s ease;
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &--selected {
+    background: var(--azul-oscuro, #0f385a);
+    color: #ffffff;
+  }
+
+  ion-icon {
+    font-size: 1rem;
+  }
+}
+
+/* ============================================================
+   BOTONES MEJORADOS
+   ============================================================ */
+
+.ui-btn {
+  --border-radius: 8px;
+  --box-shadow: none;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+
+  &--rounded {
+    --border-radius: 20px;
+  }
+
+  &--icon-only {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+}
+
+/* Estado de carga en botón */
+.ui-btn-loading {
+  position: relative;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  span, ion-icon {
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   FORMULARIOS MEJORADOS
+   ============================================================ */
+
+.ui-input-group {
+  margin-bottom: var(--spacing-lg);
+
+  label {
+    display: block;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--texto-secundario);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  ion-input, ion-textarea, ion-select {
+    --border-radius: 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus-within {
+      border-color: var(--azul-claro);
+      box-shadow: 0 0 0 3px rgba(31, 178, 222, 0.15);
+    }
+  }
+
+  .ui-input-error {
+    font-size: var(--fs-xs);
+    color: var(--magenta);
+    margin-top: var(--spacing-xs);
+  }
+}
+
+/* ============================================================
+   LISTAS MEJORADAS
+   ============================================================ */
+
+.ui-list {
+  ion-item {
+    --padding-start: var(--spacing-lg);
+    --padding-end: var(--spacing-lg);
+    --inner-padding-end: 0;
+    --min-height: var(--list-item-height);
+    transition: background 0.2s ease;
+
+    &[button]:hover {
+      --background: rgba(0, 0, 0, 0.03);
+    }
+
+    &[button]:active {
+      --background: rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  &--compact {
+    ion-item {
+      --min-height: var(--list-item-compact);
+      font-size: var(--fs-sm);
+    }
+  }
+
+  &--divided {
+    ion-item {
+      --border-color: var(--border-color);
+    }
+  }
+}
+
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+
+.ui-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 4rem;
+    color: var(--texto-secundario);
+    opacity: 0.5;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    color: var(--texto-principal);
+    margin: 0 0 var(--spacing-sm);
+  }
+
+  p {
+    font-size: var(--fs-sm);
+    color: var(--texto-secundario);
+    max-width: 280px;
+    margin: 0 0 var(--spacing-lg);
+  }
+}
+
+/* ============================================================
+   PROGRESS INDICATORS
+   ============================================================ */
+
+.ui-progress {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+
+  &__bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--azul-claro), var(--verde));
+  }
+
+  &--striped &__bar {
+    background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.15) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 1rem 1rem;
+  }
+
+  &--animated &__bar {
+    animation: progress-stripes 1s linear infinite;
+  }
+}
+
+@keyframes progress-stripes {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
+}
+
+/* ============================================================
+   TOOLTIPS
+   ============================================================ */
+
+[data-tooltip] {
+  position: relative;
+
+  &::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #ffffff;
+    font-size: var(--fs-xs);
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 1000;
+  }
+
+  &:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE UTILITIES
+   ============================================================ */
+
+/* Hide en mobile */
+@media (max-width: 767px) {
+  .ui-hide-mobile { display: none !important; }
+}
+
+/* Hide en desktop */
+@media (min-width: 768px) {
+  .ui-hide-desktop { display: none !important; }
+}
+
+/* Stack en mobile */
+@media (max-width: 767px) {
+  .ui-stack-mobile {
+    flex-direction: column !important;
+
+    > * {
+      width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ============================================================
+   GLASSMORPHISM (opcional para elementos destacados)
+   ============================================================ */
+
+.ui-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================
+   FOCUS VISIBLE - Accesibilidad
+   ============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--azul-claro);
+  outline-offset: 2px;
+}
+
+button:focus:not(:focus-visible),
+ion-button:focus:not(:focus-visible) {
+  outline: none;
+}
