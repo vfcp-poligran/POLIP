@@ -149,7 +149,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   selectedGrupo: number = 0; // Grupo seleccionado en UI (para botones)
   grupoVisualizado: number = 0; // Grupo para mostrar integrantes (puede ser diferente)
   searchExpanded: boolean = false;
-  isDesktop: boolean = window.innerWidth >= 992;
+  isDesktop: boolean = typeof window !== 'undefined' ? window.innerWidth >= 992 : false;
   grupos: string[] = [];
   tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG';
 
@@ -319,6 +319,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   /** Actualiza isDesktop solo si cambió - evita detecciones innecesarias */
   private updateDesktopState(): void {
+    if (typeof window === 'undefined') return;
     const newIsDesktop = window.innerWidth >= 992;
     if (this.isDesktop !== newIsDesktop) {
       this.isDesktop = newIsDesktop;
