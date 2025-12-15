@@ -22,7 +22,7 @@
                   <!-- Personas -->
                   <div class="import-item" [class.has-file]="estudiantesFileName"
                     (click)="estudiantesFileInput.click()">
-                    <input #estudiantesFileInput type="file" accept=".csv" aria-label="Personas"
+                    <input #estudiantesFileInput type="file" accept=".csv,text/csv,text/comma-separated-values,application/csv" aria-label="Personas"
                       (change)="onEstudiantesFileSelected($event)" class="display-none">
                     <div class="import-top">
                       <ion-icon name="people-outline"></ion-icon>
@@ -44,7 +44,7 @@
                   <div class="import-item"
                     [class.has-file]="calificacionesFileName || (codigoCursoEnEdicion && obtenerNombreArchivoCalificaciones(codigoCursoEnEdicion))"
                     (click)="calificacionesFileInput.click()">
-                    <input #calificacionesFileInput type="file" accept=".csv" aria-label="Calificaciones"
+                    <input #calificacionesFileInput type="file" accept=".csv,text/csv,text/comma-separated-values,application/csv" aria-label="Calificaciones"
                       (change)="onCalificacionesFileSelected($event)" class="display-none">
                     <div class="import-top">
                       <ion-icon name="stats-chart-outline"></ion-icon>
