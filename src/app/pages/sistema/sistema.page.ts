@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Logger } from '@app/core/utils/logger';
 import {
   IonContent,
   IonCard,
@@ -123,7 +124,7 @@ export class SistemaPage implements OnInit {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error exportando base de datos:', error);
+      Logger.error('Error exportando base de datos:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al exportar base de datos',
@@ -168,7 +169,7 @@ export class SistemaPage implements OnInit {
           });
           await toast.present();
         } catch (error) {
-          console.error('Error procesando backup:', error);
+          Logger.error('Error procesando backup:', error);
 
           const toast = await this.toastController.create({
             message: 'Error al procesar archivo de backup',
@@ -194,7 +195,7 @@ export class SistemaPage implements OnInit {
 
       reader.readAsText(file);
     } catch (error) {
-      console.error('Error importando base de datos:', error);
+      Logger.error('Error importando base de datos:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al importar base de datos',
@@ -230,7 +231,7 @@ export class SistemaPage implements OnInit {
               });
               await toast.present();
             } catch (error) {
-              console.error('Error limpiando base de datos:', error);
+              Logger.error('Error limpiando base de datos:', error);
 
               const toast = await this.toastController.create({
                 message: 'Error al limpiar base de datos',
@@ -249,3 +250,4 @@ export class SistemaPage implements OnInit {
     await alert.present();
   }
 }
+

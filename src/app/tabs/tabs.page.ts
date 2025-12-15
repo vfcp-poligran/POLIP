@@ -36,6 +36,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Logger } from '@app/core/utils/logger';
 import { addIcons } from 'ionicons';
 import {
   // Iconos filled
@@ -284,7 +285,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       this.dataService.searchResults$.subscribe(results => {
         this.searchResults = results.results;
         this.searchTerm = results.term;
-        console.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
+        Logger.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
       })
     );
 
@@ -633,7 +634,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       archivoCalificaciones: nuevoArchivoCalificaciones
     });
 
-    console.log(`✅ Calificación actualizada: ${estudiante.nombres} ${estudiante.apellidos} - ${entrega}: ${nuevoValor}`);
+    Logger.log(`✅ Calificación actualizada: ${estudiante.nombres} ${estudiante.apellidos} - ${entrega}: ${nuevoValor}`);
   }
 
   /**
@@ -659,7 +660,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
    * Abre la rúbrica para evaluación desde el panel de seguimiento
    */
   abrirRubricaEntrega(entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI') {
-    console.log(`📋[TabsPage] Abriendo rúbrica desde sidebar: ${entrega} - ${tipo} `);
+    Logger.log(`📋[TabsPage] Abriendo rúbrica desde sidebar: ${entrega} - ${tipo} `);
 
     // Trigger evento personalizado para abrir rúbrica
     const event = new CustomEvent('abrirRubrica', {
@@ -785,11 +786,11 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       });
 
       navigator.clipboard.write([clipboardItem]).then(() => {
-        console.log('✅ Texto de seguimiento copiado al portapapeles con formato y colores');
+        Logger.log('✅ Texto de seguimiento copiado al portapapeles con formato y colores');
       }).catch(() => {
         // Fallback a texto plano si falla el formato HTML
         navigator.clipboard.writeText(textoPlano).then(() => {
-          console.log('✅ Texto de seguimiento copiado al portapapeles (texto plano)');
+          Logger.log('✅ Texto de seguimiento copiado al portapapeles (texto plano)');
         });
       });
     }

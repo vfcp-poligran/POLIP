@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Logger } from '@app/core/utils/logger';
 import {
   IonContent,
   IonButton,
@@ -390,10 +391,10 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       }
 
       // Debug: mostrar información del CSV
-      console.log(`Exportando CSV con ${this.csvOriginalLineas.length} líneas`);
-      console.log('Primera línea (headers):', this.csvOriginalLineas[0]?.substring(0, 100));
+      Logger.log(`Exportando CSV con ${this.csvOriginalLineas.length} líneas`);
+      Logger.log('Primera línea (headers):', this.csvOriginalLineas[0]?.substring(0, 100));
       if (this.csvOriginalLineas.length > 3) {
-        console.log('Muestra línea 3:', this.csvOriginalLineas[3]?.substring(0, 150));
+        Logger.log('Muestra línea 3:', this.csvOriginalLineas[3]?.substring(0, 150));
       }
 
       // Reconstruir el CSV desde csvOriginalLineas (ya tiene los valores actualizados)
@@ -418,7 +419,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error exportando calificaciones:', error);
+      Logger.error('Error exportando calificaciones:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al exportar calificaciones',
@@ -746,7 +747,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
    */
   private actualizarLineaCSV(lineaIndex: number, columnaIndex: number, nuevoValor: string): void {
     if (lineaIndex < 0 || lineaIndex >= this.csvOriginalLineas.length) {
-      console.error(`actualizarLineaCSV: índice fuera de rango ${lineaIndex}`);
+      Logger.error(`actualizarLineaCSV: índice fuera de rango ${lineaIndex}`);
       return;
     }
 
@@ -754,7 +755,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
     const valores = this.parsearLineaCSV(linea);
 
     if (columnaIndex < 0 || columnaIndex >= valores.length) {
-      console.error(`actualizarLineaCSV: columna fuera de rango ${columnaIndex}`);
+      Logger.error(`actualizarLineaCSV: columna fuera de rango ${columnaIndex}`);
       return;
     }
 
@@ -770,7 +771,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       return v;
     }).join(',');
 
-    console.log(`CSV actualizado - Línea ${lineaIndex}, Columna ${columnaIndex}: "${nuevoValor}"`);
+    Logger.log(`CSV actualizado - Línea ${lineaIndex}, Columna ${columnaIndex}: "${nuevoValor}"`);
   }
 
   /**
@@ -984,7 +985,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
                 await toast.present();
               }
             } catch (error) {
-              console.error('Error eliminando archivo:', error);
+              Logger.error('Error eliminando archivo:', error);
 
               const toast = await this.toastController.create({
                 message: 'Error al eliminar archivo',
@@ -1130,3 +1131,4 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
     return num > 0 && num <= 50;
   }
 }
+

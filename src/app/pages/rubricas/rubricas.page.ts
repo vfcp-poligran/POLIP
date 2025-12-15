@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Logger } from '@app/core/utils/logger';
 import {
   IonContent,
   IonCard,
@@ -594,7 +595,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
       this.rubricaSeleccionada = rubrica;
       this.modoEdicion = true; // Activar modo edición para mostrar botones Guardar/Cancelar
     } catch (error: any) {
-      console.error('Error importando rúbrica:', error);
+      Logger.error('Error importando rúbrica:', error);
       await loading.dismiss();
 
       // Mostrar alert con el mensaje de error específico
@@ -944,7 +945,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
 
       await this.mostrarToast('Rúbrica guardada exitosamente', 'success');
     } catch (error) {
-      console.error('Error guardando rúbrica:', error);
+      Logger.error('Error guardando rúbrica:', error);
       await this.mostrarToast('Error al guardar la rúbrica', 'danger');
     }
   } cancelarEdicion() {
@@ -973,7 +974,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
 
       await this.mostrarToast(`Rúbrica "${this.rubricaSeleccionada.nombre}" guardada exitosamente`, 'success');
     } catch (error) {
-      console.error('Error al guardar rúbrica:', error);
+      Logger.error('Error al guardar rúbrica:', error);
       await this.mostrarToast('Error al guardar la rúbrica', 'danger');
     }
   }
@@ -1083,7 +1084,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
 
       await this.mostrarToast('Rúbrica actualizada exitosamente', 'success');
     } catch (error: any) {
-      console.error('Error guardando texto editado:', error);
+      Logger.error('Error guardando texto editado:', error);
       await this.mostrarToast(`Error al guardar: ${error.message}`, 'danger');
     }
   }
@@ -1205,7 +1206,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
         await this.mostrarToast('Plantilla descargada y rúbrica creada. Asigna cursos y guarda.', 'success');
       }
     } catch (error: any) {
-      console.error('Error generando rúbrica en blanco:', error);
+      Logger.error('Error generando rúbrica en blanco:', error);
       await this.mostrarToast(`Error al crear rúbrica: ${error.message}`, 'danger');
     }
   }
@@ -1285,3 +1286,4 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     await toast.present();
   }
 }
+

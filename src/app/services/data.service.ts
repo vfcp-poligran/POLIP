@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UnifiedStorageService } from './unified-storage.service';
 import { BackupService } from './backup.service';
+import { Logger } from '@app/core/utils/logger';
 import {
   Estudiante,
   CursoData,
@@ -214,7 +215,7 @@ export class DataService {
       this.isInitialized = true;
       this.initializationPromise = null;
     } catch (error) {
-      console.error('❌ [DataService] Error initializing data service:', error);
+      Logger.error('❌ [DataService] Error initializing data service:', error);
       this.initializationPromise = null;
       throw error;
     }
@@ -268,7 +269,7 @@ export class DataService {
           await this.guardarRubrica(nueva);
           migradas++;
         } catch (error) {
-          console.error(`❌ [DataService] Error migrando rúbrica ${viejoId}:`, error);
+          Logger.error(`❌ [DataService] Error migrando rúbrica ${viejoId}:`, error);
           errores++;
         }
       }
@@ -277,7 +278,7 @@ export class DataService {
       localStorage.removeItem('rubricas');
 
     } catch (error) {
-      console.error('❌ [DataService] Error en migración de rúbricas:', error);
+      Logger.error('❌ [DataService] Error en migración de rúbricas:', error);
       errores++;
     }
 
@@ -312,7 +313,7 @@ export class DataService {
   }
 
   async loadCursos(): Promise<void> {
-    const cursos = await this.storage.get(this.STORAGE_KEYS.CURSOS) || {};
+    const cursos = await this.storage.get<CursoData>(this.STORAGE_KEYS.CURSOS) || {} as CursoData;
     this.cursosSubject.next(cursos);
   }
 
@@ -403,7 +404,7 @@ export class DataService {
 
       // Extraer código base (primera parte antes de "-B" o los primeros 3+ caracteres)
       const codigoBase = this.extraerCodigoBaseCurso(cursoData.codigo);
-      console.log(`🔍 [crearCurso] Buscando rúbricas de cursos relacionados con código base: "${codigoBase}"`);
+      Logger.log(`🔍 [crearCurso] Buscando rúbricas de cursos relacionados con código base: "${codigoBase}"`);
 
       // Buscar otros cursos con el mismo código base que tengan rúbricas asociadas
       const cursosRelacionados = Object.entries(courseStates).filter(([key, state]) => {
@@ -426,9 +427,9 @@ export class DataService {
             entregaFinalIndividual: rubricasOrigen.entregaFinalIndividual ?? null
           };
         }
-        console.log(`✅ [crearCurso] Heredando rúbricas del curso relacionado: "${cursoRelacionadoKey}"`, rubricasHeredadas);
+        Logger.log(`✅ [crearCurso] Heredando rúbricas del curso relacionado: "${cursoRelacionadoKey}"`, rubricasHeredadas);
       } else {
-        console.log('📋 [crearCurso] No se encontraron cursos relacionados con rúbricas, el curso se creará sin asociaciones');
+        Logger.log('📋 [crearCurso] No se encontraron cursos relacionados con rúbricas, el curso se creará sin asociaciones');
       }
 
       // INMUTABILIDAD: Crear copia del UI State con el nuevo curso
@@ -466,7 +467,7 @@ export class DataService {
       this.cursosSubject.next(cursosActuales);
       this.uiStateSubject.next(uiState);
 
-      console.log('✅ [crearCurso] Curso establecido como activo:', nombreClave);
+      Logger.log('✅ [crearCurso] Curso establecido como activo:', nombreClave);
 
       // Guardar cambios en storage
       await this.saveCursos();
@@ -474,7 +475,7 @@ export class DataService {
 
       // Log de éxito
       const rubricasInfo = rubricasHeredadas ? '(con rúbricas heredadas)' : '(sin rúbricas)';
-      console.log(
+      Logger.log(
         `✅ Curso creado exitosamente ${rubricasInfo}:\n` +
         `   • Nombre completo: "${cursoData.nombre}"\n` +
         `   • Código abreviado: "${cursoData.codigo}"\n` +
@@ -489,7 +490,7 @@ export class DataService {
 
     } catch (error) {
       // Re-lanzar el error para que el componente lo maneje
-      console.error('Error al crear curso:', error);
+      Logger.error('Error al crear curso:', error);
       throw error;
     }
   }
@@ -514,9 +515,9 @@ export class DataService {
       this.cursosSubject.next(cursosActualizados);
       await this.saveCursos();
 
-      console.log(`✅ Estudiantes actualizados para curso: ${codigoCurso} (${estudiantes.length} estudiantes)`);
+      Logger.log(`✅ Estudiantes actualizados para curso: ${codigoCurso} (${estudiantes.length} estudiantes)`);
     } catch (error) {
-      console.error('Error actualizando estudiantes:', error);
+      Logger.error('Error actualizando estudiantes:', error);
       throw error;
     }
   }
@@ -568,7 +569,7 @@ export class DataService {
     this.uiStateSubject.next(uiState);
     await this.saveUIState();
 
-    console.log(`✅ Nombre del curso actualizado: "${nombreNuevo}" (${codigoUnico})`);
+    Logger.log(`✅ Nombre del curso actualizado: "${nombreNuevo}" (${codigoUnico})`);
   }
 
   /**
@@ -578,19 +579,19 @@ export class DataService {
   async eliminarCurso(codigoUnico: string): Promise<void> {
     await this.ensureInitialized();
 
-    console.log(`🗑️ Eliminando curso: ${codigoUnico}`);
+    Logger.log(`🗑️ Eliminando curso: ${codigoUnico}`);
 
     // 1. ELIMINAR ESTUDIANTES DEL CURSO
     const cursosOriginales = this.cursosSubject.value;
     const { [codigoUnico]: cursoEliminado, ...cursosRestantes } = cursosOriginales;
 
     if (!cursoEliminado) {
-      console.warn(`⚠️ No se encontró el curso ${codigoUnico} en la lista de cursos`);
+      Logger.warn(`⚠️ No se encontró el curso ${codigoUnico} en la lista de cursos`);
     }
 
     this.cursosSubject.next(cursosRestantes);
     await this.saveCursos();
-    console.log(`✅ Estudiantes eliminados (${cursoEliminado?.length || 0})`);
+    Logger.log(`✅ Estudiantes eliminados (${cursoEliminado?.length || 0})`);
 
     // 2. ELIMINAR COURSE STATE Y METADATA
     try {
@@ -605,9 +606,9 @@ export class DataService {
 
       this.uiStateSubject.next(uiState);
       await this.saveUIState();
-      console.log(`✅ Course state eliminado`);
+      Logger.log(`✅ Course state eliminado`);
     } catch (error) {
-      console.error('❌ [DataService] Error eliminando course state:', error);
+      Logger.error('❌ [DataService] Error eliminando course state:', error);
     }
 
     // 3. ELIMINAR EVALUACIONES DEL CURSO
@@ -627,12 +628,12 @@ export class DataService {
 
       this.evaluacionesSubject.next(evaluacionesRestantes);
       await this.saveEvaluaciones();
-      console.log(`✅ Evaluaciones eliminadas (${evaluacionesEliminadas})`);
+      Logger.log(`✅ Evaluaciones eliminadas (${evaluacionesEliminadas})`);
     } catch (error) {
-      console.error('❌ [DataService] Error eliminando evaluaciones:', error);
+      Logger.error('❌ [DataService] Error eliminando evaluaciones:', error);
     }
 
-    console.log(`✅ Curso ${codigoUnico} eliminado completamente`);
+    Logger.log(`✅ Curso ${codigoUnico} eliminado completamente`);
   }
 
   getCursos(): CursoData {
@@ -675,14 +676,14 @@ export class DataService {
     }
 
     // Si no se encuentra, devolver el valor original y advertir
-    console.warn(`⚠️ No se encontró curso para identificador: "${identificador}"`);
+    Logger.warn(`⚠️ No se encontró curso para identificador: "${identificador}"`);
     return identificador;
   }
 
   // === GESTIÓN DE EVALUACIONES ===
 
   async loadEvaluaciones(): Promise<void> {
-    const evaluaciones = await this.storage.get(this.STORAGE_KEYS.EVALUACIONES) || {};
+    const evaluaciones = await this.storage.get<{ [key: string]: Evaluacion }>(this.STORAGE_KEYS.EVALUACIONES) || {} as { [key: string]: Evaluacion };
     this.evaluacionesSubject.next(evaluaciones);
   }
 
@@ -715,7 +716,7 @@ export class DataService {
     const evaluacionesOriginales = this.evaluacionesSubject.value;
     const key = `${codigoCurso}_${entrega}_${tipo}_${identificador}`;
 
-    console.log(`🗑️ [borrarEvaluacion] Eliminando evaluación:`, {
+    Logger.log(`🗑️ [borrarEvaluacion] Eliminando evaluación:`, {
       cursoNombreOriginal: cursoNombre,
       codigoNormalizado: codigoCurso,
       key
@@ -736,7 +737,7 @@ export class DataService {
     // Normalizar el nombre del curso para coincidir con generateEvaluationKey
     const codigoCurso = this.getCourseCodeFromNameOrCode(cursoNombre);
     const key = `${codigoCurso}_${entrega}_${tipo}_${identificador}`;
-    console.log(`🔍 [getEvaluacion] Buscando con key: ${key}`);
+    Logger.log(`🔍 [getEvaluacion] Buscando con key: ${key}`);
     return this.evaluacionesSubject.value[key];
   }
 
@@ -760,7 +761,7 @@ export class DataService {
 
     const key = `${codigoCurso}_${evaluacion.entrega}_${evaluacion.tipo}_${identificador}`;
 
-    console.log(`🔑 [generateEvaluationKey]`, {
+    Logger.log(`🔑 [generateEvaluationKey]`, {
       cursoNombreOriginal: evaluacion.cursoNombre,
       codigoNormalizado: codigoCurso,
       key
@@ -773,7 +774,7 @@ export class DataService {
 
   async loadUIState(): Promise<void> {
 
-    const uiState = await this.storage.get(this.STORAGE_KEYS.UI_STATE) || { cursoActivo: null, courseStates: {} };
+    const uiState = await this.storage.get<UIState>(this.STORAGE_KEYS.UI_STATE) || { cursoActivo: null, grupoSeguimientoActivo: null, courseStates: {} } as UIState;
 
     // Migrar/limpiar archivos Canvas antiguos
     const uiStateMigrado = this.migrarArchivosCanvas(uiState);
@@ -801,7 +802,7 @@ export class DataService {
       if ((courseState as any).archivoCanvas && !courseState.archivoCalificaciones) {
         const archivoCanvas = (courseState as any).archivoCanvas;
 
-        console.log(`🔄 [Migración] Detectado archivoCanvas antiguo en curso: ${cursoNombre}`);
+        Logger.log(`🔄 [Migración] Detectado archivoCanvas antiguo en curso: ${cursoNombre}`);
 
         const contenidoCSV = archivoCanvas.contenidoCSV || '';
         courseStateMigrado.archivoCalificaciones = {
@@ -816,7 +817,7 @@ export class DataService {
 
       // Eliminar propiedad archivoCanvas obsoleta
       if ((courseStateMigrado as any).archivoCanvas) {
-        console.log(`🧹 [Limpieza] Eliminando archivoCanvas obsoleto en curso: ${cursoNombre}`);
+        Logger.log(`🧹 [Limpieza] Eliminando archivoCanvas obsoleto en curso: ${cursoNombre}`);
         delete (courseStateMigrado as any).archivoCanvas;
         cambiosRealizados = true;
       }
@@ -827,7 +828,7 @@ export class DataService {
 
         // Validar estructura
         if (!archivo.nombre || !archivo.contenidoOriginal || typeof archivo.contenidoOriginal !== 'string') {
-          console.warn(`⚠️ [Limpieza] Archivo de calificaciones corrupto en curso: ${cursoNombre}, eliminando...`);
+          Logger.warn(`⚠️ [Limpieza] Archivo de calificaciones corrupto en curso: ${cursoNombre}, eliminando...`);
           delete courseStateMigrado.archivoCalificaciones;
           cambiosRealizados = true;
         }
@@ -835,7 +836,7 @@ export class DataService {
         else if (archivo.contenidoOriginal.trim().length > 0) {
           const lineas = archivo.contenidoOriginal.split('\n');
           if (lineas.length < 2) {
-            console.warn(`⚠️ [Limpieza] Archivo CSV inválido (menos de 2 líneas) en curso: ${cursoNombre}, eliminando...`);
+            Logger.warn(`⚠️ [Limpieza] Archivo CSV inválido (menos de 2 líneas) en curso: ${cursoNombre}, eliminando...`);
             delete courseStateMigrado.archivoCalificaciones;
             cambiosRealizados = true;
           }
@@ -846,11 +847,11 @@ export class DataService {
     });
 
     if (cambiosRealizados) {
-      console.log('✅ [Migración] Archivos Canvas migrados y limpiados exitosamente');
+      Logger.log('✅ [Migración] Archivos Canvas migrados y limpiados exitosamente');
       // Guardar cambios inmediatamente
       setTimeout(() => {
         this.saveUIState().catch(err =>
-          console.error('Error guardando UIState migrado:', err)
+          Logger.error('Error guardando UIState migrado:', err)
         );
       }, 100);
     }
@@ -939,7 +940,7 @@ export class DataService {
 
     return calificaciones;
   } async guardarArchivoCalificaciones(codigoCurso: string, nombreArchivo: string, contenido: string): Promise<void> {
-    console.log('💾 [DataService.guardarArchivoCalificaciones] Iniciando guardado:', {
+    Logger.log('💾 [DataService.guardarArchivoCalificaciones] Iniciando guardado:', {
       codigoCurso,
       nombreArchivo,
       longitudContenido: contenido.length,
@@ -949,7 +950,7 @@ export class DataService {
 
     // Validación: verificar que el curso existe
     if (!this.getCurso(codigoCurso)) {
-      console.error('❌ [guardarArchivoCalificaciones] El curso no existe:', codigoCurso);
+      Logger.error('❌ [guardarArchivoCalificaciones] El curso no existe:', codigoCurso);
       throw new Error(`No se puede guardar archivo Canvas: el curso "${codigoCurso}" no existe`);
     }
 
@@ -959,13 +960,13 @@ export class DataService {
     const courseState = currentState.courseStates?.[codigoCurso];
 
     if (!courseState) {
-      console.warn(`No se encontró courseState para ${codigoCurso}, creando uno nuevo`);
+      Logger.warn(`No se encontró courseState para ${codigoCurso}, creando uno nuevo`);
     } else {
-      console.log('📊 [DataService] CourseState existente encontrado para:', codigoCurso);
+      Logger.log('📊 [DataService] CourseState existente encontrado para:', codigoCurso);
 
       // Si ya existe un archivo, mostrar info
       if (courseState.archivoCalificaciones) {
-        console.log('⚠️ [DataService] Se sobrescribirá archivo existente:', {
+        Logger.log('⚠️ [DataService] Se sobrescribirá archivo existente:', {
           nombreAnterior: courseState.archivoCalificaciones.nombre,
           nombreNuevo: nombreArchivo
         });
@@ -982,7 +983,7 @@ export class DataService {
       calificaciones: calificaciones  // Campos procesados para búsquedas rápidas
     };
 
-    console.log('📋 [DataService] Archivo Canvas guardado:', {
+    Logger.log('📋 [DataService] Archivo Canvas guardado:', {
       totalRegistros: calificaciones.length,
       longitudCSV: contenido.length,
       primerRegistro: calificaciones[0]
@@ -1001,13 +1002,13 @@ export class DataService {
       }
     };
 
-    console.log('📦 [DataService] Actualizando UIState con nuevo archivo...');
-    console.log('🔑 [DataService] Clave del curso:', codigoCurso);
+    Logger.log('📦 [DataService] Actualizando UIState con nuevo archivo...');
+    Logger.log('🔑 [DataService] Clave del curso:', codigoCurso);
     this.uiStateSubject.next(newState);
 
     try {
       await this.saveUIState();
-      console.log('✅ [DataService] UIState guardado exitosamente');
+      Logger.log('✅ [DataService] UIState guardado exitosamente');
 
       // IMPORTANTE: Notificar que las calificaciones Canvas fueron actualizadas
       // Esto invalidará el cache en cursos.page.ts
@@ -1015,17 +1016,17 @@ export class DataService {
         curso: codigoCurso,
         timestamp: Date.now()
       });
-      console.log('📢 [DataService] Notificación emitida: calificaciones Canvas actualizadas para', codigoCurso);
+      Logger.log('📢 [DataService] Notificación emitida: calificaciones Canvas actualizadas para', codigoCurso);
 
       // Verificación inmediata
       const verificacion = this.obtenerArchivoCalificaciones(codigoCurso);
       if (verificacion && verificacion.calificaciones.length > 0) {
-        console.log('✅ [DataService] Verificación exitosa: archivo guardado correctamente en clave:', codigoCurso);
-        console.log('📊 [DataService] Registros procesados:', verificacion.calificaciones.length);
-        console.log('📊 [DataService] CSV original:', verificacion.contenidoOriginal.length, 'caracteres');
+        Logger.log('✅ [DataService] Verificación exitosa: archivo guardado correctamente en clave:', codigoCurso);
+        Logger.log('📊 [DataService] Registros procesados:', verificacion.calificaciones.length);
+        Logger.log('📊 [DataService] CSV original:', verificacion.contenidoOriginal.length, 'caracteres');
       } else {
-        console.error('❌ [DataService] Error en verificación: sin calificaciones procesadas');
-        console.log('🔍 Verificación detallada:', {
+        Logger.error('❌ [DataService] Error en verificación: sin calificaciones procesadas');
+        Logger.log('🔍 Verificación detallada:', {
           existeArchivo: !!verificacion,
           calificacionesEncontradas: verificacion?.calificaciones.length || 0,
           tieneCSVOriginal: !!verificacion?.contenidoOriginal,
@@ -1033,7 +1034,7 @@ export class DataService {
         });
       }
     } catch (error) {
-      console.error('❌ [DataService] Error guardando UIState:', error);
+      Logger.error('❌ [DataService] Error guardando UIState:', error);
       throw error;
     }
   }
@@ -1076,7 +1077,7 @@ export class DataService {
     const courseState = currentState.courseStates?.[codigoCurso];
 
     if (!courseState || !courseState.archivoCalificaciones) {
-      console.warn(`No hay archivo de calificaciones para eliminar en ${codigoCurso}`);
+      Logger.warn(`No hay archivo de calificaciones para eliminar en ${codigoCurso}`);
       return;
     }
 
@@ -1101,18 +1102,18 @@ export class DataService {
   async actualizarArchivoCalificaciones(codigoCurso: string, entrega?: 'E1' | 'E2' | 'EF'): Promise<void> {
     const archivo = this.obtenerArchivoCalificaciones(codigoCurso);
     if (!archivo) {
-      console.warn('⚠️ [actualizarArchivoCalificaciones] No hay archivo Canvas asociado al curso:', codigoCurso);
+      Logger.warn('⚠️ [actualizarArchivoCalificaciones] No hay archivo Canvas asociado al curso:', codigoCurso);
       return; // No hay archivo asociado
     }
 
     const estudiantes = this.getCurso(codigoCurso);
     if (!estudiantes || estudiantes.length === 0) {
-      console.warn('⚠️ [actualizarArchivoCalificaciones] No hay estudiantes en el curso:', codigoCurso);
+      Logger.warn('⚠️ [actualizarArchivoCalificaciones] No hay estudiantes en el curso:', codigoCurso);
       return;
     }
 
     try {
-      console.log('📊 [actualizarArchivoCalificaciones] Iniciando actualización:', {
+      Logger.log('📊 [actualizarArchivoCalificaciones] Iniciando actualización:', {
         curso: codigoCurso,
         archivo: archivo.nombre,
         estudiantesTotal: estudiantes.length
@@ -1122,7 +1123,7 @@ export class DataService {
       const lineas = archivo.contenidoOriginal.split('\n');
       const headers = this.parseCSVRow(lineas[0]);
 
-      console.log('📋 [Canvas Headers]:', headers);
+      Logger.log('📋 [Canvas Headers]:', headers);
 
       // Encontrar columnas Canvas específicas
       const indiceEmail = headers.findIndex(h => h.toLowerCase() === 'sis login id');
@@ -1142,7 +1143,7 @@ export class DataService {
         h.toLowerCase().includes('sustentacion')
       );
 
-      console.log('🔍 [Canvas Columnas]:', {
+      Logger.log('🔍 [Canvas Columnas]:', {
         email: indiceEmail,
         E1: indiceE1,
         E2: indiceE2,
@@ -1151,12 +1152,12 @@ export class DataService {
 
       // Validar estructura Canvas
       if (indiceEmail === -1) {
-        console.error('❌ No se encontró la columna "SIS Login ID" en el archivo Canvas');
+        Logger.error('❌ No se encontró la columna "SIS Login ID" en el archivo Canvas');
         throw new Error('Archivo no parece ser un CSV de Canvas válido. Falta columna "SIS Login ID"');
       }
 
       if (indiceE1 === -1 && indiceE2 === -1 && indiceEF === -1) {
-        console.error('❌ No se encontraron columnas de entregas en el archivo Canvas');
+        Logger.error('❌ No se encontraron columnas de entregas en el archivo Canvas');
         throw new Error('No se encontraron columnas de entregas (proyecto 1, proyecto 2, final) en el archivo Canvas');
       }
 
@@ -1183,13 +1184,13 @@ export class DataService {
 
         // 🔧 FIX: Validar que el estudiante tenga correo
         if (estudiante && (!estudiante.correo || estudiante.correo.trim() === '')) {
-          console.warn(`⚠️ [Canvas] Estudiante sin correo:`, estudiante);
+          Logger.warn(`⚠️ [Canvas] Estudiante sin correo:`, estudiante);
           estudiantesSinCorreo++;
           return linea; // No actualizar esta fila
         }
 
         if (!estudiante) {
-          console.warn(`👤 Estudiante NO encontrado en lista:`, {
+          Logger.warn(`👤 Estudiante NO encontrado en lista:`, {
             emailCanvas,
             correosDisponibles: estudiantes.slice(0, 3).map(e => e.correo)
           });
@@ -1207,17 +1208,17 @@ export class DataService {
           if (ent === 'E1' && indiceE1 !== -1 && indiceE1 < campos.length) {
             const valorAnterior = campos[indiceE1];
             campos[indiceE1] = sumatoria > 0 ? sumatoria.toString() : '';
-            console.log(`📝 E1 ${estudiante.correo}: ${valorAnterior} → ${campos[indiceE1]}`);
+            Logger.log(`📝 E1 ${estudiante.correo}: ${valorAnterior} → ${campos[indiceE1]}`);
             actualizado = true;
           } else if (ent === 'E2' && indiceE2 !== -1 && indiceE2 < campos.length) {
             const valorAnterior = campos[indiceE2];
             campos[indiceE2] = sumatoria > 0 ? sumatoria.toString() : '';
-            console.log(`📝 E2 ${estudiante.correo}: ${valorAnterior} → ${campos[indiceE2]}`);
+            Logger.log(`📝 E2 ${estudiante.correo}: ${valorAnterior} → ${campos[indiceE2]}`);
             actualizado = true;
           } else if (ent === 'EF' && indiceEF !== -1 && indiceEF < campos.length) {
             const valorAnterior = campos[indiceEF];
             campos[indiceEF] = sumatoria > 0 ? sumatoria.toString() : '';
-            console.log(`📝 EF ${estudiante.correo}: ${valorAnterior} → ${campos[indiceEF]}`);
+            Logger.log(`📝 EF ${estudiante.correo}: ${valorAnterior} → ${campos[indiceEF]}`);
             actualizado = true;
           }
         });
@@ -1233,7 +1234,7 @@ export class DataService {
       const contenidoActualizado = filasActualizadas.join('\n');
       await this.guardarArchivoCalificaciones(codigoCurso, archivo.nombre, contenidoActualizado);
 
-      console.log(`✅ [Canvas] Actualización completada:`, {
+      Logger.log(`✅ [Canvas] Actualización completada:`, {
         curso: codigoCurso,
         estudiantesActualizados,
         estudiantesNoEncontrados,
@@ -1242,11 +1243,11 @@ export class DataService {
       });
 
       if (estudiantesSinCorreo > 0) {
-        console.warn(`⚠️ [Canvas] ${estudiantesSinCorreo} estudiante(s) no tienen correo electrónico y no se actualizaron`);
+        Logger.warn(`⚠️ [Canvas] ${estudiantesSinCorreo} estudiante(s) no tienen correo electrónico y no se actualizaron`);
       }
 
     } catch (error) {
-      console.error('❌ [Canvas] Error actualizando archivo:', error);
+      Logger.error('❌ [Canvas] Error actualizando archivo:', error);
       throw error;
     }
   }
@@ -1445,7 +1446,7 @@ export class DataService {
     const piKey = `${codigoCurso}_${entrega}_PI_${estudiante.correo}`;
     const pi = evaluaciones[piKey]?.puntosTotales || 0;
 
-    console.log(`🔍 [calcularSumatoriaEstudiante] ${estudiante.correo} - ${entrega}:`, {
+    Logger.log(`🔍 [calcularSumatoriaEstudiante] ${estudiante.correo} - ${entrega}:`, {
       codigoUsado: codigoCurso,
       pg,
       pi,
@@ -1470,7 +1471,7 @@ export class DataService {
    * Útil después de migración o cuando hay problemas de sincronización
    */
   async resincronizarTodosLosArchivosCanvas(): Promise<void> {
-    console.log('🔄 [DataService] Iniciando re-sincronización de todos los archivos Canvas...');
+    Logger.log('🔄 [DataService] Iniciando re-sincronización de todos los archivos Canvas...');
 
     const uiState = this.uiStateSubject.value;
     const courseStates = uiState.courseStates || {};
@@ -1484,7 +1485,7 @@ export class DataService {
       }
     });
 
-    console.log(`📊 Encontrados ${cursosConArchivos.length} cursos con archivos Canvas`);
+    Logger.log(`📊 Encontrados ${cursosConArchivos.length} cursos con archivos Canvas`);
 
     // Re-sincronizar cada uno
     let exitosos = 0;
@@ -1494,21 +1495,21 @@ export class DataService {
       try {
         await this.actualizarArchivoCalificaciones(cursoNombre);
         exitosos++;
-        console.log(`✅ Re-sincronizado: ${cursoNombre}`);
+        Logger.log(`✅ Re-sincronizado: ${cursoNombre}`);
       } catch (error) {
         fallidos++;
-        console.error(`❌ Error re-sincronizando ${cursoNombre}:`, error);
+        Logger.error(`❌ Error re-sincronizando ${cursoNombre}:`, error);
       }
     }
 
-    console.log(`✅ Re-sincronización completada: ${exitosos} exitosos, ${fallidos} fallidos`);
+    Logger.log(`✅ Re-sincronización completada: ${exitosos} exitosos, ${fallidos} fallidos`);
   }
 
   /**
    * Limpia archivos Canvas corruptos o inválidos de todos los cursos
    */
   async limpiarArchivosCanvasCorruptos(): Promise<number> {
-    console.log('🧹 [DataService] Iniciando limpieza de archivos Canvas corruptos...');
+    Logger.log('🧹 [DataService] Iniciando limpieza de archivos Canvas corruptos...');
 
     const uiState = this.uiStateSubject.value;
     const courseStates = uiState.courseStates || {};
@@ -1524,18 +1525,18 @@ export class DataService {
 
         // Validaciones
         if (!archivo.nombre || !archivo.contenidoOriginal) {
-          console.warn(`⚠️ Archivo sin nombre o contenido en: ${cursoNombre}`);
+          Logger.warn(`⚠️ Archivo sin nombre o contenido en: ${cursoNombre}`);
           esInvalido = true;
         } else if (typeof archivo.contenidoOriginal !== 'string') {
-          console.warn(`⚠️ Contenido no es string en: ${cursoNombre}`);
+          Logger.warn(`⚠️ Contenido no es string en: ${cursoNombre}`);
           esInvalido = true;
         } else if (archivo.contenidoOriginal.trim().length === 0) {
-          console.warn(`⚠️ Contenido vacío en: ${cursoNombre}`);
+          Logger.warn(`⚠️ Contenido vacío en: ${cursoNombre}`);
           esInvalido = true;
         } else {
           const lineas = archivo.contenidoOriginal.split('\n').filter((l: string) => l.trim());
           if (lineas.length < 2) {
-            console.warn(`⚠️ CSV inválido (menos de 2 líneas) en: ${cursoNombre}`);
+            Logger.warn(`⚠️ CSV inválido (menos de 2 líneas) en: ${cursoNombre}`);
             esInvalido = true;
           }
         }
@@ -1543,7 +1544,7 @@ export class DataService {
         if (esInvalido) {
           delete courseState.archivoCalificaciones;
           archivosEliminados++;
-          console.log(`🗑️ Eliminado archivo corrupto de: ${cursoNombre}`);
+          Logger.log(`🗑️ Eliminado archivo corrupto de: ${cursoNombre}`);
         }
       }
 
@@ -1558,9 +1559,9 @@ export class DataService {
 
       this.uiStateSubject.next(newState);
       await this.saveUIState();
-      console.log(`✅ Limpieza completada: ${archivosEliminados} archivos eliminados`);
+      Logger.log(`✅ Limpieza completada: ${archivosEliminados} archivos eliminados`);
     } else {
-      console.log('✅ No se encontraron archivos corruptos');
+      Logger.log('✅ No se encontraron archivos corruptos');
     }
 
     return archivosEliminados;
@@ -1619,16 +1620,16 @@ export class DataService {
       detalles
     };
 
-    console.log('🔍 === DIAGNÓSTICO DE ARCHIVOS CANVAS ===');
-    console.log(`📊 Total archivos Canvas: ${totalArchivos}`);
-    console.log(`📊 Total cursos: ${diagnostico.totalCursos}`);
-    console.log('\n📁 Detalles:');
+    Logger.log('🔍 === DIAGNÓSTICO DE ARCHIVOS CANVAS ===');
+    Logger.log(`📊 Total archivos Canvas: ${totalArchivos}`);
+    Logger.log(`📊 Total cursos: ${diagnostico.totalCursos}`);
+    Logger.log('\n📁 Detalles:');
     detalles.forEach(d => {
-      console.log(`\n  Clave: ${d.claveCurso}`);
-      console.log(`  Nombre: ${d.nombreCurso || 'N/A'}`);
-      console.log(`  Código: ${d.codigoCurso || 'N/A'}`);
-      console.log(`  Archivo: ${d.nombreArchivo}`);
-      console.log(`  Tamaño: ${d.tamanoContenido} chars`);
+      Logger.log(`\n  Clave: ${d.claveCurso}`);
+      Logger.log(`  Nombre: ${d.nombreCurso || 'N/A'}`);
+      Logger.log(`  Código: ${d.codigoCurso || 'N/A'}`);
+      Logger.log(`  Archivo: ${d.nombreArchivo}`);
+      Logger.log(`  Tamaño: ${d.tamanoContenido} chars`);
     });
 
     return diagnostico;
@@ -1655,7 +1656,7 @@ export class DataService {
       codigoCurso: string;
     }>;
   }> {
-    console.log('🔄 === INICIANDO NORMALIZACIÓN DE CLAVES DE CURSO ===');
+    Logger.log('🔄 === INICIANDO NORMALIZACIÓN DE CLAVES DE CURSO ===');
 
     const errores: string[] = [];
     const detalles: Array<{
@@ -1673,7 +1674,7 @@ export class DataService {
       let cambiosRealizados = false;
 
       // 1. Normalizar courseStates
-      console.log('📋 Paso 1: Normalizando claves en courseStates...');
+      Logger.log('📋 Paso 1: Normalizando claves en courseStates...');
       const nuevoCourseStates: { [key: string]: any } = {};
 
       Object.keys(courseStates).forEach(claveActual => {
@@ -1691,7 +1692,7 @@ export class DataService {
 
         // Si la clave actual NO es el código, necesitamos migrar
         if (claveActual !== codigoCurso) {
-          console.log(`  🔀 Migrando: "${claveActual}" → "${codigoCurso}"`);
+          Logger.log(`  🔀 Migrando: "${claveActual}" → "${codigoCurso}"`);
           nuevoCourseStates[codigoCurso] = courseState;
           cambiosRealizados = true;
 
@@ -1708,7 +1709,7 @@ export class DataService {
       });
 
       // 2. Normalizar cursosData
-      console.log('📋 Paso 2: Normalizando claves en cursosData...');
+      Logger.log('📋 Paso 2: Normalizando claves en cursosData...');
       const nuevoCursosData: { [key: string]: any } = {};
 
       Object.keys(cursosData).forEach(claveActual => {
@@ -1721,7 +1722,7 @@ export class DataService {
         });
 
         if (!courseState || !courseState.metadata?.codigo) {
-          console.warn(`  ⚠️ No se encontró metadata para curso: ${claveActual}`);
+          Logger.warn(`  ⚠️ No se encontró metadata para curso: ${claveActual}`);
           // Mantener la clave actual
           nuevoCursosData[claveActual] = estudiantes;
           return;
@@ -1730,7 +1731,7 @@ export class DataService {
         const codigoCurso = courseState.metadata.codigo;
 
         if (claveActual !== codigoCurso) {
-          console.log(`  🔀 Migrando cursosData: "${claveActual}" → "${codigoCurso}"`);
+          Logger.log(`  🔀 Migrando cursosData: "${claveActual}" → "${codigoCurso}"`);
           nuevoCursosData[codigoCurso] = estudiantes;
           cambiosRealizados = true;
         } else {
@@ -1750,7 +1751,7 @@ export class DataService {
         if (courseStateActivo && courseStateActivo.metadata?.codigo) {
           const codigoActivo = courseStateActivo.metadata.codigo;
           if (currentState.cursoActivo !== codigoActivo) {
-            console.log(`  🔀 Actualizando cursoActivo: "${currentState.cursoActivo}" → "${codigoActivo}"`);
+            Logger.log(`  🔀 Actualizando cursoActivo: "${currentState.cursoActivo}" → "${codigoActivo}"`);
             nuevoCursoActivo = codigoActivo;
             cambiosRealizados = true;
           }
@@ -1759,7 +1760,7 @@ export class DataService {
 
       // 4. Guardar cambios si hubo normalizaciones
       if (cambiosRealizados) {
-        console.log('💾 Guardando cambios normalizados...');
+        Logger.log('💾 Guardando cambios normalizados...');
 
         // Actualizar UIState
         const nuevoUIState = {
@@ -1775,9 +1776,9 @@ export class DataService {
         this.cursosSubject.next(nuevoCursosData);
         await this.storage.set(this.STORAGE_KEYS.CURSOS, nuevoCursosData);
 
-        console.log('✅ Normalización completada exitosamente');
+        Logger.log('✅ Normalización completada exitosamente');
       } else {
-        console.log('✅ No se requirieron cambios - todas las claves ya usan códigos');
+        Logger.log('✅ No se requirieron cambios - todas las claves ya usan códigos');
       }
 
       return {
@@ -1788,7 +1789,7 @@ export class DataService {
       };
 
     } catch (error) {
-      console.error('❌ Error en normalización:', error);
+      Logger.error('❌ Error en normalización:', error);
       errores.push(`Error general: ${error}`);
 
       return {
@@ -1803,14 +1804,12 @@ export class DataService {
   // === GESTIÓN DE RÚBRICAS ===
 
   async loadRubricas(): Promise<void> {
-    let rubricas = await this.storage.get(this.STORAGE_KEYS.RUBRICAS);
+    let rubricas = await this.storage.get<{ [key: string]: RubricaDefinicion }>(this.STORAGE_KEYS.RUBRICAS);
 
     if (!rubricas) {
 
-      rubricas = {}; // Objeto vacío, sin rúbricas por defecto
+      rubricas = {} as { [key: string]: RubricaDefinicion };
       await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-
-    } else {
 
     }
 
@@ -1822,7 +1821,7 @@ export class DataService {
     const rubrica = rubricas[id];
 
     if (!rubrica) {
-      console.warn(`⚠️ [DataService.getRubrica] Rúbrica no encontrada con ID: ${id}`);
+      Logger.warn(`⚠️ [DataService.getRubrica] Rúbrica no encontrada con ID: ${id}`);
 
     }
 
@@ -1907,7 +1906,7 @@ export class DataService {
                   resolve();
                 };
                 deleteRequest.onerror = () => {
-                  console.warn(`  ⚠️ Error eliminando DB: ${db.name}`);
+                  Logger.warn(`  ⚠️ Error eliminando DB: ${db.name}`);
                   resolve(); // Continue even if one fails
                 };
               });
@@ -1915,7 +1914,7 @@ export class DataService {
           }
         }
       } catch (indexedDBError) {
-        console.warn('⚠️ Error limpiando IndexedDB:', indexedDBError);
+        Logger.warn('⚠️ Error limpiando IndexedDB:', indexedDBError);
       }
 
       // 5. Limpiar WebSQL (si existe - legacy)
@@ -1935,7 +1934,7 @@ export class DataService {
           }
         }
       } catch (webSQLError) {
-        console.warn('⚠️ Error limpiando WebSQL:', webSQLError);
+        Logger.warn('⚠️ Error limpiando WebSQL:', webSQLError);
       }
 
       // 6. Limpiar Cache API (si existe)
@@ -1952,7 +1951,7 @@ export class DataService {
           );
         }
       } catch (cacheError) {
-        console.warn('⚠️ Error limpiando Cache API:', cacheError);
+        Logger.warn('⚠️ Error limpiando Cache API:', cacheError);
       }
 
       // 7. Resetear subjects con datos limpios
@@ -1978,7 +1977,7 @@ export class DataService {
 
 
     } catch (error) {
-      console.error('❌ Error al borrar datos:', error);
+      Logger.error('❌ Error al borrar datos:', error);
       throw error;
     }
   }
@@ -2054,11 +2053,11 @@ export class DataService {
         (r: RubricaDefinicion) => Object.values(rubricasOriginales).some((orig: RubricaDefinicion) =>
           orig.id === r.id && orig.cursosCodigos?.includes(nombreCurso)
         )
-      ).length; console.log(`Curso "${nombreCurso}" eliminado exitosamente`);
+      ).length; Logger.log(`Curso "${nombreCurso}" eliminado exitosamente`);
 
 
     } catch (error) {
-      console.error(`Error al borrar curso "${nombreCurso}":`, error);
+      Logger.error(`Error al borrar curso "${nombreCurso}":`, error);
       throw error;
     }
   }
@@ -2116,7 +2115,7 @@ export class DataService {
 
   async loadComentariosGrupo(): Promise<void> {
 
-    const comentarios = await this.storage.get(this.STORAGE_KEYS.COMENTARIOS_GRUPO) || {};
+    const comentarios = await this.storage.get<ComentariosGrupoData>(this.STORAGE_KEYS.COMENTARIOS_GRUPO) || {} as ComentariosGrupoData;
 
     this.comentariosGrupoSubject.next(comentarios);
   }
@@ -2173,7 +2172,7 @@ export class DataService {
     const comentarios = { ...this.comentariosGrupoSubject.value };
 
     if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
-      console.warn(`⚠️ [DataService] No existen comentarios para ${cursoId} - ${grupo}`);
+      Logger.warn(`⚠️ [DataService] No existen comentarios para ${cursoId} - ${grupo}`);
       return;
     }
 
@@ -2192,7 +2191,7 @@ export class DataService {
     const comentarios = { ...this.comentariosGrupoSubject.value };
 
     if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
-      console.warn(`⚠️ [DataService] No existen comentarios para ${cursoId} - ${grupo}`);
+      Logger.warn(`⚠️ [DataService] No existen comentarios para ${cursoId} - ${grupo}`);
       return;
     }
 
@@ -2228,10 +2227,11 @@ export class DataService {
 
     try {
       // Obtener el estado actual del UI
-      const uiState = await this.storage.get(this.STORAGE_KEYS.UI_STATE) || {
+      const uiState = await this.storage.get<UIState>(this.STORAGE_KEYS.UI_STATE) || {
         cursoActivo: null,
+        grupoSeguimientoActivo: null,
         courseStates: {}
-      };
+      } as UIState;
 
       // Asegurar que existe el courseState para este curso
       if (!uiState.courseStates) {
@@ -2240,8 +2240,21 @@ export class DataService {
 
       if (!uiState.courseStates[codigoCurso]) {
         uiState.courseStates[codigoCurso] = {
-          metadata: {},
-          rubricasAsociadas: {}
+          activeStudent: null,
+          activeGroup: null,
+          activeDelivery: null,
+          activeType: null,
+          filtroGrupo: '',
+          emailsVisible: false,
+          isScrollingTable: false,
+          rubricasAsociadas: {
+            entrega1: null,
+            entrega1Individual: null,
+            entrega2: null,
+            entrega2Individual: null,
+            entregaFinal: null,
+            entregaFinalIndividual: null
+          }
         };
       }
 
@@ -2260,7 +2273,7 @@ export class DataService {
       this.uiStateSubject.next(uiState);
 
     } catch (error) {
-      console.error('❌ [DataService] Error guardando rúbricas asociadas:', error);
+      Logger.error('❌ [DataService] Error guardando rúbricas asociadas:', error);
       throw error;
     }
   }
@@ -2279,10 +2292,11 @@ export class DataService {
     await this.ensureInitialized();
 
     try {
-      const uiState = await this.storage.get(this.STORAGE_KEYS.UI_STATE) || {
+      const uiState = await this.storage.get<UIState>(this.STORAGE_KEYS.UI_STATE) || {
         cursoActivo: null,
+        grupoSeguimientoActivo: null,
         courseStates: {}
-      };
+      } as UIState;
 
       const courseState = uiState.courseStates?.[codigoCurso];
 
@@ -2306,7 +2320,7 @@ export class DataService {
         entregaFinalIndividual: courseState.rubricasAsociadas.entregaFinalIndividual || null
       };
     } catch (error) {
-      console.error('❌ [DataService] Error obteniendo rúbricas asociadas:', error);
+      Logger.error('❌ [DataService] Error obteniendo rúbricas asociadas:', error);
       return {
         entrega1: null,
         entrega2: null,
@@ -2391,7 +2405,7 @@ export class DataService {
     // Emitir resultados
     this.searchResultsSubject.next({ term: termLower, results: allResults });
 
-    console.log(`🔍 [searchAcrossAllCourses] Búsqueda "${term}" encontró ${allResults.length} resultados`);
+    Logger.log(`🔍 [searchAcrossAllCourses] Búsqueda "${term}" encontró ${allResults.length} resultados`);
   }
 
   /**
@@ -2464,7 +2478,7 @@ export class DataService {
         localStorage.removeItem('rubricas_migrado'); // Flag de migración
 
       } catch (error) {
-        console.warn('⚠️ No se pudo limpiar localStorage legacy:', error);
+        Logger.warn('⚠️ No se pudo limpiar localStorage legacy:', error);
       }
 
 
@@ -2482,7 +2496,7 @@ export class DataService {
 
 
     } catch (error) {
-      console.error('❌ [DataService] Error limpiando base de datos:', error);
+      Logger.error('❌ [DataService] Error limpiando base de datos:', error);
       throw error;
     }
   }
@@ -2754,7 +2768,7 @@ export class DataService {
         fechaModificacion: new Date()
       };
     } catch (error) {
-      console.error('Error parseando archivo de rúbrica:', error);
+      Logger.error('Error parseando archivo de rúbrica:', error);
       return null;
     }
   }
@@ -2952,15 +2966,15 @@ export class DataService {
     const nombreNormalizado = this.normalizarTexto(nombreBusqueda);
     const codigosEncontrados: string[] = [];
 
-    console.log('🔍 Buscando curso:', nombreBusqueda);
-    console.log('📋 Cursos disponibles:', Object.keys(cursos));
+    Logger.log('🔍 Buscando curso:', nombreBusqueda);
+    Logger.log('📋 Cursos disponibles:', Object.keys(cursos));
 
     Object.keys(cursos).forEach(codigo => {
       const metadata = uiState.courseStates?.[codigo]?.metadata;
       const nombreCurso = metadata?.nombre || '';
       const codigoNormalizado = this.normalizarTexto(codigo);
 
-      console.log(`  - Comparando con curso: ${codigo} (${nombreCurso})`);
+      Logger.log(`  - Comparando con curso: ${codigo} (${nombreCurso})`);
 
       // Buscar coincidencia en el nombre del curso
       if (nombreCurso) {
@@ -2969,7 +2983,7 @@ export class DataService {
         // Buscar coincidencia exacta o parcial en el nombre
         if (nombreCursoNormalizado.includes(nombreNormalizado) ||
           nombreNormalizado.includes(nombreCursoNormalizado)) {
-          console.log(`  ✅ Coincidencia encontrada por NOMBRE`);
+          Logger.log(`  ✅ Coincidencia encontrada por NOMBRE`);
           codigosEncontrados.push(codigo);
           return;
         }
@@ -2978,12 +2992,12 @@ export class DataService {
       // También buscar coincidencia en el código del curso
       if (codigoNormalizado.includes(nombreNormalizado) ||
         nombreNormalizado.includes(codigoNormalizado)) {
-        console.log(`  ✅ Coincidencia encontrada por CÓDIGO`);
+        Logger.log(`  ✅ Coincidencia encontrada por CÓDIGO`);
         codigosEncontrados.push(codigo);
       }
     });
 
-    console.log('✅ Cursos encontrados:', codigosEncontrados);
+    Logger.log('✅ Cursos encontrados:', codigosEncontrados);
     return codigosEncontrados;
   }
 
@@ -3094,7 +3108,7 @@ export class DataService {
     const rubrica = rubricas[rubricaId];
 
     if (!rubrica) {
-      console.warn(`⚠️ Rúbrica ${rubricaId} no encontrada`);
+      Logger.warn(`⚠️ Rúbrica ${rubricaId} no encontrada`);
       return;
     }
 
@@ -3115,7 +3129,7 @@ export class DataService {
 
       for (const codigoCurso of cursosCodigos) {
         if (!uiState.courseStates[codigoCurso]) {
-          console.warn(`⚠️ CourseState no encontrado para ${codigoCurso}`);
+          Logger.warn(`⚠️ CourseState no encontrado para ${codigoCurso}`);
           continue;
         }
 

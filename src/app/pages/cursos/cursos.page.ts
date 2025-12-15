@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewEncapsulation, HostListener, ChangeDe
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Logger } from '@app/core/utils/logger';
 import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import {
   IonContent,
@@ -372,7 +373,7 @@ export class InicioPage implements OnInit, OnDestroy {
         const totalEstudiantes = Object.values(cursos).reduce((sum: number, estudiantes: any) =>
           sum + (Array.isArray(estudiantes) ? estudiantes.length : 0), 0);
 
-        console.log(`📚[cursos$.subscribe] ${new Date().toISOString().substr(11, 12)} `, {
+        Logger.log(`📚[cursos$.subscribe] ${new Date().toISOString().substr(11, 12)} `, {
           totalCursos,
           totalEstudiantes,
           cursos: Object.keys(cursos)
@@ -383,13 +384,13 @@ export class InicioPage implements OnInit, OnDestroy {
         // Actualizar cursosOrdenados cuando cambian los cursos disponibles
         const cursosActuales = Object.keys(cursos);
         if (this.cursosOrdenados.length !== cursosActuales.length) {
-          console.log(`🔄 Actualizando cursosOrdenados: ${this.cursosOrdenados.length} -> ${cursosActuales.length}`);
+          Logger.log(`🔄 Actualizando cursosOrdenados: ${this.cursosOrdenados.length} -> ${cursosActuales.length}`);
           this.cursosOrdenados = [...cursosActuales].sort();
         }
 
         // Si el curso activo fue eliminado, limpiar estado
         if (this.cursoActivo && !cursos[this.cursoActivo]) {
-          console.log('⚠️ [InicioPage] Curso activo eliminado:', this.cursoActivo);
+          Logger.log('⚠️ [InicioPage] Curso activo eliminado:', this.cursoActivo);
           this.cursoActivo = null;
           this.estudiantesActuales = [];
           this.gruposDisponibles = [];
@@ -410,12 +411,12 @@ export class InicioPage implements OnInit, OnDestroy {
       ).subscribe(uiState => {
         // Si cambió el curso activo, cargar sus estudiantes
         if (uiState.cursoActivo && uiState.cursoActivo !== this.cursoActivo) {
-          console.log(`🔄[uiState$.subscribe] Curso activo cambió a:`, uiState.cursoActivo);
+          Logger.log(`🔄[uiState$.subscribe] Curso activo cambió a:`, uiState.cursoActivo);
 
           // Asegurar que cursosData esté actualizado antes de seleccionar
           const cursosActuales = this.dataService.getCursos();
           if (Object.keys(cursosActuales).length > Object.keys(this.cursosData).length) {
-            console.log(`📥 Actualizando cursosData desde DataService`);
+            Logger.log(`📥 Actualizando cursosData desde DataService`);
             this.cursosData = cursosActuales;
           }
 
@@ -459,7 +460,7 @@ export class InicioPage implements OnInit, OnDestroy {
             this.filtroGrupo = grupoNumStr;
             this.grupoSeguimientoActivo = grupoNumStr;
           } else {
-            console.warn('⚠️ Grupo no encontrado en gruposDisponibles:', grupoNum, 'disponibles:', this.gruposDisponibles);
+            Logger.warn('⚠️ Grupo no encontrado en gruposDisponibles:', grupoNum, 'disponibles:', this.gruposDisponibles);
           }
         }
 
@@ -474,14 +475,14 @@ export class InicioPage implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.dataService.calificacionesCanvasActualizadas$.subscribe(evento => {
         if (evento && evento.curso) {
-          console.log('📢 [cursos.page] Recibida notificación: calificaciones actualizadas para', evento.curso);
+          Logger.log('📢 [cursos.page] Recibida notificación: calificaciones actualizadas para', evento.curso);
 
           // Invalidar cache de calificaciones para este curso
           this._calificacionesCargadasPorCurso.delete(evento.curso);
 
           // Si es el curso activo, recargar calificaciones
           if (this.cursoActivo === evento.curso) {
-            console.log('🔄 [cursos.page] Recargando calificaciones del curso activo');
+            Logger.log('🔄 [cursos.page] Recargando calificaciones del curso activo');
             this.limpiarCacheCalificaciones();
             this.precargarCalificacionesCurso();
             this._calificacionesCargadasPorCurso.set(evento.curso, true);
@@ -699,7 +700,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // 🚨 CRITICAL FIX: Si estudiantesActuales está vacío pero hay curso activo, cargar datos
     if (this.estudiantesActuales.length === 0 && this.cursoActivo && this.cursosData[this.cursoActivo]) {
-      console.warn('⚠️ [aplicarFiltros] EMERGENCIA: cargando desde cursosData');
+      Logger.warn('⚠️ [aplicarFiltros] EMERGENCIA: cargando desde cursosData');
       this.estudiantesActuales = this.cursosData[this.cursoActivo];
       this._estudiantesCargadosPorCurso.set(this.cursoActivo, true);
       this.actualizarGrupos();
@@ -760,7 +761,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // 🛡️ GUARDIA: No hacer nada si es el mismo grupo
     if (this.filtroGrupo === nuevoGrupo) {
-      console.log('⚡ [onFiltroGrupoChange] Skipped - mismo grupo:', nuevoGrupo);
+      Logger.log('⚡ [onFiltroGrupoChange] Skipped - mismo grupo:', nuevoGrupo);
       return;
     }
 
@@ -770,7 +771,7 @@ export class InicioPage implements OnInit, OnDestroy {
     // Limpiar modo de selección de estado
     this.modoSeleccionEstado = null;
 
-    console.log('🔄 [onFiltroGrupoChange] Cambio de grupo:', {
+    Logger.log('🔄 [onFiltroGrupoChange] Cambio de grupo:', {
       filtroGrupo: this.filtroGrupo,
       grupoSeguimientoActivo: this.grupoSeguimientoActivo
     });
@@ -796,11 +797,11 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // Si hay una rúbrica activa, cargar el estado del nuevo grupo y actualizar el panel
     if (this.mostrarRubrica && this.tipoEvaluando && nuevoGrupo !== 'todos') {
-      console.log('📊 [onFiltroGrupoChange] Cargando evaluación guardada para grupo:', nuevoGrupo);
+      Logger.log('📊 [onFiltroGrupoChange] Cargando evaluación guardada para grupo:', nuevoGrupo);
 
       // 🔄 Cargar datos y forzar actualización del componente hijo
       this.cargarEvaluacionGuardada().then(() => {
-        console.log('📊 [onFiltroGrupoChange] evaluacionActual después de cargar:', this.evaluacionActual);
+        Logger.log('📊 [onFiltroGrupoChange] evaluacionActual después de cargar:', this.evaluacionActual);
         this.emitToSeguimientoPanel();
         this.cdr.detectChanges(); // Forzar detección de cambios con OnPush
       });
@@ -1098,7 +1099,7 @@ export class InicioPage implements OnInit, OnDestroy {
       this.dataService.updateCourseState(this.cursoActivo, courseState);
     }
 
-    console.log(`📍 Navegando a Grupo ${grupo} - ${entrega}`);
+    Logger.log(`📍 Navegando a Grupo ${grupo} - ${entrega}`);
 
     // Trigger change detection para actualizar UI
     this.cdr.detectChanges();
@@ -1194,7 +1195,7 @@ export class InicioPage implements OnInit, OnDestroy {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error sincronizando archivo:', error);
+      Logger.error('Error sincronizando archivo:', error);
       await this.mostrarError('Error', 'No se pudo sincronizar el archivo de calificaciones');
     }
   }
@@ -1257,7 +1258,7 @@ export class InicioPage implements OnInit, OnDestroy {
       // Limpiar también los comentarios
       seguimiento.comentarios = [];
       this.seguimientoService.setSeguimiento(seguimiento);
-      console.log('🧹 Panel de seguimiento limpiado (evaluaciones, integrante, entrega, tipo y comentarios)');
+      Logger.log('🧹 Panel de seguimiento limpiado (evaluaciones, integrante, entrega, tipo y comentarios)');
     }
   }
 
@@ -1294,10 +1295,10 @@ export class InicioPage implements OnInit, OnDestroy {
           // Verificar que la rúbrica exista
           const existe = this.dataService.getRubrica(rubricaId);
           if (existe) {
-            console.log(`✅[obtenerRubricaIdPorDefecto] Usando rúbrica asociada: ${rubricaId} `);
+            Logger.log(`✅[obtenerRubricaIdPorDefecto] Usando rúbrica asociada: ${rubricaId} `);
             return rubricaId;
           } else {
-            console.warn(`⚠️ Rúbrica asociada ${rubricaId} no encontrada en storage`);
+            Logger.warn(`⚠️ Rúbrica asociada ${rubricaId} no encontrada en storage`);
           }
         }
       }
@@ -1305,10 +1306,10 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // 2️⃣ Si no hay rubricasAsociadas, usar categoría por defecto
     const categoria = this.CATEGORIA_RUBRICAS_DEFAULT;
-    console.log('🏷️ [obtenerRubricaIdPorDefecto] Categoría por defecto:', categoria);
+    Logger.log('🏷️ [obtenerRubricaIdPorDefecto] Categoría por defecto:', categoria);
 
     const rubricasDisponibles = this.dataService.obtenerIdsRubricas();
-    console.log('📚 [obtenerRubricaIdPorDefecto] Rúbricas disponibles:', rubricasDisponibles);
+    Logger.log('📚 [obtenerRubricaIdPorDefecto] Rúbricas disponibles:', rubricasDisponibles);
 
     if (tipo === 'PG') {
       // Para rúbricas grupales, buscar dinámicamente según la entrega
@@ -1318,10 +1319,10 @@ export class InicioPage implements OnInit, OnDestroy {
         id.toLowerCase().includes('grupal') && id.toLowerCase().includes(palabraClave)
       );
 
-      console.log(`🔍[obtenerRubricaIdPorDefecto] Buscando rúbrica grupal para ${entrega}: `, rubricasGrupales);
+      Logger.log(`🔍[obtenerRubricaIdPorDefecto] Buscando rúbrica grupal para ${entrega}: `, rubricasGrupales);
 
       if (rubricasGrupales.length === 0) {
-        console.error(`❌ No se encontró rúbrica grupal para ${entrega} `);
+        Logger.error(`❌ No se encontró rúbrica grupal para ${entrega} `);
         this.mostrarError(
           'Rúbrica Grupal No Encontrada',
           `No hay ninguna rúbrica grupal para ${entrega} importada en el sistema.\n\n` +
@@ -1331,25 +1332,25 @@ export class InicioPage implements OnInit, OnDestroy {
       }
 
       const rubricaId = rubricasGrupales[0];
-      console.log('✅ [obtenerRubricaIdPorDefecto] Usando rúbrica grupal:', rubricaId);
+      Logger.log('✅ [obtenerRubricaIdPorDefecto] Usando rúbrica grupal:', rubricaId);
       return rubricaId;
 
     } else {
       // Para rúbricas individuales, buscar dinámicamente cualquier rúbrica que contenga "individual"
-      console.log('🔍 [obtenerRubricaIdPorDefecto] Buscando rúbrica individual...');
+      Logger.log('🔍 [obtenerRubricaIdPorDefecto] Buscando rúbrica individual...');
 
       const rubricasDisponibles = this.dataService.obtenerIdsRubricas();
-      console.log('� [obtenerRubricaIdPorDefecto] Rúbricas disponibles:', rubricasDisponibles);
+      Logger.log('� [obtenerRubricaIdPorDefecto] Rúbricas disponibles:', rubricasDisponibles);
 
       // Buscar cualquier rúbrica que contenga "individual" en su ID
       const rubricasIndividuales = rubricasDisponibles.filter(id =>
         id.toLowerCase().includes('individual')
       );
 
-      console.log('� [obtenerRubricaIdPorDefecto] Rúbricas individuales encontradas:', rubricasIndividuales);
+      Logger.log('� [obtenerRubricaIdPorDefecto] Rúbricas individuales encontradas:', rubricasIndividuales);
 
       if (rubricasIndividuales.length === 0) {
-        console.error('❌ No se encontró ninguna rúbrica individual en el sistema');
+        Logger.error('❌ No se encontró ninguna rúbrica individual en el sistema');
         this.mostrarError(
           'Rúbrica Individual No Encontrada',
           'No hay ninguna rúbrica individual importada en el sistema.\n\n' +
@@ -1360,7 +1361,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
       // Usar la primera rúbrica individual encontrada
       const rubricaId = rubricasIndividuales[0];
-      console.log('✅ [obtenerRubricaIdPorDefecto] Usando rúbrica individual:', rubricaId);
+      Logger.log('✅ [obtenerRubricaIdPorDefecto] Usando rúbrica individual:', rubricaId);
 
       return rubricaId;
     }
@@ -1448,17 +1449,17 @@ export class InicioPage implements OnInit, OnDestroy {
       (sum, c) => sum + (c.puntosObtenidos || 0), 0
     );
 
-    console.log('🔄 [onCalificacionesChange] criteriosEvaluados actualizado:', this.criteriosEvaluados.length, 'criterios');
+    Logger.log('🔄 [onCalificacionesChange] criteriosEvaluados actualizado:', this.criteriosEvaluados.length, 'criterios');
   }
 
   /**
    * Maneja el evento de guardado de evaluación desde el componente hijo
    */
   async onEvaluacionGuardada(evaluacionData: any) {
-    console.log('📥 [onEvaluacionGuardada] Recibiendo datos de evaluación:', evaluacionData);
+    Logger.log('📥 [onEvaluacionGuardada] Recibiendo datos de evaluación:', evaluacionData);
 
     if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando || !this.rubricaActual) {
-      console.error('❌ [onEvaluacionGuardada] Faltan datos necesarios');
+      Logger.error('❌ [onEvaluacionGuardada] Faltan datos necesarios');
       await this.mostrarError('Error', 'Faltan datos para guardar la evaluación');
       return;
     }
@@ -1515,7 +1516,7 @@ export class InicioPage implements OnInit, OnDestroy {
         comentarioGeneral: evaluacionData.observaciones || ''
       };
 
-      console.log('💾 [onEvaluacionGuardada] Guardando evaluación:', evaluacion);
+      Logger.log('💾 [onEvaluacionGuardada] Guardando evaluación:', evaluacion);
       await this.dataService.guardarEvaluacion(evaluacion);
 
       // Actualizar estado local
@@ -1525,9 +1526,9 @@ export class InicioPage implements OnInit, OnDestroy {
       // Forzar actualización de la UI
       this.cdr.detectChanges();
 
-      console.log('✅ [onEvaluacionGuardada] Evaluación guardada exitosamente');
+      Logger.log('✅ [onEvaluacionGuardada] Evaluación guardada exitosamente');
     } catch (error: any) {
-      console.error('❌ [onEvaluacionGuardada] Error:', error);
+      Logger.error('❌ [onEvaluacionGuardada] Error:', error);
       await this.mostrarError('Error', 'No se pudo guardar la evaluación: ' + error.message);
     }
   }
@@ -1681,7 +1682,7 @@ export class InicioPage implements OnInit, OnDestroy {
           });
         }
 
-        console.log(`✅[Aplicar a +] Evaluación aplicada a ${otrosEstudiantes.length} estudiantes adicionales`);
+        Logger.log(`✅[Aplicar a +] Evaluación aplicada a ${otrosEstudiantes.length} estudiantes adicionales`);
         this.aplicarAMas = false; // Resetear checkbox
       }
 
@@ -1697,7 +1698,7 @@ export class InicioPage implements OnInit, OnDestroy {
       : 'Rúbrica guardada para el estudiante';
 
     this.mostrarError('Éxito', mensaje);
-    console.log(`✅[guardarRubricaGrupo] Evaluación ${this.tipoEvaluando} guardada para ${identificador} `);
+    Logger.log(`✅[guardarRubricaGrupo] Evaluación ${this.tipoEvaluando} guardada para ${identificador} `);
   }
 
   private inicializarCriteriosRubrica() {
@@ -1809,7 +1810,7 @@ export class InicioPage implements OnInit, OnDestroy {
    * Abre la rúbrica para una entrega específica (E1, E2, EF) y tipo (PG, PI)
    */
   async abrirRubricaEntrega(entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI') {
-    console.log(`📋[abrirRubricaEntrega] Abriendo rúbrica: ${entrega} - ${tipo} `);
+    Logger.log(`📋[abrirRubricaEntrega] Abriendo rúbrica: ${entrega} - ${tipo} `);
 
     // Verificar si hay curso activo
     if (!this.cursoActivo) {
@@ -1826,15 +1827,15 @@ export class InicioPage implements OnInit, OnDestroy {
     const codigoCurso = this.cursoActivo;
     // Buscar rúbrica asociada al curso, entrega y tipo
     const rubricas = this.dataService.obtenerRubricasArray();
-    console.log(`🔍[abrirRubricaEntrega] Buscando rúbrica para:`);
-    console.log(`   - Curso: ${codigoCurso}`);
-    console.log(`   - Entrega: ${entrega}`);
-    console.log(`   - Tipo: ${tipo}`);
-    console.log(`🔍[abrirRubricaEntrega] Total rúbricas disponibles: ${rubricas.length}`);
+    Logger.log(`🔍[abrirRubricaEntrega] Buscando rúbrica para:`);
+    Logger.log(`   - Curso: ${codigoCurso}`);
+    Logger.log(`   - Entrega: ${entrega}`);
+    Logger.log(`   - Tipo: ${tipo}`);
+    Logger.log(`🔍[abrirRubricaEntrega] Total rúbricas disponibles: ${rubricas.length}`);
 
     // Log de todas las rúbricas para debug
     rubricas.forEach((r, i) => {
-      console.log(`   [${i}] ${r.nombre} | cursosCodigos: ${JSON.stringify(r.cursosCodigos)} | tipoEntrega: ${r.tipoEntrega} | tipoRubrica: ${r.tipoRubrica}`);
+      Logger.log(`   [${i}] ${r.nombre} | cursosCodigos: ${JSON.stringify(r.cursosCodigos)} | tipoEntrega: ${r.tipoEntrega} | tipoRubrica: ${r.tipoRubrica}`);
     });
 
     const rubricaEncontrada = rubricas.find(r =>
@@ -1848,18 +1849,18 @@ export class InicioPage implements OnInit, OnDestroy {
         'Rúbrica no encontrada',
         `No hay rúbrica ${tipo} configurada para ${entrega} en este curso.`
       );
-      console.warn(`⚠️[abrirRubricaEntrega] No se encontró rúbrica para ${codigoCurso} - ${entrega} - ${tipo} `);
+      Logger.warn(`⚠️[abrirRubricaEntrega] No se encontró rúbrica para ${codigoCurso} - ${entrega} - ${tipo} `);
       return;
     }
 
-    console.log(`✅[abrirRubricaEntrega] Rúbrica encontrada: ${rubricaEncontrada.nombre} `);
+    Logger.log(`✅[abrirRubricaEntrega] Rúbrica encontrada: ${rubricaEncontrada.nombre} `);
     // Establecer variables de estado
     this.entregaEvaluando = entrega;
     this.tipoEvaluando = tipo;
     this.rubricaActual = rubricaEncontrada;
     this.mostrarRubrica = true;
 
-    console.log(`✅[abrirRubricaEntrega] Estado actualizado: `, {
+    Logger.log(`✅[abrirRubricaEntrega] Estado actualizado: `, {
       entrega: this.entregaEvaluando,
       tipo: this.tipoEvaluando,
       rubrica: this.rubricaActual?.nombre,
@@ -1876,8 +1877,8 @@ export class InicioPage implements OnInit, OnDestroy {
     // Forzar detección de cambios para actualizar la UI
     this.cdr.detectChanges();
 
-    console.log(`✅[abrirRubricaEntrega] Rúbrica cargada: ${rubricaEncontrada.nombre} `);
-    console.log(`✅[abrirRubricaEntrega] mostrarRubrica: ${this.mostrarRubrica} `);
+    Logger.log(`✅[abrirRubricaEntrega] Rúbrica cargada: ${rubricaEncontrada.nombre} `);
+    Logger.log(`✅[abrirRubricaEntrega] mostrarRubrica: ${this.mostrarRubrica} `);
   }
 
 
@@ -1961,7 +1962,7 @@ export class InicioPage implements OnInit, OnDestroy {
     const grupoActual = this.grupoSeguimientoActivo || (this.filtroGrupo !== 'todos' ? this.filtroGrupo : null);
 
     if (!this.cursoActivo || !this.entregaEvaluando || !grupoActual) {
-      console.warn('⚠️ [cargarEvaluacionGuardada] Faltan datos necesarios');
+      Logger.warn('⚠️ [cargarEvaluacionGuardada] Faltan datos necesarios');
       return;
     }
 
@@ -1971,7 +1972,7 @@ export class InicioPage implements OnInit, OnDestroy {
       // Para Individual: usar email del estudiante
       identificador = this.estudianteSeleccionado || '';
       if (!identificador) {
-        console.warn('⚠️ [cargarEvaluacionGuardada] PI requiere estudiante seleccionado');
+        Logger.warn('⚠️ [cargarEvaluacionGuardada] PI requiere estudiante seleccionado');
         return;
       }
     } else {
@@ -1979,7 +1980,7 @@ export class InicioPage implements OnInit, OnDestroy {
       identificador = grupoActual;
     }
 
-    console.log(`🔍[cargarEvaluacionGuardada] Buscando evaluación: `, {
+    Logger.log(`🔍[cargarEvaluacionGuardada] Buscando evaluación: `, {
       curso: this.cursoActivo,
       entrega: this.entregaEvaluando,
       tipo: this.tipoEvaluando,
@@ -1995,14 +1996,14 @@ export class InicioPage implements OnInit, OnDestroy {
     );
 
     if (evaluacionExistente) {
-      console.log(`📂[cargarEvaluacionGuardada] ✅ Evaluación recuperada para ${this.entregaEvaluando}: `, evaluacionExistente);
-      console.log(`📂[cargarEvaluacionGuardada] Criterios:`, evaluacionExistente.criterios);
+      Logger.log(`📂[cargarEvaluacionGuardada] ✅ Evaluación recuperada para ${this.entregaEvaluando}: `, evaluacionExistente);
+      Logger.log(`📂[cargarEvaluacionGuardada] Criterios:`, evaluacionExistente.criterios);
 
       // Crear copia PROFUNDA para forzar ngOnChanges en el hijo
       this.evaluacionActual = JSON.parse(JSON.stringify(evaluacionExistente));
       this.reconstruirEstadoDesdeEvaluacion(evaluacionExistente);
     } else {
-      console.log(`🆕[cargarEvaluacionGuardada] ❌ Sin evaluación previa para ${this.entregaEvaluando} `);
+      Logger.log(`🆕[cargarEvaluacionGuardada] ❌ Sin evaluación previa para ${this.entregaEvaluando} `);
       this.evaluacionActual = null;
       this.reiniciarEstadoEvaluacion();
     }
@@ -2015,11 +2016,11 @@ export class InicioPage implements OnInit, OnDestroy {
   // Helper para reconstruir estado interno (compatibilidad)
   private reconstruirEstadoDesdeEvaluacion(evaluacion: Evaluacion) {
     if (!evaluacion || !evaluacion.criterios) {
-      console.warn('⚠️ [reconstruirEstadoDesdeEvaluacion] Evaluación sin criterios');
+      Logger.warn('⚠️ [reconstruirEstadoDesdeEvaluacion] Evaluación sin criterios');
       return;
     }
 
-    console.log('🔄 [reconstruirEstadoDesdeEvaluacion] Reconstruyendo estado desde evaluación:', evaluacion);
+    Logger.log('🔄 [reconstruirEstadoDesdeEvaluacion] Reconstruyendo estado desde evaluación:', evaluacion);
 
     // Restaurar criteriosEvaluados desde la evaluación guardada
     this.criteriosEvaluados = evaluacion.criterios.map((crit, index) => {
@@ -2066,7 +2067,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     this.timestampsSeguimiento = evaluacion.criterios.map(() => timestamp);
 
-    console.log('✅ [reconstruirEstadoDesdeEvaluacion] Estado reconstruido:', {
+    Logger.log('✅ [reconstruirEstadoDesdeEvaluacion] Estado reconstruido:', {
       criterios: this.criteriosEvaluados.length,
       puntosTotal: this.puntosRubricaTotales,
       textoParrafos: textoSeguimiento.length
@@ -2108,7 +2109,7 @@ export class InicioPage implements OnInit, OnDestroy {
     }
     this.timestampsSeguimiento = [];
 
-    console.log('🧹 [reiniciarEstadoEvaluacion] Estado de evaluación reiniciado');
+    Logger.log('🧹 [reiniciarEstadoEvaluacion] Estado de evaluación reiniciado');
   }
 
   get nivelSeleccionadoActual(): any {
@@ -2149,15 +2150,15 @@ export class InicioPage implements OnInit, OnDestroy {
   seleccionarNivelCriterioActual(nivel: any) {
     if (!this.criterioActual || !nivel) return;
 
-    console.log('📝 [seleccionarNivelCriterioActual] Seleccionando nivel:', nivel.titulo, 'para criterio:', this.criterioActualIndex);
+    Logger.log('📝 [seleccionarNivelCriterioActual] Seleccionando nivel:', nivel.titulo, 'para criterio:', this.criterioActualIndex);
 
     if (this.aplicarATodos && this.rubricaActual) {
       // APLICAR A TODOS LOS CRITERIOS
-      console.log('🔄 [Aplicar a Todos] Aplicando nivel a todos los criterios');
-      console.log('🔍 [Aplicar a Todos] Estado inicial - criteriosEvaluados.length:', this.criteriosEvaluados.length);
+      Logger.log('🔄 [Aplicar a Todos] Aplicando nivel a todos los criterios');
+      Logger.log('🔍 [Aplicar a Todos] Estado inicial - criteriosEvaluados.length:', this.criteriosEvaluados.length);
 
       // 🧹 PRIMERO: Limpiar completamente el texto del panel de seguimiento
-      console.log('🧹 [Aplicar a Todos] Limpiando texto de seguimiento previo...');
+      Logger.log('🧹 [Aplicar a Todos] Limpiando texto de seguimiento previo...');
       this.textoSeguimientoRubrica = [];
       this.textoSeguimientoRubricaGrupal = [];
       this.textoSeguimientoRubricaIndividual = [];
@@ -2170,7 +2171,7 @@ export class InicioPage implements OnInit, OnDestroy {
       // IMPORTANTE: Limpiar inmediatamente el servicio de seguimiento
       if (this.tipoEvaluando) {
         this.seguimientoService.actualizarTextoRubrica(this.tipoEvaluando, [], []);
-        console.log('🧹 [Aplicar a Todos] Servicio de seguimiento limpiado');
+        Logger.log('🧹 [Aplicar a Todos] Servicio de seguimiento limpiado');
       }
 
       // IMPORTANTE: Reconstruir completamente el array de criterios evaluados para evitar duplicaciones
@@ -2209,9 +2210,9 @@ export class InicioPage implements OnInit, OnDestroy {
           this.actualizarTextoSeguimiento(nivelEquivalente, puntosNivel, puntosNivel, undefined);
           this.criterioActualIndex = indexTemp;
 
-          console.log(`✅[Aplicar a Todos] Criterio ${i}: "${criterio.titulo}" -> Nivel: "${nivelEquivalente.titulo}"(${puntosNivel} pts)`);
+          Logger.log(`✅[Aplicar a Todos] Criterio ${i}: "${criterio.titulo}" -> Nivel: "${nivelEquivalente.titulo}"(${puntosNivel} pts)`);
         } else {
-          console.warn(`⚠️[Aplicar a Todos] No se encontró nivel equivalente para criterio ${i}: "${criterio.titulo}"`);
+          Logger.warn(`⚠️[Aplicar a Todos] No se encontró nivel equivalente para criterio ${i}: "${criterio.titulo}"`);
 
           // Mantener el criterio existente si no hay nivel equivalente
           if (this.criteriosEvaluados[i]) {
@@ -2232,11 +2233,11 @@ export class InicioPage implements OnInit, OnDestroy {
       // REEMPLAZAR completamente el array de criterios evaluados
       this.criteriosEvaluados = nuevosEvaluados;
 
-      console.log('✅ [Aplicar a Todos] Array reconstruido - nuevosEvaluados.length:', this.criteriosEvaluados.length);
-      console.log('📊 [Aplicar a Todos] Criterios finales:', this.criteriosEvaluados.map(c => `${c.criterioTitulo}: ${c.nivelSeleccionado} `));
+      Logger.log('✅ [Aplicar a Todos] Array reconstruido - nuevosEvaluados.length:', this.criteriosEvaluados.length);
+      Logger.log('📊 [Aplicar a Todos] Criterios finales:', this.criteriosEvaluados.map(c => `${c.criterioTitulo}: ${c.nivelSeleccionado} `));
 
       // 🔄 IMPORTANTE: Forzar actualización completa del panel de seguimiento después de aplicar a todos
-      console.log('🔄 [Aplicar a Todos] Forzando actualización del panel de seguimiento...');
+      Logger.log('🔄 [Aplicar a Todos] Forzando actualización del panel de seguimiento...');
 
       this.aplicarATodos = false; // Resetear checkbox
 
@@ -2271,8 +2272,8 @@ export class InicioPage implements OnInit, OnDestroy {
     // Enviar texto al servicio de seguimiento
     this.actualizarTextoEnServicio();
 
-    console.log('✅ [seleccionarNivelCriterioActual] Nivel guardado. Niveles seleccionados:', this.nivelesSeleccionados);
-    console.log('📄 [seleccionarNivelCriterioActual] Texto de seguimiento actualizado:', this.textoSeguimientoRubrica[this.criterioActualIndex]);
+    Logger.log('✅ [seleccionarNivelCriterioActual] Nivel guardado. Niveles seleccionados:', this.nivelesSeleccionados);
+    Logger.log('📄 [seleccionarNivelCriterioActual] Texto de seguimiento actualizado:', this.textoSeguimientoRubrica[this.criterioActualIndex]);
   }
 
   actualizarPuntosPersonalizados(puntos: number) {
@@ -2425,7 +2426,7 @@ export class InicioPage implements OnInit, OnDestroy {
             this.modoEdicionRubrica = false;
 
             // IMPORTANTE: Recargar datos para actualizar las tablas
-            console.log('🔄 Recargando datos después del borrado de evaluación...');
+            Logger.log('🔄 Recargando datos después del borrado de evaluación...');
 
             // Recargar el curso actual para actualizar todas las evaluaciones en las tablas
             if (this.cursoActivo) {
@@ -2476,7 +2477,7 @@ export class InicioPage implements OnInit, OnDestroy {
         await this.mostrarMensajeExito('Texto de seguimiento completo copiado al portapapeles');
       }
     } catch (error) {
-      console.error('Error al copiar texto:', error);
+      Logger.error('Error al copiar texto:', error);
       await this.mostrarError('Error', 'No se pudo copiar el texto al portapapeles');
     }
   }
@@ -2716,7 +2717,7 @@ export class InicioPage implements OnInit, OnDestroy {
    * Asegura que cada integrante tenga evaluaciones independientes y persistentes
    */
   private limpiarRubricaParaNuevoEstudiante() {
-    console.log('🧹 [limpiarRubricaParaNuevoEstudiante] Limpiando rúbrica para nuevo estudiante');
+    Logger.log('🧹 [limpiarRubricaParaNuevoEstudiante] Limpiando rúbrica para nuevo estudiante');
 
     // Limpiar niveles seleccionados
     this.nivelesSeleccionados = {};
@@ -2741,7 +2742,7 @@ export class InicioPage implements OnInit, OnDestroy {
     // Salir del modo edición
     this.modoEdicionRubrica = false;
 
-    console.log('✅ [limpiarRubricaParaNuevoEstudiante] Rúbrica limpiada correctamente');
+    Logger.log('✅ [limpiarRubricaParaNuevoEstudiante] Rúbrica limpiada correctamente');
   }
 
   /**
@@ -2749,7 +2750,7 @@ export class InicioPage implements OnInit, OnDestroy {
    * Se ejecuta solo si no está habilitada la aplicación masiva de rúbrica grupal
    */
   private limpiarRubricaParaNuevoSubgrupo() {
-    console.log('🧹 [limpiarRubricaParaNuevoSubgrupo] Limpiando rúbrica por cambio de subgrupo');
+    Logger.log('🧹 [limpiarRubricaParaNuevoSubgrupo] Limpiando rúbrica por cambio de subgrupo');
 
     // Limpiar niveles seleccionados
     this.nivelesSeleccionados = {};
@@ -2780,10 +2781,10 @@ export class InicioPage implements OnInit, OnDestroy {
     // Reinicializar criterios de la rúbrica para mostrarla en blanco
     if (this.rubricaActual) {
       this.inicializarCriteriosRubrica();
-      console.log('🔄 [limpiarRubricaParaNuevoSubgrupo] Criterios reinicializados para rúbrica en blanco');
+      Logger.log('🔄 [limpiarRubricaParaNuevoSubgrupo] Criterios reinicializados para rúbrica en blanco');
     }
 
-    console.log('✅ [limpiarRubricaParaNuevoSubgrupo] Rúbrica limpiada para nuevo subgrupo');
+    Logger.log('✅ [limpiarRubricaParaNuevoSubgrupo] Rúbrica limpiada para nuevo subgrupo');
   }
 
   // === MÉTODOS PARA METADATA DE CURSOS ===
@@ -2817,7 +2818,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // OPTIMIZACIÓN: Si no cambió el grupo, no hacer nada
     if (!cambioDeGrupo) {
-      console.log('⚡ [seleccionarGrupoSeguimiento] Grupo ya seleccionado, evitando recarga:', grupo);
+      Logger.log('⚡ [seleccionarGrupoSeguimiento] Grupo ya seleccionado, evitando recarga:', grupo);
       return;
     }
 
@@ -2832,7 +2833,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // Si cambió de grupo y hay rúbrica activa, limpiarla (comportamiento normal)
     if (this.mostrarRubrica) {
-      console.log('🧹 [seleccionarGrupoSeguimiento] Limpiando rúbrica por cambio de grupo');
+      Logger.log('🧹 [seleccionarGrupoSeguimiento] Limpiando rúbrica por cambio de grupo');
       this.limpiarRubricaParaNuevoSubgrupo();
     }
 
@@ -2870,7 +2871,7 @@ export class InicioPage implements OnInit, OnDestroy {
       mostrarNombreCorto: this.mostrarNombreCorto
     });
 
-    console.log('🔤 [InicioPage] Mostrar nombre corto:', this.mostrarNombreCorto ? 'Activado' : 'Desactivado');
+    Logger.log('🔤 [InicioPage] Mostrar nombre corto:', this.mostrarNombreCorto ? 'Activado' : 'Desactivado');
   }
 
   // === MÉTODOS PARA COMENTARIOS DE GRUPO ===
@@ -2889,7 +2890,7 @@ export class InicioPage implements OnInit, OnDestroy {
       this.grupoSeguimientoActivo
     );
 
-    console.log('💬 [InicioPage] Comentarios cargados:', this.comentariosGrupoActual.length);
+    Logger.log('💬 [InicioPage] Comentarios cargados:', this.comentariosGrupoActual.length);
   }
 
   /**
@@ -2910,7 +2911,7 @@ export class InicioPage implements OnInit, OnDestroy {
     this.nuevoComentario = '';
     this.cargarComentariosGrupo();
 
-    console.log('✅ [InicioPage] Comentario agregado exitosamente');
+    Logger.log('✅ [InicioPage] Comentario agregado exitosamente');
   }
 
   /**
@@ -2939,7 +2940,7 @@ export class InicioPage implements OnInit, OnDestroy {
               comentarioId
             );
             this.cargarComentariosGrupo();
-            console.log('🗑️ [InicioPage] Comentario eliminado');
+            Logger.log('🗑️ [InicioPage] Comentario eliminado');
 
             const toast = await this.toastController.create({
               message: 'Comentario eliminado',
@@ -2963,7 +2964,7 @@ export class InicioPage implements OnInit, OnDestroy {
   iniciarEdicionComentario(comentarioId: string, textoActual: string): void {
     this.comentarioEditando = comentarioId;
     this.textoEditando = textoActual;
-    console.log('✏️ [InicioPage] Iniciando edición de comentario:', comentarioId);
+    Logger.log('✏️ [InicioPage] Iniciando edición de comentario:', comentarioId);
   }
 
   /**
@@ -2972,7 +2973,7 @@ export class InicioPage implements OnInit, OnDestroy {
   cancelarEdicionComentario(): void {
     this.comentarioEditando = null;
     this.textoEditando = '';
-    console.log('❌ [InicioPage] Edición cancelada');
+    Logger.log('❌ [InicioPage] Edición cancelada');
   }
 
   /**
@@ -2995,7 +2996,7 @@ export class InicioPage implements OnInit, OnDestroy {
     this.textoEditando = '';
     this.cargarComentariosGrupo();
 
-    console.log('✅ [InicioPage] Comentario actualizado exitosamente');
+    Logger.log('✅ [InicioPage] Comentario actualizado exitosamente');
 
     const toast = await this.toastController.create({
       message: 'Comentario actualizado',
@@ -3088,7 +3089,7 @@ export class InicioPage implements OnInit, OnDestroy {
     this.grupoSeguimientoActivo = grupoAnterior;
     this.filtroGrupo = grupoAnterior;
 
-    console.log('⬅️ [retrocederGrupo] filtroGrupo actualizado a:', this.filtroGrupo);
+    Logger.log('⬅️ [retrocederGrupo] filtroGrupo actualizado a:', this.filtroGrupo);
 
     // Actualizar el servicio de seguimiento
     const grupoNum = parseInt(grupoAnterior.replace(/\D/g, ''));
@@ -3145,7 +3146,7 @@ export class InicioPage implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     }
 
-    console.log('➡️ [InicioPage] Navegado a grupo siguiente:', grupoSiguiente);
+    Logger.log('➡️ [InicioPage] Navegado a grupo siguiente:', grupoSiguiente);
   }
 
   // === MÉTODOS PARA PERSISTENCIA POR SUBGRUPO ===
@@ -3177,7 +3178,7 @@ export class InicioPage implements OnInit, OnDestroy {
     const grupoNumero = parseInt(this.filtroGrupo.replace(/\D/g, ''));
     this.seguimientoService.setGrupoSeleccionado(grupoNumero);
 
-    console.log('🎯 Seguimiento inicializado:', this.cursoActivo, this.filtroGrupo, cached ? 'con cache' : 'sin cache');
+    Logger.log('🎯 Seguimiento inicializado:', this.cursoActivo, this.filtroGrupo, cached ? 'con cache' : 'sin cache');
   }
 
   /**
@@ -3208,7 +3209,7 @@ export class InicioPage implements OnInit, OnDestroy {
     cached.timestamp = Date.now(); // Actualizar timestamp
     this.evaluacionesCache.set(key, cached);
     // Log deshabilitado para evitar spam
-    // console.log('💾 Evaluación guardada en cache:', key, this.tipoEvaluando);
+    // Logger.log('💾 Evaluación guardada en cache:', key, this.tipoEvaluando);
   }
 
   /**
@@ -3255,7 +3256,7 @@ export class InicioPage implements OnInit, OnDestroy {
       this.textoSeguimientoRubricaIndividual = this.generarTextoSeguimiento(evaluacion.criterios);
     }
 
-    console.log('📂 Evaluación restaurada desde cache:', key, this.tipoEvaluando);
+    Logger.log('📂 Evaluación restaurada desde cache:', key, this.tipoEvaluando);
     return true;
   }
 
@@ -3275,19 +3276,19 @@ export class InicioPage implements OnInit, OnDestroy {
   private buildEvaluacionRubrica(): any {
     if (!this.rubricaActual || !this.tipoEvaluando) return null;
 
-    console.log('🔧 [buildEvaluacionRubrica] Criterios totales:', this.criteriosEvaluados.length);
+    Logger.log('🔧 [buildEvaluacionRubrica] Criterios totales:', this.criteriosEvaluados.length);
 
     // Filtrar solo criterios que realmente han sido evaluados (tienen nivel seleccionado Y título válido)
     const criteriosEvaluados = this.criteriosEvaluados.filter((criterio: any, index: number) => {
       const tieneNivel = criterio.nivelSeleccionado && criterio.nivelSeleccionado.trim() !== '';
       const tieneTitulo = criterio.criterioTitulo && criterio.criterioTitulo.trim() !== '';
 
-      console.log(`🔍 Criterio ${index}: "${criterio.criterioTitulo}" - Nivel: "${criterio.nivelSeleccionado}" - Válido: ${tieneNivel && tieneTitulo} `);
+      Logger.log(`🔍 Criterio ${index}: "${criterio.criterioTitulo}" - Nivel: "${criterio.nivelSeleccionado}" - Válido: ${tieneNivel && tieneTitulo} `);
 
       return tieneNivel && tieneTitulo;
     });
 
-    console.log('✅ [buildEvaluacionRubrica] Criterios evaluados válidos:', criteriosEvaluados.length);
+    Logger.log('✅ [buildEvaluacionRubrica] Criterios evaluados válidos:', criteriosEvaluados.length);
 
     // Si no hay criterios evaluados, retornar null para evitar mostrar contenido vacío
     if (criteriosEvaluados.length === 0) {
@@ -3301,18 +3302,18 @@ export class InicioPage implements OnInit, OnDestroy {
       );
 
       if (indexOriginal === -1) {
-        console.warn('⚠️ No se encontró índice original para criterio:', criterio.criterioTitulo);
+        Logger.warn('⚠️ No se encontró índice original para criterio:', criterio.criterioTitulo);
         return null;
       }
 
       const criterioRubrica = this.rubricaActual!.criterios[indexOriginal];
 
       if (!criterioRubrica) {
-        console.warn('⚠️ No se encontró criterioRubrica para índice:', indexOriginal);
+        Logger.warn('⚠️ No se encontró criterioRubrica para índice:', indexOriginal);
         return null;
       }
 
-      console.log(`✅ Mapeando criterio ${mapIndex}: "${criterio.criterioTitulo}"(índice original: ${indexOriginal})`);
+      Logger.log(`✅ Mapeando criterio ${mapIndex}: "${criterio.criterioTitulo}"(índice original: ${indexOriginal})`);
 
       return {
         nombreCriterio: criterio.criterioTitulo,
@@ -3328,7 +3329,7 @@ export class InicioPage implements OnInit, OnDestroy {
       };
     }).filter(Boolean); // Filtrar elementos null
 
-    console.log('📊 [buildEvaluacionRubrica] Criterios finales para panel:', criterios.length);
+    Logger.log('📊 [buildEvaluacionRubrica] Criterios finales para panel:', criterios.length);
 
     return {
       tipo: this.tipoEvaluando,
@@ -3344,14 +3345,14 @@ export class InicioPage implements OnInit, OnDestroy {
   private emitToSeguimientoPanel(): void {
     const evaluacion = this.buildEvaluacionRubrica();
     if (!this.filtroGrupo) {
-      console.log('⚠️ No se puede emitir al panel: sin filtroGrupo');
+      Logger.log('⚠️ No se puede emitir al panel: sin filtroGrupo');
       return;
     }
 
     // Verificar que el seguimiento esté inicializado
     const seguimientoActual = this.seguimientoService.getSeguimiento();
     if (!seguimientoActual) {
-      console.log('🔄 Reinicializando seguimiento...');
+      Logger.log('🔄 Reinicializando seguimiento...');
       this.inicializarSeguimientoGrupo();
     }
 
@@ -3382,7 +3383,7 @@ export class InicioPage implements OnInit, OnDestroy {
         this.seguimientoService.actualizarIntegranteSeleccionado(null);
       }
 
-      console.log('📊 Panel actualizado:', {
+      Logger.log('📊 Panel actualizado:', {
         tipo: this.tipoEvaluando,
         grupo: grupoNumero,
         criterios: evaluacion.criterios.length,
@@ -3399,7 +3400,7 @@ export class InicioPage implements OnInit, OnDestroy {
         }
         this.seguimientoService.setSeguimiento(seguimiento);
       }
-      console.log('🧹 Panel limpiado para tipo:', this.tipoEvaluando);
+      Logger.log('🧹 Panel limpiado para tipo:', this.tipoEvaluando);
     }
   }
 
@@ -3417,7 +3418,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     this.seguimientoService.actualizarTextoRubrica(this.tipoEvaluando, textos, timestamps);
 
-    console.log('📝 Texto actualizado en servicio:', {
+    Logger.log('📝 Texto actualizado en servicio:', {
       tipo: this.tipoEvaluando,
       parrafos: textos.length,
       ultimoTexto: textos[textos.length - 1]
@@ -3437,7 +3438,7 @@ export class InicioPage implements OnInit, OnDestroy {
    * Selecciona un estudiante y muestra su correo en un toast
    */
   async seleccionarEstudiante(correo: string) {
-    console.log('📧 Estudiante seleccionado:', correo);
+    Logger.log('📧 Estudiante seleccionado:', correo);
 
     // Si hay un modo de selección de estado activo, agregar/quitar estado
     if (this.modoSeleccionEstado && this.filtroGrupo !== 'todos' && this.entregaEvaluando) {
@@ -3581,7 +3582,7 @@ export class InicioPage implements OnInit, OnDestroy {
    */
   obtenerCalificacionPanel(estudiante: Estudiante, entrega: string): number {
     if (!this.cursoActivo) {
-      console.warn('⚠️ [obtenerCalificacionPanel] No hay curso activo');
+      Logger.warn('⚠️ [obtenerCalificacionPanel] No hay curso activo');
       return 0;
     }
 
@@ -3592,7 +3593,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     // Log de depuración (solo si hay puntaje)
     if (total > 0) {
-      console.log(`📊[obtenerCalificacionPanel] ${estudiante.apellidos}: ${entrega} = PG(${pg}) + PI(${pi}) = ${total} `);
+      Logger.log(`📊[obtenerCalificacionPanel] ${estudiante.apellidos}: ${entrega} = PG(${pg}) + PI(${pi}) = ${total} `);
     }
 
     return total;
@@ -3641,7 +3642,7 @@ export class InicioPage implements OnInit, OnDestroy {
       segment.classList.add('drag-active');
     }
 
-    console.log('🎯 [DragDrop] Iniciando drag de curso:', curso);
+    Logger.log('🎯 [DragDrop] Iniciando drag de curso:', curso);
   }
 
   /**
@@ -3692,8 +3693,8 @@ export class InicioPage implements OnInit, OnDestroy {
       // Guardar el nuevo orden en el localStorage
       this.guardarOrdenCursos();
 
-      console.log('🎯 [DragDrop] Curso reordenado:', this.elementoArrastrado, 'movido a posición de:', cursoDestino);
-      console.log('📋 [DragDrop] Nuevo orden:', this.cursosOrdenados);
+      Logger.log('🎯 [DragDrop] Curso reordenado:', this.elementoArrastrado, 'movido a posición de:', cursoDestino);
+      Logger.log('📋 [DragDrop] Nuevo orden:', this.cursosOrdenados);
     }
 
     this.limpiarEstadoDrag();
@@ -3732,7 +3733,7 @@ export class InicioPage implements OnInit, OnDestroy {
     try {
       localStorage.setItem('cursosOrden', JSON.stringify(this.cursosOrdenados));
     } catch (error) {
-      console.error('Error al guardar orden de cursos:', error);
+      Logger.error('Error al guardar orden de cursos:', error);
     }
   }
 
@@ -3746,7 +3747,7 @@ export class InicioPage implements OnInit, OnDestroy {
         this.cursosOrdenados = JSON.parse(ordenGuardado);
       }
     } catch (error) {
-      console.error('Error al cargar orden de cursos:', error);
+      Logger.error('Error al cargar orden de cursos:', error);
       this.cursosOrdenados = [];
     }
   }
@@ -3771,7 +3772,7 @@ export class InicioPage implements OnInit, OnDestroy {
     this.colorPopoverEvent = event;
     this.menuColorVisible = true;
 
-    console.log('🎨 [abrirMenuColor] Color cargado:', colorActual, 'para curso:', curso);
+    Logger.log('🎨 [abrirMenuColor] Color cargado:', colorActual, 'para curso:', curso);
   }
 
   /**
@@ -3894,7 +3895,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
       } catch (error) {
         await loading.dismiss();
-        console.error('Error importando CSV:', error);
+        Logger.error('Error importando CSV:', error);
         await this.mostrarError('Error',
           'Error al procesar el archivo CSV: ' + (error as Error).message);
       }
@@ -3939,7 +3940,7 @@ export class InicioPage implements OnInit, OnDestroy {
       throw new Error('El CSV debe tener al menos una columna de entregas (E1, E2, EF)');
     }
 
-    console.log('📊 Procesando CSV sumatorias:', {
+    Logger.log('📊 Procesando CSV sumatorias:', {
       totalLineas: lineas.length - 1,
       columnas: { correo: indiceCorreo, E1: indiceE1, E2: indiceE2, EF: indiceEF }
     });
@@ -3959,7 +3960,7 @@ export class InicioPage implements OnInit, OnDestroy {
       );
 
       if (!estudiante) {
-        console.warn(`👤 Estudiante no encontrado: ${correo} `);
+        Logger.warn(`👤 Estudiante no encontrado: ${correo} `);
         noEncontrados++;
         continue;
       }
@@ -3983,7 +3984,7 @@ export class InicioPage implements OnInit, OnDestroy {
       }
     }
 
-    console.log('✅ CSV procesado:', {
+    Logger.log('✅ CSV procesado:', {
       actualizados,
       noEncontrados,
       total: lineas.length - 1
@@ -4118,7 +4119,7 @@ export class InicioPage implements OnInit, OnDestroy {
       await toast.present();
 
     } catch (error) {
-      console.error('Error al exportar CSV:', error);
+      Logger.error('Error al exportar CSV:', error);
       const toast = await this.toastController.create({
         message: 'Error al exportar CSV: ' + (error as Error).message,
         duration: 4000,
@@ -4219,18 +4220,18 @@ export class InicioPage implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('👁️ [previsualizarArchivoCanvas] Obteniendo archivo para:', {
+    Logger.log('👁️ [previsualizarArchivoCanvas] Obteniendo archivo para:', {
       cursoActivo: this.cursoActivo,
       cursoEncontrado: !!this.cursosData[this.cursoActivo]
     });
 
     const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
     if (!archivo) {
-      console.error('❌ No se encontró archivo Canvas para:', this.cursoActivo);
+      Logger.error('❌ No se encontró archivo Canvas para:', this.cursoActivo);
       return;
     }
 
-    console.log('📄 [previsualizarArchivoCanvas] Archivo encontrado:', {
+    Logger.log('📄 [previsualizarArchivoCanvas] Archivo encontrado:', {
       nombre: archivo.nombre,
       fechaCarga: archivo.fechaCarga,
       totalCalificaciones: archivo.calificaciones.length,
@@ -4295,7 +4296,7 @@ export class InicioPage implements OnInit, OnDestroy {
       await toast.present();
 
     } catch (error) {
-      console.error('Error exportando Canvas:', error);
+      Logger.error('Error exportando Canvas:', error);
       await this.mostrarError('Error', 'Error al exportar el archivo Canvas');
     }
   }
@@ -4358,7 +4359,7 @@ export class InicioPage implements OnInit, OnDestroy {
       await this.realizarActualizacionCanvas();
 
     } catch (error) {
-      console.error('Error actualizando Canvas:', error);
+      Logger.error('Error actualizando Canvas:', error);
       await this.mostrarError('Error', 'Error al actualizar calificaciones: ' + (error as Error).message);
     }
   }
@@ -4407,7 +4408,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     } catch (error) {
       await loading.dismiss();
-      console.error('Error en actualización Canvas:', error);
+      Logger.error('Error en actualización Canvas:', error);
 
       const toast = await this.toastController.create({
         message: '❌ Error actualizando Canvas: ' + (error as Error).message,
@@ -4420,6 +4421,7 @@ export class InicioPage implements OnInit, OnDestroy {
     }
   }
 }
+
 
 
 

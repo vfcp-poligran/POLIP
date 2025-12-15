@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Logger } from '@app/core/utils/logger';
 import {
   IonContent,
   IonCard,
@@ -152,16 +153,16 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   iniciarCreacionCurso() {
-    console.log('🔘 [CursosPage] Click en Crear Curso - Iniciando...');
+    Logger.log('🔘 [CursosPage] Click en Crear Curso - Iniciando...');
     // alert('Click detectado'); // Feedback inmediato
     try {
       this.modoEdicion = true;
       this.cursoSeleccionado = null;
       this.limpiarFormulario();
       this.cd.detectChanges(); // Forzar actualización de vista
-      console.log('✅ [CursosPage] Modo edición activado');
+      Logger.log('✅ [CursosPage] Modo edición activado');
     } catch (error) {
-      console.error('❌ [CursosPage] Error al iniciar creación:', error);
+      Logger.error('❌ [CursosPage] Error al iniciar creación:', error);
     }
   }
 
@@ -266,12 +267,12 @@ export class CursosPage implements OnInit, ViewWillEnter {
       };
 
       const headers = parsearLineaCSV(lineas[0]);
-      console.log('========================================');
-      console.log('📋 ANÁLISIS COMPLETO DEL CSV');
-      console.log('========================================');
-      console.log('Total de líneas en el archivo:', lineas.length);
-      console.log('Headers completos:', headers);
-      console.log('Primeros 4 headers:', headers.slice(0, 4));
+      Logger.log('========================================');
+      Logger.log('📋 ANÁLISIS COMPLETO DEL CSV');
+      Logger.log('========================================');
+      Logger.log('Total de líneas en el archivo:', lineas.length);
+      Logger.log('Headers completos:', headers);
+      Logger.log('Primeros 4 headers:', headers.slice(0, 4));
 
       // Detectar índices de columnas importantes
       // Mapeo correcto para formato Canvas:
@@ -307,7 +308,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       const pgIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pg');
       const piIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pi');
 
-      console.log('📍 Índices de columnas detectados:', {
+      Logger.log('📍 Índices de columnas detectados:', {
         nombreIndex,
         canvasUserIdIndex,
         loginIdIndex,
@@ -323,11 +324,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
       // Verificar línea 2 (puede ser "Manual Posting" o "Points Possible")
       if (lineas.length > 1) {
         const linea2 = parsearLineaCSV(lineas[1]);
-        console.log('Línea 2:', linea2.slice(0, 6));
+        Logger.log('Línea 2:', linea2.slice(0, 6));
       }
       if (lineas.length > 2) {
         const linea3 = parsearLineaCSV(lineas[2]);
-        console.log('Línea 3:', linea3.slice(0, 6));
+        Logger.log('Línea 3:', linea3.slice(0, 6));
       }
 
       // Filtrar líneas de datos (saltar "Manual Posting", "Points Possible" y líneas vacías)
@@ -341,24 +342,24 @@ export class CursosPage implements OnInit, ViewWillEnter {
         const esVacia = primeraColumna === '' && linea.trim() === '';
 
         if (idx < 4) {
-          console.log(`Filtro línea ${idx + 2}: "${primeraColumna.substring(0, 30)}" - Points:${esPointsPossible}, ManualPosting:${esManualPosting}, Vacía:${esVacia}`);
+          Logger.log(`Filtro línea ${idx + 2}: "${primeraColumna.substring(0, 30)}" - Points:${esPointsPossible}, ManualPosting:${esManualPosting}, Vacía:${esVacia}`);
         }
 
         // Filtrar "Manual Posting", "Points Possible" y líneas vacías
         return !esPointsPossible && !esManualPosting && !esVacia;
       });
 
-      console.log(`📊 Total de líneas de datos después de filtrar: ${lineasDatos.length}`);
+      Logger.log(`📊 Total de líneas de datos después de filtrar: ${lineasDatos.length}`);
 
       const estudiantes = lineasDatos.map((linea, index) => {
         const valores = parsearLineaCSV(linea).map(v => v.trim());
 
         // Debug: mostrar valores de las primeras 3 líneas
         if (index < 3) {
-          console.log(`🔍 DEBUG Línea ${index + 1} del CSV:`);
-          console.log(`   Total columnas: ${valores.length}`);
+          Logger.log(`🔍 DEBUG Línea ${index + 1} del CSV:`);
+          Logger.log(`   Total columnas: ${valores.length}`);
           valores.slice(0, 6).forEach((val, idx) => {
-            console.log(`   [${idx}]: "${val}"`);
+            Logger.log(`   [${idx}]: "${val}"`);
           });
         }
 
@@ -372,7 +373,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
           nombreCompleto = (valores[nombreIndex] || '').trim();
 
           if (index === 0) {
-            console.log(`📝 Valor en nombreIndex [${nombreIndex}]: "${nombreCompleto}"`);
+            Logger.log(`📝 Valor en nombreIndex [${nombreIndex}]: "${nombreCompleto}"`);
           }
 
           // Separar por coma: "APELLIDOS, NOMBRE" -> apellidos / nombres
@@ -424,11 +425,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
         // Debug: Mostrar mapeo de columnas para el primer estudiante
         if (index === 0) {
-          console.log('🔍 MAPEO DE COLUMNAS (Primer estudiante):');
-          console.log('Total valores parseados:', valores.length);
-          console.log('Total headers:', headers.length);
+          Logger.log('🔍 MAPEO DE COLUMNAS (Primer estudiante):');
+          Logger.log('Total valores parseados:', valores.length);
+          Logger.log('Total headers:', headers.length);
           for (let i = 4; i < Math.min(10, headers.length); i++) {
-            console.log(`  [${i}] "${headers[i]}" = "${valores[i] || '(vacío)'}"`);
+            Logger.log(`  [${i}] "${headers[i]}" = "${valores[i] || '(vacío)'}"`);
           }
         }
 
@@ -472,8 +473,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
         }
 
         if (index === 0) {
-          console.log('👤 Primer estudiante parseado:', estudiante);
-          console.log('📊 Calificaciones extraídas:', Object.keys(estudiante.calificaciones));
+          Logger.log('👤 Primer estudiante parseado:', estudiante);
+          Logger.log('📊 Calificaciones extraídas:', Object.keys(estudiante.calificaciones));
         }
 
         return estudiante;
@@ -558,7 +559,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error cargando estudiantes:', error);
+      Logger.error('Error cargando estudiantes:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al cargar archivo de estudiantes',
@@ -591,7 +592,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
         calificaciones: calificaciones  // Array procesado para búsquedas
       };
 
-      console.log('✅ Calificaciones cargadas:', {
+      Logger.log('✅ Calificaciones cargadas:', {
         archivo: file.name,
         totalRegistros: calificaciones.length,
         primerRegistro: calificaciones[0]
@@ -602,7 +603,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
       // OPTIMIZACIÓN: Notificar al sistema que las calificaciones cambiaron
       // Esto invalidará el cache en cursos.page.ts cuando se guarde
-      console.log('🔄 [cargarArchivoCalificaciones] Calificaciones cargadas - cache se invalidará al guardar');
+      Logger.log('🔄 [cargarArchivoCalificaciones] Calificaciones cargadas - cache se invalidará al guardar');
 
       const toast = await this.toastController.create({
         message: 'Archivo de calificaciones cargado',
@@ -613,7 +614,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error cargando calificaciones:', error);
+      Logger.error('Error cargando calificaciones:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al cargar archivo de calificaciones',
@@ -844,9 +845,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
         });
       }
 
-      // console.log('🔄 Recargando lista de cursos...');
+      // Logger.log('🔄 Recargando lista de cursos...');
       this.cargarCursos();
-      // console.log('📋 Cursos disponibles:', this.cursosDisponibles.length);
+      // Logger.log('📋 Cursos disponibles:', this.cursosDisponibles.length);
 
       // Limpiar formulario sin mostrar toast de cancelación
       this.limpiarFormulario();
@@ -862,7 +863,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error guardando curso:', error);
+      Logger.error('Error guardando curso:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al guardar curso',
@@ -961,7 +962,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
               });
               await toast.present();
             } catch (error) {
-              console.error('Error eliminando curso:', error);
+              Logger.error('Error eliminando curso:', error);
 
               const toast = await this.toastController.create({
                 message: 'Error al eliminar curso',
@@ -1102,7 +1103,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       });
       await toast.present();
     } catch (error) {
-      console.error('Error cargando rúbrica:', error);
+      Logger.error('Error cargando rúbrica:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al cargar archivo de rúbrica',
@@ -1147,7 +1148,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
         this.rubricaFileInput.nativeElement.value = '';
       }
     } catch (error) {
-      console.error('Error guardando rúbrica:', error);
+      Logger.error('Error guardando rúbrica:', error);
 
       const toast = await this.toastController.create({
         message: 'Error al guardar la rúbrica',
@@ -1175,7 +1176,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   verCalificaciones(codigo: string) {
     // Navegar a la página de calificaciones con el curso seleccionado
-    console.log('Ver calificaciones:', codigo);
+    Logger.log('Ver calificaciones:', codigo);
   }
 
   async exportarCalificaciones(codigo: string) {
@@ -1207,3 +1208,4 @@ export class CursosPage implements OnInit, ViewWillEnter {
     }
   }
 }
+
