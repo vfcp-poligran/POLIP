@@ -22,7 +22,6 @@ import {
   IonMenuToggle,
   IonHeader,
   IonToolbar,
-  IonButtons,
   IonFooter,
   IonAvatar,
   IonContent,
@@ -57,6 +56,7 @@ import {
   documentText,
   star,
   cog,
+  speedometer,
   // Iconos de estado de estudiantes
   checkmarkCircle,
   gitMerge,
@@ -78,10 +78,16 @@ import {
   closeOutline,
   menuOutline,
   chevronForwardOutline,
+  chevronBackOutline,
+  arrowForwardOutline,
+  arrowBackOutline,
   expandOutline,
   trophyOutline,
   bookOutline,
-  eyeOutline
+  eyeOutline,
+  speedometerOutline,
+  libraryOutline,
+  ribbonOutline
 } from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
@@ -115,7 +121,6 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonMenuToggle,
     IonHeader,
     IonToolbar,
-    IonButtons,
     IonFooter,
     IonAvatar,
     IonContent,
@@ -138,7 +143,7 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
 })
 export class TabsPage implements OnDestroy, AfterViewInit {
   public environmentInjector = inject(EnvironmentInjector);
-  private router = inject(Router);
+  public router = inject(Router);
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);
   public fullscreenService = inject(FullscreenService);
@@ -157,6 +162,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   isDesktop: boolean = typeof window !== 'undefined' ? window.innerWidth >= 992 : false;
   grupos: string[] = [];
   tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG';
+
+  // URL actual para cambio de íconos
+  currentUrl: string = '';
 
   // Seguimiento actual
   seguimientoActual: SeguimientoGrupo | null = null;
@@ -190,19 +198,34 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Control del panel de seguimiento móvil
   mobileSeguimientoVisible: boolean = false;
 
+  // Control de expansión del sidebar
+  sidebarExpanded: boolean = false;
+
   constructor() {
     addIcons({
       // Filled icons
       home, library, clipboard, ribbon, settings, search, school, people, grid, trophy, chatbubble, person, book,
-      documentText, star, cog,
+      documentText, star, cog, speedometer,
       // Estado icons
       checkmarkCircle, gitMerge, closeCircle,
       // Outline icons
       homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline,
       informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline,
       pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline,
-      bookOutline, eyeOutline, menuOutline
+      bookOutline, eyeOutline, menuOutline, chevronForwardOutline, chevronBackOutline,
+      arrowForwardOutline, arrowBackOutline,
+      speedometerOutline, libraryOutline, ribbonOutline
     });
+
+    // Suscribirse a cambios de ruta para actualizar iconos
+    this.currentUrl = this.router.url;
+    this.subscriptions.push(
+      this.router.events.pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      ).subscribe((event: NavigationEnd) => {
+        this.currentUrl = event.urlAfterRedirects;
+      })
+    );
 
     // Suscribirse al seguimiento actual con cleanup
     this.subscriptions.push(
@@ -413,6 +436,11 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   /** Toggle del panel de seguimiento móvil */
   toggleMobileSeguimiento(): void {
     this.mobileSeguimientoVisible = !this.mobileSeguimientoVisible;
+  }
+
+  /** Toggle de expansión del sidebar */
+  toggleSidebar(): void {
+    this.sidebarExpanded = !this.sidebarExpanded;
   }
 
   /** Helper para parseInt en template */

@@ -25,7 +25,7 @@
       <ion-menu-toggle auto-hide="true">
         <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
           <ion-icon slot="start" name="school" color="primary"></ion-icon>
-          <ion-label>Gestión de Cursos</ion-label>
+          <ion-label>Cursos</ion-label>
         </ion-item>
       </ion-menu-toggle>
 
@@ -69,57 +69,54 @@
 </ion-menu>
 
 <!-- Sidebar permanente para desktop - sin ion-split-pane -->
-<ion-card class="desktop-sidebar" *ngIf="isDesktop">
+<ion-card class="desktop-sidebar" [class.collapsed]="!sidebarExpanded" *ngIf="isDesktop">
   <ion-card-header>
     <ion-avatar class="sidebar-logo-avatar">
       <img
         src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
         alt="Logo Politécnico Grancolombiano" />
     </ion-avatar>
+    <span class="sidebar-title">POLIProject</span>
   </ion-card-header>
 
   <ion-card-content class="desktop-sidebar-content">
     <ion-list lines="none" class="desktop-nav-list">
-      <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false" data-tooltip="Inicio">
-        <ion-icon slot="start" name="home" color="tertiary"></ion-icon>
+      <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/inicio') ? 'home' : 'home-outline'"></ion-icon>
+        <ion-label>Inicio</ion-label>
       </ion-item>
 
-      <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false" data-tooltip="Gestión de Cursos">
-        <ion-icon slot="start" name="school" color="primary"></ion-icon>
+      <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/cursos') ? 'library' : 'library-outline'"></ion-icon>
+        <ion-label>Cursos</ion-label>
       </ion-item>
 
-      <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false" data-tooltip="Rúbricas">
-        <ion-icon slot="start" name="document-text" color="warning"></ion-icon>
+      <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/rubricas') ? 'speedometer' : 'speedometer-outline'"></ion-icon>
+        <ion-label>Rúbricas</ion-label>
       </ion-item>
 
-      <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false" data-tooltip="Calificaciones">
-        <ion-icon slot="start" name="star" color="success"></ion-icon>
+      <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/calificaciones') ? 'ribbon' : 'ribbon-outline'"></ion-icon>
+        <ion-label>Calificaciones</ion-label>
       </ion-item>
 
-      <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false" data-tooltip="Sistema">
-        <ion-icon slot="start" name="cog" color="medium"></ion-icon>
+      <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/sistema') ? 'settings' : 'settings-outline'"></ion-icon>
+        <ion-label>Sistema</ion-label>
       </ion-item>
     </ion-list>
   </ion-card-content>
 
-  <ion-footer>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button fill="clear" (click)="toggleFullscreen()">
-          <ion-icon slot="icon-only" name="expand-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button fill="clear" (click)="toggleSearch()">
-          <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
+  <ion-footer class="sidebar-footer-desktop">
+    <ion-button fill="clear" class="expand-btn" (click)="toggleSidebar()">
+      <ion-icon slot="icon-only" [name]="sidebarExpanded ? 'arrow-back-outline' : 'arrow-forward-outline'"></ion-icon>
+    </ion-button>
   </ion-footer>
 </ion-card>
 
 <!-- Contenido principal - SOLO ion-router-outlet sin ion-tabs -->
-<div id="main-content" class="main-content-area">
+<div id="main-content" class="main-content-area" [class.sidebar-collapsed]="!sidebarExpanded">
   <ion-router-outlet></ion-router-outlet>
 </div>
 

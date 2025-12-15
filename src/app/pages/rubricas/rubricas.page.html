@@ -71,13 +71,14 @@
           <!-- Contenedor de Rúbricas Disponibles -->
           <div class="rubricas-container" [class.two-column-layout]="rubricaSeleccionada && !modoEdicion">
 
-            <!-- Tabla de rúbricas -->
             @if (rubricas.length === 0) {
             <div class="empty-state">
               <p>No hay rúbricas disponibles</p>
             </div>
             } @else {
-            <ion-list lines="full" [class.list-compact]="rubricaSeleccionada && !modoEdicion">
+
+            <!-- Vista Desktop: Lista Ionic con sliding -->
+            <ion-list lines="full" [class.list-compact]="rubricaSeleccionada && !modoEdicion" class="desktop-only">
               @for (rubrica of rubricas; track rubrica.id) {
               <ion-item-sliding>
                 <ion-item [class.item-selected]="rubricaSeleccionada?.id === rubrica.id" button
@@ -115,6 +116,75 @@
               </ion-item-sliding>
               }
             </ion-list>
+
+            <!-- Vista Móvil: Cards con componentes Ionic -->
+            <ion-list class="mobile-only rubrica-cards">
+              @for (rubrica of rubricas; track rubrica.id) {
+              <ion-item lines="none" class="rubrica-card">
+                <ion-card (click)="seleccionarRubrica(rubrica)">
+                  <ion-card-header>
+                    <ion-card-title>
+                      <span class="rubrica-nombre-mobile">{{ rubrica.nombre }}</span>
+                    </ion-card-title>
+                  </ion-card-header>
+
+                  <ion-card-content>
+                    <ion-grid>
+                      <ion-row>
+                        <ion-col size="6">
+                          <div class="info-item">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span class="info-label">Fecha:</span>
+                            <span class="info-value">{{ rubrica.fechaCreacion | date: 'dd/MM/yyyy' }}</span>
+                          </div>
+                        </ion-col>
+                        <ion-col size="6">
+                          <div class="info-item">
+                            <ion-icon name="school-outline"></ion-icon>
+                            <span class="info-label">Curso:</span>
+                            <span class="info-value">{{ obtenerNombreCursoAsociado(rubrica) }}</span>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="12">
+                          <div class="badges-wrapper">
+                            <ion-chip color="success">
+                              <ion-icon name="trophy-outline"></ion-icon>
+                              <ion-label>{{ rubrica.puntuacionTotal }} pts</ion-label>
+                            </ion-chip>
+                            <ion-chip color="tertiary">
+                              <ion-icon name="list-outline"></ion-icon>
+                              <ion-label>{{ rubrica.criterios.length }} criterios</ion-label>
+                            </ion-chip>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="12">
+                          <div class="acciones-mobile">
+                            <ion-button expand="block" fill="outline" color="primary" (click)="seleccionarRubrica(rubrica); $event.stopPropagation()">
+                              <ion-icon name="eye-outline" slot="start"></ion-icon>
+                              Ver
+                            </ion-button>
+                            <ion-button expand="block" fill="outline" color="warning" (click)="seleccionarRubrica(rubrica); editarRubricaSeleccionada(); $event.stopPropagation()">
+                              <ion-icon name="pencil-outline" slot="start"></ion-icon>
+                              Editar
+                            </ion-button>
+                            <ion-button expand="block" fill="outline" color="danger" (click)="eliminarRubrica(rubrica, $event); $event.stopPropagation()">
+                              <ion-icon name="trash-outline" slot="start"></ion-icon>
+                              Eliminar
+                            </ion-button>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+              }
+            </ion-list>
+
             }
 
           </div>
@@ -195,7 +265,10 @@
 
           <!-- Asignación de Cursos -->
           <div class="cursos-section">
-            <h3>Cursos Asignados</h3>
+            <h3>
+              <ion-icon name="school-outline"></ion-icon>
+              Cursos Asignados
+            </h3>
 
             @if (cursosDisponibles.length === 0) {
             <div class="no-cursos-message">
@@ -226,17 +299,18 @@
 
           <!-- Escala de Calificación -->
           <div class="escala-section">
-            <h3>Escala de Calificación</h3>
+            <h3>
+              <ion-icon name="bar-chart-outline"></ion-icon>
+              Escala de Calificación
+            </h3>
             <ion-grid class="escala-grid-horizontal">
               <ion-row class="ion-nowrap">
                 @for (escala of rubricaSeleccionada.escalaCalificacion; track escala.rango; let i = $index) {
                 <ion-col>
-                  <ion-card [color]="i === 0 ? 'danger' : i === 1 ? 'warning' : 'success'" class="escala-card">
-                    <ion-card-content>
-                      <div class="escala-rango">{{ escala.rango }}</div>
-                      <div class="escala-descripcion">{{ escala.descripcion }}</div>
-                    </ion-card-content>
-                  </ion-card>
+                  <div class="escala-card" [class.escala-danger]="i === 0" [class.escala-warning]="i === 1" [class.escala-success]="i === 2">
+                    <div class="escala-rango">{{ escala.rango }}</div>
+                    <div class="escala-descripcion">{{ escala.descripcion }}</div>
+                  </div>
                 </ion-col>
                 }
               </ion-row>
@@ -245,7 +319,10 @@
 
           <!-- Tabla de Rúbrica -->
           <div class="tabla-section">
-            <h3>Tabla de Evaluación</h3>
+            <h3>
+              <ion-icon name="list-outline"></ion-icon>
+              Tabla de Evaluación
+            </h3>
             <div class="tabla-rubrica-container">
               <table class="tabla-rubrica">
                 <thead>

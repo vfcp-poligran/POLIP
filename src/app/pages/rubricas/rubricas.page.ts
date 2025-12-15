@@ -77,7 +77,8 @@ import {
   trophyOutline,
   documentOutline,
   downloadOutline,
-  phonePortraitOutline
+  phonePortraitOutline,
+  pencilOutline
 } from 'ionicons/icons';
 
 @Component({

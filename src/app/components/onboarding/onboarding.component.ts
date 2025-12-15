@@ -8,7 +8,7 @@ import {
   inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   arrowForward,
@@ -33,7 +33,7 @@ export interface OnboardingStep {
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule, IonIcon, IonButton],
+  imports: [CommonModule, IonIcon],
   template: `
     @if (isVisible && steps.length > 0) {
       <div class="ui-onboarding">

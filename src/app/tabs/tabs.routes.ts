@@ -9,12 +9,12 @@ export const routes: Routes = [
       {
         path: 'inicio',
         loadComponent: () =>
-          import('../pages/cursos/cursos.page').then((m) => m.InicioPage),
+          import('../pages/inicio/inicio.page').then((m) => m.InicioPage),
       },
       {
         path: 'cursos',
         loadComponent: () =>
-          import('../pages/gestion-cursos/gestion-cursos.page').then((m) => m.CursosPage),
+          import('../pages/cursos/cursos.page').then((m) => m.CursosPage),
       },
       {
         path: 'rubricas',

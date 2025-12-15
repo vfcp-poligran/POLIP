@@ -90,6 +90,55 @@
    CARDS MEJORADAS
    ============================================================ */
 
+/* ============================================================
+   TÍTULOS DE PÁGINA - DESKTOP
+   Sistema de títulos consistente para todas las páginas
+   Solo visible en pantallas >= 992px
+   Usa ion-text para compatibilidad con Ionic
+   ============================================================ */
+ion-text.page-title,
+.page-title {
+  // Ocultar en móvil por defecto
+  display: none;
+
+  // Mostrar solo en desktop
+  @media (min-width: 992px) {
+    display: block;
+    margin: 0 0 1rem 0;
+    padding: 1rem 1rem 0 1rem;
+  }
+
+  // Estilos del h1 interno
+  h1 {
+    font-size: 1.5rem; // 24px base
+    font-weight: 600;
+    font-family: var(--font-principal, 'Montserrat', sans-serif);
+    color: var(--ion-color-primary, var(--azul-oscuro, #0f385a));
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// Clase para mostrar solo en desktop (min-width: 992px)
+.desktop-only {
+  display: none;
+
+  @media (min-width: 992px) {
+    display: block;
+  }
+}
+
+// Clase para ocultar en desktop
+.mobile-only {
+  display: block;
+
+  @media (min-width: 992px) {
+    display: none;
+  }
+}
+
 .ui-card {
   background: var(--bg-card, #ffffff);
   border-radius: var(--rad-sm, 8px);
@@ -484,8 +533,8 @@
 
 .ui-glass {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -661,8 +710,8 @@ ion-button:focus:not(:focus-visible) {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 999;
@@ -1194,7 +1243,6 @@ ion-button:focus:not(:focus-visible) {
 /* Contenedor con scroll suave */
 .ui-smooth-scroll {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Centrado flex rápido */
@@ -1247,5 +1295,5 @@ ion-button:focus:not(:focus-visible) {
 
 /* Interactividad */
 .ui-pointer { cursor: pointer; }
-.ui-no-select { user-select: none; }
+.ui-no-select { -webkit-user-select: none; user-select: none; }
 .ui-no-events { pointer-events: none; }
