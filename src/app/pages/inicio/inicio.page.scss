@@ -915,7 +915,6 @@ ion-segment-button.segment-button-checked {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 2px solid var(--verde);
   margin: 0;
   padding: 0;
   z-index: 1;
@@ -925,109 +924,65 @@ ion-segment-button.segment-button-checked {
 
   .empty-state-content {
     text-align: center;
-    padding: 40px 20px;
-
-    ion-icon {
-      color: var(--azul-claro);
-      font-size: 4rem;
-      margin-bottom: 20px;
-    }
+    padding: 48px 24px;
 
     h3 {
-      color: var(--azul-oscuro);
+      margin: 0 0 8px 0;
+      font-size: 1.1rem;
       font-weight: 600;
-      font-size: 14px;
-      margin: 16px 0;
+      color: #495057;
     }
 
     p {
-      color: #2c3e50;
-      font-size: 14px;
-      margin: 8px 0 0 0;
+      margin: 0;
+      font-size: 0.9rem;
+      color: #6c757d;
       line-height: 1.5;
 
       strong {
-        font-weight: 600;
-        color: var(--azul-oscuro);
+        color: #495057;
+
+        ion-icon.icon-menu {
+          font-size: 1rem;
+          vertical-align: middle;
+          margin-right: 2px;
+          color: var(--ion-color-primary, #0F385A);
+        }
       }
     }
 
-    // Móviles: tamaño de texto reducido
-    @media (max-width: 767px) {
-      padding: 30px 15px;
-
-      ion-icon {
-        font-size: 3rem;
-        margin-bottom: 15px;
-      }
+    // Tablet (768px - 1024px)
+    @media (max-width: 1024px) and (min-width: 769px) {
+      padding: 40px 20px;
 
       h3 {
-        font-size: 12px;
+        font-size: 1rem;
       }
 
       p {
-        font-size: 12px;
+        font-size: 0.85rem;
+
+        strong ion-icon.icon-menu {
+          font-size: 0.95rem;
+        }
       }
     }
-  }
-}
 
-/* Estilo para card de no hay cursos disponibles (legacy) */
-ion-card.text-center,
-ion-card ion-card-content.text-center {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  color: #000000;
-  padding: 40px 20px;
-  border: 1px solid rgba(15, 56, 90, 0.1);
-  box-shadow: 0 4px 12px rgba(15, 56, 90, 0.08);
+    // Mobile (< 768px)
+    @media (max-width: 768px) {
+      padding: 32px 16px;
 
-  ion-icon {
-    color: var(--azul-claro);
-    font-size: 4rem;
-    margin-bottom: 20px;
-  }
+      h3 {
+        font-size: 0.95rem;
+      }
 
-  h3 {
-    color: var(--azul-oscuro);
-    font-weight: 600;
-    font-size: 14px;
-    margin: 16px 0;
-  }
+      p {
+        font-size: 0.8rem;
 
-  p {
-    color: #2c3e50;
-    font-size: 14px;
-    margin: 8px 0 0 0;
-    line-height: 1.5;
-
-    strong {
-      font-weight: 600;
-      color: var(--azul-oscuro);
-    }
-
-    .inline-icon {
-      vertical-align: middle;
-      font-size: 1.2em;
-      margin: 0 4px;
-      color: var(--azul-claro);
-    }
-  }
-
-  // Móviles: tamaño de texto reducido
-  @media (max-width: 767px) {
-    padding: 30px 15px;
-
-    ion-icon {
-      font-size: 3rem;
-      margin-bottom: 15px;
-    }
-
-    h3 {
-      font-size: 12px;
-    }
-
-    p {
-      font-size: 12px;
+        strong ion-icon.icon-menu {
+          font-size: 0.9rem;
+        }
+      }
     }
   }
 }

@@ -18,7 +18,7 @@ ion-content {
 }
 
 // ============================================
-// TÍTULO DE PÁGINA
+// TÍTULO DE PÁGINA - Responsive
 // ============================================
 .page-title-header {
   display: flex;
@@ -43,10 +43,6 @@ ion-content {
     margin-left: auto;
   }
 
-  .btn-add-curso {
-    // Botón ya está dentro de .header-actions
-  }
-
   ion-icon {
     font-size: 1.5rem;
     color: #ffffff;
@@ -59,16 +55,72 @@ ion-content {
     color: #ffffff;
     letter-spacing: 0.3px;
   }
+
+  // Tablet (768px - 1024px)
+  @media (max-width: 1024px) and (min-width: 769px) {
+    padding: 10px 14px;
+    border-radius: 8px;
+
+    h2 {
+      font-size: 1rem;
+    }
+
+    ion-icon {
+      font-size: 1.3rem;
+    }
+  }
+
+  // Mobile (< 768px)
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+    margin-bottom: 2px;
+    border-radius: 6px;
+
+    .title-wrapper {
+      gap: 6px;
+    }
+
+    .header-actions {
+      gap: 4px;
+    }
+
+    h2 {
+      font-size: 0.9rem;
+    }
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 0.75rem;
+    }
+  }
 }
 
 // ============================================
-// TAB CONTENT
+// TAB CONTENT - Responsive
 // ============================================
 .cursos-tab-content {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 120px);
   gap: 4px;
+
+  // Tablet
+  @media (max-width: 1024px) and (min-width: 769px) {
+    height: calc(100vh - 110px);
+    gap: 3px;
+  }
+
+  // Mobile
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: calc(100vh - 100px);
+    gap: 2px;
+  }
 }
 
 // ============================================
@@ -697,32 +749,54 @@ ion-content {
 }
 
 // ============================================
-// EMPTY STATE
+// EMPTY STATE - Estandarizado con responsive
 // ============================================
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 48px 24px;
   text-align: center;
-  color: #6c757d;
 
-  ion-icon {
-    font-size: 4rem;
-    opacity: 0.4;
-    margin-bottom: 16px;
-    color: var(--azul-oscuro, #0f385a);
-  }
-
-  p {
-    font-size: 1rem;
-    margin: 0 0 20px 0;
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #495057;
   }
 
-  ion-button {
-    font-weight: 600;
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.5;
+  }
+
+  // Tablet (768px - 1024px)
+  @media (max-width: 1024px) and (min-width: 769px) {
+    padding: 40px 20px;
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+
+  // Mobile (< 768px)
+  @media (max-width: 768px) {
+    padding: 32px 16px;
+
+    h3 {
+      font-size: 0.95rem;
+    }
+
+    p {
+      font-size: 0.8rem;
+    }
   }
 }
 
@@ -1115,28 +1189,6 @@ ion-item-sliding {
         font-size: 12px;
       }
     }
-  }
-}
-
-.empty-state {
-  padding: 9px;
-  color: var(--ion-color-medium);
-
-  p {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.4;
-  }
-}
-
-// ===== ESTILOS DE TABLA (LEGACY - Mantener por compatibilidad) =====
-.estudiantes-table {
-
-  th,
-  td {
-    padding-left: calc(12px * 1.05);
-    padding-right: calc(12px * 1.05);
   }
 }
 

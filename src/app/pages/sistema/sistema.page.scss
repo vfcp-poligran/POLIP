@@ -160,3 +160,13 @@ ion-button {
 .display-none {
   display: none !important;
 }
+
+// ===== BOTONES DE ACCIÓN =====
+.button-cache-warning {
+  --color: var(--ion-color-warning-shade, #e0a800);
+  --border-color: var(--ion-color-warning, #ffc107);
+
+  &:hover {
+    --background: rgba(255, 193, 7, 0.1);
+  }
+}

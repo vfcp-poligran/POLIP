@@ -123,6 +123,33 @@
                 </ion-label>
               </ion-item>
             </ion-list>
+
+            <!-- Limpiar Caché PWA -->
+            <div>
+              <h3 class="h3-system-section">Mantenimiento PWA</h3>
+              <p class="text-gray-small">
+                Limpia la caché del Service Worker para forzar la actualización de la aplicación. Útil si la app muestra una versión desactualizada.
+              </p>
+              <ion-button
+                fill="outline"
+                size="default"
+                (click)="limpiarCachePWA()"
+                class="button-cache-warning">
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Limpiar Caché PWA
+              </ion-button>
+            </div>
+
+            <ion-list class="metadata-section">
+              <ion-item lines="none">
+                <ion-icon name="information-circle-outline" slot="start" color="tertiary"></ion-icon>
+                <ion-label class="ion-text-wrap">
+                  <p class="text-info-blue">
+                    <strong>Info:</strong> Esta acción NO elimina tus datos. Solo limpia archivos estáticos (JS, CSS, imágenes) para forzar una recarga desde el servidor.
+                  </p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
           </div>
         </ion-card-content>
       </ion-card>

@@ -10,7 +10,6 @@ import {
   IonCardContent,
   IonButton,
   IonIcon,
-  IonBadge,
   IonGrid,
   IonRow,
   IonCol,
@@ -18,13 +17,6 @@ import {
   IonItem,
   IonLabel,
   IonChip,
-  IonCheckbox,
-  IonSelect,
-  IonSelectOption,
-  IonItemSliding,
-  IonItemOptions,
-  IonItemOption,
-  IonText,
   ToastController,
   AlertController,
   LoadingController,
@@ -94,7 +86,6 @@ import {
     IonCardContent,
     IonButton,
     IonIcon,
-    IonBadge,
     IonGrid,
     IonRow,
     IonCol,
@@ -102,13 +93,6 @@ import {
     IonItem,
     IonLabel,
     IonChip,
-    IonCheckbox,
-    IonSelect,
-    IonSelectOption,
-    IonItemSliding,
-    IonItemOptions,
-    IonItemOption,
-    IonText,
     CommonModule,
     FormsModule
   ]
@@ -127,6 +111,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
   rubricaFileName = '';
   rubricaCargada: RubricaDefinicion | null = null;
   cursosDisponibles: any[] = [];
+  infoExpanded = false;
 
   // Imports de iconos
   constructor() {
@@ -906,7 +891,14 @@ export class RubricasPage implements OnInit, ViewWillEnter {
   nuevaRubrica() {
     this.modoEdicion = true;
     this.rubricaSeleccionada = null;
+    this.infoExpanded = true;
     this.mostrarToast('Importa un archivo de rúbrica para crear una nueva', 'primary');
+  }
+
+  editarRubrica(rubrica: RubricaDefinicion) {
+    this.rubricaSeleccionada = rubrica;
+    this.modoEdicion = true;
+    this.mostrarToast(`Editando rúbrica: ${rubrica.nombre}`, 'primary');
   }
 
   async editarRubricaSeleccionada() {
@@ -949,12 +941,29 @@ export class RubricasPage implements OnInit, ViewWillEnter {
       Logger.error('Error guardando rúbrica:', error);
       await this.mostrarToast('Error al guardar la rúbrica', 'danger');
     }
-  } cancelarEdicion() {
+  }
+
+  cancelarEdicion() {
     this.modoEdicion = false;
     this.rubricaSeleccionada = null;
     this.rubricaCargada = null;
     this.rubricaFileName = '';
+    this.infoExpanded = false;
     this.mostrarToast('Creación de rúbrica cancelada', 'warning');
+  }
+
+  toggleInfo() {
+    this.infoExpanded = !this.infoExpanded;
+  }
+
+  limpiarRubrica() {
+    this.rubricaCargada = null;
+    this.rubricaFileName = '';
+    this.mostrarToast('Archivo de rúbrica eliminado', 'warning');
+  }
+
+  async confirmarEliminarRubrica(rubrica: RubricaDefinicion) {
+    await this.eliminarRubrica(rubrica);
   }
 
   async guardarRubricaSeleccionada() {

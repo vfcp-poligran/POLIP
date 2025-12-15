@@ -32,7 +32,8 @@ import {
   warningOutline,
   logoAngular,
   logoJavascript,
-  cloudOutline
+  cloudOutline,
+  refreshOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { BackupService } from '../../services/backup.service';
@@ -89,7 +90,8 @@ export class SistemaPage implements OnInit {
       warningOutline,
       logoAngular,
       logoJavascript,
-      cloudOutline
+      cloudOutline,
+      refreshOutline
     });
   }
 
@@ -235,6 +237,83 @@ export class SistemaPage implements OnInit {
 
               const toast = await this.toastController.create({
                 message: 'Error al limpiar base de datos',
+                duration: 3000,
+                color: 'danger',
+                position: 'top',
+                cssClass: 'toast-danger'
+              });
+              await toast.present();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Limpia la caché del Service Worker (PWA)
+   * Solo afecta archivos estáticos cacheados, NO los datos de usuario
+   */
+  async limpiarCachePWA() {
+    const alert = await this.alertController.create({
+      header: 'Limpiar Caché PWA',
+      message: 'Esto eliminará los archivos cacheados de la aplicación. Los datos (cursos, evaluaciones, rúbricas) NO se verán afectados. La app necesitará conexión a internet para recargar los recursos.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Limpiar Caché',
+          role: 'destructive',
+          handler: async () => {
+            try {
+              let cachesCleaned = 0;
+              let swUnregistered = 0;
+
+              // Limpiar todas las cachés del navegador
+              if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                  cacheNames.map(async (name) => {
+                    await caches.delete(name);
+                    cachesCleaned++;
+                  })
+                );
+              }
+
+              // Desregistrar Service Workers
+              if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(
+                  registrations.map(async (reg) => {
+                    await reg.unregister();
+                    swUnregistered++;
+                  })
+                );
+              }
+
+              const toast = await this.toastController.create({
+                message: `Caché limpiada: ${cachesCleaned} cachés, ${swUnregistered} Service Workers. Recargando...`,
+                duration: 2000,
+                color: 'success',
+                position: 'top',
+                cssClass: 'toast-success'
+              });
+              await toast.present();
+
+              // Recargar la página después de un breve delay
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+
+            } catch (error) {
+              Logger.error('Error limpiando caché PWA:', error);
+
+              const toast = await this.toastController.create({
+                message: 'Error al limpiar caché PWA',
                 duration: 3000,
                 color: 'danger',
                 position: 'top',

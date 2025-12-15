@@ -86,7 +86,7 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
@@ -332,72 +332,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({
-      ellipsisVerticalOutline,
-      arrowBackOutline,
-      arrowForwardOutline,
-      home,
-      ellipsisVertical,
-      closeOutline,
-      checkmarkCircle,
-      hourglassOutline,
-      documentText,
-      informationCircle,
-      peopleCircle,
-      rocket,
-      saveOutline,
-      documentTextOutline,
-      createOutline,
-      gitMerge,
-      closeCircle,
-      trashOutline,
-      alertCircle,
-      checkmarkOutline,
-      library,
-      people,
-      arrowForward,
-      lockClosed,
-      lockOpen,
-      scanOutline,
-      enterOutline,
-      eye,
-      logIn,
-      eyeOutline,
-      informationCircleOutline,
-      alertCircleOutline,
-      listOutline,
-      copyOutline,
-      personOutline,
-      analyticsOutline,
-      checkmarkCircleOutline,
-      cubeOutline,
-      timeOutline,
-      peopleOutline,
-      documentOutline,
-      trophyOutline,
-      personCircleOutline,
-      arrowUndoOutline,
-      arrowRedoOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
-      clipboardOutline,
-      notificationsOutline,
-      checkmarkDoneOutline,
-      linkOutline,
-      downloadOutline,
-      cloudUploadOutline,
-      refreshOutline,
-      addCircleOutline,
-      chatbubblesOutline,
-      closeCircleOutline,
-      pencilOutline,
-      person,
-      layersOutline,
-      menuOutline,
-      save,
-      chatboxOutline,
-      add
-    });
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,home,ellipsisVertical,closeOutline,checkmarkCircle,hourglassOutline,library,speedometer,informationCircle,peopleCircle,rocket,saveOutline,documentTextOutline,createOutline,gitMerge,closeCircle,trashOutline,alertCircle,book,grid,schoolOutline,clipboardOutline,documentText,checkmarkOutline,people,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();

@@ -124,7 +124,8 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
 
         this.calificaciones[titulo] = puntos;
 
-        console.log(`  ✓ Criterio ${index + 1}: ${titulo} → ${puntos} pts (Nivel: ${criterioGuardado.nivelSeleccionado || 'N/A'})`);\n      });
+        console.log(`  ✓ Criterio ${index + 1}: ${titulo} → ${puntos} pts (Nivel: ${criterioGuardado.nivelSeleccionado || 'N/A'})`);
+      });
 
       // Cargar observaciones generales si existen
       this.observaciones = this.evaluacionExistente.comentarioGeneral || '';
