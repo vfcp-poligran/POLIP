@@ -1,7 +1,7 @@
 {
   "name": "gestor-proyectos",
-  "version": "1.0.0",
-  "author": "Víctor Castro Pérez - Politécnico Grancolombiano",
+  "version": "1.2.0",
+  "author": "Ing. MG. Víctor Castro Pérez - Politécnico Grancolombiano",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",

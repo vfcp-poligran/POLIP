@@ -29,6 +29,7 @@ import {
   IonCheckbox,
   IonFab,
   IonFabButton,
+  IonTitle,
   MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -53,6 +54,9 @@ import {
   chatbubble,
   person,
   book,
+  documentText,
+  star,
+  cog,
   // Iconos de estado de estudiantes
   checkmarkCircle,
   gitMerge,
@@ -117,7 +121,8 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonContent,
     IonCheckbox,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    IonTitle
   ],
   animations: [
     trigger('slideInOut', [
@@ -189,6 +194,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     addIcons({
       // Filled icons
       home, library, clipboard, ribbon, settings, search, school, people, grid, trophy, chatbubble, person, book,
+      documentText, star, cog,
       // Estado icons
       checkmarkCircle, gitMerge, closeCircle,
       // Outline icons
