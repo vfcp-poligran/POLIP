@@ -31,43 +31,29 @@
       </div>
 
       <!-- Selector de Curso -->
-      <ion-card *ngIf="cursosDisponibles.length > 0" role="region" aria-label="Selector de cursos">
+      <ion-card *ngIf="cursosDisponibles.length > 0" role="region" aria-label="Selector de cursos" class="course-selector-card">
         <ion-card-content>
-          <ion-segment
-            [(ngModel)]="cursoActivo"
-            (ionChange)="onCursoChange($event)"
-            class="course-segment"
-            scrollable
-            mode="md"
-            aria-label="Seleccione un curso">
-            <ion-segment-button
-              *ngFor="let curso of cursosDisponibles; trackBy: trackByCurso"
-              [value]="curso"
-              [style.--background-checked]="getCourseColor(curso)"
-              [style.--color-checked]="'#ffffff'"
-              [style.--border-color]="getCourseColor(curso)"
+          <div class="course-chips-container">
+            @for (curso of cursosDisponibles; track curso) {
+            <ion-chip
+              [class.selected]="cursoActivo === curso"
+              [style.--background]="cursoActivo === curso ? getCourseColor(curso) : 'transparent'"
+              [style.--color]="cursoActivo === curso ? '#ffffff' : getCourseColor(curso)"
+              [style.border-color]="getCourseColor(curso)"
+              (click)="seleccionarCurso(curso)"
               [attr.aria-label]="'Curso: ' + (getCursoMetadataForCourse(curso)?.codigo || curso)"
-              [attr.aria-pressed]="cursoActivo === curso">
-              <ion-label>
-                <div class="course-label">
-                  <div class="course-name-wrapper">
-                    <span class="course-tab-code" [attr.aria-hidden]="false">
-                      {{ getCursoMetadataForCourse(curso)?.codigo || curso }}
-                    </span>
-                  </div>
-                  <ion-button
-                    fill="clear"
-                    size="small"
-                    class="course-menu-btn"
-                    (click)="abrirMenuColor($event, curso)"
-                    [attr.aria-label]="'Cambiar color de ' + curso"
-                    [disabled]="menuColorVisible">
-                    <ion-icon slot="icon-only" name="ellipsis-vertical" aria-hidden="true"></ion-icon>
-                  </ion-button>
-                </div>
-              </ion-label>
-            </ion-segment-button>
-          </ion-segment>
+              [attr.aria-pressed]="cursoActivo === curso"
+              class="course-chip">
+              <ion-icon name="school-outline" class="chip-icon"></ion-icon>
+              <ion-label class="chip-label">{{ getCursoMetadataForCourse(curso)?.codigo || curso }}</ion-label>
+              <ion-icon
+                name="ellipsis-vertical"
+                class="chip-menu-icon"
+                (click)="abrirMenuColor($event, curso)"
+                [attr.aria-label]="'Opciones de ' + curso"></ion-icon>
+            </ion-chip>
+            }
+          </div>
 
           <!-- Popover para cambiar color (Ionic nativo) - Botón 3 puntos -->
           <ion-popover

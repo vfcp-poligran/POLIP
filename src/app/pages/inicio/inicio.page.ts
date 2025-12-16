@@ -11,8 +11,6 @@ import {
   IonCardHeader,
   IonButton,
   IonIcon,
-  IonSegment,
-  IonSegmentButton,
   IonLabel,
   IonChip,
   IonPopover,
@@ -107,8 +105,6 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonCardHeader,
     IonButton,
     IonIcon,
-    IonSegment,
-    IonSegmentButton,
     IonLabel,
     IonChip,
     IonPopover,
@@ -3217,7 +3213,7 @@ export class InicioPage implements OnInit, OnDestroy {
    */
   volverAMatriz(): void {
     Logger.log('🔙 [volverAMatriz] Regresando a vista de matriz');
-    
+
     // Cerrar rúbrica si está abierta
     if (this.mostrarRubrica) {
       this.cerrarRubrica();
@@ -3600,12 +3596,12 @@ export class InicioPage implements OnInit, OnDestroy {
    */
   contarEstadosIntegrantes(estado: 'ok' | 'solo' | 'ausente' | null): number {
     if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return 0;
-    
+
     const integrantes = this.obtenerIntegrantesGrupo();
     return integrantes.filter(est => {
       const estadoActual = this.seguimientoService.getEstadoEstudiante(
-        this.filtroGrupo, 
-        this.entregaEvaluando!, 
+        this.filtroGrupo,
+        this.entregaEvaluando!,
         est.correo
       );
       return estadoActual === estado;
