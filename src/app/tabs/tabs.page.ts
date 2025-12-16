@@ -29,6 +29,7 @@ import {
   IonFab,
   IonFabButton,
   IonTitle,
+  IonTextarea,
   MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -87,7 +88,11 @@ import {
   eyeOutline,
   speedometerOutline,
   libraryOutline,
-  ribbonOutline
+  ribbonOutline,
+  pencilOutline,
+  trashOutline,
+  addCircleOutline,
+  checkmarkOutline
 } from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
@@ -127,7 +132,8 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonCheckbox,
     IonFab,
     IonFabButton,
-    IonTitle
+    IonTitle,
+    IonTextarea
   ],
   animations: [
     trigger('slideInOut', [
@@ -172,6 +178,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Control del panel de comentarios
   comentariosColapsado: boolean = true;
   comentariosFijados: boolean = false;
+  nuevoComentarioTexto: string = '';
+  editandoComentarioId: string | null = null;
+  editandoComentarioTexto: string = '';
 
   // Control de curso activo
   cursoActivo: string | null = null;
@@ -195,6 +204,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Modo de selección de estado para estudiantes
   modoSeleccionEstado: 'ok' | 'solo' | 'ausente' | null = null;
 
+  // Set de integrantes seleccionados (por correo)
+  selectedIntegrantes: Set<string> = new Set();
+
   // Control del panel de seguimiento móvil
   mobileSeguimientoVisible: boolean = false;
 
@@ -214,7 +226,8 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline,
       bookOutline, eyeOutline, menuOutline, chevronForwardOutline, chevronBackOutline,
       arrowForwardOutline, arrowBackOutline,
-      speedometerOutline, libraryOutline, ribbonOutline
+      speedometerOutline, libraryOutline, ribbonOutline,
+      pencilOutline, trashOutline, addCircleOutline, checkmarkOutline
     });
 
     // Suscribirse a cambios de ruta para actualizar iconos
@@ -870,6 +883,41 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     }
   }
 
+  agregarComentario(): void {
+    if (!this.nuevoComentarioTexto.trim() || this.selectedGrupo === 0) return;
+
+    const nuevoComentario: ComentarioGrupo = {
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      comentario: this.nuevoComentarioTexto.trim(),
+      fecha: new Date(),
+      autor: 'Docente'
+    };
+
+    this.seguimientoService.agregarComentario(nuevoComentario);
+    this.nuevoComentarioTexto = '';
+  }
+
+  iniciarEdicionComentario(comentario: ComentarioGrupo): void {
+    this.editandoComentarioId = comentario.id;
+    this.editandoComentarioTexto = comentario.comentario;
+  }
+
+  guardarEdicionComentario(): void {
+    if (!this.editandoComentarioId || !this.editandoComentarioTexto.trim()) return;
+
+    this.seguimientoService.actualizarComentario(this.editandoComentarioId, this.editandoComentarioTexto.trim());
+    this.cancelarEdicionComentario();
+  }
+
+  cancelarEdicionComentario(): void {
+    this.editandoComentarioId = null;
+    this.editandoComentarioTexto = '';
+  }
+
+  eliminarComentario(id: string): void {
+    this.seguimientoService.eliminarComentario(id);
+  }
+
   toggleFullscreen(): void {
     this.fullscreenService.toggleFullscreen();
   }
@@ -1074,5 +1122,59 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   salirModoSeleccion() {
     this.modoSeleccionEstado = null;
     this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si un integrante está seleccionado
+   */
+  isIntegranteSelected(correo: string): boolean {
+    return this.selectedIntegrantes.has(correo);
+  }
+
+  /**
+   * Alterna la selección de un integrante
+   */
+  toggleIntegranteSelection(correo: string, event?: any) {
+    if (this.selectedIntegrantes.has(correo)) {
+      this.selectedIntegrantes.delete(correo);
+    } else {
+      this.selectedIntegrantes.add(correo);
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Selecciona todos los integrantes del grupo actual
+   */
+  selectAllIntegrantes() {
+    this.integrantesGrupoActual.forEach(i => this.selectedIntegrantes.add(i.correo));
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Deselecciona todos los integrantes
+   */
+  deselectAllIntegrantes() {
+    this.selectedIntegrantes.clear();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si todos los integrantes están seleccionados
+   */
+  areAllIntegrantesSelected(): boolean {
+    if (this.integrantesGrupoActual.length === 0) return false;
+    return this.integrantesGrupoActual.every(i => this.selectedIntegrantes.has(i.correo));
+  }
+
+  /**
+   * Alterna selección de todos los integrantes
+   */
+  toggleSelectAllIntegrantes() {
+    if (this.areAllIntegrantesSelected()) {
+      this.deselectAllIntegrantes();
+    } else {
+      this.selectAllIntegrantes();
+    }
   }
 }

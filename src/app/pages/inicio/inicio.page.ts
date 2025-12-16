@@ -9,16 +9,15 @@ import {
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonButton,
   IonIcon,
   IonLabel,
-  IonChip,
+  IonSegment,
+  IonSegmentButton,
   IonPopover,
   IonFab,
   IonFabButton,
   IonFabList,
   IonItem,
-  IonBadge,
   IonText,
   MenuController,
   AlertController,
@@ -83,12 +82,11 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { ToastService } from '../../services/toast.service';
 import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
-import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/evaluacion-rubrica.component';
 
 @Component({
   selector: 'app-inicio',
@@ -103,18 +101,16 @@ import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/
     IonCard,
     IonCardContent,
     IonCardHeader,
-    IonButton,
     IonIcon,
     IonLabel,
-    IonChip,
+    IonSegment,
+    IonSegmentButton,
     IonPopover,
     IonFab,
     IonFabButton,
     IonFabList,
     IonItem,
-    IonBadge,
-    IonText,
-    EvaluacionRubricaComponent
+    IonText
   ]
 })
 export class InicioPage implements OnInit, OnDestroy {
@@ -124,6 +120,7 @@ export class InicioPage implements OnInit, OnDestroy {
   estudiantesActuales: Estudiante[] = [];
   estudiantesFiltrados: Estudiante[] = [];
   filtroGrupo: string = 'todos';
+  filtroEntregaDinamica: 'todas' | 'E1' | 'E2' | 'EF' = 'todas'; // Filtro para panel de dinámica grupal
   busquedaGeneral: string = '';
   gruposDisponibles: string[] = [];
   estudianteSeleccionado: string | null = null;
@@ -171,11 +168,6 @@ export class InicioPage implements OnInit, OnDestroy {
   colorSeleccionado: string | null = null;
   colorPopoverEvent: Event | null = null;
   isApplyingColor: boolean = false; // Estado de loading al aplicar color
-
-  // Modo de selección de encabezado de grupo en la matriz
-  // true = mantener en vista matriz (solo mostrar integrantes en panel seguimiento)
-  // false = navegar a detalles del grupo
-  modoMantenerVistaMatriz: boolean = true;
 
   // === ESTADOS DE ESTUDIANTES (Ok/Solo/Ausente) ===
   // Los estados se manejan a través del SeguimientoService para compartir con tabs.page
@@ -242,13 +234,13 @@ export class InicioPage implements OnInit, OnDestroy {
   // Propiedades para panel de seguimiento
   grupoSeguimientoActivo: string | null = null;
 
-  // Cache de evaluaciones por subgrupo con TTL
+  // Cache de evaluaciones por subgrupo con TTL extendido
   private evaluacionesCache = new Map<string, {
     grupal?: any;
     individual?: any;
     timestamp: number;
   }>();
-  private readonly CACHE_TTL = 30000; // 30 segundos
+  private readonly CACHE_TTL = 300000; // 5 minutos (aumentado para mejor UX)
 
   // Caché de calificaciones Canvas optimizado
   private cacheCalificacionesCanvas = new Map<string, Map<string, number>>();
@@ -328,7 +320,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,home,ellipsisVertical,closeOutline,checkmarkCircle,hourglassOutline,library,speedometer,homeOutline,chevronForwardOutline,gridOutline,rocket,saveOutline,documentTextOutline,createOutline,peopleOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,alertCircle,informationCircle,peopleCircle,book,grid,schoolOutline,clipboardOutline,documentText,checkmarkOutline,people,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,home,schoolOutline,ellipsisVertical,closeOutline,checkmarkCircle,library,speedometer,homeOutline,chevronForwardOutline,gridOutline,peopleCircleOutline,analyticsOutline,checkmarkDoneCircle,hourglassOutline,warning,people,albums,alertCircle,informationCircleOutline,rocket,saveOutline,documentTextOutline,createOutline,peopleOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,informationCircle,peopleCircle,book,grid,clipboardOutline,documentText,checkmarkOutline,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,alertCircleOutline,listOutline,copyOutline,personOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -852,7 +844,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
       // Verificar cada entrega
       entregas.forEach(entrega => {
-        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo} `;
+        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo}`;
         if (evaluaciones[keyPG]) {
           estadoEntregas[entrega] = true;
         }
@@ -917,7 +909,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
       // Verificar cada entrega
       entregas.forEach(entrega => {
-        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo} `;
+        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo}`;
         if (evaluaciones[keyPG]) {
           estadoEntregas[entrega] = true;
         }
@@ -946,39 +938,6 @@ export class InicioPage implements OnInit, OnDestroy {
       const numB = parseInt(b.grupo) || 0;
       return numA - numB;
     });
-  }
-
-  /**
-   * Maneja el clic en el encabezado del grupo según el modo configurado
-   * - modoMantenerVistaMatriz = true: Solo muestra integrantes en panel de seguimiento
-   * - modoMantenerVistaMatriz = false: Navega a la vista detallada del grupo
-   */
-  onClickEncabezadoGrupo(grupo: string) {
-    if (this.modoMantenerVistaMatriz) {
-      // ACTIVO: Mantener vista matriz, solo mostrar integrantes en panel de seguimiento
-      this.seleccionarGrupoParaSeguimiento(grupo);
-    } else {
-      // INACTIVO: Navegar a los detalles del grupo
-      this.navegarAGrupo(grupo);
-    }
-  }
-
-  /**
-   * Selecciona un grupo para mostrar en el panel de seguimiento
-   * SIN cambiar la vista actual (mantiene la matriz visible)
-   */
-  seleccionarGrupoParaSeguimiento(grupo: string) {
-    // Extraer número del grupo - puede venir como "G1", "1", "Grupo 1", etc.
-    const grupoNum = parseInt(grupo.replace(/\D/g, '')) || 0;
-
-    if (grupoNum === 0) return;
-
-    // Actualizar seguimiento sin cambiar filtroGrupo (mantiene la matriz)
-    this.grupoSeguimientoActivo = grupo;
-
-    // Usar setGrupoVisualizado para mostrar integrantes SIN cambiar el filtro activo
-    // Esto mantiene "Todos" seleccionado en el panel mientras muestra los integrantes del grupo
-    this.seguimientoService.setGrupoVisualizado(grupoNum);
   }
 
   /**
@@ -1087,6 +1046,86 @@ export class InicioPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Obtiene un resumen de la "salud" del grupo basado en los estados de sus integrantes
+   * Útil para visualizar problemas de dinámica grupal
+   */
+  getResumenSaludGrupo(grupo: string): {
+    ok: number;
+    solos: number;
+    ausentes: number;
+    sinEstado: number;
+    total: number;
+    estado: 'ok' | 'alerta' | 'problema';
+    icono: string;
+    color: string;
+    nota: string | null;
+  } | null {
+    if (!this.cursoActivo) return null;
+
+    const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo);
+    if (integrantes.length === 0) return null;
+
+    // Contadores por entrega (acumulados)
+    let totalOk = 0;
+    let totalSolos = 0;
+    let totalAusentes = 0;
+    let totalSinEstado = 0;
+
+    const entregas: ('E1' | 'E2' | 'EF')[] = ['E1', 'E2', 'EF'];
+
+    // Para cada entrega, contar estados
+    entregas.forEach(entrega => {
+      integrantes.forEach(est => {
+        const estado = this.seguimientoService.getEstadoEstudiante(grupo, entrega, est.correo);
+        if (estado === 'ok') totalOk++;
+        else if (estado === 'solo') totalSolos++;
+        else if (estado === 'ausente') totalAusentes++;
+        else totalSinEstado++;
+      });
+    });
+
+    // Calcular estado general
+    const totalRegistros = integrantes.length * entregas.length;
+    let estado: 'ok' | 'alerta' | 'problema' = 'ok';
+    let icono = 'checkmark-circle-outline';
+    let color = 'success';
+    let nota: string | null = null;
+
+    // Si hay ausentes o solos, hay alerta/problema
+    if (totalAusentes > 0 || totalSolos > 0) {
+      if (totalAusentes >= totalOk || totalSolos >= integrantes.length) {
+        estado = 'problema';
+        icono = 'warning-outline';
+        color = 'danger';
+        nota = totalAusentes > 0 ? `${totalAusentes} ausencia(s)` : `${totalSolos} solo(s)`;
+      } else {
+        estado = 'alerta';
+        icono = 'alert-circle-outline';
+        color = 'warning';
+        nota = totalSolos > 0 ? `${totalSolos} trabaja(n) solo` : null;
+      }
+    } else if (totalSinEstado === totalRegistros) {
+      // Todo sin estado = sin información
+      estado = 'ok';
+      icono = 'ellipse-outline';
+      color = 'medium';
+      nota = 'Sin registros';
+    }
+
+    return {
+      ok: totalOk,
+      solos: totalSolos,
+      ausentes: totalAusentes,
+      sinEstado: totalSinEstado,
+      total: integrantes.length,
+      estado,
+      icono,
+      color,
+      nota
+    };
+  }
+
+  /**
    * Navega a un grupo y entrega específica desde la matriz
    */
   navegarAGrupoEntrega(grupo: string, entrega: string) {
@@ -1108,8 +1147,183 @@ export class InicioPage implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  /**
+   * Obtiene resumen de salud del grupo filtrado por entrega(s) seleccionada(s)
+   * Usado internamente por getResumenTotalCurso
+   */
+  private getResumenSaludGrupoFiltrado(grupo: string, filtroEntrega: 'todas' | 'E1' | 'E2' | 'EF'): {
+    ok: number;
+    solos: number;
+    ausentes: number;
+    sinEstado: number;
+    total: number;
+    totalRegistros: number;
+    estado: 'ok' | 'alerta' | 'problema';
+    icono: string;
+    color: string;
+    nota: string | null;
+  } | null {
+    if (!this.cursoActivo) return null;
 
+    const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo);
+    if (integrantes.length === 0) return null;
 
+    // Contadores
+    let totalOk = 0;
+    let totalSolos = 0;
+    let totalAusentes = 0;
+    let totalSinEstado = 0;
+
+    // Entregas a evaluar según filtro
+    const entregas: ('E1' | 'E2' | 'EF')[] = filtroEntrega === 'todas'
+      ? ['E1', 'E2', 'EF']
+      : [filtroEntrega];
+
+    // Para cada entrega, contar estados
+    entregas.forEach(entrega => {
+      integrantes.forEach(est => {
+        const estado = this.seguimientoService.getEstadoEstudiante(grupo, entrega, est.correo);
+        if (estado === 'ok') totalOk++;
+        else if (estado === 'solo') totalSolos++;
+        else if (estado === 'ausente') totalAusentes++;
+        else totalSinEstado++;
+      });
+    });
+
+    // Total de registros posibles
+    const totalRegistros = integrantes.length * entregas.length;
+
+    // Calcular estado general
+    let estado: 'ok' | 'alerta' | 'problema' = 'ok';
+    let icono = 'checkmark-circle-outline';
+    let color = 'success';
+    let nota: string | null = null;
+
+    // Lógica de estado
+    if (totalAusentes > 0 || totalSolos > 0) {
+      const ratioProblemas = (totalAusentes + totalSolos) / totalRegistros;
+      if (ratioProblemas > 0.5 || totalAusentes > totalOk) {
+        estado = 'problema';
+        icono = 'warning-outline';
+        color = 'danger';
+        if (totalAusentes > 0 && totalSolos > 0) {
+          nota = `${totalAusentes} ausente(s), ${totalSolos} solo(s)`;
+        } else if (totalAusentes > 0) {
+          nota = `${totalAusentes} ausencia(s)`;
+        } else {
+          nota = `${totalSolos} trabaja(n) solo`;
+        }
+      } else {
+        estado = 'alerta';
+        icono = 'alert-circle-outline';
+        color = 'warning';
+        nota = totalSolos > 0 ? `${totalSolos} trabaja(n) individual` : `${totalAusentes} ausencia(s)`;
+      }
+    } else if (totalSinEstado === totalRegistros) {
+      estado = 'ok';
+      icono = 'ellipse-outline';
+      color = 'medium';
+      nota = 'Sin evaluar';
+    } else if (totalOk === totalRegistros) {
+      nota = '✓ Todos participando';
+    }
+
+    return {
+      ok: totalOk,
+      solos: totalSolos,
+      ausentes: totalAusentes,
+      sinEstado: totalSinEstado,
+      total: integrantes.length,
+      totalRegistros,
+      estado,
+      icono,
+      color,
+      nota
+    };
+  }
+
+  /**
+   * Obtiene estadísticas de una entrega específica
+   */
+  getEstadisticasEntrega(entrega: 'E1' | 'E2' | 'EF'): {
+    evaluados: number;
+    porCalificar: number;
+    atencionEspecial: number;
+    porcentajeCompletado: number;
+  } {
+    let evaluados = 0;
+    let porCalificar = 0;
+    let atencionEspecial = 0;
+
+    this.gruposDisponibles.forEach(grupo => {
+      const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo);
+
+      integrantes.forEach(est => {
+        // Verificar si tiene evaluación para esta entrega
+        const tieneEvaluacion = this.tieneEvaluacionEntrega(est, entrega);
+        const estadoEst = this.seguimientoService.getEstadoEstudiante(grupo, entrega, est.correo);
+
+        if (tieneEvaluacion) {
+          evaluados++;
+        } else {
+          porCalificar++;
+        }
+
+        // Atención especial: ausentes o solos
+        if (estadoEst === 'ausente' || estadoEst === 'solo') {
+          atencionEspecial++;
+        }
+      });
+    });
+
+    const total = evaluados + porCalificar;
+    const porcentajeCompletado = total > 0 ? (evaluados / total) * 100 : 0;
+
+    return { evaluados, porCalificar, atencionEspecial, porcentajeCompletado };
+  }
+
+  /**
+   * Verifica si un estudiante tiene evaluación para una entrega
+   */
+  private tieneEvaluacionEntrega(estudiante: Estudiante, entrega: string): boolean {
+    if (!this.cursoActivo) return false;
+
+    // Verificar calificación grupal (PG)
+    const keyPG = `${this.cursoActivo}_${entrega}_PG_${estudiante.grupo}`;
+    const evalPG = this.evaluacionesCache.get(keyPG);
+    if (evalPG?.grupal?.puntuacionTotal > 0) return true;
+
+    // Verificar calificación individual (PI)
+    const keyPI = `${this.cursoActivo}_${entrega}_PI_${estudiante.correo}`;
+    const evalPI = this.evaluacionesCache.get(keyPI);
+    if (evalPI?.individual?.puntuacionTotal > 0) return true;
+
+    return false;
+  }
+
+  /**
+   * Obtiene el resumen total del curso
+   */
+  getResumenTotalCurso(): {
+    totalEstudiantes: number;
+    totalGrupos: number;
+    gruposAtencion: number;
+  } {
+    let gruposAtencion = 0;
+
+    this.gruposDisponibles.forEach(grupo => {
+      const salud = this.getResumenSaludGrupoFiltrado(grupo, 'todas');
+      if (salud && (salud.estado === 'alerta' || salud.estado === 'problema')) {
+        gruposAtencion++;
+      }
+    });
+
+    return {
+      totalEstudiantes: this.estudiantesActuales.length,
+      totalGrupos: this.gruposDisponibles.length,
+      gruposAtencion
+    };
+  }
 
 
   // Método para compatibilidad con código existente
@@ -1739,7 +1953,7 @@ export class InicioPage implements OnInit, OnDestroy {
     this.calcularPuntosTotales();
   }
 
-  guardarEvaluacionRubrica() {
+  async guardarEvaluacionRubrica() {
     if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando || !this.rubricaActual) {
       this.mostrarError('Error', 'Faltan datos para guardar la evaluación');
       return;
@@ -1772,9 +1986,10 @@ export class InicioPage implements OnInit, OnDestroy {
     }
 
     try {
-      this.dataService.guardarEvaluacion(evaluacion);
+      // 🔧 FIX: Usar await para evitar race conditions
+      await this.dataService.guardarEvaluacion(evaluacion);
 
-      // Guardar en cache
+      // Guardar en cache después de confirmar persistencia
       this.guardarEnCache();
 
       // NO actualizar this.evaluacionActual aquí para evitar que ngOnChanges
@@ -2833,6 +3048,42 @@ export class InicioPage implements OnInit, OnDestroy {
   }
 
   /**
+   * Obtiene el código corto del curso (2 primeras secciones)
+   * Ej: EEPM-B01-BLQ2-V-20251215 -> EPM-B01
+   */
+  getCodigoCorto(curso: string): string {
+    const metadata = this.getCursoMetadataForCourse(curso);
+    const codigo = metadata?.codigo || curso;
+    // Dividir por guiones y tomar las 2 primeras secciones
+    const partes = codigo.split('-');
+    if (partes.length >= 2) {
+      // Primera parte puede tener prefijo extra (EEPM -> EPM)
+      let primera = partes[0];
+      // Si empieza con doble letra, quitar la primera (EEPM -> EPM)
+      if (primera.length > 3 && primera[0] === primera[1]) {
+        primera = primera.substring(1);
+      }
+      return `${primera}-${partes[1]}`;
+    }
+    return codigo;
+  }
+
+  /**
+   * Obtiene el nombre completo del curso con el grupo
+   * Ej: ÉNFASIS EN PROGRAMACIÓN MÓVIL-B01
+   */
+  getNombreCompletoConGrupo(curso: string): string {
+    const metadata = this.getCursoMetadataForCourse(curso);
+    const nombre = metadata?.nombre || curso;
+    const codigo = metadata?.codigo || curso;
+    // Extraer el grupo del código (B01, B02, etc.)
+    const partes = codigo.split('-');
+    const grupo = partes.length >= 2 ? partes[1] : '';
+    // Combinar nombre con grupo
+    return grupo ? `${nombre}-${grupo}` : nombre;
+  }
+
+  /**
    * Extrae el número de un grupo (G1 -> 1, G2 -> 2, etc.)
    */
   getNumeroGrupo(grupo: string): string {
@@ -3280,7 +3531,7 @@ export class InicioPage implements OnInit, OnDestroy {
     if (!this.cursoActivo || !this.filtroGrupo || !this.entregaEvaluando) {
       return '';
     }
-    return `${this.cursoActivo}_${this.filtroGrupo}_${this.entregaEvaluando} `;
+    return `${this.cursoActivo}_${this.filtroGrupo}_${this.entregaEvaluando}`;
   }
 
   /**
@@ -3306,6 +3557,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
   /**
    * Restaura el estado desde el cache verificando TTL
+   * Si el cache expiró, intenta cargar desde storage
    */
   private restaurarDesdeCache(): boolean {
     const key = this.getCacheKey();
@@ -3317,8 +3569,10 @@ export class InicioPage implements OnInit, OnDestroy {
     // Verificar si el cache expiró
     const now = Date.now();
     if (cached.timestamp && (now - cached.timestamp) > this.CACHE_TTL) {
-      // Cache expirado, eliminarlo
+      // Cache expirado, eliminarlo pero NO fallar
+      // El llamador debe cargar desde storage
       this.evaluacionesCache.delete(key);
+      Logger.log('⏰ Cache expirado para:', key, '- Se cargará desde storage');
       return false;
     }
 
@@ -3890,7 +4144,31 @@ export class InicioPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Cambia temporalmente el color seleccionado
+   * Aplica el color directamente al curso (sin botón Aplicar)
+   */
+  aplicarColorDirecto(color: string): void {
+    if (!this.cursoParaCambiarColor || !color) {
+      return;
+    }
+
+    // Validar hex
+    const hexRegex = /^#[0-9A-F]{6}$/i;
+    if (!hexRegex.test(color)) {
+      Logger.warn(`[aplicarColorDirecto] Color inválido: ${color}`);
+      return;
+    }
+
+    // Aplicar inmediatamente
+    this.dataService.updateCourseState(this.cursoParaCambiarColor, { color });
+    Logger.log(`✅ [aplicarColorDirecto] Color ${color} aplicado a ${this.cursoParaCambiarColor}`);
+
+    // Cerrar popover
+    this.cerrarMenuColor();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Cambia temporalmente el color seleccionado (legacy)
    */
   cambiarColorCurso(color: string): void {
     this.colorSeleccionado = color;
