@@ -353,6 +353,7 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   /**
    * Activa o desactiva una versión de rúbrica.
    * Al activar, muestra selector de versiones disponibles.
+   * Si la rúbrica está en borrador, pregunta si desea publicarla primero.
    * @param rubrica - Rúbrica a activar/desactivar
    * @param event - Evento del click (para stopPropagation)
    */
@@ -360,6 +361,7 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     event?.stopPropagation();
 
     const estaActiva = rubrica.activa !== false;
+    const esBorrador = rubrica.estado === 'borrador';
 
     // Si ya está activa, preguntar si quiere desactivar
     if (estaActiva) {
@@ -389,7 +391,37 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
       return;
     }
 
-    // Si está inactiva, mostrar selector de versiones para activar
+    // Si está en borrador, no se puede activar directamente
+    if (esBorrador) {
+      const alert = await this.alertController.create({
+        header: '📝 Rúbrica en Borrador',
+        message: `<strong>${rubrica.codigo}</strong> está en estado <em>Borrador</em>.<br><br>
+                  Solo se pueden activar rúbricas <strong>publicadas</strong>.<br><br>
+                  ¿Deseas publicar esta rúbrica para poder activarla?`,
+        cssClass: 'alert-info',
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel'
+          },
+          {
+            text: 'Sí, Publicar',
+            handler: async () => {
+              // Cambiar estado a publicada
+              rubrica.estado = 'publicada';
+              rubrica.fechaModificacion = new Date();
+              await this.dataService.guardarRubrica(rubrica);
+              this.cargarRubricas();
+              await this.mostrarToast(`Rúbrica ${rubrica.codigo} publicada. Ahora puede activarla.`, 'success');
+            }
+          }
+        ]
+      });
+      await alert.present();
+      return;
+    }
+
+    // Si está inactiva y publicada, mostrar selector de versiones para activar
     await this.mostrarSelectorVersiones(rubrica);
   }
 

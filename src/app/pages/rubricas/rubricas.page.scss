@@ -816,6 +816,19 @@ ion-content {
         box-shadow: 0 3px 6px rgba(136, 14, 79, 0.4);
       }
     }
+
+    // Estado borrador - indicador visual diferente
+    &.estado-borrador {
+      background: linear-gradient(135deg, #ff8f00 0%, #ffa000 100%);
+      color: white;
+      box-shadow: 0 2px 4px rgba(255, 143, 0, 0.3);
+      cursor: help;
+
+      &:hover {
+        background: linear-gradient(135deg, #ffa000 0%, #ffb300 100%);
+        transform: translateY(-1px);
+      }
+    }
   }
 
   tbody {
@@ -1044,6 +1057,7 @@ ion-content {
   display: flex;
   flex-direction: column;
   min-height: 200px;
+  max-height: calc(100vh - 280px); // Altura máxima para permitir scroll
   width: 100%;
   max-width: 100%;
   background: #ffffff;
@@ -1114,8 +1128,10 @@ ion-content {
   .detalle-contenido {
     flex: 1;
     padding: 14px;
-    overflow-y: scroll; // Siempre visible para evitar cambio de ancho
+    overflow-y: auto; // Auto para mostrar scroll solo cuando sea necesario
+    overflow-x: hidden;
     min-height: 0; // Importante para scroll en flex
+    max-height: 100%; // Limitar al contenedor padre
     width: 100%;
     box-sizing: border-box;
 
@@ -1776,6 +1792,18 @@ ion-card {
               color: white;
               box-shadow: 0 1px 3px rgba(136, 14, 79, 0.3);
             }
+
+            &.estado-borrador {
+              background: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
+              color: white;
+              box-shadow: 0 1px 3px rgba(230, 81, 0, 0.3);
+              animation: pulse-borrador-mobile 2s ease-in-out infinite;
+            }
+          }
+
+          @keyframes pulse-borrador-mobile {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
           }
         }
       }

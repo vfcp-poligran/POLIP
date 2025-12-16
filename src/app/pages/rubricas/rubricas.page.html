@@ -189,11 +189,12 @@
                           <td class="tabla-cell col-estado">
                             <span
                               class="estado-indicador"
-                              [class.estado-activo]="rubrica.activa !== false"
-                              [class.estado-inactivo]="rubrica.activa === false"
+                              [class.estado-activo]="rubrica.activa !== false && rubrica.estado !== 'borrador'"
+                              [class.estado-inactivo]="rubrica.activa === false && rubrica.estado !== 'borrador'"
+                              [class.estado-borrador]="rubrica.estado === 'borrador'"
                               (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()"
-                              title="Click para cambiar estado">
-                              {{ rubrica.activa !== false ? 'Activa' : 'Inactiva' }}
+                              [title]="rubrica.estado === 'borrador' ? 'Borrador - Click para publicar' : 'Click para cambiar estado'">
+                              {{ rubrica.estado === 'borrador' ? 'Borrador' : (rubrica.activa !== false ? 'Activa' : 'Inactiva') }}
                             </span>
                           </td>
                           <td class="tabla-cell col-acciones">
@@ -242,10 +243,12 @@
                               }
                               <span
                                 class="estado-indicador-mobile"
-                                [class.estado-activo]="rubrica.activa !== false"
-                                [class.estado-inactivo]="rubrica.activa === false"
-                                (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()">
-                                {{ rubrica.activa !== false ? 'Activa' : 'Inactiva' }}
+                                [class.estado-activo]="rubrica.activa !== false && rubrica.estado !== 'borrador'"
+                                [class.estado-inactivo]="rubrica.activa === false && rubrica.estado !== 'borrador'"
+                                [class.estado-borrador]="rubrica.estado === 'borrador'"
+                                (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()"
+                                [title]="rubrica.estado === 'borrador' ? 'Borrador - Click para publicar' : 'Click para cambiar estado'">
+                                {{ rubrica.estado === 'borrador' ? 'Borrador' : (rubrica.activa !== false ? 'Activa' : 'Inactiva') }}
                               </span>
                             </div>
                           </div>
