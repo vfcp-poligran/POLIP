@@ -243,14 +243,14 @@ Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
 
       <div class="explanation">
         <h4>📚 Beneficio del Patrón Barrel</h4>
-        <table style="width: 100%; margin-top: 10px;">
-          <tr style="background: #f0f0f0;">
-            <th style="padding: 10px; text-align: left;">Sin Barrel</th>
-            <th style="padding: 10px; text-align: left;">Con Barrel</th>
+        <table class="summary-table mt-10">
+          <tr class="table-header-alt">
+            <th>Sin Barrel</th>
+            <th>Con Barrel</th>
           </tr>
           <tr>
-            <td style="padding: 10px; font-family: monospace; background: #ffe0e0;">import { Logger } from './core/utils/logger';</td>
-            <td style="padding: 10px; font-family: monospace; background: #e0ffe0;">import { Logger } from '@app/core';</td>
+            <td class="code-bad">import { Logger } from './core/utils/logger';</td>
+            <td class="code-good">import { Logger } from '@app/core';</td>
           </tr>
         </table>
       </div>
@@ -266,29 +266,29 @@ Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
     <section class="section theme-blue">
       <h2>📋 Resumen - Carpeta Core</h2>
 
-      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <table class="summary-table mt-20">
         <thead>
-          <tr style="background: var(--bg-gradient); color: white;">
-            <th style="padding: 15px; text-align: left;">Archivo</th>
-            <th style="padding: 15px; text-align: left;">Propósito</th>
-            <th style="padding: 15px; text-align: left;">Usado Por</th>
+          <tr class="table-header">
+            <th>Archivo</th>
+            <th>Propósito</th>
+            <th>Usado Por</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="background: #f8f9fa;">
-            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>logger.ts</code></td>
-            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Sistema de logging controlado</td>
-            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Todos los componentes y servicios</td>
+          <tr class="table-row-alt">
+            <td><code>logger.ts</code></td>
+            <td>Sistema de logging controlado</td>
+            <td>Todos los componentes y servicios</td>
           </tr>
           <tr>
-            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>utils/index.ts</code></td>
-            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Barrel export de utilidades</td>
-            <td style="padding: 12px; border-bottom: 1px solid #ddd;">core/index.ts</td>
+            <td><code>utils/index.ts</code></td>
+            <td>Barrel export de utilidades</td>
+            <td>core/index.ts</td>
           </tr>
-          <tr style="background: #f8f9fa;">
-            <td style="padding: 12px;"><code>index.ts</code></td>
-            <td style="padding: 12px;">Barrel export principal</td>
-            <td style="padding: 12px;">Importaciones con @app/core</td>
+          <tr class="table-row-alt">
+            <td><code>index.ts</code></td>
+            <td>Barrel export principal</td>
+            <td>Importaciones con @app/core</td>
           </tr>
         </tbody>
       </table>

@@ -889,3 +889,182 @@ footer.theme-cyan a { color: var(--pwa-cyan); }
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   CLASES ADICIONALES PARA TABLAS Y LISTAS
+   ============================================ */
+
+/* Tablas de documentación - estilo boot-sequence */
+.boot-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.boot-table thead {
+  background: var(--bootstrap-blue, #0d6efd);
+  color: white;
+}
+
+.boot-table th,
+.boot-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.boot-table th {
+  font-weight: 600;
+}
+
+.boot-table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.boot-table tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.boot-table .file-icon {
+  font-size: 0.7rem;
+}
+
+/* Listas con line-height amplio */
+.list-spaced {
+  margin-left: 20px;
+  line-height: 2;
+}
+
+/* Bloque de código inline para comandos */
+.command-block {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Span con texto descriptivo pequeño */
+.text-description {
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+/* Filas de tabla alternadas */
+.table-row-alt {
+  background: #f8f9fa;
+}
+
+/* Celda de tabla con padding */
+.table-cell {
+  padding: 12px;
+}
+
+/* Borde inferior en filas */
+.border-bottom {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Margen superior 30px */
+.mt-30 {
+  margin-top: 30px;
+}
+
+/* Table container con overflow */
+.table-container {
+  overflow-x: auto;
+}
+
+/* Tabla header con gradiente */
+.table-header {
+  background: var(--bg-gradient, linear-gradient(135deg, #0f385a, #1a5f8c));
+  color: white;
+}
+
+.table-header-alt {
+  background: #f0f0f0;
+}
+
+/* Celdas de código bueno/malo para comparación */
+.code-bad {
+  padding: 10px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  background: #ffe0e0;
+}
+
+.code-good {
+  padding: 10px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  background: #e0ffe0;
+}
+
+/* Link con color de acento */
+.link-accent {
+  color: var(--secondary-color, #1a5f8c);
+}
+
+/* Swatches de colores predefinidos */
+.swatch-primary { background: #0f385a !important; }
+.swatch-secondary { background: #1fb2de !important; }
+.swatch-success { background: #a6ce38 !important; }
+.swatch-warning { background: #fbaf17 !important; }
+.swatch-magenta { background: #ec0677 !important; }
+.swatch-gradient { background: linear-gradient(135deg, #0f385a 0%, #1a5f8c 100%) !important; }
+
+/* Preview sin padding */
+.preview-no-pad {
+  padding: 0;
+}
+
+/* Code block sin bordes para ejemplos */
+.code-block-flat {
+  border-radius: 0;
+  margin: 0;
+}
+
+/* Bloque inline de código */
+.code-inline-block {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Colores de estado */
+.text-success { color: #28a745; }
+.text-warning { color: #ffc107; }
+.text-danger { color: #dc3545; }
+
+/* Card preview parts */
+.card-header-preview {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-weight: 600;
+}
+
+.card-content-preview {
+  padding: 10px;
+}
+
+.card-footer-preview {
+  padding: 10px;
+  background: #f5f5f5;
+  border-top: 1px solid #ddd;
+}
+
+/* Syntax highlighting classes */
+.syntax-keyword { color: #569cd6; }
+.syntax-string { color: #ce9178; }
+.syntax-comment { color: #6a9955; }
+.syntax-bool { color: #569cd6; }
+
+/* Code block dark theme */
+.code-block-dark {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', monospace;
+}

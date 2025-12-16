@@ -52,7 +52,7 @@
       <div class="comparison">
         <div class="comparison-bad">
           <div class="comparison-header">❌ JavaScript (sin tipos)</div>
-          <div class="code-block" style="border-radius: 0; margin: 0;">
+          <div class="code-block code-block-flat">
             <code>
 <span class="keyword">function</span> <span class="method">calcularNota</span>(estudiante) {
   <span class="comment">// ¿Qué propiedades tiene estudiante?</span>
@@ -69,7 +69,7 @@ calcularNota({ nombre: <span class="string">"Juan"</span> });
 
         <div class="comparison-good">
           <div class="comparison-header">✅ TypeScript (con tipos)</div>
-          <div class="code-block" style="border-radius: 0; margin: 0;">
+          <div class="code-block code-block-flat">
             <code>
 <span class="keyword">interface</span> <span class="type">Estudiante</span> {
   nombre: <span class="keyword">string</span>;
@@ -263,7 +263,7 @@ nombre2 = <span class="keyword">null</span>; <span class="comment">// ✅ OK</sp
       <div class="comparison">
         <div class="comparison-bad">
           <div class="comparison-header">❌ Sin Path Mapping</div>
-          <div class="code-block" style="border-radius: 0; margin: 0;">
+          <div class="code-block code-block-flat">
             <code>
 <span class="comment">// Desde pages/inicio/inicio.page.ts</span>
 <span class="keyword">import</span> { <span class="type">Estudiante</span> } <span class="keyword">from</span>
@@ -280,7 +280,7 @@ nombre2 = <span class="keyword">null</span>; <span class="comment">// ✅ OK</sp
 
         <div class="comparison-good">
           <div class="comparison-header">✅ Con Path Mapping</div>
-          <div class="code-block" style="border-radius: 0; margin: 0;">
+          <div class="code-block code-block-flat">
             <code>
 <span class="comment">// Desde cualquier archivo</span>
 <span class="keyword">import</span> { <span class="type">Estudiante</span> } <span class="keyword">from</span>
@@ -329,7 +329,7 @@ nombre2 = <span class="keyword">null</span>; <span class="comment">// ✅ OK</sp
       <div class="comparison">
         <div class="comparison-bad">
           <div class="comparison-header">❌ Sin strictTemplates</div>
-          <div class="code-block" style="border-radius: 0; margin: 0;">
+          <div class="code-block code-block-flat">
             <code>
 <span class="comment">&lt;!-- Template HTML --&gt;</span>
 &lt;p&gt;{{ estudiante.nombreCompleto }}&lt;/p&gt;
@@ -343,7 +343,7 @@ nombre2 = <span class="keyword">null</span>; <span class="comment">// ✅ OK</sp
 
         <div class="comparison-good">
           <div class="comparison-header">✅ Con strictTemplates</div>
-          <div class="code-block" style="border-radius: 0; margin: 0;">
+          <div class="code-block code-block-flat">
             <code>
 <span class="comment">&lt;!-- Template HTML --&gt;</span>
 &lt;p&gt;{{ estudiante.nombreCompleto }}&lt;/p&gt;

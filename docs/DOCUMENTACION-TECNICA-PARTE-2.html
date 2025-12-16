@@ -12,7 +12,7 @@
         <div class="header">
             <h1>📚 Documentación Técnica POLIProject - Parte 2</h1>
             <p>Estructura de Carpetas y Archivos del Proyecto</p>
-            <p style="margin-top: 10px; font-size: 1rem; opacity: 0.8;">
+            <p class="mt-10 text-sm text-muted">
                 <span class="badge badge-docs">docs/</span>
                 <span class="badge badge-src">src/</span>
                 <span class="badge badge-config">archivos base</span>
@@ -81,14 +81,14 @@
                     <p><strong>Propósito:</strong> Almacena documentación técnica, archivos de referencia, datos de prueba, y recursos que no forman parte del código ejecutable de la aplicación.</p>
 
                     <p><strong>Contenido Típico:</strong></p>
-                    <ul style="margin-top: 10px; padding-left: 30px; line-height: 1.8;">
+                    <ul class="mt-10 list-spaced">
                         <li><strong>📊 Archivos CSV:</strong> Datos de estudiantes, calificaciones y grupos para importar en la aplicación</li>
                         <li><strong>📋 Rúbricas:</strong> Definiciones de rúbricas de evaluación en formato <code>.json</code> y <code>.txt</code></li>
                         <li><strong>📚 Documentación HTML:</strong> Documentación técnica generada (como este archivo)</li>
                         <li><strong>📦 Archivos de Referencia:</strong> SRS (Software Requirements Specification), plantillas, etc.</li>
                     </ul>
 
-                    <p style="margin-top: 15px;"><strong>Uso:</strong> Esta carpeta NO se incluye en el build final de la aplicación. Sirve como repositorio de referencia para desarrolladores y usuarios del sistema.</p>
+                    <p class="mt-15"><strong>Uso:</strong> Esta carpeta NO se incluye en el build final de la aplicación. Sirve como repositorio de referencia para desarrolladores y usuarios del sistema.</p>
                 </div>
 
                 <div class="warning-box">
@@ -116,9 +116,9 @@
 
                     <p class="mt-10"><strong>Es el corazón de la aplicación</strong> donde reside toda la funcionalidad del Gestor de Proyectos.</p>
 
-                    <div class="subsection" style="margin-top: 15px;">
+                    <div class="subsection" class="mt-15">
                         <p><strong>Subcarpetas principales:</strong></p>
-                        <ul style="padding-left: 20px; line-height: 1.8;">
+                        <ul class="list-spaced">
                             <li><strong>components/</strong> - Componentes reutilizables (header, footer, modales, etc.)</li>
                             <li><strong>core/</strong> - Servicios y funcionalidades core del sistema</li>
                             <li><strong>models/</strong> - Interfaces y tipos TypeScript (Estudiante, Evaluacion, Rubrica, etc.)</li>
@@ -136,7 +136,7 @@
                     <p><strong>Propósito:</strong> Almacena recursos estáticos que se sirven tal cual en la aplicación: imágenes, iconos, fuentes, archivos JSON estáticos, etc.</p>
 
                     <p class="mt-10"><strong>Subcarpetas:</strong></p>
-                    <ul style="padding-left: 20px;">
+                    <ul class="ml-20">
                         <li><strong>icon/</strong> - Iconos de la aplicación (app icon, splash screen)</li>
                         <li><strong>shapes.svg</strong> - Formas SVG decorativas</li>
                     </ul>
@@ -150,7 +150,7 @@
                     <p><strong>Propósito:</strong> Contiene archivos de configuración específicos para cada entorno de ejecución (desarrollo vs producción).</p>
 
                     <p class="mt-10"><strong>Archivos:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li><strong>environment.ts</strong> - Configuración para desarrollo (logging habilitado, debug mode)</li>
                         <li><strong>environment.prod.ts</strong> - Configuración para producción (optimizaciones, analytics)</li>
                     </ul>
@@ -164,7 +164,7 @@
                     <p><strong>Propósito:</strong> Define las variables CSS de Ionic que controlan el tema visual de toda la aplicación (colores, tipografía, espaciado, etc.).</p>
 
                     <p class="mt-10"><strong>Archivo principal:</strong></p>
-                    <ul style="padding-left: 20px;">
+                    <ul class="ml-20">
                         <li><strong>variables.scss</strong> - Variables CSS de Ionic (<code>--ion-color-primary</code>, <code>--ion-color-secondary</code>, etc.)</li>
                     </ul>
 
@@ -174,7 +174,7 @@
                 <div class="success-box">
                     <strong>✨ Organización por Capas:</strong><br>
                     La estructura de <code>src/</code> sigue el patrón de arquitectura por capas:
-                    <ul style="margin-top: 10px; padding-left: 20px;">
+                    <ul class="mt-10 ml-20">
                         <li><strong>Presentación:</strong> <code>pages/</code>, <code>components/</code>, <code>tabs/</code></li>
                         <li><strong>Lógica de Negocio:</strong> <code>services/</code>, <code>core/</code></li>
                         <li><strong>Modelo de Datos:</strong> <code>models/</code></li>
@@ -268,7 +268,7 @@
                     <h4>📊 models/</h4>
                     <p><strong>Propósito:</strong> Define la estructura de datos de la aplicación mediante interfaces y tipos TypeScript.</p>
                     <p><strong>Modelos principales:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li><code>Estudiante</code> - Datos de estudiantes</li>
                         <li><code>Evaluacion</code> - Evaluaciones de proyectos (PG/PI)</li>
                         <li><code>RubricaDefinicion</code> - Estructura de rúbricas</li>
@@ -279,7 +279,7 @@
                     <h4>📄 pages/</h4>
                     <p><strong>Propósito:</strong> Contiene las páginas/vistas de la aplicación, cada una en su propia carpeta.</p>
                     <p><strong>Estructura típica de una página:</strong></p>
-                    <ul style="padding-left: 20px;">
+                    <ul class="ml-20">
                         <li><code>nombre.page.ts</code> - Lógica del componente</li>
                         <li><code>nombre.page.html</code> - Template</li>
                         <li><code>nombre.page.scss</code> - Estilos</li>
@@ -289,7 +289,7 @@
                     <h4>⚙️ services/</h4>
                     <p><strong>Propósito:</strong> Servicios inyectables que manejan lógica de negocio, acceso a datos, y estado de la aplicación.</p>
                     <p><strong>Servicios clave:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li><code>DataService</code> - Gestión centralizada de datos con BehaviorSubjects</li>
                         <li><code>UnifiedStorageService</code> - Abstracción de almacenamiento (SQLite/IndexedDB)</li>
                         <li><code>SeguimientoService</code> - Estado del panel de seguimiento</li>
@@ -319,7 +319,7 @@
                     <p><strong>Propósito:</strong> Contiene estilos globales que se aplican a toda la aplicación, independientemente del componente.</p>
 
                     <p class="mt-10"><strong>Contenido típico:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li>Imports de archivos SCSS de Ionic Core</li>
                         <li>Resets CSS globales</li>
                         <li>Clases utility (margin, padding, flex, etc.)</li>
@@ -336,7 +336,7 @@
                     <p><strong>Propósito:</strong> Archivo HTML raíz de la aplicación. Es el punto de entrada que carga en el navegador.</p>
 
                     <p class="mt-10"><strong>Contenido clave:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li><code>&lt;app-root&gt;&lt;/app-root&gt;</code> - Selector del componente raíz de Angular</li>
                         <li><code>&lt;meta&gt;</code> tags - Viewport, charset, description para SEO</li>
                         <li><code>&lt;link rel="manifest"&gt;</code> - Referencia al manifest.webmanifest para PWA</li>
@@ -353,7 +353,7 @@
                     <p><strong>Propósito:</strong> Punto de entrada TypeScript de la aplicación. Es el primer archivo que se ejecuta al iniciar la app.</p>
 
                     <p class="mt-10"><strong>Función principal:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li>Bootstrap (arranque) de la aplicación Angular</li>
                         <li>Importa y ejecuta <code>AppComponent</code></li>
                         <li>Configura providers globales (servicios, configuraciones)</li>
@@ -370,7 +370,7 @@
                     <p><strong>Propósito:</strong> Importa polyfills necesarios para compatibilidad con navegadores antiguos que no soportan características modernas de JavaScript/ES2022.</p>
 
                     <p class="mt-10"><strong>Función:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li>Agrega implementaciones de APIs modernas para navegadores legacy</li>
                         <li>Importa <code>zone.js</code> (requerido por Angular para detección de cambios)</li>
                         <li>Incluye polyfills para Web Components si es necesario</li>
@@ -386,7 +386,7 @@
                     <p><strong>Propósito:</strong> Archivo de configuración para inicializar el entorno de testing de Angular.</p>
 
                     <p class="mt-10"><strong>Función:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li>Configura el TestBed de Angular para pruebas unitarias</li>
                         <li>Importa módulos y providers necesarios para tests</li>
                         <li>Configura el platform browser para testing</li>
@@ -402,7 +402,7 @@
                     <p><strong>Propósito:</strong> Configura flags de optimización para Zone.js (motor de detección de cambios de Angular).</p>
 
                     <p class="mt-10"><strong>Función:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li>Desactiva patching innecesario de APIs del navegador</li>
                         <li>Mejora el rendimiento al reducir el overhead de Zone.js</li>
                         <li>Deshabilita tracking de eventos que la app no usa</li>
@@ -417,7 +417,7 @@
                 <div class="info-box">
                     <strong>🔄 Orden de Carga:</strong><br>
                     La aplicación se inicializa en este orden:
-                    <ol style="margin-top: 10px; padding-left: 20px;">
+                    <ol class="mt-10 ml-20">
                         <li><code>index.html</code> se carga en el navegador</li>
                         <li><code>zone-flags.ts</code> configura Zone.js (si se usa)</li>
                         <li><code>polyfills.ts</code> carga compatibilidad y Zone.js</li>
@@ -440,7 +440,7 @@
                     <p><strong>Propósito:</strong> Archivo de configuración para Karma, el test runner utilizado para ejecutar pruebas unitarias de Angular.</p>
 
                     <p class="mt-10"><strong>Configuraciones clave:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li><strong>Frameworks:</strong> Define que usa Jasmine para escribir tests</li>
                         <li><strong>Browsers:</strong> Especifica en qué navegadores ejecutar tests (Chrome, ChromeHeadless)</li>
                         <li><strong>Coverage:</strong> Configuración de reportes de cobertura de código</li>
@@ -459,7 +459,7 @@
                     <p><strong>Propósito:</strong> Configuración del Service Worker de Angular (Angular Service Worker) para funcionalidades PWA (Progressive Web App).</p>
 
                     <p class="mt-10"><strong>Funcionalidades configuradas:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li><strong>Estrategias de Caching:</strong> Define qué archivos cachear y cómo</li>
                         <li><strong>Asset Groups:</strong> Grupos de recursos que se cachean juntos (app, assets)</li>
                         <li><strong>Data Groups:</strong> Configuración de cache para APIs y datos dinámicos</li>
@@ -468,7 +468,7 @@
                     </ul>
 
                     <p class="mt-10"><strong>Beneficios:</strong></p>
-                    <ul style="padding-left: 20px; line-height: 1.8;">
+                    <ul class="list-spaced">
                         <li>✅ Aplicación funciona offline</li>
                         <li>✅ Carga instantánea en visitas repetidas</li>
                         <li>✅ Actualización automática en segundo plano</li>
@@ -481,7 +481,7 @@
                 <div class="success-box">
                     <strong>📱 Capacidades PWA de POLIP:</strong><br>
                     Con <code>ngsw-config.json</code> y <code>@angular/service-worker</code>, la aplicación puede:
-                    <ul style="margin-top: 10px; padding-left: 20px;">
+                    <ul class="mt-10 ml-20">
                         <li>Instalarse en el escritorio/pantalla de inicio como app nativa</li>
                         <li>Funcionar completamente offline (evaluaciones, consultas, navegación)</li>
                         <li>Sincronizar datos cuando recupere conexión</li>
@@ -494,90 +494,90 @@
             <div class="section">
                 <h2><span class="icon">📝</span>Resumen de Estructura</h2>
 
-                <div class="table-container" style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead style="background: linear-gradient(135deg, #0f385a, #1a5a7a); color: white;">
+                <div class="table-container">
+                    <table class="summary-table">
+                        <thead>
                             <tr>
-                                <th style="padding: 15px; text-align: left;">Carpeta/Archivo</th>
-                                <th style="padding: 15px; text-align: left;">Función Principal</th>
-                                <th style="padding: 15px; text-align: left;">Categoría</th>
+                                <th>Carpeta/Archivo</th>
+                                <th>Función Principal</th>
+                                <th>Categoría</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>docs/</strong></td>
-                                <td style="padding: 15px;">Documentación, datos de prueba, rúbricas de referencia</td>
-                                <td style="padding: 15px;"><span class="badge badge-docs">Documentación</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>src/app/</strong></td>
-                                <td style="padding: 15px;">Aplicación Angular (componentes, servicios, modelos, páginas)</td>
-                                <td style="padding: 15px;"><span class="badge badge-src">Código Fuente</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>src/assets/</strong></td>
-                                <td style="padding: 15px;">Recursos estáticos (imágenes, iconos, fuentes)</td>
-                                <td style="padding: 15px;"><span class="badge badge-src">Assets</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>src/environments/</strong></td>
-                                <td style="padding: 15px;">Configuración por entorno (dev/prod)</td>
-                                <td style="padding: 15px;"><span class="badge badge-config">Config</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>src/theme/</strong></td>
-                                <td style="padding: 15px;">Variables de tema Ionic (colores, tipografía)</td>
-                                <td style="padding: 15px;"><span class="badge badge-src">Estilos</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>global.scss</strong></td>
-                                <td style="padding: 15px;">Estilos globales de la aplicación</td>
-                                <td style="padding: 15px;"><span class="badge badge-src">Estilos</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>index.html</strong></td>
-                                <td style="padding: 15px;">Punto de entrada HTML</td>
-                                <td style="padding: 15px;"><span class="badge badge-src">Core</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>main.ts</strong></td>
-                                <td style="padding: 15px;">Bootstrap de la aplicación Angular</td>
-                                <td style="padding: 15px;"><span class="badge badge-src">Core</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>polyfills.ts</strong></td>
-                                <td style="padding: 15px;">Compatibilidad con navegadores legacy</td>
-                                <td style="padding: 15px;"><span class="badge badge-config">Config</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>test.ts</strong></td>
-                                <td style="padding: 15px;">Configuración de entorno de testing</td>
-                                <td style="padding: 15px;"><span class="badge badge-test">Testing</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>zone-flags.ts</strong></td>
-                                <td style="padding: 15px;">Optimización de Zone.js</td>
-                                <td style="padding: 15px;"><span class="badge badge-config">Config</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e1e8ed;">
-                                <td style="padding: 15px;"><strong>karma.conf.js</strong></td>
-                                <td style="padding: 15px;">Configuración del test runner</td>
-                                <td style="padding: 15px;"><span class="badge badge-test">Testing</span></td>
+                            <tr>
+                                <td><strong>docs/</strong></td>
+                                <td>Documentación, datos de prueba, rúbricas de referencia</td>
+                                <td><span class="badge badge-docs">Documentación</span></td>
                             </tr>
                             <tr>
-                                <td style="padding: 15px;"><strong>ngsw-config.json</strong></td>
-                                <td style="padding: 15px;">Configuración PWA Service Worker</td>
-                                <td style="padding: 15px;"><span class="badge badge-config">PWA</span></td>
+                                <td><strong>src/app/</strong></td>
+                                <td>Aplicación Angular (componentes, servicios, modelos, páginas)</td>
+                                <td><span class="badge badge-src">Código Fuente</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>src/assets/</strong></td>
+                                <td>Recursos estáticos (imágenes, iconos, fuentes)</td>
+                                <td><span class="badge badge-src">Assets</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>src/environments/</strong></td>
+                                <td>Configuración por entorno (dev/prod)</td>
+                                <td><span class="badge badge-config">Config</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>src/theme/</strong></td>
+                                <td>Variables de tema Ionic (colores, tipografía)</td>
+                                <td><span class="badge badge-src">Estilos</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>global.scss</strong></td>
+                                <td>Estilos globales de la aplicación</td>
+                                <td><span class="badge badge-src">Estilos</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>index.html</strong></td>
+                                <td>Punto de entrada HTML</td>
+                                <td><span class="badge badge-src">Core</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>main.ts</strong></td>
+                                <td>Bootstrap de la aplicación Angular</td>
+                                <td><span class="badge badge-src">Core</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>polyfills.ts</strong></td>
+                                <td>Compatibilidad con navegadores legacy</td>
+                                <td><span class="badge badge-config">Config</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>test.ts</strong></td>
+                                <td>Configuración de entorno de testing</td>
+                                <td><span class="badge badge-test">Testing</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>zone-flags.ts</strong></td>
+                                <td>Optimización de Zone.js</td>
+                                <td><span class="badge badge-config">Config</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>karma.conf.js</strong></td>
+                                <td>Configuración del test runner</td>
+                                <td><span class="badge badge-test">Testing</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>ngsw-config.json</strong></td>
+                                <td>Configuración PWA Service Worker</td>
+                                <td><span class="badge badge-config">PWA</span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="success-box" style="margin-top: 30px;">
+                <div class="success-box mt-30">
                     <h4>✅ Conclusión Parte 2</h4>
                     <p>La estructura de carpetas de POLIProject sigue las mejores prácticas de Ionic/Angular, organizando el código en capas funcionales claramente separadas. Cada carpeta y archivo tiene una responsabilidad única y específica, facilitando el mantenimiento, escalabilidad y comprensión del proyecto.</p>
                     <p class="mt-10"><strong>Jerarquía de responsabilidades:</strong></p>
-                    <ul style="padding-left: 20px; margin-top: 10px;">
+                    <ul class="ml-20 mt-10">
                         <li><strong>Configuración Base:</strong> Archivos en raíz (.json, .js, .ts)</li>
                         <li><strong>Código Fuente:</strong> src/ con subcarpetas especializadas</li>
                         <li><strong>Lógica de Aplicación:</strong> src/app/ con arquitectura por capas</li>
@@ -655,7 +655,7 @@
                         </div>
                     </dl>
 
-                    <h3 style="margin-top: 30px;">Archivos Clave</h3>
+                    <h3 class="mt-30">Archivos Clave</h3>
 
                     <dl>
                         <div class="glossary-term">
@@ -714,7 +714,7 @@
                         </div>
                     </dl>
 
-                    <h3 style="margin-top: 30px;">Patrones y Convenciones</h3>
+                    <h3 class="mt-30">Patrones y Convenciones</h3>
 
                     <dl>
                         <div class="glossary-term">
@@ -750,7 +750,7 @@
         <footer class="theme-teal">
             <p><strong>Gestor de Seguimiento de Proyectos POLIProject</strong></p>
             <p>Politécnico Grancolombiano | Ing. MG. Víctor Castro Pérez</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">
+            <p class="mt-10 text-sm">
                 Documentación generada: 16 de diciembre de 2025 | Versión 2.0.0
             </p>
         </footer>

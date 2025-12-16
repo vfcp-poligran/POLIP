@@ -191,7 +191,7 @@
 
       <div class="project-box">
         <h4>📋 En POLIProject, appConfig incluye:</h4>
-        <ul style="margin-left: 20px; line-height: 2;">
+        <ul class="list-spaced">
           <li><strong>Router:</strong> Configuración de rutas con <code>provideRouter(routes)</code></li>
           <li><strong>IonicAngular:</strong> Providers de Ionic para Angular</li>
           <li><strong>HttpClient:</strong> Para llamadas HTTP si se necesitan</li>
@@ -368,7 +368,7 @@ getTestBed().<span class="function">initTestEnvironment</span>(
       <div class="project-box">
         <h4>📋 En POLIProject:</h4>
         <p>Este archivo se ejecuta automáticamente al correr:</p>
-        <pre style="background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 6px; margin-top: 10px;"><code>npm test</code> o <code>ng test</code></pre>
+        <pre class="command-block"><code>npm test</code> o <code>ng test</code></pre>
         <p class="mt-10">Karma busca todos los archivos <code>*.spec.ts</code> y los ejecuta.</p>
       </div>
     </section>
@@ -379,51 +379,51 @@ getTestBed().<span class="function">initTestEnvironment</span>(
     <section class="section theme-blue">
       <h2>📝 Resumen de Archivos Base</h2>
 
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead style="background: var(--bootstrap-blue); color: white;">
+      <table class="boot-table">
+        <thead>
           <tr>
-            <th style="padding: 12px; text-align: left;">Archivo</th>
-            <th style="padding: 12px; text-align: left;">Tipo</th>
-            <th style="padding: 12px; text-align: left;">Función</th>
-            <th style="padding: 12px; text-align: left;">Orden de Carga</th>
+            <th>Archivo</th>
+            <th>Tipo</th>
+            <th>Función</th>
+            <th>Orden de Carga</th>
           </tr>
         </thead>
         <tbody>
-          <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 12px;"><code>index.html</code></td>
-            <td style="padding: 12px;"><span class="file-icon html" style="font-size: 0.7rem;">HTML</span></td>
-            <td style="padding: 12px;">Punto de entrada del navegador</td>
-            <td style="padding: 12px;">1º</td>
+          <tr>
+            <td><code>index.html</code></td>
+            <td><span class="file-icon html">HTML</span></td>
+            <td>Punto de entrada del navegador</td>
+            <td>1º</td>
           </tr>
-          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
-            <td style="padding: 12px;"><code>zone-flags.ts</code></td>
-            <td style="padding: 12px;"><span class="file-icon config" style="font-size: 0.7rem;">CFG</span></td>
-            <td style="padding: 12px;">Optimización Zone.js</td>
-            <td style="padding: 12px;">2º</td>
+          <tr>
+            <td><code>zone-flags.ts</code></td>
+            <td><span class="file-icon config">CFG</span></td>
+            <td>Optimización Zone.js</td>
+            <td>2º</td>
           </tr>
-          <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 12px;"><code>polyfills.ts</code></td>
-            <td style="padding: 12px;"><span class="file-icon ts" style="font-size: 0.7rem;">TS</span></td>
-            <td style="padding: 12px;">Compatibilidad + Zone.js</td>
-            <td style="padding: 12px;">3º</td>
+          <tr>
+            <td><code>polyfills.ts</code></td>
+            <td><span class="file-icon ts">TS</span></td>
+            <td>Compatibilidad + Zone.js</td>
+            <td>3º</td>
           </tr>
-          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
-            <td style="padding: 12px;"><code>main.ts</code></td>
-            <td style="padding: 12px;"><span class="file-icon ts" style="font-size: 0.7rem;">TS</span></td>
-            <td style="padding: 12px;">Bootstrap Angular</td>
-            <td style="padding: 12px;">4º</td>
+          <tr>
+            <td><code>main.ts</code></td>
+            <td><span class="file-icon ts">TS</span></td>
+            <td>Bootstrap Angular</td>
+            <td>4º</td>
           </tr>
-          <tr style="border-bottom: 1px solid #ddd;">
-            <td style="padding: 12px;"><code>global.scss</code></td>
-            <td style="padding: 12px;"><span class="file-icon scss" style="font-size: 0.7rem;">SCSS</span></td>
-            <td style="padding: 12px;">Estilos globales</td>
-            <td style="padding: 12px;">Con build</td>
+          <tr>
+            <td><code>global.scss</code></td>
+            <td><span class="file-icon scss">SCSS</span></td>
+            <td>Estilos globales</td>
+            <td>Con build</td>
           </tr>
-          <tr style="background: #f8f9fa;">
-            <td style="padding: 12px;"><code>test.ts</code></td>
-            <td style="padding: 12px;"><span class="file-icon ts" style="font-size: 0.7rem;">TS</span></td>
-            <td style="padding: 12px;">Config testing</td>
-            <td style="padding: 12px;">Solo tests</td>
+          <tr>
+            <td><code>test.ts</code></td>
+            <td><span class="file-icon ts">TS</span></td>
+            <td>Config testing</td>
+            <td>Solo tests</td>
           </tr>
         </tbody>
       </table>

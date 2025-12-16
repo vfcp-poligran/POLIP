@@ -110,7 +110,7 @@
         <h4><span class="file-icon">🗺️</span>app.routes.ts</h4>
         <p><strong>Propósito:</strong> Define la <strong>configuración de rutas</strong> (routing) de la aplicación.</p>
         <p class="mt-10"><strong>Función:</strong> Mapea URLs a componentes/páginas:</p>
-        <ul style="margin-left: 20px; margin-top: 10px;">
+        <ul class="ml-20 mt-10">
           <li><code>/tabs/inicio</code> → <code>InicioPage</code></li>
           <li><code>/tabs/cursos</code> → <code>CursosPage</code></li>
           <li><code>/tabs/calificaciones</code> → <code>CalificacionesPage</code></li>
@@ -248,7 +248,7 @@
       <div class="info-box">
         <strong>💡 Barrel Export:</strong><br>
         El archivo <code>index.ts</code> re-exporta todos los modelos, permitiendo imports limpios:
-        <pre style="margin-top: 10px; background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 6px;"><span style="color: #569cd6;">import</span> { Estudiante, Evaluacion, RubricaDefinicion } <span style="color: #569cd6;">from</span> <span style="color: #ce9178;">'@app/models'</span>;</pre>
+        <pre class="code-block-dark mt-10"><span class="syntax-bool">import</span> { Estudiante, Evaluacion, RubricaDefinicion } <span class="syntax-bool">from</span> <span class="syntax-string">'@app/models'</span>;</pre>
       </div>
     </section>
 
@@ -310,7 +310,7 @@
 
       <div class="project-box">
         <h4>📋 Flujo de Datos en POLIProject:</h4>
-        <ol style="margin-left: 20px; line-height: 2;">
+        <ol class="list-spaced">
           <li><strong>Componente</strong> llama a <code>DataService.guardarEvaluacion(eval)</code></li>
           <li><strong>DataService</strong> valida los datos</li>
           <li><strong>DataService</strong> usa <code>UnifiedStorageService</code> para persistir</li>
@@ -411,7 +411,7 @@
 
       <div class="project-box">
         <h4>📋 Tabs de POLIProject:</h4>
-        <ul style="margin-left: 20px; line-height: 2;">
+        <ul class="list-spaced">
           <li>🏠 <strong>Inicio</strong> - Dashboard principal</li>
           <li>📚 <strong>Cursos</strong> - Gestión de cursos</li>
           <li>📋 <strong>Rúbricas</strong> - Definiciones de rúbricas</li>
