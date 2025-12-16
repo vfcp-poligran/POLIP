@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 1.2: Dependencias (package.json)</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --accent-color: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--bg-gradient); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+    .section h4 { color: var(--accent-color); margin: 20px 0 10px 0; font-size: 1.1rem; }
+
+    .file-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block.standalone { border-radius: 10px; }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: help;
+      border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .analogy-box {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 5px solid #f39c12;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
+
+    .project-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .project-box h4 { color: #155724; margin-bottom: 10px; }
+
+    .info-box {
+      background: #cce5ff;
+      border: 1px solid #007bff;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .success-box {
+      background: #d4edda;
+      border: 1px solid #28a745;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .dep-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .dep-table th, .dep-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .dep-table th {
+      background: var(--primary-color);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .dep-table tr:nth-child(even) { background: #f8f9fa; }
+    .dep-table tr:hover { background: #e9ecef; }
+    .dep-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+
+    .dep-category {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin: 25px 0 15px 0;
+      font-weight: 600;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: var(--secondary-color);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+    footer a { color: var(--secondary-color); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📦 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📦 Parte 1.2: Dependencias (package.json)</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">1.1: Stack</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-2.html" class="active">1.2: Dependencies</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-3.html">1.3: TypeScript</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-4.html">1.4: Angular</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html">1.5: Ionic+Capacitor</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN PACKAGE.JSON -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📦 El Archivo package.json</h2>
+
+      <p>El <code>package.json</code> es el <span class="tech-term" title="Documento central que define el proyecto">manifiesto</span> del proyecto. Define metadatos, dependencias y scripts de automatización.</p>
+
+      <div class="analogy-box">
+        <h4>🧾 Analogía: La Lista de Ingredientes</h4>
+        <p>Si POLIProject fuera una receta de cocina, <code>package.json</code> sería la lista de ingredientes con cantidades exactas. Especifica qué librerías necesitas y en qué versiones, para que cualquiera pueda "cocinar" la misma aplicación.</p>
+        <p style="margin-top: 10px;"><code>npm install</code> es como ir al supermercado con esa lista y comprar todo automáticamente.</p>
+      </div>
+
+      <h3>📋 Metadatos del Proyecto</h3>
+
+      <div class="file-header">📄 package.json - Metadatos</div>
+      <div class="code-block">
+        <code>
+{
+  <span class="property">"name"</span>: <span class="string">"gestor-proyectos"</span>,
+  <span class="property">"version"</span>: <span class="string">"2.0.0"</span>,
+  <span class="property">"author"</span>: <span class="string">"Ing. MG. Víctor Castro Pérez - Politécnico Grancolombiano"</span>,
+  <span class="property">"description"</span>: <span class="string">"POLIProject - Gestor de Seguimiento de Proyectos Educativos"</span>,
+  <span class="property">"private"</span>: <span class="keyword">true</span>  <span class="comment">// No publicar en npm registry</span>
+}
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <ul>
+          <li><code>name</code>: Identificador interno del proyecto (usado por npm)</li>
+          <li><code>version</code>: Versión semántica (Major.Minor.Patch) - Actualmente 2.0.0</li>
+          <li><code>private: true</code>: Evita publicación accidental a npm</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SCRIPTS NPM -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>⚡ Scripts de Automatización</h2>
+
+      <p>Los scripts npm automatizan tareas repetitivas del desarrollo:</p>
+
+      <div class="analogy-box">
+        <h4>🤖 Analogía: Los Botones del Control Remoto</h4>
+        <p>Los scripts npm son como los botones de un control remoto universal. En lugar de recordar comandos complejos, presionas un botón (<code>npm start</code>) y el sistema hace todo el trabajo pesado.</p>
+      </div>
+
+      <table class="dep-table">
+        <thead>
+          <tr>
+            <th>Script</th>
+            <th>Comando</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>npm start</code></td>
+            <td><code>ionic serve</code></td>
+            <td>Servidor de desarrollo en <strong>http://localhost:8100</strong></td>
+          </tr>
+          <tr>
+            <td><code>npm run build</code></td>
+            <td><code>ionic build</code></td>
+            <td>Compila para desarrollo (rápido, con source maps)</td>
+          </tr>
+          <tr>
+            <td><code>npm run build:prod</code></td>
+            <td><code>ionic build --prod</code></td>
+            <td>Compila optimizado para producción (AOT, minificación)</td>
+          </tr>
+          <tr>
+            <td><code>npm run android:sync</code></td>
+            <td><code>npx cap sync android</code></td>
+            <td>Sincroniza código web con proyecto Android</td>
+          </tr>
+          <tr>
+            <td><code>npm run ios:sync</code></td>
+            <td><code>npx cap sync ios</code></td>
+            <td>Sincroniza código web con proyecto iOS</td>
+          </tr>
+          <tr>
+            <td><code>npm run build:all</code></td>
+            <td><code>build + sync all</code></td>
+            <td>Compila y sincroniza todas las plataformas</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>💡 Tip:</strong> El script <code>build:all</code> ejecuta el archivo <code>scripts/build-all-platforms.ps1</code> que limpia, compila y sincroniza automáticamente Web, Android e iOS.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- DEPENDENCIAS DE PRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📚 Dependencias de Producción</h2>
+
+      <p>Las <code>dependencies</code> son librerías que se incluyen en el bundle final de la aplicación.</p>
+
+      <div class="dep-category">🔴 Angular Core <span class="version-badge">v20.0.0</span></div>
+
+      <div class="code-block standalone">
+        <code>
+<span class="string">"@angular/core"</span>: <span class="string">"^20.0.0"</span>           <span class="comment">// Motor principal de Angular</span>
+<span class="string">"@angular/common"</span>: <span class="string">"^20.0.0"</span>         <span class="comment">// Pipes, directivas comunes (NgIf, NgFor)</span>
+<span class="string">"@angular/forms"</span>: <span class="string">"^20.0.0"</span>          <span class="comment">// Reactive Forms, Template Forms</span>
+<span class="string">"@angular/router"</span>: <span class="string">"^20.0.0"</span>         <span class="comment">// Sistema de navegación SPA</span>
+<span class="string">"@angular/animations"</span>: <span class="string">"^20.0.0"</span>     <span class="comment">// Animaciones programáticas</span>
+<span class="string">"@angular/service-worker"</span>: <span class="string">"^20.0.0"</span> <span class="comment">// PWA - Funcionalidad offline</span>
+        </code>
+      </div>
+
+      <div class="success-box">
+        <strong>✨ Angular 20 Features usadas en POLIProject:</strong>
+        <ul style="margin-top: 10px;">
+          <li><strong>Standalone Components:</strong> Todos los componentes sin NgModules</li>
+          <li><strong>Control Flow:</strong> <code>@if</code>, <code>@for</code>, <code>@switch</code> en templates</li>
+          <li><strong>Signals:</strong> Reactividad fine-grained para estado</li>
+          <li><strong>Deferrable Views:</strong> <code>@defer</code> para lazy loading de secciones</li>
+        </ul>
+      </div>
+
+      <div class="dep-category">🔵 Ionic Framework <span class="version-badge">v8.0.0</span></div>
+
+      <div class="code-block standalone">
+        <code>
+<span class="string">"@ionic/angular"</span>: <span class="string">"^8.0.0"</span>
+<span class="comment">// Wrapper Angular para componentes Ionic</span>
+<span class="comment">// Provee: IonContent, IonButton, IonModal, IonTabs, etc.</span>
+
+<span class="string">"@ionic/storage-angular"</span>: <span class="string">"^4.0.0"</span>
+<span class="comment">// API unificada de almacenamiento (SQLite + IndexedDB)</span>
+
+<span class="string">"ionicons"</span>: <span class="string">"^7.0.0"</span>
+<span class="comment">// Librería de iconos SVG (1300+ iconos)</span>
+        </code>
+      </div>
+
+      <div class="dep-category">📱 Capacitor <span class="version-badge">v7.4.4</span></div>
+
+      <div class="code-block standalone">
+        <code>
+<span class="string">"@capacitor/core"</span>: <span class="string">"^7.4.4"</span>         <span class="comment">// Core del runtime nativo</span>
+<span class="string">"@capacitor/android"</span>: <span class="string">"^7.4.4"</span>      <span class="comment">// Plataforma Android</span>
+<span class="string">"@capacitor/ios"</span>: <span class="string">"^7.4.4"</span>          <span class="comment">// Plataforma iOS</span>
+<span class="string">"@capacitor/app"</span>: <span class="string">"7.1.0"</span>          <span class="comment">// Eventos lifecycle (resume, pause)</span>
+<span class="string">"@capacitor/filesystem"</span>: <span class="string">"^7.1.4"</span>  <span class="comment">// Lectura/escritura de archivos</span>
+<span class="string">"@capacitor/haptics"</span>: <span class="string">"7.0.2"</span>       <span class="comment">// Vibración táctil</span>
+<span class="string">"@capacitor/keyboard"</span>: <span class="string">"7.0.3"</span>      <span class="comment">// Control del teclado virtual</span>
+<span class="string">"@capacitor/status-bar"</span>: <span class="string">"7.0.3"</span>    <span class="comment">// Personalización barra de estado</span>
+        </code>
+      </div>
+
+      <div class="dep-category">🗄️ Base de Datos</div>
+
+      <div class="code-block standalone">
+        <code>
+<span class="string">"@capacitor-community/sqlite"</span>: <span class="string">"^7.0.2"</span>
+<span class="comment">// SQLite nativo para Android/iOS</span>
+<span class="comment">// Almacenamiento estructurado offline de alto rendimiento</span>
+
+<span class="string">"jeep-sqlite"</span>: <span class="string">"^2.8.0"</span>
+<span class="comment">// Polyfill de SQLite para web (usa IndexedDB internamente)</span>
+<span class="comment">// Permite usar la misma API SQLite en el navegador</span>
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p><strong>UnifiedStorageService</strong> abstrae el almacenamiento:</p>
+        <ul>
+          <li><strong>Móvil (Android/iOS):</strong> SQLite nativo via @capacitor-community/sqlite</li>
+          <li><strong>Web:</strong> IndexedDB via jeep-sqlite como fallback</li>
+        </ul>
+        <p>El código de la app es idéntico, solo cambia el driver subyacente.</p>
+      </div>
+
+      <div class="dep-category">🛠️ Utilidades</div>
+
+      <div class="code-block standalone">
+        <code>
+<span class="string">"rxjs"</span>: <span class="string">"~7.8.0"</span>
+<span class="comment">// Programación reactiva (Observables, Subjects)</span>
+<span class="comment">// Base de toda la reactividad en Angular</span>
+
+<span class="string">"papaparse"</span>: <span class="string">"^5.5.3"</span>
+<span class="comment">// Parser CSV de alto rendimiento</span>
+<span class="comment">// Usado para importar estudiantes desde archivos CSV</span>
+
+<span class="string">"zone.js"</span>: <span class="string">"~0.15.0"</span>
+<span class="comment">// Detección de cambios de Angular</span>
+<span class="comment">// Intercepta eventos async para actualizar UI</span>
+
+<span class="string">"tslib"</span>: <span class="string">"^2.3.0"</span>
+<span class="comment">// Helpers runtime de TypeScript</span>
+<span class="comment">// Reduce tamaño de bundle compartiendo código común</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- DEPENDENCIAS DE DESARROLLO -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔧 Dependencias de Desarrollo</h2>
+
+      <p>Las <code>devDependencies</code> son herramientas usadas solo durante el desarrollo. No se incluyen en el bundle de producción.</p>
+
+      <div class="analogy-box">
+        <h4>🏗️ Analogía: Andamios de Construcción</h4>
+        <p>Las devDependencies son como los andamios de un edificio. Necesarios para construir, pero se retiran cuando el edificio está terminado. El usuario final nunca los ve.</p>
+      </div>
+
+      <div class="code-block standalone">
+        <code>
+<span class="comment">// CLIs (Command Line Interfaces)</span>
+<span class="string">"@angular/cli"</span>: <span class="string">"^20.0.0"</span>                   <span class="comment">// CLI de Angular (ng)</span>
+<span class="string">"@capacitor/cli"</span>: <span class="string">"^7.4.4"</span>                   <span class="comment">// CLI de Capacitor (cap)</span>
+<span class="string">"@ionic/angular-toolkit"</span>: <span class="string">"^12.0.0"</span>          <span class="comment">// Schematics Ionic</span>
+
+<span class="comment">// Compilación y Build</span>
+<span class="string">"@angular-devkit/build-angular"</span>: <span class="string">"^20.0.0"</span>   <span class="comment">// Herramientas de build</span>
+<span class="string">"typescript"</span>: <span class="string">"~5.8.0"</span>                       <span class="comment">// Compilador TypeScript</span>
+
+<span class="comment">// Calidad de Código</span>
+<span class="string">"eslint"</span>: <span class="string">"^9.16.0"</span>                          <span class="comment">// Linter de código</span>
+
+<span class="comment">// Testing</span>
+<span class="string">"karma"</span>: <span class="string">"~6.4.0"</span>                            <span class="comment">// Test runner</span>
+<span class="string">"jasmine-core"</span>: <span class="string">"~5.1.0"</span>                     <span class="comment">// Framework de testing</span>
+        </code>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Importante:</strong> Las devDependencies se instalan con <code>npm install</code>, pero se excluyen cuando ejecutas <code>npm install --production</code> en un servidor de CI/CD.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- VERSIONADO SEMÁNTICO -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🏷️ Versionado Semántico (SemVer)</h2>
+
+      <p>Las versiones en package.json siguen el estándar <span class="tech-term" title="Semantic Versioning">SemVer</span>:</p>
+
+      <div class="code-block standalone">
+        <code>
+<span class="comment">// Formato: MAJOR.MINOR.PATCH</span>
+
+<span class="string">"^20.0.0"</span>  <span class="comment">// Caret: acepta 20.x.x (minor + patch updates)</span>
+<span class="string">"~7.8.0"</span>   <span class="comment">// Tilde: acepta 7.8.x (solo patch updates)</span>
+<span class="string">"7.0.2"</span>    <span class="comment">// Exacta: solo esta versión específica</span>
+        </code>
+      </div>
+
+      <table class="dep-table">
+        <thead>
+          <tr>
+            <th>Cambio</th>
+            <th>Cuándo se incrementa</th>
+            <th>Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>MAJOR</strong></td>
+            <td>Breaking changes (API incompatible)</td>
+            <td>Angular 19 → 20</td>
+          </tr>
+          <tr>
+            <td><strong>MINOR</strong></td>
+            <td>Nueva funcionalidad (backwards compatible)</td>
+            <td>20.0 → 20.1</td>
+          </tr>
+          <tr>
+            <td><strong>PATCH</strong></td>
+            <td>Bug fixes (backwards compatible)</td>
+            <td>20.0.0 → 20.0.1</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>Usamos <code>^</code> (caret) para dependencias de Angular e Ionic, permitiendo actualizaciones menores automáticas. Para plugins críticos como SQLite, usamos versiones exactas para evitar sorpresas.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📝 Resumen de Dependencias</h2>
+
+      <table class="dep-table">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Dependencias Principales</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Angular</strong></td>
+            <td>@angular/core, router, forms</td>
+            <td>Framework de aplicación</td>
+          </tr>
+          <tr>
+            <td><strong>Ionic</strong></td>
+            <td>@ionic/angular, ionicons</td>
+            <td>Componentes UI</td>
+          </tr>
+          <tr>
+            <td><strong>Capacitor</strong></td>
+            <td>core, filesystem, keyboard</td>
+            <td>Runtime nativo</td>
+          </tr>
+          <tr>
+            <td><strong>Storage</strong></td>
+            <td>sqlite, jeep-sqlite</td>
+            <td>Persistencia offline</td>
+          </tr>
+          <tr>
+            <td><strong>Utilidades</strong></td>
+            <td>rxjs, papaparse</td>
+            <td>Reactividad, CSV parsing</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 1.2 de 5 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">← Anterior: 1.1 Stack</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-3.html">Siguiente: 1.3 TypeScript →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

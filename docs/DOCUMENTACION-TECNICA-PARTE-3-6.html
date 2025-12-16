@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.6: Services</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --accent-color: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--bg-gradient); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+
+    .file-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .code-line { display: block; padding: 2px 0; }
+    .code-line:hover { background: rgba(255,255,255,0.05); }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .class-name { color: #4ec9b0; }
+    .type { color: #4ec9b0; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+    .decorator { color: #dcdcaa; }
+    .method { color: #dcdcaa; }
+
+    .explanation {
+      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+      border-left: 4px solid var(--secondary-color);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .explanation h4 { color: var(--primary-color); margin-bottom: 10px; }
+    .explanation ul { margin-left: 20px; }
+    .explanation li { margin: 8px 0; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: help;
+      border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+    .info-box.success { background: #d4edda; border-color: #28a745; }
+    .info-box.primary { background: #cce5ff; border-color: #007bff; }
+    .info-box.danger { background: #f8d7da; border-color: #dc3545; }
+
+    .service-card {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .service-card-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .service-card-header .icon { font-size: 1.5rem; }
+    .service-card-header .name { font-family: 'Consolas', monospace; font-size: 1.1rem; }
+    .service-card-header .badge {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-left: auto;
+    }
+
+    .service-card-body { padding: 20px; }
+
+    .method-list { list-style: none; padding: 0; }
+    .method-list li {
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .method-list li:last-child { border-bottom: none; }
+    .method-list .method-name {
+      font-family: 'Consolas', monospace;
+      background: #f8f9fa;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: var(--secondary-color);
+    }
+    .method-list .method-desc { color: #666; font-size: 0.9rem; }
+
+    .property-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    .property-table th, .property-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .property-table th { background: var(--primary-color); color: white; font-size: 0.9rem; }
+    .property-table tr:nth-child(even) { background: #f8f9fa; }
+    .property-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+
+    .architecture-diagram {
+      background: #f8f9fa;
+      border: 2px dashed var(--secondary-color);
+      border-radius: 12px;
+      padding: 25px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .arch-layer {
+      background: white;
+      border: 2px solid var(--secondary-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px auto;
+      max-width: 500px;
+    }
+
+    .arch-layer.top { background: linear-gradient(135deg, #667eea20, #764ba220); }
+    .arch-layer .title { font-weight: bold; color: var(--primary-color); }
+    .arch-layer .items { font-size: 0.9rem; color: #666; margin-top: 5px; }
+
+    .arrow-down { font-size: 1.5rem; color: var(--secondary-color); margin: 5px 0; }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+    footer a { color: var(--secondary-color); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚙️ POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.6: Services (Servicios)</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html" class="active">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- ARQUITECTURA DE SERVICIOS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🏗️ Arquitectura de Servicios</h2>
+      <p>Los <span class="tech-term" title="Clases singleton inyectables en Angular">Services</span> son clases singleton que encapsulan lógica de negocio y comunicación entre componentes. Se inyectan mediante <strong>Dependency Injection</strong>.</p>
+
+      <div class="architecture-diagram">
+        <div class="arch-layer top">
+          <div class="title">📱 Componentes / Pages</div>
+          <div class="items">CalificacionesPage, CursosPage, RubricasPage...</div>
+        </div>
+        <div class="arrow-down">⬇️</div>
+        <div class="arch-layer">
+          <div class="title">⚙️ Servicios de Aplicación</div>
+          <div class="items">DataService, SeguimientoService, ToastService, ExportService</div>
+        </div>
+        <div class="arrow-down">⬇️</div>
+        <div class="arch-layer">
+          <div class="title">💾 Capa de Persistencia</div>
+          <div class="items">UnifiedStorageService, BackupService</div>
+        </div>
+        <div class="arrow-down">⬇️</div>
+        <div class="arch-layer">
+          <div class="title">🗄️ Storage Nativo</div>
+          <div class="items">IndexedDB (Web) | SQLite (Mobile)</div>
+        </div>
+      </div>
+
+      <div class="info-box primary">
+        <strong>💡 providedIn: 'root'</strong> — Todos los servicios usan esta configuración, creando una única instancia global accesible en toda la app.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- UNIFIED STORAGE SERVICE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>💾 UnifiedStorageService</h2>
+      <p>Abstracción de almacenamiento cross-platform usando <code>@ionic/storage-angular</code>.</p>
+
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">💾</span>
+          <span class="name">UnifiedStorageService</span>
+          <span class="badge">158 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <p><strong>Propósito:</strong> Capa de abstracción que detecta automáticamente la plataforma y usa el mejor driver disponible.</p>
+
+          <ul class="method-list">
+            <li>
+              <span class="method-name">init()</span>
+              <span class="method-desc">Inicializa el storage (IndexedDB o SQLite)</span>
+            </li>
+            <li>
+              <span class="method-name">set&lt;T&gt;(key, value)</span>
+              <span class="method-desc">Guarda un valor con tipado genérico</span>
+            </li>
+            <li>
+              <span class="method-name">get&lt;T&gt;(key, useCache?)</span>
+              <span class="method-desc">Obtiene valor con caché opcional (5s TTL)</span>
+            </li>
+            <li>
+              <span class="method-name">remove(key)</span>
+              <span class="method-desc">Elimina valor y su entrada en caché</span>
+            </li>
+            <li>
+              <span class="method-name">clear()</span>
+              <span class="method-desc">Limpia todo el almacenamiento</span>
+            </li>
+            <li>
+              <span class="method-name">invalidateCache(key)</span>
+              <span class="method-desc">Invalida caché de una clave específica</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="file-header">📄 Caché en memoria</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">/** Caché en memoria para operaciones frecuentes */</span></span>
+<span class="code-line"><span class="keyword">private</span> memoryCache = <span class="keyword">new</span> <span class="class-name">Map</span>&lt;<span class="type">string</span>, {</span>
+<span class="code-line">  value: <span class="type">unknown</span>;</span>
+<span class="code-line">  timestamp: <span class="type">number</span>;</span>
+<span class="code-line">}&gt;();</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">private readonly</span> CACHE_TTL = <span class="number">5000</span>; <span class="comment">// 5 segundos</span></span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>🔄 Detección Automática de Plataforma</h4>
+        <ul>
+          <li><strong>Web/Desktop:</strong> Usa IndexedDB via localforage</li>
+          <li><strong>iOS/Android:</strong> Usa SQLite nativo via Capacitor</li>
+          <li>El driver se selecciona automáticamente sin configuración adicional</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- DATA SERVICE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📊 DataService</h2>
+      <p>Servicio central de gestión de datos con <span class="tech-term" title="Patrón de programación reactiva">BehaviorSubjects</span> para estado reactivo.</p>
+
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">📊</span>
+          <span class="name">DataService</span>
+          <span class="badge">~4400 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <p><strong>Propósito:</strong> Fuente única de verdad para cursos, evaluaciones, rúbricas y estado de UI.</p>
+        </div>
+      </div>
+
+      <h3>Storage Keys</h3>
+      <div class="file-header">📄 Claves de almacenamiento</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">private readonly</span> STORAGE_KEYS = {</span>
+<span class="code-line">  CURSOS: <span class="string">'gestorCursosData'</span>,          <span class="comment">// Datos de cursos</span></span>
+<span class="code-line">  EVALUACIONES: <span class="string">'evaluacionesData'</span>,     <span class="comment">// Evaluaciones realizadas</span></span>
+<span class="code-line">  UI_STATE: <span class="string">'appUIState'</span>,             <span class="comment">// Estado de la UI</span></span>
+<span class="code-line">  RUBRICAS: <span class="string">'rubricDefinitionsData'</span>,  <span class="comment">// Definiciones de rúbricas</span></span>
+<span class="code-line">  COMENTARIOS_GRUPO: <span class="string">'comentariosGrupoData'</span></span>
+<span class="code-line">};</span>
+        </code>
+      </div>
+
+      <h3>Observables Públicos</h3>
+      <div class="file-header">📄 BehaviorSubjects y Observables</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// BehaviorSubjects privados</span></span>
+<span class="code-line"><span class="keyword">private</span> cursosSubject = <span class="keyword">new</span> <span class="class-name">BehaviorSubject</span>&lt;<span class="type">CursoData</span>&gt;({});</span>
+<span class="code-line"><span class="keyword">private</span> evaluacionesSubject = <span class="keyword">new</span> <span class="class-name">BehaviorSubject</span>&lt;{ [key: <span class="type">string</span>]: <span class="type">Evaluacion</span> }&gt;({});</span>
+<span class="code-line"><span class="keyword">private</span> uiStateSubject = <span class="keyword">new</span> <span class="class-name">BehaviorSubject</span>&lt;<span class="type">UIState</span>&gt;({ ... });</span>
+<span class="code-line"><span class="keyword">private</span> rubricasSubject = <span class="keyword">new</span> <span class="class-name">BehaviorSubject</span>&lt;{ [key: <span class="type">string</span>]: <span class="type">RubricaDefinicion</span> }&gt;({});</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Observables públicos (read-only)</span></span>
+<span class="code-line"><span class="keyword">public</span> cursos$ = <span class="keyword">this</span>.cursosSubject.<span class="method">asObservable</span>();</span>
+<span class="code-line"><span class="keyword">public</span> evaluaciones$ = <span class="keyword">this</span>.evaluacionesSubject.<span class="method">asObservable</span>();</span>
+<span class="code-line"><span class="keyword">public</span> uiState$ = <span class="keyword">this</span>.uiStateSubject.<span class="method">asObservable</span>();</span>
+<span class="code-line"><span class="keyword">public</span> rubricas$ = <span class="keyword">this</span>.rubricasSubject.<span class="method">asObservable</span>();</span>
+        </code>
+      </div>
+
+      <h3>Métodos Principales</h3>
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Método</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3"><strong>Cursos</strong></td>
+            <td><code>crearCurso(data)</code></td>
+            <td>Crea un nuevo curso con código único</td>
+          </tr>
+          <tr>
+            <td><code>getCursos()</code></td>
+            <td>Obtiene todos los cursos (con caché)</td>
+          </tr>
+          <tr>
+            <td><code>importarEstudiantesCSV(file)</code></td>
+            <td>Importa estudiantes desde archivo CSV</td>
+          </tr>
+          <tr>
+            <td rowspan="3"><strong>Rúbricas</strong></td>
+            <td><code>guardarRubrica(rubrica)</code></td>
+            <td>Guarda o actualiza una rúbrica</td>
+          </tr>
+          <tr>
+            <td><code>cargarArchivoRubrica(file)</code></td>
+            <td>Carga rúbrica desde JSON o TXT</td>
+          </tr>
+          <tr>
+            <td><code>parsearArchivoRubricaJSON()</code></td>
+            <td>Parsea formato JSON de rúbrica</td>
+          </tr>
+          <tr>
+            <td rowspan="2"><strong>UI State</strong></td>
+            <td><code>updateUIState(partial)</code></td>
+            <td>Actualiza estado parcialmente</td>
+          </tr>
+          <tr>
+            <td><code>setCursoActivo(nombre)</code></td>
+            <td>Establece el curso activo</td>
+          </tr>
+          <tr>
+            <td rowspan="2"><strong>Búsqueda</strong></td>
+            <td><code>setGlobalSearch(term)</code></td>
+            <td>Establece término de búsqueda global</td>
+          </tr>
+          <tr>
+            <td><code>searchResults$</code></td>
+            <td>Observable con resultados cross-curso</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>⚡ Lazy Initialization:</strong> El servicio no carga datos en el constructor. Usa <code>ensureInitialized()</code> para cargar datos bajo demanda.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SEGUIMIENTO SERVICE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>👁️ SeguimientoService</h2>
+      <p>Gestiona el panel de seguimiento lateral y comunicación entre componentes de evaluación.</p>
+
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">👁️</span>
+          <span class="name">SeguimientoService</span>
+          <span class="badge">287 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <p><strong>Propósito:</strong> Sincronizar información del grupo/estudiante seleccionado en tiempo real entre CalificacionesPage y el panel lateral.</p>
+        </div>
+      </div>
+
+      <div class="file-header">📄 Interfaces principales</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">SeguimientoGrupo</span> {</span>
+<span class="code-line">  <span class="property">curso</span>: <span class="type">string</span>;                      <span class="comment">// Código del curso</span></span>
+<span class="code-line">  <span class="property">grupo</span>: <span class="type">string</span>;                      <span class="comment">// Número de grupo</span></span>
+<span class="code-line">  <span class="property">comentarios</span>: <span class="type">ComentarioGrupo[]</span>;     <span class="comment">// Feedback del grupo</span></span>
+<span class="code-line">  <span class="property">evaluacionGrupal</span>?: <span class="type">EvaluacionRubrica</span>;</span>
+<span class="code-line">  <span class="property">evaluacionIndividual</span>?: <span class="type">EvaluacionRubrica</span>;</span>
+<span class="code-line">  <span class="property">integranteSeleccionado</span>?: <span class="type">IntegranteInfo</span>;</span>
+<span class="code-line">  <span class="property">entregaActual</span>?: <span class="string">'E1'</span> | <span class="string">'E2'</span> | <span class="string">'EF'</span>;</span>
+<span class="code-line">  <span class="property">tipoEvaluacionActiva</span>?: <span class="string">'PG'</span> | <span class="string">'PI'</span> | <span class="keyword">null</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">CriterioEvaluado</span> {</span>
+<span class="code-line">  <span class="property">nombreCriterio</span>: <span class="type">string</span>;</span>
+<span class="code-line">  <span class="property">niveles</span>: { nombre, intervalo, color, descripcion }[];</span>
+<span class="code-line">  <span class="property">nivelSeleccionado</span>: <span class="type">string</span>;</span>
+<span class="code-line">  <span class="property">puntosAsignados</span>: <span class="type">number</span>;</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <h3>Observables del Servicio</h3>
+      <div class="file-header">📄 BehaviorSubjects</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// Grupo filtrado en la tabla (0 = todos)</span></span>
+<span class="code-line"><span class="property">grupoSeleccionado$</span> = <span class="keyword">this</span>.grupoSeleccionadoSubject.<span class="method">asObservable</span>();</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Grupo mostrado en panel (puede diferir del filtro)</span></span>
+<span class="code-line"><span class="property">grupoVisualizado$</span> = <span class="keyword">this</span>.grupoVisualizadoSubject.<span class="method">asObservable</span>();</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Datos completos de seguimiento</span></span>
+<span class="code-line"><span class="property">seguimientoActual$</span> = <span class="keyword">this</span>.seguimientoActualSubject.<span class="method">asObservable</span>();</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Estados de estudiantes (ok, solo, ausente)</span></span>
+<span class="code-line"><span class="property">estadosEstudiantes$</span> = <span class="keyword">this</span>.estadosEstudiantesSubject.<span class="method">asObservable</span>();</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>🔄 Flujo de Comunicación</h4>
+        <ol>
+          <li>Usuario selecciona grupo/estudiante en <code>CalificacionesPage</code></li>
+          <li><code>SeguimientoService.setSeguimiento()</code> actualiza el estado</li>
+          <li>Panel lateral (<code>TabsPage</code>) recibe actualización via observable</li>
+          <li>Panel muestra criterios, puntajes y estados en tiempo real</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- TOAST SERVICE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔔 ToastService</h2>
+      <p>Servicio centralizado para notificaciones toast con soporte para preferencias de usuario.</p>
+
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">🔔</span>
+          <span class="name">ToastService</span>
+          <span class="badge">128 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <ul class="method-list">
+            <li>
+              <span class="method-name">show(options)</span>
+              <span class="method-desc">Muestra toast respetando preferencias</span>
+            </li>
+            <li>
+              <span class="method-name">success(message)</span>
+              <span class="method-desc">Toast verde de éxito</span>
+            </li>
+            <li>
+              <span class="method-name">error(message)</span>
+              <span class="method-desc">Toast rojo de error</span>
+            </li>
+            <li>
+              <span class="method-name">warning(message)</span>
+              <span class="method-desc">Toast amarillo de advertencia</span>
+            </li>
+            <li>
+              <span class="method-name">info(message)</span>
+              <span class="method-desc">Toast azul informativo</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="file-header">📄 Configuración de tipos</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">private readonly</span> ICONS: <span class="type">Record</span>&lt;<span class="type">ToastType</span>, <span class="type">string</span>&gt; = {</span>
+<span class="code-line">  <span class="property">success</span>: <span class="string">'checkmark-circle'</span>,</span>
+<span class="code-line">  <span class="property">error</span>: <span class="string">'close-circle'</span>,</span>
+<span class="code-line">  <span class="property">warning</span>: <span class="string">'warning'</span>,</span>
+<span class="code-line">  <span class="property">info</span>: <span class="string">'information-circle'</span></span>
+<span class="code-line">};</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">private readonly</span> COLORS: <span class="type">Record</span>&lt;<span class="type">ToastType</span>, <span class="type">string</span>&gt; = {</span>
+<span class="code-line">  <span class="property">success</span>: <span class="string">'success'</span>,   <span class="comment">// Verde</span></span>
+<span class="code-line">  <span class="property">error</span>: <span class="string">'danger'</span>,      <span class="comment">// Rojo</span></span>
+<span class="code-line">  <span class="property">warning</span>: <span class="string">'warning'</span>,   <span class="comment">// Amarillo</span></span>
+<span class="code-line">  <span class="property">info</span>: <span class="string">'primary'</span>       <span class="comment">// Azul</span></span>
+<span class="code-line">};</span>
+        </code>
+      </div>
+
+      <div class="info-box success">
+        <strong>✅ forceShow:</strong> Usa <code>forceShow: true</code> para mostrar un toast aunque el usuario tenga deshabilitados los mensajes emergentes.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- OTROS SERVICIOS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📦 Otros Servicios</h2>
+
+      <h3>BackupService</h3>
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">💾</span>
+          <span class="name">BackupService</span>
+          <span class="badge">72 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <p><strong>Propósito:</strong> Crear, parsear y descargar backups completos de la aplicación.</p>
+          <ul class="method-list">
+            <li>
+              <span class="method-name">createBackup(data)</span>
+              <span class="method-desc">Crea objeto AppBackup con metadatos</span>
+            </li>
+            <li>
+              <span class="method-name">parseBackup(json)</span>
+              <span class="method-desc">Valida y parsea archivo de backup</span>
+            </li>
+            <li>
+              <span class="method-name">downloadBackup(backup)</span>
+              <span class="method-desc">Descarga como JSON con Blob URL</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>ExportService</h3>
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">📤</span>
+          <span class="name">ExportService</span>
+          <span class="badge">216 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <p><strong>Propósito:</strong> Exportar datos de cursos y calificaciones en formato CSV.</p>
+          <ul class="method-list">
+            <li>
+              <span class="method-name">exportarDatosCurso(codigo)</span>
+              <span class="method-desc">Exporta un curso específico a CSV</span>
+            </li>
+            <li>
+              <span class="method-name">exportarTodosLosCursos()</span>
+              <span class="method-desc">Exporta todos los cursos en un archivo</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>FullscreenService</h3>
+      <div class="service-card">
+        <div class="service-card-header">
+          <span class="icon">🖥️</span>
+          <span class="name">FullscreenService</span>
+          <span class="badge">47 líneas</span>
+        </div>
+        <div class="service-card-body">
+          <p><strong>Propósito:</strong> Control del modo pantalla completa con fallbacks para diferentes navegadores.</p>
+          <ul class="method-list">
+            <li>
+              <span class="method-name">enterFullscreen()</span>
+              <span class="method-desc">Activa pantalla completa</span>
+            </li>
+            <li>
+              <span class="method-name">exitFullscreen()</span>
+              <span class="method-desc">Sale de pantalla completa</span>
+            </li>
+            <li>
+              <span class="method-name">toggleFullscreen()</span>
+              <span class="method-desc">Alterna el estado</span>
+            </li>
+            <li>
+              <span class="method-name">isFullscreen()</span>
+              <span class="method-desc">Verifica estado actual</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- BARREL EXPORT -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📦 index.ts - Barrel Export</h2>
+
+      <div class="file-header">📄 src/app/services/index.ts</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// Re-exportar todos los servicios</span></span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./unified-storage.service'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./data.service'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./backup.service'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./fullscreen.service'</span>;</span>
+        </code>
+      </div>
+
+      <div class="info-box primary">
+        <strong>💡 Nota:</strong> <code>SeguimientoService</code>, <code>ToastService</code> y <code>ExportService</code> no están en el barrel. Deben importarse directamente.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📋 Resumen de Servicios</h2>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Líneas</th>
+            <th>Responsabilidad Principal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>UnifiedStorageService</code></td>
+            <td>~158</td>
+            <td>Abstracción de almacenamiento cross-platform</td>
+          </tr>
+          <tr>
+            <td><code>DataService</code></td>
+            <td>~4400</td>
+            <td>Gestión central de datos y estado reactivo</td>
+          </tr>
+          <tr>
+            <td><code>SeguimientoService</code></td>
+            <td>~287</td>
+            <td>Comunicación del panel de seguimiento</td>
+          </tr>
+          <tr>
+            <td><code>ToastService</code></td>
+            <td>~128</td>
+            <td>Notificaciones con preferencias de usuario</td>
+          </tr>
+          <tr>
+            <td><code>BackupService</code></td>
+            <td>~72</td>
+            <td>Importación/exportación de backups JSON</td>
+          </tr>
+          <tr>
+            <td><code>ExportService</code></td>
+            <td>~216</td>
+            <td>Exportación de datos a CSV</td>
+          </tr>
+          <tr>
+            <td><code>FullscreenService</code></td>
+            <td>~47</td>
+            <td>Control de pantalla completa</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.6 de 8 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">← Anterior: 3.5 Models</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">Siguiente: 3.7 Components →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 1.4: Angular (angular.json)</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --angular-red: #dd0031;
+      --angular-dark: #c3002f;
+      --bg-gradient: linear-gradient(135deg, #dd0031 0%, #c3002f 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(221, 0, 49, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--angular-red); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--angular-red);
+      border-bottom: 3px solid var(--angular-red);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+    .section h4 { color: var(--angular-dark); margin: 20px 0 10px 0; font-size: 1.1rem; }
+
+    .file-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block.standalone { border-radius: 10px; }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #dd003120, #c3002f20);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--angular-red);
+      cursor: help;
+      border-bottom: 1px dashed var(--angular-red);
+    }
+
+    .philosophy-box {
+      background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+      border-left: 5px solid var(--angular-red);
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .philosophy-box h4 { color: #b71c1c; margin-bottom: 12px; }
+    .philosophy-box ul { margin-left: 20px; margin-top: 10px; }
+
+    .analogy-box {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 5px solid #f39c12;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
+
+    .project-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .project-box h4 { color: #155724; margin-bottom: 10px; }
+
+    .info-box {
+      background: #cce5ff;
+      border: 1px solid #007bff;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .config-table th, .config-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .config-table th {
+      background: var(--angular-red);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .config-table tr:nth-child(even) { background: #f8f9fa; }
+    .config-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+
+    .build-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .build-step {
+      background: white;
+      border: 2px solid var(--angular-red);
+      border-radius: 10px;
+      padding: 15px 20px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .build-step .icon { font-size: 1.5rem; margin-bottom: 5px; }
+    .build-step .label { font-weight: 600; color: var(--angular-red); font-size: 0.9rem; }
+
+    .build-arrow {
+      font-size: 1.5rem;
+      color: var(--angular-red);
+    }
+
+    .budget-visual {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .budget-bar {
+      height: 30px;
+      background: #e9ecef;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+      margin: 10px 0;
+    }
+
+    .budget-fill {
+      height: 100%;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .budget-warning { background: linear-gradient(90deg, #28a745, #ffc107); width: 40%; }
+    .budget-error { background: linear-gradient(90deg, #28a745, #ffc107, #dc3545); width: 100%; }
+
+    .budget-markers {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+    footer a { color: var(--angular-red); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">⚡ Parte 1.4: Angular (angular.json)</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">1.1: Stack</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-2.html">1.2: Dependencies</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-3.html">1.3: TypeScript</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-4.html" class="active">1.4: Angular</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html">1.5: Ionic+Capacitor</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- FILOSOFÍA ANGULAR -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎯 Filosofía de Angular</h2>
+
+      <div class="philosophy-box">
+        <h4>📐 Principio: "Batteries Included"</h4>
+        <p>Angular es un framework "opinionated" y "batteries included". Esto significa:</p>
+        <ul>
+          <li><strong>Opinionated:</strong> Define cómo estructurar código (carpetas, nombres, patrones)</li>
+          <li><strong>Batteries Included:</strong> Incluye todo lo necesario (routing, forms, HTTP, testing)</li>
+          <li><strong>Consistency:</strong> Todos los proyectos Angular tienen estructura similar</li>
+          <li><strong>Tooling:</strong> Angular CLI automatiza tareas comunes</li>
+        </ul>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🏨 Analogía: El Hotel Todo Incluido</h4>
+        <p>Angular es como un hotel todo incluido. Al llegar (crear proyecto), todo está preparado: habitación (estructura), restaurante (routing), gimnasio (testing), spa (DevTools). No necesitas buscar servicios externos.</p>
+        <p style="margin-top: 10px;">React sería más como alquilar un apartamento vacío: más libertad para decorar, pero debes comprar cada mueble (librería) por separado.</p>
+      </div>
+
+      <h3>🔄 El Ciclo de Vida Angular</h3>
+
+      <div class="build-flow">
+        <div class="build-step">
+          <div class="icon">📝</div>
+          <div class="label">TypeScript</div>
+        </div>
+        <div class="build-arrow">→</div>
+        <div class="build-step">
+          <div class="icon">⚙️</div>
+          <div class="label">Compilador</div>
+        </div>
+        <div class="build-arrow">→</div>
+        <div class="build-step">
+          <div class="icon">📦</div>
+          <div class="label">Bundle JS</div>
+        </div>
+        <div class="build-arrow">→</div>
+        <div class="build-step">
+          <div class="icon">🌐</div>
+          <div class="label">Browser</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ANGULAR.JSON -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>⚙️ El Archivo angular.json</h2>
+
+      <p>El <code>angular.json</code> es el archivo de configuración maestro del Angular CLI. Define cómo compilar, servir y testear el proyecto.</p>
+
+      <h3>🏗️ Estructura del Proyecto</h3>
+
+      <div class="file-header">📄 angular.json - Estructura base</div>
+      <div class="code-block">
+        <code>
+{
+  <span class="property">"$schema"</span>: <span class="string">"./node_modules/@angular/cli/lib/config/schema.json"</span>,
+  <span class="property">"version"</span>: <span class="number">1</span>,
+  <span class="property">"newProjectRoot"</span>: <span class="string">"projects"</span>,
+  <span class="property">"projects"</span>: {
+    <span class="property">"app"</span>: {
+      <span class="property">"projectType"</span>: <span class="string">"application"</span>,
+      <span class="property">"root"</span>: <span class="string">""</span>,
+      <span class="property">"sourceRoot"</span>: <span class="string">"src"</span>,
+      <span class="property">"prefix"</span>: <span class="string">"app"</span>        <span class="comment">// Prefijo: app-header, app-footer</span>
+    }
+  }
+}
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <ul>
+          <li><code>prefix: "app"</code> significa que los componentes se nombran <code>&lt;app-inicio&gt;</code>, <code>&lt;app-cursos&gt;</code></li>
+          <li><code>sourceRoot: "src"</code> indica que el código fuente está en <code>src/</code></li>
+          <li>Solo hay un proyecto (<code>app</code>), no es un monorepo</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SCHEMATICS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎨 Schematics (Generadores de Código)</h2>
+
+      <p>Los <span class="tech-term" title="Plantillas de código automatizadas">schematics</span> son plantillas que generan código automáticamente:</p>
+
+      <div class="file-header">📄 angular.json - Schematics</div>
+      <div class="code-block">
+        <code>
+<span class="property">"schematics"</span>: {
+  <span class="string">"@ionic/angular-toolkit:page"</span>: {
+    <span class="property">"styleext"</span>: <span class="string">"scss"</span>,           <span class="comment">// Usar SCSS para estilos</span>
+    <span class="property">"standalone"</span>: <span class="keyword">true</span>            <span class="comment">// Generar componentes standalone</span>
+  },
+  <span class="string">"@ionic/angular-toolkit:component"</span>: {
+    <span class="property">"styleext"</span>: <span class="string">"scss"</span>,
+    <span class="property">"standalone"</span>: <span class="keyword">true</span>
+  }
+}
+        </code>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🍪 Analogía: Los Moldes de Galletas</h4>
+        <p>Los schematics son como moldes de galletas. En lugar de formar cada galleta (componente) a mano, usas un molde que garantiza forma y tamaño consistentes. <code>ionic generate page</code> es como usar el molde.</p>
+      </div>
+
+      <h3>📝 Comandos de Generación</h3>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Comando</th>
+            <th>Genera</th>
+            <th>Archivos Creados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ionic g page MiPagina</code></td>
+            <td>Página con routing</td>
+            <td>.ts, .html, .scss, .spec.ts</td>
+          </tr>
+          <tr>
+            <td><code>ionic g component MiComp</code></td>
+            <td>Componente standalone</td>
+            <td>.ts, .html, .scss, .spec.ts</td>
+          </tr>
+          <tr>
+            <td><code>ionic g service MiServ</code></td>
+            <td>Servicio injectable</td>
+            <td>.ts, .spec.ts</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>💡 Beneficio:</strong> Al usar schematics, todos los componentes de POLIProject siguen la misma estructura. Un nuevo desarrollador puede entender cualquier componente porque todos son consistentes.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CONFIGURACIÓN DE BUILD -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔨 Configuración de Build</h2>
+
+      <p>La sección <code>architect.build</code> define cómo se compila la aplicación:</p>
+
+      <div class="file-header">📄 angular.json - Build options</div>
+      <div class="code-block">
+        <code>
+<span class="property">"architect"</span>: {
+  <span class="property">"build"</span>: {
+    <span class="property">"builder"</span>: <span class="string">"@angular-devkit/build-angular:application"</span>,
+    <span class="property">"options"</span>: {
+      <span class="property">"outputPath"</span>: { <span class="property">"base"</span>: <span class="string">"www"</span> },  <span class="comment">// Carpeta de salida</span>
+      <span class="property">"index"</span>: <span class="string">"src/index.html"</span>,         <span class="comment">// HTML principal</span>
+      <span class="property">"browser"</span>: <span class="string">"src/main.ts"</span>,           <span class="comment">// Punto de entrada</span>
+      <span class="property">"polyfills"</span>: [<span class="string">"src/polyfills.ts"</span>],  <span class="comment">// Compatibilidad</span>
+      <span class="property">"styles"</span>: [
+        <span class="string">"src/global.scss"</span>,
+        <span class="string">"src/theme/variables.scss"</span>
+      ],
+      <span class="property">"assets"</span>: [
+        { <span class="property">"glob"</span>: <span class="string">"**/*"</span>, <span class="property">"input"</span>: <span class="string">"public"</span> }
+      ]
+    }
+  }
+}
+        </code>
+      </div>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Opción</th>
+            <th>Valor</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>outputPath</code></td>
+            <td><strong>www</strong></td>
+            <td>Carpeta donde Capacitor busca los assets web</td>
+          </tr>
+          <tr>
+            <td><code>browser</code></td>
+            <td><strong>src/main.ts</strong></td>
+            <td>Archivo que arranca la aplicación Angular</td>
+          </tr>
+          <tr>
+            <td><code>styles</code></td>
+            <td><strong>global.scss, variables.scss</strong></td>
+            <td>Estilos globales incluidos en el bundle</td>
+          </tr>
+          <tr>
+            <td><code>assets</code></td>
+            <td><strong>public/**</strong></td>
+            <td>Archivos estáticos copiados sin procesar</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- BUDGETS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📊 Budgets (Presupuestos de Tamaño)</h2>
+
+      <p>Los <span class="tech-term" title="Límites de tamaño de bundle">budgets</span> alertan si la aplicación crece demasiado:</p>
+
+      <div class="file-header">📄 angular.json - Budgets</div>
+      <div class="code-block">
+        <code>
+<span class="property">"budgets"</span>: [
+  {
+    <span class="property">"type"</span>: <span class="string">"initial"</span>,
+    <span class="property">"maximumWarning"</span>: <span class="string">"2mb"</span>,      <span class="comment">// Advertencia si > 2MB</span>
+    <span class="property">"maximumError"</span>: <span class="string">"5mb"</span>         <span class="comment">// Error si > 5MB</span>
+  },
+  {
+    <span class="property">"type"</span>: <span class="string">"anyComponentStyle"</span>,
+    <span class="property">"maximumWarning"</span>: <span class="string">"6kb"</span>
+  }
+]
+        </code>
+      </div>
+
+      <div class="budget-visual">
+        <p><strong>Bundle Inicial de POLIProject:</strong></p>
+        <div class="budget-bar">
+          <div class="budget-fill budget-warning">~1.2MB</div>
+        </div>
+        <div class="budget-markers">
+          <span>0</span>
+          <span style="color: #28a745;">OK</span>
+          <span style="color: #ffc107;">2MB (Warning)</span>
+          <span style="color: #dc3545;">5MB (Error)</span>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <h4>⚖️ Analogía: El Control de Equipaje</h4>
+        <p>Los budgets son como el límite de peso del equipaje en un avión. Si pasas de 2MB (warning), te avisan. Si pasas de 5MB (error), no puedes abordar (el build falla). Esto evita que la app se vuelva lenta.</p>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Importante:</strong> Un bundle grande significa tiempos de carga largos, especialmente en conexiones móviles lentas. Los budgets ayudan a mantener POLIProject rápido.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CONFIGURACIONES -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎛️ Configuraciones de Build</h2>
+
+      <p>Angular permite múltiples configuraciones para diferentes entornos:</p>
+
+      <div class="file-header">📄 angular.json - Configurations</div>
+      <div class="code-block">
+        <code>
+<span class="property">"configurations"</span>: {
+  <span class="property">"production"</span>: {
+    <span class="property">"optimization"</span>: <span class="keyword">true</span>,        <span class="comment">// Minificación, tree-shaking</span>
+    <span class="property">"sourceMap"</span>: <span class="keyword">false</span>,          <span class="comment">// Sin mapas de debug</span>
+    <span class="property">"namedChunks"</span>: <span class="keyword">false</span>,
+    <span class="property">"extractLicenses"</span>: <span class="keyword">true</span>,
+    <span class="property">"serviceWorker"</span>: <span class="keyword">true</span>        <span class="comment">// PWA habilitado</span>
+  },
+  <span class="property">"development"</span>: {
+    <span class="property">"optimization"</span>: <span class="keyword">false</span>,       <span class="comment">// Build rápido</span>
+    <span class="property">"sourceMap"</span>: <span class="keyword">true</span>,           <span class="comment">// Debugging habilitado</span>
+    <span class="property">"extractLicenses"</span>: <span class="keyword">false</span>
+  }
+}
+        </code>
+      </div>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Configuración</th>
+            <th>Comando</th>
+            <th>Características</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>development</strong></td>
+            <td><code>ng build</code></td>
+            <td>Build rápido, source maps, sin optimización</td>
+          </tr>
+          <tr>
+            <td><strong>production</strong></td>
+            <td><code>ng build --configuration=production</code></td>
+            <td>AOT, minificación, tree-shaking, PWA</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <ul>
+          <li><strong>Desarrollo:</strong> <code>ionic serve</code> usa config development (rebuild instantáneo)</li>
+          <li><strong>Producción:</strong> <code>ionic build --prod</code> usa config production (bundle optimizado)</li>
+          <li><strong>PWA:</strong> Solo en producción se activa el Service Worker para offline</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- OPTIMIZACIONES -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🚀 Optimizaciones de Producción</h2>
+
+      <p>El build de producción aplica múltiples optimizaciones:</p>
+
+      <div class="build-flow">
+        <div class="build-step">
+          <div class="icon">🔍</div>
+          <div class="label">AOT</div>
+        </div>
+        <div class="build-arrow">→</div>
+        <div class="build-step">
+          <div class="icon">🌳</div>
+          <div class="label">Tree Shake</div>
+        </div>
+        <div class="build-arrow">→</div>
+        <div class="build-step">
+          <div class="icon">📦</div>
+          <div class="label">Minify</div>
+        </div>
+        <div class="build-arrow">→</div>
+        <div class="build-step">
+          <div class="icon">🗜️</div>
+          <div class="label">Compress</div>
+        </div>
+      </div>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Optimización</th>
+            <th>Qué Hace</th>
+            <th>Beneficio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>AOT (Ahead-of-Time)</strong></td>
+            <td>Compila templates antes del deploy</td>
+            <td>Arranque más rápido, errores en build</td>
+          </tr>
+          <tr>
+            <td><strong>Tree Shaking</strong></td>
+            <td>Elimina código no usado</td>
+            <td>Bundle más pequeño</td>
+          </tr>
+          <tr>
+            <td><strong>Minification</strong></td>
+            <td>Elimina espacios, renombra variables</td>
+            <td>~70% reducción de tamaño</td>
+          </tr>
+          <tr>
+            <td><strong>Code Splitting</strong></td>
+            <td>Divide en chunks para lazy loading</td>
+            <td>Carga inicial más rápida</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>💡 AOT vs JIT:</strong>
+        <ul style="margin-top: 10px;">
+          <li><strong>JIT (Just-in-Time):</strong> Compila templates en el navegador. Más lento, pero útil en desarrollo.</li>
+          <li><strong>AOT (Ahead-of-Time):</strong> Compila templates en build. Más rápido en runtime, detecta errores antes.</li>
+        </ul>
+        <p style="margin-top: 10px;">POLIProject siempre usa AOT en producción.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📝 Resumen de Configuración Angular</h2>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Sección</th>
+            <th>Propósito</th>
+            <th>Impacto en POLIProject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>schematics</strong></td>
+            <td>Generadores de código</td>
+            <td>Componentes standalone con SCSS</td>
+          </tr>
+          <tr>
+            <td><strong>build.options</strong></td>
+            <td>Configuración base</td>
+            <td>Output a www/, estilos globales</td>
+          </tr>
+          <tr>
+            <td><strong>budgets</strong></td>
+            <td>Límites de tamaño</td>
+            <td>Warning a 2MB, error a 5MB</td>
+          </tr>
+          <tr>
+            <td><strong>configurations</strong></td>
+            <td>Entornos de build</td>
+            <td>Development vs Production</td>
+          </tr>
+          <tr>
+            <td><strong>optimization</strong></td>
+            <td>AOT, tree-shaking</td>
+            <td>Bundle optimizado para móviles</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 1.4 de 5 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-3.html">← Anterior: 1.3 TypeScript</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html">Siguiente: 1.5 Ionic+Capacitor →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

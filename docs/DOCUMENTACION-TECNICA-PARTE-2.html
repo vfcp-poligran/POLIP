@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Técnica POLIProject - Parte 2: Estructura de Carpetas y Archivos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f385a 0%, #1a5a7a 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .section h2 {
+            color: #0f385a;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section h3 {
+            color: #1a5a7a;
+            font-size: 1.5rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .section h4 {
+            color: #667eea;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            text-align: center;
+            line-height: 40px;
+            font-size: 1.5rem;
+        }
+
+        .folder-card {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .folder-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .folder-card h4 {
+            color: #0f385a;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+
+        .folder-card .folder-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 6px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 1.2rem;
+        }
+
+        .folder-card p {
+            color: #555;
+            margin-top: 10px;
+            line-height: 1.7;
+        }
+
+        .file-card {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: border-color 0.3s;
+        }
+
+        .file-card:hover {
+            border-color: #667eea;
+        }
+
+        .file-card h4 {
+            color: #0f385a;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            background: #3880ff;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .tree-structure {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 2;
+        }
+
+        .code-line {
+            display: block;
+            padding: 2px 0;
+        }
+
+        .glossary {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .glossary h3 {
+            color: #0f385a;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .glossary-term {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+
+        .glossary-term dt {
+            color: #0f385a;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .glossary-term dd {
+            color: #555;
+            line-height: 1.7;
+            margin-left: 20px;
+        }
+
+        .tech-term {
+            color: #667eea;
+            font-weight: 600;
+            cursor: help;
+            border-bottom: 1px dotted #667eea;
+        }
+
+        .tree-structure .folder {
+            color: #569cd6;
+        }
+
+        .tree-structure .file {
+            color: #ce9178;
+        }
+
+        .tree-structure .comment {
+            color: #6a9955;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge-docs {
+            background: #ff9800;
+            color: white;
+        }
+
+        .badge-src {
+            background: #4caf50;
+            color: white;
+        }
+
+        .badge-config {
+            background: #2196f3;
+            color: white;
+        }
+
+        .badge-test {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .toc {
+            background: #f5f7fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .toc h3 {
+            color: #0f385a;
+            margin-bottom: 15px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #0f385a;
+        }
+
+        footer {
+            background: #f5f7fa;
+            padding: 30px 40px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .subsection {
+            margin-left: 30px;
+            padding-left: 20px;
+            border-left: 2px dashed #e1e8ed;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .subsection {
+                margin-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📚 Documentación Técnica POLIProject - Parte 2</h1>
+            <p>Estructura de Carpetas y Archivos del Proyecto</p>
+            <p style="margin-top: 10px; font-size: 1rem; opacity: 0.8;">
+                <span class="badge badge-docs">docs/</span>
+                <span class="badge badge-src">src/</span>
+                <span class="badge badge-config">archivos base</span>
+                <span class="badge badge-test">testing</span>
+            </p>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- ÍNDICE -->
+            <div class="toc">
+                <h3>📑 Tabla de Contenido - Parte 2</h3>
+                <ul>
+                    <li><a href="#estructura-general">1. Estructura General del Proyecto</a></li>
+                    <li><a href="#docs">2. Carpeta docs/</a></li>
+                    <li><a href="#src">3. Carpeta src/</a></li>
+                    <li><a href="#src-app">4. src/app/ - Aplicación Principal</a></li>
+                    <li><a href="#archivos-base">5. Archivos Base de src/</a></li>
+                    <li><a href="#archivos-raiz">6. Archivos de Configuración en Raíz</a></li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN 1: ESTRUCTURA GENERAL -->
+            <div class="section" id="estructura-general">
+                <h2><span class="icon">🏗️</span>1. Estructura General del Proyecto</h2>
+
+                <p>El proyecto POLIP sigue la estructura estándar de una aplicación Ionic Angular, organizada en capas funcionales que separan código fuente, configuración, documentación y assets nativos.</p>
+
+                <div class="tree-structure">
+<span class="code-line"><span class="folder">POLI/</span></span>
+<span class="code-line">├── <span class="folder">docs/</span>                  <span class="comment"># Documentación y archivos de referencia</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">src/</span>                   <span class="comment"># Código fuente de la aplicación</span></span>
+<span class="code-line">│   ├── <span class="folder">app/</span>               <span class="comment"># Componentes, servicios, modelos</span></span>
+<span class="code-line">│   ├── <span class="folder">assets/</span>            <span class="comment"># Imágenes, iconos, recursos estáticos</span></span>
+<span class="code-line">│   ├── <span class="folder">environments/</span>       <span class="comment"># Configuraciones por entorno</span></span>
+<span class="code-line">│   ├── <span class="folder">theme/</span>             <span class="comment"># Variables de tema y estilos globales</span></span>
+<span class="code-line">│   ├── <span class="file">global.scss</span>          <span class="comment"># Estilos globales</span></span>
+<span class="code-line">│   ├── <span class="file">index.html</span>           <span class="comment"># Punto de entrada HTML</span></span>
+<span class="code-line">│   ├── <span class="file">main.ts</span>              <span class="comment"># Punto de entrada TypeScript</span></span>
+<span class="code-line">│   ├── <span class="file">polyfills.ts</span>         <span class="comment"># Compatibilidad navegadores antiguos</span></span>
+<span class="code-line">│   ├── <span class="file">test.ts</span>              <span class="comment"># Configuración de tests unitarios</span></span>
+<span class="code-line">│   └── <span class="file">zone-flags.ts</span>        <span class="comment"># Optimización de Zone.js</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">android/</span>               <span class="comment"># Proyecto nativo Android</span></span>
+<span class="code-line">├── <span class="folder">ios/</span>                   <span class="comment"># Proyecto nativo iOS</span></span>
+<span class="code-line">├── <span class="folder">www/</span>                   <span class="comment"># Build output (código compilado)</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="file">karma.conf.js</span>            <span class="comment"># Configuración de Karma (test runner)</span></span>
+<span class="code-line">├── <span class="file">ngsw-config.json</span>         <span class="comment"># Configuración PWA Service Worker</span></span>
+<span class="code-line">└── <span class="file">package.json</span>             <span class="comment"># Dependencias y scripts</span></span>
+                </div>
+
+                <div class="info-box">
+                    <strong>📌 Convención de Nomenclatura:</strong><br>
+                    Los archivos TypeScript terminan en <code>.ts</code>, los archivos de estilos en <code>.scss</code>, los templates HTML en <code>.html</code>, y los archivos de configuración pueden ser <code>.json</code>, <code>.js</code> o <code>.ts</code>.
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: CARPETA DOCS -->
+            <div class="section" id="docs">
+                <h2><span class="icon">📄</span>2. Carpeta docs/</h2>
+
+                <div class="folder-card">
+                    <h4><span class="folder-icon">📁</span>docs/</h4>
+                    <p><strong>Propósito:</strong> Almacena documentación técnica, archivos de referencia, datos de prueba, y recursos que no forman parte del código ejecutable de la aplicación.</p>
+
+                    <p><strong>Contenido Típico:</strong></p>
+                    <ul style="margin-top: 10px; padding-left: 30px; line-height: 1.8;">
+                        <li><strong>📊 Archivos CSV:</strong> Datos de estudiantes, calificaciones y grupos para importar en la aplicación</li>
+                        <li><strong>📋 Rúbricas:</strong> Definiciones de rúbricas de evaluación en formato <code>.json</code> y <code>.txt</code></li>
+                        <li><strong>📚 Documentación HTML:</strong> Documentación técnica generada (como este archivo)</li>
+                        <li><strong>📦 Archivos de Referencia:</strong> SRS (Software Requirements Specification), plantillas, etc.</li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><strong>Uso:</strong> Esta carpeta NO se incluye en el build final de la aplicación. Sirve como repositorio de referencia para desarrolladores y usuarios del sistema.</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Importante:</strong> Los archivos en <code>docs/</code> no se compilan ni se envían a dispositivos móviles. Son exclusivamente para desarrollo, testing y documentación.
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: CARPETA SRC -->
+            <div class="section" id="src">
+                <h2><span class="icon">💻</span>3. Carpeta src/ - Código Fuente</h2>
+
+                <p>La carpeta <code>src/</code> (source) contiene todo el código fuente de la aplicación que se compila y empaqueta para su ejecución en web, Android e iOS.</p>
+
+                <div class="folder-card">
+                    <h4><span class="folder-icon">📁</span>src/</h4>
+                    <p><strong>Propósito:</strong> Directorio raíz del código fuente de la aplicación. Contiene la aplicación Angular, assets, estilos globales y archivos de configuración de inicialización.</p>
+                </div>
+
+                <h3>📂 Subcarpetas de src/</h3>
+
+                <!-- APP -->
+                <div class="folder-card">
+                    <h4><span class="folder-icon">⚙️</span>src/app/</h4>
+                    <p><strong>Propósito:</strong> Contiene toda la lógica de la aplicación Angular: componentes, servicios, modelos, páginas, y sistema de routing.</p>
+
+                    <p style="margin-top: 10px;"><strong>Es el corazón de la aplicación</strong> donde reside toda la funcionalidad del Gestor de Proyectos.</p>
+
+                    <div class="subsection" style="margin-top: 15px;">
+                        <p><strong>Subcarpetas principales:</strong></p>
+                        <ul style="padding-left: 20px; line-height: 1.8;">
+                            <li><strong>components/</strong> - Componentes reutilizables (header, footer, modales, etc.)</li>
+                            <li><strong>core/</strong> - Servicios y funcionalidades core del sistema</li>
+                            <li><strong>models/</strong> - Interfaces y tipos TypeScript (Estudiante, Evaluacion, Rubrica, etc.)</li>
+                            <li><strong>pages/</strong> - Páginas/vistas de la aplicación (inicio, evaluaciones, configuración)</li>
+                            <li><strong>services/</strong> - Servicios inyectables (DataService, StorageService, etc.)</li>
+                            <li><strong>styles/</strong> - Estilos SCSS compartidos y mixins</li>
+                            <li><strong>tabs/</strong> - Sistema de navegación por pestañas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ASSETS -->
+                <div class="folder-card">
+                    <h4><span class="folder-icon">🖼️</span>src/assets/</h4>
+                    <p><strong>Propósito:</strong> Almacena recursos estáticos que se sirven tal cual en la aplicación: imágenes, iconos, fuentes, archivos JSON estáticos, etc.</p>
+
+                    <p style="margin-top: 10px;"><strong>Subcarpetas:</strong></p>
+                    <ul style="padding-left: 20px;">
+                        <li><strong>icon/</strong> - Iconos de la aplicación (app icon, splash screen)</li>
+                        <li><strong>shapes.svg</strong> - Formas SVG decorativas</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Acceso:</strong> Se referencian con rutas relativas desde HTML/CSS usando <code>/assets/...</code></p>
+                </div>
+
+                <!-- ENVIRONMENTS -->
+                <div class="folder-card">
+                    <h4><span class="folder-icon">🌍</span>src/environments/</h4>
+                    <p><strong>Propósito:</strong> Contiene archivos de configuración específicos para cada entorno de ejecución (desarrollo vs producción).</p>
+
+                    <p style="margin-top: 10px;"><strong>Archivos:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>environment.ts</strong> - Configuración para desarrollo (logging habilitado, debug mode)</li>
+                        <li><strong>environment.prod.ts</strong> - Configuración para producción (optimizaciones, analytics)</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Uso:</strong> Angular reemplaza automáticamente <code>environment.ts</code> con <code>environment.prod.ts</code> al compilar con <code>--configuration=production</code>.</p>
+                </div>
+
+                <!-- THEME -->
+                <div class="folder-card">
+                    <h4><span class="folder-icon">🎨</span>src/theme/</h4>
+                    <p><strong>Propósito:</strong> Define las variables CSS de Ionic que controlan el tema visual de toda la aplicación (colores, tipografía, espaciado, etc.).</p>
+
+                    <p style="margin-top: 10px;"><strong>Archivo principal:</strong></p>
+                    <ul style="padding-left: 20px;">
+                        <li><strong>variables.scss</strong> - Variables CSS de Ionic (<code>--ion-color-primary</code>, <code>--ion-color-secondary</code>, etc.)</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Función:</strong> Permite cambiar el tema completo de la aplicación (modo claro/oscuro, paleta de colores) desde un solo archivo.</p>
+                </div>
+
+                <div class="success-box">
+                    <strong>✨ Organización por Capas:</strong><br>
+                    La estructura de <code>src/</code> sigue el patrón de arquitectura por capas:
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>Presentación:</strong> <code>pages/</code>, <code>components/</code>, <code>tabs/</code></li>
+                        <li><strong>Lógica de Negocio:</strong> <code>services/</code>, <code>core/</code></li>
+                        <li><strong>Modelo de Datos:</strong> <code>models/</code></li>
+                        <li><strong>Estilos:</strong> <code>theme/</code>, <code>styles/</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 4: SRC/APP DETALLE -->
+            <div class="section" id="src-app">
+                <h2><span class="icon">🎯</span>4. src/app/ - Aplicación Principal</h2>
+
+                <p>Dentro de <code>src/app/</code> se encuentra toda la estructura de la aplicación Angular. Cada subcarpeta tiene una responsabilidad específica.</p>
+
+                <h3>📋 Archivos Raíz de app/</h3>
+
+                <div class="file-card">
+                    <h4><span class="file-icon">TS</span>app.component.ts</h4>
+                    <p><strong>Propósito:</strong> Componente raíz de la aplicación. Es el primer componente que se carga y contiene la estructura general de la app (router-outlet, navegación principal).</p>
+                    <p><strong>Función:</strong> Inicializa servicios globales, maneja eventos del ciclo de vida de la aplicación, y establece la estructura base del DOM.</p>
+                </div>
+
+                <div class="file-card">
+                    <h4><span class="file-icon">📄</span>app.component.html</h4>
+                    <p><strong>Propósito:</strong> Template HTML del componente raíz.</p>
+                    <p><strong>Contenido típico:</strong> <code>&lt;ion-app&gt;</code>, <code>&lt;ion-router-outlet&gt;</code> para la navegación.</p>
+                </div>
+
+                <div class="file-card">
+                    <h4><span class="file-icon">🎨</span>app.component.scss</h4>
+                    <p><strong>Propósito:</strong> Estilos específicos del componente raíz.</p>
+                    <p><strong>Alcance:</strong> Estilos globales que afectan a toda la aplicación o configuraciones del layout principal.</p>
+                </div>
+
+                <div class="file-card">
+                    <h4><span class="file-icon">🧪</span>app.component.spec.ts</h4>
+                    <p><strong>Propósito:</strong> Archivo de pruebas unitarias para el componente raíz.</p>
+                    <p><strong>Framework:</strong> Utiliza Jasmine y Karma para testing.</p>
+                </div>
+
+                <div class="file-card">
+                    <h4><span class="file-icon">🗺️</span>app.routes.ts</h4>
+                    <p><strong>Propósito:</strong> Define la configuración de rutas (routing) de la aplicación.</p>
+                    <p><strong>Función:</strong> Mapea URLs a componentes/páginas. Por ejemplo: <code>/inicio</code> → <code>InicioPage</code>, <code>/evaluaciones</code> → <code>EvaluacionesPage</code>.</p>
+                    <p><strong>Características:</strong> Incluye lazy loading de módulos, guards de autenticación, y configuración de navegación.</p>
+                </div>
+
+                <h3>📂 Subcarpetas de app/</h3>
+
+                <div class="tree-structure">
+<span class="code-line"><span class="folder">app/</span></span>
+<span class="code-line">├── <span class="folder">components/</span>       <span class="comment"># Componentes reutilizables</span></span>
+<span class="code-line">│   ├── <span class="file">texto-seguimiento-seccion/</span></span>
+<span class="code-line">│   ├── <span class="file">barra-de-grupos/</span></span>
+<span class="code-line">│   └── <span class="file">...</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">core/</span>             <span class="comment"># Servicios core y guards</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">models/</span>           <span class="comment"># Interfaces y tipos TypeScript</span></span>
+<span class="code-line">│   ├── <span class="file">estudiante.model.ts</span></span>
+<span class="code-line">│   ├── <span class="file">evaluacion.model.ts</span></span>
+<span class="code-line">│   ├── <span class="file">rubrica.model.ts</span></span>
+<span class="code-line">│   └── <span class="file">index.ts</span>        <span class="comment"># Barrel export</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">pages/</span>            <span class="comment"># Páginas de la aplicación</span></span>
+<span class="code-line">│   ├── <span class="file">inicio/</span></span>
+<span class="code-line">│   ├── <span class="file">evaluaciones/</span></span>
+<span class="code-line">│   ├── <span class="file">configuracion/</span></span>
+<span class="code-line">│   └── <span class="file">...</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">services/</span>         <span class="comment"># Servicios inyectables</span></span>
+<span class="code-line">│   ├── <span class="file">data.service.ts</span></span>
+<span class="code-line">│   ├── <span class="file">unified-storage.service.ts</span></span>
+<span class="code-line">│   ├── <span class="file">seguimiento.service.ts</span></span>
+<span class="code-line">│   └── <span class="file">...</span></span>
+<span class="code-line">│</span>
+<span class="code-line">├── <span class="folder">styles/</span>           <span class="comment"># Estilos compartidos SCSS</span></span>
+<span class="code-line">└── <span class="folder">tabs/</span>             <span class="comment"># Sistema de navegación por tabs</span></span>
+                </div>
+
+                <div class="subsection">
+                    <h4>📦 components/</h4>
+                    <p><strong>Propósito:</strong> Contiene componentes reutilizables que se utilizan en múltiples páginas de la aplicación.</p>
+                    <p><strong>Ejemplos:</strong> Cabeceras, modales, tarjetas de estudiantes, paneles de seguimiento, barras de navegación de grupos.</p>
+                    <p><strong>Característica:</strong> Componentes standalone que pueden importarse individualmente sin NgModules.</p>
+
+                    <h4>🔧 core/</h4>
+                    <p><strong>Propósito:</strong> Servicios fundamentales del sistema, guards de navegación, interceptors HTTP, y configuraciones centrales.</p>
+                    <p><strong>Uso:</strong> Funcionalidades que se cargan una sola vez y están disponibles en toda la aplicación.</p>
+
+                    <h4>📊 models/</h4>
+                    <p><strong>Propósito:</strong> Define la estructura de datos de la aplicación mediante interfaces y tipos TypeScript.</p>
+                    <p><strong>Modelos principales:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><code>Estudiante</code> - Datos de estudiantes</li>
+                        <li><code>Evaluacion</code> - Evaluaciones de proyectos (PG/PI)</li>
+                        <li><code>RubricaDefinicion</code> - Estructura de rúbricas</li>
+                        <li><code>UIState</code> - Estado de la interfaz de usuario</li>
+                    </ul>
+                    <p><strong>Patrón:</strong> Usa barrel export en <code>index.ts</code> para importaciones limpias.</p>
+
+                    <h4>📄 pages/</h4>
+                    <p><strong>Propósito:</strong> Contiene las páginas/vistas de la aplicación, cada una en su propia carpeta.</p>
+                    <p><strong>Estructura típica de una página:</strong></p>
+                    <ul style="padding-left: 20px;">
+                        <li><code>nombre.page.ts</code> - Lógica del componente</li>
+                        <li><code>nombre.page.html</code> - Template</li>
+                        <li><code>nombre.page.scss</code> - Estilos</li>
+                        <li><code>nombre.page.spec.ts</code> - Tests</li>
+                    </ul>
+
+                    <h4>⚙️ services/</h4>
+                    <p><strong>Propósito:</strong> Servicios inyectables que manejan lógica de negocio, acceso a datos, y estado de la aplicación.</p>
+                    <p><strong>Servicios clave:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><code>DataService</code> - Gestión centralizada de datos con BehaviorSubjects</li>
+                        <li><code>UnifiedStorageService</code> - Abstracción de almacenamiento (SQLite/IndexedDB)</li>
+                        <li><code>SeguimientoService</code> - Estado del panel de seguimiento</li>
+                        <li><code>StateManagerService</code> - Gestión de estado de evaluaciones</li>
+                    </ul>
+                    <p><strong>Patrón:</strong> Singleton con <code>providedIn: 'root'</code> para inyección global.</p>
+
+                    <h4>🎨 styles/</h4>
+                    <p><strong>Propósito:</strong> Archivos SCSS compartidos: mixins, variables personalizadas, utility classes.</p>
+                    <p><strong>Diferencia con theme/:</strong> <code>theme/</code> contiene variables de Ionic, <code>styles/</code> contiene estilos custom del proyecto.</p>
+
+                    <h4>🔖 tabs/</h4>
+                    <p><strong>Propósito:</strong> Implementa el sistema de navegación por pestañas (tabs) de la aplicación.</p>
+                    <p><strong>Contenido:</strong> <code>tabs.page.ts/html/scss</code> que define la estructura de tabs (Inicio, Evaluaciones, Configuración, etc.).</p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 5: ARCHIVOS BASE DE SRC -->
+            <div class="section" id="archivos-base">
+                <h2><span class="icon">📋</span>5. Archivos Base de src/</h2>
+
+                <p>Estos archivos en la raíz de <code>src/</code> controlan la inicialización y configuración base de la aplicación.</p>
+
+                <!-- GLOBAL.SCSS -->
+                <div class="file-card">
+                    <h4><span class="file-icon">🎨</span>global.scss</h4>
+                    <p><strong>Propósito:</strong> Contiene estilos globales que se aplican a toda la aplicación, independientemente del componente.</p>
+
+                    <p style="margin-top: 10px;"><strong>Contenido típico:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>Imports de archivos SCSS de Ionic Core</li>
+                        <li>Resets CSS globales</li>
+                        <li>Clases utility (margin, padding, flex, etc.)</li>
+                        <li>Estilos para elementos HTML base (body, html, h1-h6)</li>
+                        <li>Variables CSS custom del proyecto</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Carga:</strong> Se importa automáticamente en <code>angular.json</code> en la sección <code>styles</code>, asegurando que se incluya en el bundle final.</p>
+                </div>
+
+                <!-- INDEX.HTML -->
+                <div class="file-card">
+                    <h4><span class="file-icon">📄</span>index.html</h4>
+                    <p><strong>Propósito:</strong> Archivo HTML raíz de la aplicación. Es el punto de entrada que carga en el navegador.</p>
+
+                    <p style="margin-top: 10px;"><strong>Contenido clave:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><code>&lt;app-root&gt;&lt;/app-root&gt;</code> - Selector del componente raíz de Angular</li>
+                        <li><code>&lt;meta&gt;</code> tags - Viewport, charset, description para SEO</li>
+                        <li><code>&lt;link rel="manifest"&gt;</code> - Referencia al manifest.webmanifest para PWA</li>
+                        <li><code>&lt;link rel="icon"&gt;</code> - Favicon de la aplicación</li>
+                        <li><code>&lt;meta name="theme-color"&gt;</code> - Color de tema para barra de direcciones móvil</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Nota:</strong> Angular inyecta automáticamente los scripts JavaScript compilados al final del <code>&lt;body&gt;</code> durante el build.</p>
+                </div>
+
+                <!-- MAIN.TS -->
+                <div class="file-card">
+                    <h4><span class="file-icon">⚡</span>main.ts</h4>
+                    <p><strong>Propósito:</strong> Punto de entrada TypeScript de la aplicación. Es el primer archivo que se ejecuta al iniciar la app.</p>
+
+                    <p style="margin-top: 10px;"><strong>Función principal:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>Bootstrap (arranque) de la aplicación Angular</li>
+                        <li>Importa y ejecuta <code>AppComponent</code></li>
+                        <li>Configura providers globales (servicios, configuraciones)</li>
+                        <li>Habilita modo de producción si aplica</li>
+                        <li>Registra Service Worker para PWA</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Código típico:</strong> Llama a <code>bootstrapApplication(AppComponent, config)</code> para inicializar Angular en modo standalone.</p>
+                </div>
+
+                <!-- POLYFILLS.TS -->
+                <div class="file-card">
+                    <h4><span class="file-icon">🔧</span>polyfills.ts</h4>
+                    <p><strong>Propósito:</strong> Importa polyfills necesarios para compatibilidad con navegadores antiguos que no soportan características modernas de JavaScript/ES2022.</p>
+
+                    <p style="margin-top: 10px;"><strong>Función:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>Agrega implementaciones de APIs modernas para navegadores legacy</li>
+                        <li>Importa <code>zone.js</code> (requerido por Angular para detección de cambios)</li>
+                        <li>Incluye polyfills para Web Components si es necesario</li>
+                        <li>Habilita características de ES2022 en navegadores antiguos</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Nota:</strong> Con target ES2022 y navegadores modernos, este archivo tiende a ser mínimo, principalmente importando Zone.js.</p>
+                </div>
+
+                <!-- TEST.TS -->
+                <div class="file-card">
+                    <h4><span class="file-icon">🧪</span>test.ts</h4>
+                    <p><strong>Propósito:</strong> Archivo de configuración para inicializar el entorno de testing de Angular.</p>
+
+                    <p style="margin-top: 10px;"><strong>Función:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>Configura el TestBed de Angular para pruebas unitarias</li>
+                        <li>Importa módulos y providers necesarios para tests</li>
+                        <li>Configura el platform browser para testing</li>
+                        <li>Busca y carga todos los archivos <code>*.spec.ts</code> del proyecto</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Uso:</strong> Se ejecuta automáticamente al correr <code>npm test</code> o <code>ng test</code>.</p>
+                </div>
+
+                <!-- ZONE-FLAGS.TS -->
+                <div class="file-card">
+                    <h4><span class="file-icon">🚩</span>zone-flags.ts</h4>
+                    <p><strong>Propósito:</strong> Configura flags de optimización para Zone.js (motor de detección de cambios de Angular).</p>
+
+                    <p style="margin-top: 10px;"><strong>Función:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>Desactiva patching innecesario de APIs del navegador</li>
+                        <li>Mejora el rendimiento al reducir el overhead de Zone.js</li>
+                        <li>Deshabilita tracking de eventos que la app no usa</li>
+                        <li>Optimiza el tiempo de arranque de la aplicación</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Ejemplo de flags:</strong> <code>__Zone_disable_requestAnimationFrame</code>, <code>__Zone_disable_on_property</code> para desactivar patching de eventos específicos.</p>
+
+                    <p style="margin-top: 10px;"><strong>Importante:</strong> Debe cargarse ANTES de <code>zone.js</code> en <code>polyfills.ts</code>.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>🔄 Orden de Carga:</strong><br>
+                    La aplicación se inicializa en este orden:
+                    <ol style="margin-top: 10px; padding-left: 20px;">
+                        <li><code>index.html</code> se carga en el navegador</li>
+                        <li><code>zone-flags.ts</code> configura Zone.js (si se usa)</li>
+                        <li><code>polyfills.ts</code> carga compatibilidad y Zone.js</li>
+                        <li><code>main.ts</code> arranca Angular</li>
+                        <li>Angular renderiza <code>AppComponent</code> en <code>&lt;app-root&gt;</code></li>
+                        <li><code>global.scss</code> aplica estilos globales</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 6: ARCHIVOS EN RAÍZ -->
+            <div class="section" id="archivos-raiz">
+                <h2><span class="icon">⚙️</span>6. Archivos de Configuración en Raíz del Proyecto</h2>
+
+                <p>Estos archivos están en la raíz de POLIP (no dentro de <code>src/</code>) y configuran herramientas de desarrollo.</p>
+
+                <!-- KARMA.CONF.JS -->
+                <div class="file-card">
+                    <h4><span class="file-icon">🧪</span>karma.conf.js</h4>
+                    <p><strong>Propósito:</strong> Archivo de configuración para Karma, el test runner utilizado para ejecutar pruebas unitarias de Angular.</p>
+
+                    <p style="margin-top: 10px;"><strong>Configuraciones clave:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>Frameworks:</strong> Define que usa Jasmine para escribir tests</li>
+                        <li><strong>Browsers:</strong> Especifica en qué navegadores ejecutar tests (Chrome, ChromeHeadless)</li>
+                        <li><strong>Coverage:</strong> Configuración de reportes de cobertura de código</li>
+                        <li><strong>Reporters:</strong> Define formato de salida de resultados (progress, coverage, junit)</li>
+                        <li><strong>Plugins:</strong> Lista de plugins de Karma a utilizar</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Uso:</strong> Se ejecuta automáticamente con <code>ng test</code> o <code>npm test</code>.</p>
+
+                    <p style="margin-top: 10px;"><strong>Ventajas:</strong> Permite ejecutar tests en múltiples navegadores simultáneamente y generar reportes de cobertura.</p>
+                </div>
+
+                <!-- NGSW-CONFIG.JSON -->
+                <div class="file-card">
+                    <h4><span class="file-icon">📡</span>ngsw-config.json</h4>
+                    <p><strong>Propósito:</strong> Configuración del Service Worker de Angular (Angular Service Worker) para funcionalidades PWA (Progressive Web App).</p>
+
+                    <p style="margin-top: 10px;"><strong>Funcionalidades configuradas:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>Estrategias de Caching:</strong> Define qué archivos cachear y cómo</li>
+                        <li><strong>Asset Groups:</strong> Grupos de recursos que se cachean juntos (app, assets)</li>
+                        <li><strong>Data Groups:</strong> Configuración de cache para APIs y datos dinámicos</li>
+                        <li><strong>Update Strategy:</strong> Cómo actualizar la app cuando hay nueva versión</li>
+                        <li><strong>Offline Support:</strong> Qué mostrar cuando no hay conexión</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Beneficios:</strong></p>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>✅ Aplicación funciona offline</li>
+                        <li>✅ Carga instantánea en visitas repetidas</li>
+                        <li>✅ Actualización automática en segundo plano</li>
+                        <li>✅ Reducción de consumo de datos móviles</li>
+                    </ul>
+
+                    <p style="margin-top: 10px;"><strong>Activación:</strong> Solo se activa en builds de producción (<code>ng build --prod</code>).</p>
+                </div>
+
+                <div class="success-box">
+                    <strong>📱 Capacidades PWA de POLIP:</strong><br>
+                    Con <code>ngsw-config.json</code> y <code>@angular/service-worker</code>, la aplicación puede:
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Instalarse en el escritorio/pantalla de inicio como app nativa</li>
+                        <li>Funcionar completamente offline (evaluaciones, consultas, navegación)</li>
+                        <li>Sincronizar datos cuando recupere conexión</li>
+                        <li>Mostrar notificaciones push (si se configura)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RESUMEN FINAL -->
+            <div class="section">
+                <h2><span class="icon">📝</span>Resumen de Estructura</h2>
+
+                <div class="table-container" style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: linear-gradient(135deg, #0f385a, #1a5a7a); color: white;">
+                            <tr>
+                                <th style="padding: 15px; text-align: left;">Carpeta/Archivo</th>
+                                <th style="padding: 15px; text-align: left;">Función Principal</th>
+                                <th style="padding: 15px; text-align: left;">Categoría</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>docs/</strong></td>
+                                <td style="padding: 15px;">Documentación, datos de prueba, rúbricas de referencia</td>
+                                <td style="padding: 15px;"><span class="badge badge-docs">Documentación</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>src/app/</strong></td>
+                                <td style="padding: 15px;">Aplicación Angular (componentes, servicios, modelos, páginas)</td>
+                                <td style="padding: 15px;"><span class="badge badge-src">Código Fuente</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>src/assets/</strong></td>
+                                <td style="padding: 15px;">Recursos estáticos (imágenes, iconos, fuentes)</td>
+                                <td style="padding: 15px;"><span class="badge badge-src">Assets</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>src/environments/</strong></td>
+                                <td style="padding: 15px;">Configuración por entorno (dev/prod)</td>
+                                <td style="padding: 15px;"><span class="badge badge-config">Config</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>src/theme/</strong></td>
+                                <td style="padding: 15px;">Variables de tema Ionic (colores, tipografía)</td>
+                                <td style="padding: 15px;"><span class="badge badge-src">Estilos</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>global.scss</strong></td>
+                                <td style="padding: 15px;">Estilos globales de la aplicación</td>
+                                <td style="padding: 15px;"><span class="badge badge-src">Estilos</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>index.html</strong></td>
+                                <td style="padding: 15px;">Punto de entrada HTML</td>
+                                <td style="padding: 15px;"><span class="badge badge-src">Core</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>main.ts</strong></td>
+                                <td style="padding: 15px;">Bootstrap de la aplicación Angular</td>
+                                <td style="padding: 15px;"><span class="badge badge-src">Core</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>polyfills.ts</strong></td>
+                                <td style="padding: 15px;">Compatibilidad con navegadores legacy</td>
+                                <td style="padding: 15px;"><span class="badge badge-config">Config</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>test.ts</strong></td>
+                                <td style="padding: 15px;">Configuración de entorno de testing</td>
+                                <td style="padding: 15px;"><span class="badge badge-test">Testing</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>zone-flags.ts</strong></td>
+                                <td style="padding: 15px;">Optimización de Zone.js</td>
+                                <td style="padding: 15px;"><span class="badge badge-config">Config</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #e1e8ed;">
+                                <td style="padding: 15px;"><strong>karma.conf.js</strong></td>
+                                <td style="padding: 15px;">Configuración del test runner</td>
+                                <td style="padding: 15px;"><span class="badge badge-test">Testing</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 15px;"><strong>ngsw-config.json</strong></td>
+                                <td style="padding: 15px;">Configuración PWA Service Worker</td>
+                                <td style="padding: 15px;"><span class="badge badge-config">PWA</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="success-box" style="margin-top: 30px;">
+                    <h4>✅ Conclusión Parte 2</h4>
+                    <p>La estructura de carpetas de POLIProject sigue las mejores prácticas de Ionic/Angular, organizando el código en capas funcionales claramente separadas. Cada carpeta y archivo tiene una responsabilidad única y específica, facilitando el mantenimiento, escalabilidad y comprensión del proyecto.</p>
+                    <p style="margin-top: 10px;"><strong>Jerarquía de responsabilidades:</strong></p>
+                    <ul style="padding-left: 20px; margin-top: 10px;">
+                        <li><strong>Configuración Base:</strong> Archivos en raíz (.json, .js, .ts)</li>
+                        <li><strong>Código Fuente:</strong> src/ con subcarpetas especializadas</li>
+                        <li><strong>Lógica de Aplicación:</strong> src/app/ con arquitectura por capas</li>
+                        <li><strong>Recursos Estáticos:</strong> assets/, docs/, theme/</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- DICCIONARIO TÉCNICO -->
+            <div class="section">
+                <h2><span class="icon">📖</span>Glosario de Términos de Estructura</h2>
+
+                <div class="glossary">
+                    <h3>Estructura de Carpetas</h3>
+
+                    <dl>
+                        <div class="glossary-term">
+                            <dt>📁 app/</dt>
+                            <dd>Directorio principal que contiene toda la lógica de la aplicación Angular: componentes, servicios, páginas, modelos y sistema de <span class="tech-term" title="Sistema de navegación entre páginas">routing</span>. Es el corazón funcional de POLIProject.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 assets/</dt>
+                            <dd>Carpeta de recursos estáticos (imágenes, iconos, fuentes, archivos JSON). Los archivos aquí se copian tal cual al build final sin procesamiento. Accesibles vía rutas <code>/assets/...</code></dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 components/</dt>
+                            <dd>Componentes reutilizables que se usan en múltiples páginas. Son piezas de UI modulares y autocontenidas (ej: header, modales, tarjetas). En Angular 20 son <span class="tech-term" title="Componentes que no requieren NgModules">standalone</span>.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 core/</dt>
+                            <dd>Servicios fundamentales, <span class="tech-term" title="Protectores de rutas">guards</span>, e <span class="tech-term" title="Interceptores HTTP">interceptors</span> que se cargan una sola vez en toda la aplicación. Funcionalidades singleton críticas del sistema.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 docs/</dt>
+                            <dd>Documentación técnica, archivos de referencia, datos de prueba (CSVs, rúbricas). NO se incluye en el build de producción. Solo para desarrollo y documentación.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 environments/</dt>
+                            <dd>Configuraciones específicas por entorno. <code>environment.ts</code> para desarrollo (debug habilitado), <code>environment.prod.ts</code> para producción (optimizado). Angular las intercambia automáticamente en build.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 models/</dt>
+                            <dd>Definiciones de tipos TypeScript: <span class="tech-term" title="Contratos de estructura de datos">interfaces</span>, <span class="tech-term" title="Alias de tipos personalizados">types</span> y <span class="tech-term" title="Conjuntos de constantes nombradas">enums</span>. Define la estructura de datos del dominio (Estudiante, Evaluacion, Rubrica, etc.).</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 pages/</dt>
+                            <dd>Páginas/vistas de la aplicación. Cada página es un componente standalone que representa una pantalla completa navegable. Ejemplos: InicioPage, EvaluacionesPage, ConfiguracionPage.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 services/</dt>
+                            <dd>Servicios <span class="tech-term" title="Pueden ser inyectados en componentes">inyectables</span> de Angular con lógica de negocio, acceso a datos y gestión de estado. Usan patrón <span class="tech-term" title="Una única instancia compartida">Singleton</span> con <code>providedIn: 'root'</code>.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 styles/</dt>
+                            <dd>Archivos SCSS compartidos: <span class="tech-term" title="Funciones reutilizables de estilos">mixins</span>, variables custom, <span class="tech-term" title="Clases auxiliares de CSS">utility classes</span>. Diferente de theme/ (variables Ionic) vs custom del proyecto.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 tabs/</dt>
+                            <dd>Componente de navegación por pestañas. Implementa la estructura de <span class="tech-term" title="Patrón de navegación con pestañas inferiores">tabs</span> de la aplicación con íconos y rutas configuradas.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📁 theme/</dt>
+                            <dd>Variables CSS de Ionic que controlan el tema visual global: colores (<code>--ion-color-primary</code>), tipografía, espaciados, radios de bordes. Permite cambiar todo el tema desde un archivo.</dd>
+                        </div>
+                    </dl>
+
+                    <h3 style="margin-top: 30px;">Archivos Clave</h3>
+
+                    <dl>
+                        <div class="glossary-term">
+                            <dt>📄 app.component.ts</dt>
+                            <dd>Componente raíz de Angular. Primer componente que se carga. Contiene la estructura base (<code>&lt;ion-router-outlet&gt;</code>) e inicializa servicios globales.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 app.routes.ts</dt>
+                            <dd>Configuración de rutas de Angular Router. Mapea URLs a componentes: <code>/inicio → InicioPage</code>. Incluye <span class="tech-term" title="Carga diferida de módulos">lazy loading</span> y <span class="tech-term" title="Protectores de navegación">guards</span>.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 global.scss</dt>
+                            <dd>Estilos CSS globales aplicados a toda la aplicación. Incluye imports de Ionic Core, resets, utility classes y estilos base para HTML.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 index.html</dt>
+                            <dd>Archivo HTML raíz. Punto de entrada que carga en el navegador. Contiene <code>&lt;app-root&gt;</code>, meta tags, manifest PWA y favicon. Angular inyecta scripts automáticamente.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 index.ts (barrel)</dt>
+                            <dd>Archivo de <span class="tech-term" title="Exportación centralizada">barrel export</span> que re-exporta múltiples módulos desde una carpeta. Simplifica imports: <code>import { A, B } from '@models';</code> en lugar de múltiples imports individuales.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 karma.conf.js</dt>
+                            <dd>Configuración de Karma (test runner). Define navegadores para tests, reporters de cobertura, y configuración de ejecución de pruebas unitarias con Jasmine.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 main.ts</dt>
+                            <dd>Punto de entrada TypeScript. Primer archivo que se ejecuta. Llama a <code>bootstrapApplication(AppComponent)</code> para arrancar Angular en modo standalone.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 ngsw-config.json</dt>
+                            <dd>Configuración del <span class="tech-term" title="Script en segundo plano para funcionalidad offline">Service Worker</span> de Angular. Define estrategias de caching, asset groups, y comportamiento offline para PWA.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 polyfills.ts</dt>
+                            <dd>Importa <span class="tech-term" title="Código de compatibilidad para navegadores antiguos">polyfills</span> necesarios para navegadores legacy. Principalmente importa Zone.js (requerido por Angular para detección de cambios).</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 test.ts</dt>
+                            <dd>Configuración de entorno de testing. Inicializa TestBed de Angular y carga todos los archivos <code>*.spec.ts</code> para ejecución de pruebas unitarias.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>📄 zone-flags.ts</dt>
+                            <dd>Flags de optimización para Zone.js. Desactiva <span class="tech-term" title="Modificación de APIs del navegador">patching</span> innecesario de APIs para mejorar rendimiento. Debe cargarse ANTES de zone.js en polyfills.</dd>
+                        </div>
+                    </dl>
+
+                    <h3 style="margin-top: 30px;">Patrones y Convenciones</h3>
+
+                    <dl>
+                        <div class="glossary-term">
+                            <dt>🔧 .page.ts/html/scss</dt>
+                            <dd>Convención de nomenclatura para páginas en Ionic. Ejemplo: <code>inicio.page.ts</code>, <code>inicio.page.html</code>, <code>inicio.page.scss</code>. Identifica componentes de página completa vs componentes reutilizables.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 .service.ts</dt>
+                            <dd>Convención para servicios inyectables. Ejemplo: <code>data.service.ts</code>. Contienen lógica de negocio y son singleton con <code>@Injectable({ providedIn: 'root' })</code>.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 .model.ts</dt>
+                            <dd>Convención para archivos de modelos TypeScript. Ejemplo: <code>estudiante.model.ts</code>. Solo contienen interfaces, types y enums (sin lógica ejecutable).</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 .spec.ts</dt>
+                            <dd>Archivos de pruebas unitarias con Jasmine. Ejemplo: <code>app.component.spec.ts</code>. Karma los busca y ejecuta automáticamente al correr <code>npm test</code>.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Path Aliases (@app, @models)</dt>
+                            <dd>Alias de rutas configurados en <code>tsconfig.json</code>. Permiten imports limpios: <code>import { X } from '@models/x';</code> en lugar de rutas relativas <code>../../../models/x</code>.</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <p><strong>Gestor de Seguimiento de Proyectos POLIProject</strong></p>
+            <p>Politécnico Grancolombiano | Ing. MG. Víctor Castro Pérez</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                Documentación generada: 16 de diciembre de 2025 | Versión 2.0.0
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

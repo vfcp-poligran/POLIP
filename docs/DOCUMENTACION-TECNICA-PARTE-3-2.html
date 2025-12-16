@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.2: Core</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --accent-color: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active {
+      background: var(--bg-gradient);
+      color: white;
+    }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 {
+      color: var(--secondary-color);
+      margin: 25px 0 15px 0;
+      font-size: 1.3rem;
+    }
+
+    .file-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .code-line { display: block; padding: 2px 0; }
+    .code-line:hover { background: rgba(255,255,255,0.05); }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .decorator { color: #dcdcaa; }
+    .class-name { color: #4ec9b0; }
+    .function { color: #dcdcaa; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+
+    .explanation {
+      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+      border-left: 4px solid var(--secondary-color);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .explanation h4 { color: var(--primary-color); margin-bottom: 10px; }
+    .explanation ul { margin-left: 20px; }
+    .explanation li { margin: 8px 0; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: help;
+      border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+    .info-box.success { background: #d4edda; border-color: #28a745; }
+    .info-box.primary { background: #cce5ff; border-color: #007bff; }
+    .info-box.danger { background: #f8d7da; border-color: #dc3545; }
+
+    .folder-tree {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Consolas', monospace;
+      margin: 20px 0;
+    }
+
+    .folder-tree .folder { color: #ffc107; }
+    .folder-tree .file { color: #4fc3f7; }
+    .folder-tree .export { color: #81c784; }
+
+    .method-card {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+
+    .method-card h5 {
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+      font-family: 'Consolas', monospace;
+    }
+
+    .method-card .signature {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-family: 'Consolas', monospace;
+      margin: 10px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+
+    footer a { color: var(--secondary-color); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔧 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.2: Core - Utilidades Centrales</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html" class="active">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎯 ¿Qué es la carpeta Core?</h2>
+      <p>La carpeta <strong>core/</strong> contiene utilidades y funcionalidades <span class="tech-term" title="Código compartido por toda la aplicación">transversales</span> que son usadas en múltiples partes de la aplicación. En POLIProject, se enfoca principalmente en el sistema de logging.</p>
+
+      <div class="folder-tree">
+        <span class="folder">📁 src/app/core/</span><br>
+        &nbsp;&nbsp;├── <span class="file">index.ts</span> <span class="export">← Barrel export principal</span><br>
+        &nbsp;&nbsp;└── <span class="folder">📁 utils/</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">index.ts</span> <span class="export">← Barrel export de utils</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="file">logger.ts</span> <span class="export">← Sistema de logging</span>
+      </div>
+
+      <div class="info-box primary">
+        <strong>💡 Patrón Barrel Export:</strong> Los archivos <code>index.ts</code> permiten importar desde <code>@app/core</code> en lugar de rutas largas como <code>./core/utils/logger</code>.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- LOGGER.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📝 logger.ts - Sistema de Logging</h2>
+      <p>Utilidad central para <span class="tech-term" title="Registro de mensajes para debugging">logging</span> que controla la salida de mensajes según el modo de la aplicación.</p>
+
+      <div class="file-header">
+        <span>📄</span>
+        src/app/core/utils/logger.ts
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { isDevMode } <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/**</span></span>
+<span class="code-line"><span class="comment"> * Utilidad de logging que solo funciona en modo desarrollo.</span></span>
+<span class="code-line"><span class="comment"> * En producción, todos los logs son silenciosos.</span></span>
+<span class="code-line"><span class="comment"> */</span></span>
+<span class="code-line"><span class="keyword">export const</span> Logger = {</span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Log informativo</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">log</span>: (...args: <span class="class-name">unknown</span>[]): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">log</span>(...args);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Log de advertencia</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">warn</span>: (...args: <span class="class-name">unknown</span>[]): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">warn</span>(...args);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Log de error (siempre se muestra, incluso en producción)</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">error</span>: (...args: <span class="class-name">unknown</span>[]): <span class="keyword">void</span> => {</span>
+<span class="code-line">    console.<span class="function">error</span>(...args);</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Log de debug (solo desarrollo)</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">debug</span>: (...args: <span class="class-name">unknown</span>[]): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">debug</span>(...args);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Log de grupo (para agrupar logs relacionados)</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">group</span>: (label: <span class="class-name">string</span>): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">group</span>(label);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Cerrar grupo de logs</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">groupEnd</span>: (): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">groupEnd</span>();</span>
+<span class="code-line">    }</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Log de tiempo (para medir rendimiento)</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">time</span>: (label: <span class="class-name">string</span>): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">time</span>(label);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  },</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">/**</span></span>
+<span class="code-line"><span class="comment">   * Finalizar medición de tiempo</span></span>
+<span class="code-line"><span class="comment">   */</span></span>
+<span class="code-line">  <span class="function">timeEnd</span>: (label: <span class="class-name">string</span>): <span class="keyword">void</span> => {</span>
+<span class="code-line">    <span class="keyword">if</span> (<span class="function">isDevMode</span>()) {</span>
+<span class="code-line">      console.<span class="function">timeEnd</span>(label);</span>
+<span class="code-line">    }</span>
+<span class="code-line">  }</span>
+<span class="code-line">};</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 ¿Por qué usar Logger en lugar de console.log?</h4>
+        <ul>
+          <li><strong>Control de entorno:</strong> Los logs solo aparecen en desarrollo, no en producción</li>
+          <li><strong>Seguridad:</strong> Evita exponer información sensible al usuario final</li>
+          <li><strong>Rendimiento:</strong> En producción, no se ejecutan llamadas innecesarias</li>
+          <li><strong>Consistencia:</strong> Un único punto de control para todos los logs</li>
+        </ul>
+      </div>
+
+      <h3>🔧 Métodos Disponibles</h3>
+
+      <div class="method-card">
+        <h5>Logger.log()</h5>
+        <div class="signature">log(...args: unknown[]): void</div>
+        <p>Muestra mensajes informativos. Solo en desarrollo.</p>
+        <p><strong>Uso:</strong> <code>Logger.log('✅ Datos cargados', data);</code></p>
+      </div>
+
+      <div class="method-card">
+        <h5>Logger.warn()</h5>
+        <div class="signature">warn(...args: unknown[]): void</div>
+        <p>Muestra advertencias (⚠️ amarillas). Solo en desarrollo.</p>
+        <p><strong>Uso:</strong> <code>Logger.warn('⚠️ Cache expirado');</code></p>
+      </div>
+
+      <div class="method-card">
+        <h5>Logger.error()</h5>
+        <div class="signature">error(...args: unknown[]): void</div>
+        <p>Muestra errores (🔴 rojos). <strong>Siempre visible</strong>, incluso en producción.</p>
+        <p><strong>Uso:</strong> <code>Logger.error('❌ Error crítico:', error);</code></p>
+      </div>
+
+      <div class="method-card">
+        <h5>Logger.debug()</h5>
+        <div class="signature">debug(...args: unknown[]): void</div>
+        <p>Información detallada para debugging. Solo en desarrollo.</p>
+        <p><strong>Uso:</strong> <code>Logger.debug('Estado actual:', state);</code></p>
+      </div>
+
+      <div class="method-card">
+        <h5>Logger.group() / Logger.groupEnd()</h5>
+        <div class="signature">group(label: string): void / groupEnd(): void</div>
+        <p>Agrupa logs relacionados visualmente en la consola.</p>
+        <p><strong>Uso:</strong></p>
+        <div class="signature">
+Logger.group('📦 Carga de datos');<br>
+Logger.log('Paso 1: Leer storage');<br>
+Logger.log('Paso 2: Parsear JSON');<br>
+Logger.groupEnd();
+        </div>
+      </div>
+
+      <div class="method-card">
+        <h5>Logger.time() / Logger.timeEnd()</h5>
+        <div class="signature">time(label: string): void / timeEnd(label: string): void</div>
+        <p>Mide el tiempo de ejecución de operaciones.</p>
+        <p><strong>Uso:</strong></p>
+        <div class="signature">
+Logger.time('cargarDatos');<br>
+await this.dataService.loadAll();<br>
+Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
+        </div>
+      </div>
+
+      <div class="info-box danger">
+        <strong>⚠️ Importante:</strong> <code>Logger.error()</code> es el ÚNICO método que funciona en producción. Use los demás solo para información de desarrollo.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- INDEX FILES -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📦 Archivos Index (Barrel Exports)</h2>
+      <p>Los archivos <code>index.ts</code> implementan el patrón <span class="tech-term" title="Exporta múltiples módulos desde un punto único">Barrel Export</span> para simplificar importaciones.</p>
+
+      <h3>core/index.ts</h3>
+      <div class="file-header">
+        <span>📄</span>
+        src/app/core/index.ts
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// Core module barrel export</span></span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./utils'</span>;</span>
+        </code>
+      </div>
+
+      <h3>core/utils/index.ts</h3>
+      <div class="file-header">
+        <span>📄</span>
+        src/app/core/utils/index.ts
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// Core utilities barrel export</span></span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./logger'</span>;</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Beneficio del Patrón Barrel</h4>
+        <table style="width: 100%; margin-top: 10px;">
+          <tr style="background: #f0f0f0;">
+            <th style="padding: 10px; text-align: left;">Sin Barrel</th>
+            <th style="padding: 10px; text-align: left;">Con Barrel</th>
+          </tr>
+          <tr>
+            <td style="padding: 10px; font-family: monospace; background: #ffe0e0;">import { Logger } from './core/utils/logger';</td>
+            <td style="padding: 10px; font-family: monospace; background: #e0ffe0;">import { Logger } from '@app/core';</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="info-box success">
+        <strong>✅ Path Alias:</strong> El alias <code>@app/</code> está configurado en <code>tsconfig.json</code> y apunta a <code>src/app/</code>, permitiendo rutas absolutas limpias.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📋 Resumen - Carpeta Core</h2>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+          <tr style="background: var(--bg-gradient); color: white;">
+            <th style="padding: 15px; text-align: left;">Archivo</th>
+            <th style="padding: 15px; text-align: left;">Propósito</th>
+            <th style="padding: 15px; text-align: left;">Usado Por</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>logger.ts</code></td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Sistema de logging controlado</td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Todos los componentes y servicios</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>utils/index.ts</code></td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Barrel export de utilidades</td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">core/index.ts</td>
+          </tr>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 12px;"><code>index.ts</code></td>
+            <td style="padding: 12px;">Barrel export principal</td>
+            <td style="padding: 12px;">Importaciones con @app/core</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- GLOSARIO -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📖 Glosario de la Parte 3.2</h2>
+
+      <div class="method-card">
+        <h5>isDevMode()</h5>
+        <p>Función de Angular que retorna <code>true</code> si la aplicación está en modo desarrollo, <code>false</code> en producción.</p>
+      </div>
+
+      <div class="method-card">
+        <h5>Barrel Export</h5>
+        <p>Patrón que re-exporta múltiples módulos desde un archivo <code>index.ts</code>, simplificando las importaciones.</p>
+      </div>
+
+      <div class="method-card">
+        <h5>Rest Parameters (...args)</h5>
+        <p>Sintaxis de JavaScript que permite recibir un número indefinido de argumentos como un array.</p>
+      </div>
+
+      <div class="method-card">
+        <h5>unknown[]</h5>
+        <p>Tipo de TypeScript más seguro que <code>any[]</code>. Permite cualquier valor pero requiere verificación antes de usar.</p>
+      </div>
+
+      <div class="method-card">
+        <h5>console.group()</h5>
+        <p>API del navegador que agrupa logs relacionados con indentación visual en la consola de desarrollador.</p>
+      </div>
+
+      <div class="method-card">
+        <h5>console.time() / timeEnd()</h5>
+        <p>APIs del navegador para medir el tiempo transcurrido entre dos puntos del código.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.2 de 8 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">← Anterior: 3.1 Raíz</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">Siguiente: 3.3 Tabs →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

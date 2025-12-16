@@ -514,6 +514,11 @@ export class InicioPage implements OnInit, OnDestroy {
     const tieneCursoActivo = !!cursoActivo;
     const existeEnData = cursoActivo ? !!this.cursosData[cursoActivo] : false;
 
+    // 🧹 Limpiar seguimiento si no hay contexto activo (evita datos residuales)
+    if (!tieneCursoActivo || !existeEnData) {
+      this.limpiarPanelSeguimiento();
+    }
+
     // CASO 1: Servicio vacío (F5 o primer inicio) -> Recargar todo
     if (Object.keys(this.cursosData).length === 0) {
       this.cargarDatosIniciales();
@@ -948,6 +953,9 @@ export class InicioPage implements OnInit, OnDestroy {
     if (this.filtroGrupo === numeroGrupo) {
       return;
     }
+
+    // 🧹 Limpiar panel de seguimiento al cambiar de grupo
+    this.limpiarPanelSeguimiento();
 
     this.filtroGrupo = numeroGrupo;
     this.grupoSeguimientoActivo = numeroGrupo;
@@ -1451,18 +1459,9 @@ export class InicioPage implements OnInit, OnDestroy {
    * Limpia completamente el panel de seguimiento
    */
   private limpiarPanelSeguimiento() {
-    const seguimiento = this.seguimientoService.getSeguimiento();
-    if (seguimiento) {
-      seguimiento.evaluacionGrupal = undefined;
-      seguimiento.evaluacionIndividual = undefined;
-      seguimiento.integranteSeleccionado = undefined;
-      seguimiento.entregaActual = undefined;
-      seguimiento.tipoEvaluacionActiva = null;
-      // Limpiar también los comentarios
-      seguimiento.comentarios = [];
-      this.seguimientoService.setSeguimiento(seguimiento);
-      Logger.log('🧹 Panel de seguimiento limpiado (evaluaciones, integrante, entrega, tipo y comentarios)');
-    }
+    // Limpiar completamente el seguimiento en el servicio
+    this.seguimientoService.limpiarSeguimiento();
+    Logger.log('🧹 Panel de seguimiento limpiado completamente');
   }
 
   /**

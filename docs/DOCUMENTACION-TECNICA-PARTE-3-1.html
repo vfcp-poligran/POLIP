@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.1: Archivos Raíz</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --accent-color: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    header .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-parts a:hover, .nav-parts a.active {
+      background: var(--bg-gradient);
+      color: white;
+    }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 {
+      color: var(--secondary-color);
+      margin: 25px 0 15px 0;
+      font-size: 1.3rem;
+    }
+
+    .file-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .file-header .icon {
+      font-size: 1.2rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .code-line {
+      display: block;
+      padding: 2px 0;
+    }
+
+    .code-line:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Syntax highlighting */
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .decorator { color: #dcdcaa; }
+    .class-name { color: #4ec9b0; }
+    .function { color: #dcdcaa; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+    .tag { color: #569cd6; }
+    .attr { color: #9cdcfe; }
+
+    .explanation {
+      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+      border-left: 4px solid var(--secondary-color);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .explanation h4 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .explanation ul {
+      margin-left: 20px;
+    }
+
+    .explanation li {
+      margin: 8px 0;
+    }
+
+    .tech-term {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: help;
+      border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .flow-diagram {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .flow-diagram .step {
+      display: inline-block;
+      background: var(--bg-gradient);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin: 5px;
+      font-weight: 500;
+    }
+
+    .flow-diagram .arrow {
+      color: var(--secondary-color);
+      font-size: 1.5rem;
+      margin: 0 10px;
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .info-box.success {
+      background: #d4edda;
+      border-color: #28a745;
+    }
+
+    .info-box.primary {
+      background: #cce5ff;
+      border-color: #007bff;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📱 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.1: Archivos Raíz de la Aplicación</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html" class="active">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎯 Introducción</h2>
+      <p>Los <strong>archivos raíz</strong> de una aplicación Angular/Ionic son el punto de entrada y configuración inicial. Estos archivos definen:</p>
+      <ul style="margin: 15px 0 15px 30px;">
+        <li>El <span class="tech-term" title="Componente que envuelve toda la aplicación">componente principal</span> que contiene toda la aplicación</li>
+        <li>La <span class="tech-term" title="Definición de URLs y sus componentes asociados">configuración de rutas</span> de navegación</li>
+        <li>La lógica de <span class="tech-term" title="Proceso inicial antes de mostrar la UI">inicialización</span> y carga de datos</li>
+      </ul>
+
+      <div class="flow-diagram">
+        <span class="step">main.ts</span>
+        <span class="arrow">→</span>
+        <span class="step">app.component.ts</span>
+        <span class="arrow">→</span>
+        <span class="step">app.routes.ts</span>
+        <span class="arrow">→</span>
+        <span class="step">tabs/</span>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- APP.COMPONENT.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📦 app.component.ts</h2>
+      <p>El <strong>componente raíz</strong> de Angular. Es el primer componente que se renderiza y contiene toda la aplicación.</p>
+
+      <div class="file-header">
+        <span class="icon">📄</span>
+        src/app/app.component.ts
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { Component, OnInit, inject, ViewChild } <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { CommonModule } <span class="keyword">from</span> <span class="string">'@angular/common'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> {</span>
+<span class="code-line">  IonApp,</span>
+<span class="code-line">  IonRouterOutlet</span>
+<span class="code-line">} <span class="keyword">from</span> <span class="string">'@ionic/angular/standalone'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { DataService } <span class="keyword">from</span> <span class="string">'./services/data.service'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { SplashScreenComponent } <span class="keyword">from</span> <span class="string">'./components/splash-screen/splash-screen.component'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { Logger } <span class="keyword">from</span> <span class="string">'@app/core/utils/logger'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="decorator">@Component</span>({</span>
+<span class="code-line">  <span class="property">selector</span>: <span class="string">'app-root'</span>,</span>
+<span class="code-line">  <span class="property">templateUrl</span>: <span class="string">'app.component.html'</span>,</span>
+<span class="code-line">  <span class="property">styleUrls</span>: [<span class="string">'app.component.scss'</span>],</span>
+<span class="code-line">  <span class="property">imports</span>: [</span>
+<span class="code-line">    CommonModule,</span>
+<span class="code-line">    IonApp,</span>
+<span class="code-line">    IonRouterOutlet,</span>
+<span class="code-line">    SplashScreenComponent</span>
+<span class="code-line">  ],</span>
+<span class="code-line">})</span>
+<span class="code-line"><span class="keyword">export class</span> <span class="class-name">AppComponent</span> <span class="keyword">implements</span> <span class="class-name">OnInit</span> {</span>
+<span class="code-line">  <span class="keyword">private</span> dataService = <span class="function">inject</span>(DataService);</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="decorator">@ViewChild</span>(SplashScreenComponent) splashScreen!: SplashScreenComponent;</span>
+<span class="code-line"></span>
+<span class="code-line">  showSplash = <span class="keyword">true</span>;</span>
+<span class="code-line">  isLoading = <span class="keyword">true</span>;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="keyword">async</span> <span class="function">ngOnInit</span>() {</span>
+<span class="code-line">    <span class="keyword">try</span> {</span>
+<span class="code-line">      <span class="comment">// 🔧 CRÍTICO: Cargar datos del almacenamiento persistente al iniciar</span></span>
+<span class="code-line">      <span class="keyword">await</span> <span class="keyword">this</span>.dataService.<span class="function">ensureInitialized</span>();</span>
+<span class="code-line">      Logger.<span class="function">log</span>(<span class="string">'✅ [AppComponent] Datos cargados del almacenamiento'</span>);</span>
+<span class="code-line"></span>
+<span class="code-line">      <span class="keyword">this</span>.isLoading = <span class="keyword">false</span>;</span>
+<span class="code-line"></span>
+<span class="code-line">      <span class="comment">// Dar un pequeño delay para que la animación de carga termine</span></span>
+<span class="code-line">      <span class="function">setTimeout</span>(() => {</span>
+<span class="code-line">        <span class="keyword">this</span>.splashScreen?.<span class="function">hideSplash</span>();</span>
+<span class="code-line">      }, <span class="number">800</span>);</span>
+<span class="code-line">    } <span class="keyword">catch</span> (error) {</span>
+<span class="code-line">      Logger.<span class="function">error</span>(<span class="string">'❌ [AppComponent] Error al inicializar:'</span>, error);</span>
+<span class="code-line">      <span class="keyword">this</span>.isLoading = <span class="keyword">false</span>;</span>
+<span class="code-line">      <span class="keyword">this</span>.splashScreen?.<span class="function">hideSplash</span>();</span>
+<span class="code-line">    }</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="function">onSplashComplete</span>(): <span class="keyword">void</span> {</span>
+<span class="code-line">    <span class="keyword">this</span>.showSplash = <span class="keyword">false</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Explicación Línea por Línea</h4>
+        <ul>
+          <li><strong>Líneas 1-9:</strong> <span class="tech-term">Imports</span> - Importación de módulos de Angular, Ionic y servicios locales</li>
+          <li><strong>Línea 11:</strong> <span class="tech-term">@Component</span> - Decorador que define metadatos del componente</li>
+          <li><strong>Línea 12:</strong> <span class="tech-term">selector</span> - El tag HTML usado: <code>&lt;app-root&gt;</code></li>
+          <li><strong>Línea 15-20:</strong> <span class="tech-term">imports</span> - Módulos standalone que usa este componente</li>
+          <li><strong>Línea 23:</strong> <span class="tech-term">inject()</span> - Inyección de dependencias moderna (Angular 14+)</li>
+          <li><strong>Línea 25:</strong> <span class="tech-term">@ViewChild</span> - Referencia al componente hijo SplashScreen</li>
+          <li><strong>Línea 30:</strong> <span class="tech-term">ngOnInit</span> - Hook del ciclo de vida, ejecutado al inicializar</li>
+          <li><strong>Línea 33:</strong> <span class="tech-term">ensureInitialized()</span> - Carga datos persistentes (cursos, evaluaciones)</li>
+          <li><strong>Línea 39:</strong> <span class="tech-term">setTimeout</span> - Delay para transición suave del splash</li>
+        </ul>
+      </div>
+
+      <div class="info-box primary">
+        <strong>💡 Patrón Importante:</strong> El uso de <code>inject()</code> en lugar de constructor injection es el patrón moderno de Angular 14+, más limpio y funciona con <span class="tech-term">standalone components</span>.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- APP.COMPONENT.HTML -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎨 app.component.html</h2>
+      <p>La plantilla HTML del componente raíz. Define la estructura visual base de la aplicación.</p>
+
+      <div class="file-header">
+        <span class="icon">📄</span>
+        src/app/app.component.html
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="tag">&lt;ion-app&gt;</span></span>
+<span class="code-line">  <span class="comment">&lt;!-- Splash Screen durante la carga inicial --&gt;</span></span>
+<span class="code-line">  <span class="keyword">@if</span> (showSplash) {</span>
+<span class="code-line">    <span class="tag">&lt;app-splash-screen</span> <span class="attr">(splashComplete)</span>=<span class="string">"onSplashComplete()"</span><span class="tag">&gt;&lt;/app-splash-screen&gt;</span></span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="tag">&lt;ion-router-outlet&gt;&lt;/ion-router-outlet&gt;</span></span>
+<span class="code-line"><span class="tag">&lt;/ion-app&gt;</span></span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Explicación de Elementos</h4>
+        <ul>
+          <li><strong>&lt;ion-app&gt;</strong>: <span class="tech-term">Contenedor raíz de Ionic</span>. Maneja estilos globales, temas y plataforma</li>
+          <li><strong>@if (showSplash)</strong>: <span class="tech-term">Control Flow</span> de Angular 17+. Renderizado condicional del splash</li>
+          <li><strong>&lt;app-splash-screen&gt;</strong>: Componente personalizado que muestra animación de carga</li>
+          <li><strong>(splashComplete)</strong>: <span class="tech-term">Event binding</span>. Escucha cuando el splash termina</li>
+          <li><strong>&lt;ion-router-outlet&gt;</strong>: <span class="tech-term">Outlet de navegación</span>. Aquí se renderizan las páginas según la ruta</li>
+        </ul>
+      </div>
+
+      <div class="info-box success">
+        <strong>✅ Angular 17+ Syntax:</strong> El uso de <code>@if</code> es la nueva sintaxis de control de flujo, más legible que <code>*ngIf</code>.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- APP.ROUTES.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🛣️ app.routes.ts</h2>
+      <p>Configuración del <span class="tech-term">Router</span> de Angular. Define cómo las URLs mapean a componentes.</p>
+
+      <div class="file-header">
+        <span class="icon">📄</span>
+        src/app/app.routes.ts
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { Routes } <span class="keyword">from</span> <span class="string">'@angular/router'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export const</span> routes: <span class="class-name">Routes</span> = [</span>
+<span class="code-line">  {</span>
+<span class="code-line">    <span class="property">path</span>: <span class="string">''</span>,</span>
+<span class="code-line">    <span class="property">loadChildren</span>: () => <span class="keyword">import</span>(<span class="string">'./tabs/tabs.routes'</span>).<span class="function">then</span>((m) => m.routes),</span>
+<span class="code-line">  },</span>
+<span class="code-line">];</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Explicación Detallada</h4>
+        <ul>
+          <li><strong>Routes</strong>: Tipo de TypeScript que define la estructura de rutas</li>
+          <li><strong>path: ''</strong>: La ruta raíz (cuando no hay path específico)</li>
+          <li><strong>loadChildren</strong>: <span class="tech-term">Lazy Loading</span> - Carga el módulo de tabs solo cuando se necesita</li>
+          <li><strong>import()</strong>: <span class="tech-term">Dynamic Import</span> - Importación dinámica de ES2020</li>
+          <li><strong>.then((m) => m.routes)</strong>: Extrae las rutas exportadas del módulo</li>
+        </ul>
+      </div>
+
+      <div class="flow-diagram">
+        <span class="step">URL: /</span>
+        <span class="arrow">→</span>
+        <span class="step">Lazy Load tabs.routes</span>
+        <span class="arrow">→</span>
+        <span class="step">Redirect: /tabs/inicio</span>
+      </div>
+
+      <div class="info-box">
+        <strong>⚡ Lazy Loading:</strong> Esta técnica mejora el tiempo de carga inicial. El código de las tabs se descarga solo cuando el usuario navega allí, no al inicio.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- APP.COMPONENT.SCSS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎨 app.component.scss</h2>
+      <p>Estilos específicos del componente raíz. Define la apariencia del menú lateral y estructura base.</p>
+
+      <div class="file-header">
+        <span class="icon">📄</span>
+        src/app/app.component.scss
+      </div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="class-name">.menu-content</span> {</span>
+<span class="code-line">  <span class="property">display</span>: flex;</span>
+<span class="code-line">  <span class="property">flex-direction</span>: column;</span>
+<span class="code-line">  <span class="property">height</span>: <span class="number">100%</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="class-name">.file-section</span> {</span>
+<span class="code-line">  <span class="property">margin-bottom</span>: <span class="number">24px</span>;</span>
+<span class="code-line">  </span>
+<span class="code-line">  <span class="class-name">.section-title</span> {</span>
+<span class="code-line">    <span class="property">font-size</span>: <span class="number">0.9rem</span>;</span>
+<span class="code-line">    <span class="property">color</span>: <span class="function">var</span>(<span class="string">--ion-color-medium</span>);</span>
+<span class="code-line">    <span class="property">margin-bottom</span>: <span class="number">12px</span>;</span>
+<span class="code-line">    <span class="property">text-align</span>: center;</span>
+<span class="code-line">    <span class="property">font-weight</span>: <span class="number">500</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="class-name">.file-name-display</span> {</span>
+<span class="code-line">  <span class="property">font-size</span>: <span class="number">0.85rem</span>;</span>
+<span class="code-line">  <span class="property">color</span>: <span class="function">var</span>(<span class="string">--ion-color-primary</span>);</span>
+<span class="code-line">  <span class="property">background-color</span>: <span class="function">rgba</span>(<span class="number">31, 178, 222, 0.1</span>);</span>
+<span class="code-line">  <span class="property">border-radius</span>: <span class="number">6px</span>;</span>
+<span class="code-line">  <span class="property">border</span>: <span class="number">1px</span> solid <span class="function">var</span>(<span class="string">--ion-color-primary-tint</span>);</span>
+<span class="code-line">  <span class="property">white-space</span>: nowrap;</span>
+<span class="code-line">  <span class="property">overflow</span>: hidden;</span>
+<span class="code-line">  <span class="property">text-overflow</span>: ellipsis;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="tag">ion-menu</span> {</span>
+<span class="code-line">  <span class="property">--width</span>: <span class="number">280px</span>;</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Conceptos de Estilos</h4>
+        <ul>
+          <li><strong>Flexbox</strong>: <code>display: flex</code> para layouts flexibles</li>
+          <li><strong>CSS Variables</strong>: <code>var(--ion-color-*)</code> - Variables de Ionic para temas consistentes</li>
+          <li><strong>SCSS Nesting</strong>: Selectores anidados para organización</li>
+          <li><strong>text-overflow: ellipsis</strong>: Trunca texto largo con "..."</li>
+          <li><strong>--width: 280px</strong>: Variable CSS personalizada para el ancho del menú</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📋 Resumen de Archivos Raíz</h2>
+
+      <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+          <tr style="background: var(--bg-gradient); color: white;">
+            <th style="padding: 15px; text-align: left;">Archivo</th>
+            <th style="padding: 15px; text-align: left;">Propósito</th>
+            <th style="padding: 15px; text-align: left;">Rol en la App</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>app.component.ts</code></td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Componente raíz</td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Inicialización, carga de datos, splash screen</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>app.component.html</code></td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Plantilla raíz</td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Estructura base con router outlet</td>
+          </tr>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><code>app.component.scss</code></td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Estilos raíz</td>
+            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Menú lateral, estructura visual</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px;"><code>app.routes.ts</code></td>
+            <td style="padding: 12px;">Rutas principales</td>
+            <td style="padding: 12px;">Lazy loading hacia tabs</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.1 de 8 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html" style="color: var(--secondary-color);">Siguiente: Parte 3.2 - Core →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

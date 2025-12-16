@@ -1,0 +1,177 @@
+{
+  "rubrica_id": "RGE2",
+  "curso": "ÉNFASIS EN PROGRAMACIÓN MÓVIL",
+  "puntuacion_total": 75,
+  "escala_calificacion": [
+    {
+      "min": 0,
+      "max": 29,
+      "nivel": "Insuficiente",
+      "descripcion": "Requiere reelaboración significativa"
+    },
+    {
+      "min": 30,
+      "max": 49,
+      "nivel": "Aceptable",
+      "descripcion": "Cumple con requisitos mínimos pero requiere mejoras"
+    },
+    {
+      "min": 50,
+      "max": 64,
+      "nivel": "Bueno",
+      "descripcion": "Cumple con lo esperado con buen nivel de calidad"
+    },
+    {
+      "min": 65,
+      "max": 75,
+      "nivel": "Excelente",
+      "descripcion": "Supera expectativas, alta calidad profesional"
+    }
+  ],
+  "criterios": [
+    {
+      "id": 1,
+      "nombre": "Almacenamiento",
+      "peso": 15,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 3,
+          "titulo": "Insuficiente",
+          "descripcion": "El documento no incluye diseño del manejo de almacenamiento de la información o es muy deficiente. No presenta modelo entidad-relación o diagrama de clases. La estructura propuesta no es coherente con los requerimientos del proyecto."
+        },
+        {
+          "numero": 2,
+          "minimo": 4,
+          "maximo": 7,
+          "titulo": "Aceptable",
+          "descripcion": "El documento incluye diseño básico del manejo de almacenamiento de la información. Presenta modelo entidad-relación o diagrama de clases con las entidades principales. La estructura es coherente aunque podría estar más detallada."
+        },
+        {
+          "numero": 3,
+          "minimo": 8,
+          "maximo": 11,
+          "titulo": "Bueno",
+          "descripcion": "El documento presenta diseño completo del manejo de almacenamiento. Incluye modelo entidad-relación detallado con relaciones y atributos clave. La estructura está bien alineada con los requerimientos."
+        },
+        {
+          "numero": 4,
+          "minimo": 12,
+          "maximo": 15,
+          "titulo": "Excelente",
+          "descripcion": "El documento presenta un diseño completo y profesional del manejo de almacenamiento de la información. Incluye modelo entidad-relación detallado, relaciones correctas, cardinalidades y restricciones. La estructura está perfectamente alineada con los requerimientos."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Arquitectura de la Aplicación",
+      "peso": 15,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 3,
+          "titulo": "Insuficiente",
+          "descripcion": "El documento no define arquitectura clara o es muy básica. No explica la organización de componentes, servicios o capas. Falta claridad sobre la estructura técnica del proyecto."
+        },
+        {
+          "numero": 2,
+          "minimo": 4,
+          "maximo": 7,
+          "titulo": "Aceptable",
+          "descripcion": "El documento define arquitectura básica de la aplicación. Explica organización general de componentes y servicios. La estructura técnica es comprensible aunque podría tener más detalle."
+        },
+        {
+          "numero": 3,
+          "minimo": 8,
+          "maximo": 11,
+          "titulo": "Bueno",
+          "descripcion": "El documento presenta arquitectura bien definida. Incluye diagrama de componentes, servicios y organización de capas. La estructura técnica es clara y sigue buenas prácticas."
+        },
+        {
+          "numero": 4,
+          "minimo": 12,
+          "maximo": 15,
+          "titulo": "Excelente",
+          "descripcion": "El documento presenta arquitectura completa y profesional. Incluye diagrama de componentes, servicios, flujo de datos y organización de capas. La estructura técnica es clara, detallada y sigue buenas prácticas."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "Plan de Desarrollo",
+      "peso": 15,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 3,
+          "titulo": "Insuficiente",
+          "descripcion": "El documento no incluye plan de desarrollo o es muy vago. No define etapas, actividades ni cronograma. Falta distribución de tareas entre los miembros del equipo."
+        },
+        {
+          "numero": 2,
+          "minimo": 4,
+          "maximo": 7,
+          "titulo": "Aceptable",
+          "descripcion": "El documento incluye plan de desarrollo básico. Define etapas principales y cronograma general. Incluye distribución de tareas aunque podría estar más detallado."
+        },
+        {
+          "numero": 3,
+          "minimo": 8,
+          "maximo": 11,
+          "titulo": "Bueno",
+          "descripcion": "El documento presenta plan de desarrollo completo. Incluye cronograma con hitos, actividades específicas y distribución clara de tareas. El plan es realista y bien organizado."
+        },
+        {
+          "numero": 4,
+          "minimo": 12,
+          "maximo": 15,
+          "titulo": "Excelente",
+          "descripcion": "El documento presenta plan de desarrollo completo y detallado. Incluye cronograma con hitos, actividades específicas, distribución clara de tareas, responsables y fechas. El plan es realista y bien estructurado."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "nombre": "Diseño de Interfaces (Mockups Detallados)",
+      "peso": 30,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 8,
+          "titulo": "Insuficiente",
+          "descripcion": "El documento no incluye mockups detallados o son muy básicos. No muestran la evolución del diseño ni incluyen todas las pantallas necesarias. Falta coherencia visual y detalle de interacciones."
+        },
+        {
+          "numero": 2,
+          "minimo": 9,
+          "maximo": 15,
+          "titulo": "Aceptable",
+          "descripcion": "El documento incluye mockups funcionales y detallados de las pantallas principales. Muestra coherencia visual y elementos de UI. Las interacciones están representadas aunque podrían tener más detalle."
+        },
+        {
+          "numero": 3,
+          "minimo": 16,
+          "maximo": 23,
+          "titulo": "Bueno",
+          "descripcion": "El documento incluye mockups profesionales y detallados. Buen diseño UI/UX con la mayoría de pantallas, estados y flujos. Buena coherencia visual y diseño bien pensado."
+        },
+        {
+          "numero": 4,
+          "minimo": 24,
+          "maximo": 30,
+          "titulo": "Excelente",
+          "descripcion": "El documento incluye mockups completos, profesionales y de alta fidelidad. Excelente diseño UI/UX con todas las pantallas, estados, transiciones y flujos de interacción. Coherencia visual perfecta y diseño innovador."
+        }
+      ]
+    }
+  ]
+}

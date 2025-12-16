@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 1.5: Ionic + Capacitor</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --ionic-blue: #3880ff;
+      --capacitor-cyan: #53b9ff;
+      --bg-gradient: linear-gradient(135deg, #3880ff 0%, #53b9ff 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(56, 128, 255, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--ionic-blue); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--ionic-blue);
+      border-bottom: 3px solid var(--ionic-blue);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+    .section h4 { color: var(--capacitor-cyan); margin: 20px 0 10px 0; font-size: 1.1rem; }
+
+    .file-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block.standalone { border-radius: 10px; }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #3880ff20, #53b9ff20);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--ionic-blue);
+      cursor: help;
+      border-bottom: 1px dashed var(--ionic-blue);
+    }
+
+    .philosophy-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border-left: 5px solid var(--ionic-blue);
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .philosophy-box h4 { color: #1565c0; margin-bottom: 12px; }
+    .philosophy-box ul { margin-left: 20px; margin-top: 10px; }
+
+    .analogy-box {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 5px solid #f39c12;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
+
+    .project-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .project-box h4 { color: #155724; margin-bottom: 10px; }
+
+    .info-box {
+      background: #cce5ff;
+      border: 1px solid #007bff;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .success-box {
+      background: #d4edda;
+      border: 1px solid #28a745;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .config-table th, .config-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .config-table th {
+      background: var(--ionic-blue);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .config-table tr:nth-child(even) { background: #f8f9fa; }
+    .config-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 25px 0;
+    }
+
+    .platform-card {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .platform-card:hover {
+      border-color: var(--ionic-blue);
+      box-shadow: 0 5px 20px rgba(56, 128, 255, 0.15);
+    }
+
+    .platform-card .icon { font-size: 3rem; margin-bottom: 10px; }
+    .platform-card h4 { color: var(--ionic-blue); margin-bottom: 10px; }
+    .platform-card p { color: #666; font-size: 0.9rem; }
+
+    .plugin-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+    }
+
+    .plugin-card .plugin-icon { font-size: 2rem; }
+    .plugin-card .plugin-info h4 { color: var(--ionic-blue); margin-bottom: 5px; font-size: 1rem; }
+    .plugin-card .plugin-info p { color: #666; font-size: 0.85rem; margin: 0; }
+
+    .sync-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .sync-step {
+      background: white;
+      border: 2px solid var(--ionic-blue);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .sync-step .icon { font-size: 2rem; margin-bottom: 8px; }
+    .sync-step .label { font-weight: 600; color: var(--ionic-blue); }
+    .sync-step .sublabel { font-size: 0.8rem; color: #666; margin-top: 5px; }
+
+    .sync-arrow { font-size: 2rem; color: var(--ionic-blue); }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+    footer a { color: var(--ionic-blue); }
+
+    .completion-banner {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      margin: 30px 0;
+    }
+    .completion-banner h3 { font-size: 1.5rem; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📱 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📱 Parte 1.5: Ionic + Capacitor</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">1.1: Stack</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-2.html">1.2: Dependencies</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-3.html">1.3: TypeScript</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-4.html">1.4: Angular</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html" class="active">1.5: Ionic+Capacitor</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- IONIC CONFIG -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎨 ionic.config.json</h2>
+
+      <p>El <code>ionic.config.json</code> configura el CLI de Ionic para el proyecto:</p>
+
+      <div class="file-header">📄 ionic.config.json</div>
+      <div class="code-block">
+        <code>
+{
+  <span class="property">"name"</span>: <span class="string">"gestor-proyectos"</span>,
+  <span class="property">"integrations"</span>: {
+    <span class="property">"capacitor"</span>: {}              <span class="comment">// Usa Capacitor (no Cordova)</span>
+  },
+  <span class="property">"type"</span>: <span class="string">"angular-standalone"</span>    <span class="comment">// Angular con standalone components</span>
+}
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 ¿Por qué "angular-standalone"?</strong><br>
+        Indica que POLIProject usa el paradigma moderno de Angular 20 con componentes standalone (sin NgModules). Esto afecta qué schematics usa <code>ionic generate</code>.
+      </div>
+
+      <h3>⚡ Comandos Ionic CLI</h3>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Comando</th>
+            <th>Descripción</th>
+            <th>Uso en POLIProject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ionic serve</code></td>
+            <td>Servidor de desarrollo con hot reload</td>
+            <td>Desarrollo diario en navegador</td>
+          </tr>
+          <tr>
+            <td><code>ionic build</code></td>
+            <td>Compila aplicación web</td>
+            <td>Genera www/ para deploy</td>
+          </tr>
+          <tr>
+            <td><code>ionic g page</code></td>
+            <td>Genera nueva página</td>
+            <td>Crear CalificacionesPage, etc.</td>
+          </tr>
+          <tr>
+            <td><code>ionic cap sync</code></td>
+            <td>Sincroniza con nativos</td>
+            <td>Prepara Android/iOS</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CAPACITOR CONFIG -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📱 capacitor.config.ts</h2>
+
+      <p>El <code>capacitor.config.ts</code> configura el runtime nativo de Capacitor:</p>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía Capacitor: "Web-First, Native When Needed"</h4>
+        <p>Capacitor ejecuta tu app web dentro de un WebView nativo, pero te da acceso a APIs nativas cuando lo necesitas:</p>
+        <ul>
+          <li><strong>Web-First:</strong> El código principal es HTML/CSS/JS</li>
+          <li><strong>Native Bridge:</strong> JavaScript llama a código nativo via plugins</li>
+          <li><strong>Progressive Enhancement:</strong> Funciona en web, mejora en nativo</li>
+        </ul>
+      </div>
+
+      <h3>🎯 Configuración Base</h3>
+
+      <div class="file-header">📄 capacitor.config.ts</div>
+      <div class="code-block">
+        <code>
+<span class="keyword">import</span> { <span class="property">CapacitorConfig</span> } <span class="keyword">from</span> <span class="string">'@capacitor/cli'</span>;
+
+<span class="keyword">const</span> config: <span class="property">CapacitorConfig</span> = {
+  <span class="property">appId</span>: <span class="string">'com.poligran.gestorproyectos'</span>,  <span class="comment">// Bundle ID único</span>
+  <span class="property">appName</span>: <span class="string">'POLIProject'</span>,                 <span class="comment">// Nombre en launcher</span>
+  <span class="property">webDir</span>: <span class="string">'www/browser'</span>,                 <span class="comment">// Carpeta de assets web</span>
+};
+
+<span class="keyword">export default</span> config;
+        </code>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Importante:</strong> El <code>appId</code> (<code>com.poligran.gestorproyectos</code>) es el identificador único de la app en iOS App Store y Google Play. <strong>No debe cambiar</strong> después del primer deploy.
+      </div>
+
+      <h3>🌐 Plataformas Soportadas</h3>
+
+      <div class="platform-grid">
+        <div class="platform-card">
+          <div class="icon">🌐</div>
+          <h4>Web (PWA)</h4>
+          <p>Funciona en cualquier navegador moderno. Service Worker para offline.</p>
+        </div>
+        <div class="platform-card">
+          <div class="icon">🤖</div>
+          <h4>Android</h4>
+          <p>WebView en Android 5.0+. Acceso a SQLite, filesystem, cámara.</p>
+        </div>
+        <div class="platform-card">
+          <div class="icon">🍎</div>
+          <h4>iOS</h4>
+          <p>WKWebView en iOS 13+. Integración con sistema Apple.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CONFIGURACIÓN POR PLATAFORMA -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎛️ Configuración por Plataforma</h2>
+
+      <h3>🤖 Configuración Android</h3>
+
+      <div class="file-header">📄 capacitor.config.ts - Android</div>
+      <div class="code-block">
+        <code>
+<span class="property">android</span>: {
+  <span class="property">allowMixedContent</span>: <span class="keyword">false</span>,             <span class="comment">// Bloquear HTTP en HTTPS</span>
+  <span class="property">captureInput</span>: <span class="keyword">true</span>,                   <span class="comment">// Captura eventos teclado</span>
+  <span class="property">webContentsDebuggingEnabled</span>: <span class="keyword">false</span>,   <span class="comment">// Desactivar en prod</span>
+  <span class="property">minWebViewVersion</span>: <span class="number">60</span>,                <span class="comment">// Chrome 60+ requerido</span>
+  <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>,            <span class="comment">// Color de fondo nativo</span>
+  <span class="property">overrideUserAgent</span>: <span class="string">'POLIProject-Android'</span>
+}
+        </code>
+      </div>
+
+      <h3>🍎 Configuración iOS</h3>
+
+      <div class="file-header">📄 capacitor.config.ts - iOS</div>
+      <div class="code-block">
+        <code>
+<span class="property">ios</span>: {
+  <span class="property">contentInset</span>: <span class="string">'automatic'</span>,            <span class="comment">// Ajuste para notch</span>
+  <span class="property">allowsLinkPreview</span>: <span class="keyword">false</span>,            <span class="comment">// Sin preview de links</span>
+  <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>,
+  <span class="property">preferredContentMode</span>: <span class="string">'mobile'</span>,       <span class="comment">// Modo móvil siempre</span>
+  <span class="property">scrollEnabled</span>: <span class="keyword">true</span>
+}
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <ul>
+          <li><code>backgroundColor: '#0f385a'</code> - El azul corporativo del Politécnico</li>
+          <li><code>contentInset: 'automatic'</code> - Evita que contenido quede bajo el notch de iPhone</li>
+          <li><code>webContentsDebuggingEnabled: false</code> - Seguridad en producción</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- PLUGINS CAPACITOR -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔌 Plugins de Capacitor</h2>
+
+      <p>Los plugins proporcionan acceso a funcionalidades nativas:</p>
+
+      <div class="file-header">📄 capacitor.config.ts - Plugins</div>
+      <div class="code-block">
+        <code>
+<span class="property">plugins</span>: {
+  <span class="property">SplashScreen</span>: {
+    <span class="property">launchShowDuration</span>: <span class="number">2000</span>,          <span class="comment">// 2 segundos</span>
+    <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>,
+    <span class="property">splashFullScreen</span>: <span class="keyword">true</span>,
+    <span class="property">splashImmersive</span>: <span class="keyword">true</span>
+  },
+  <span class="property">StatusBar</span>: {
+    <span class="property">style</span>: <span class="string">'DARK'</span>,                       <span class="comment">// Iconos claros</span>
+    <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>
+  },
+  <span class="property">Keyboard</span>: {
+    <span class="property">resize</span>: <span class="string">'body'</span>,                      <span class="comment">// Redimensionar body</span>
+    <span class="property">resizeOnFullScreen</span>: <span class="keyword">true</span>
+  }
+}
+        </code>
+      </div>
+
+      <h3>📦 Plugins Usados en POLIProject</h3>
+
+      <div class="plugin-card">
+        <div class="plugin-icon">🖼️</div>
+        <div class="plugin-info">
+          <h4>SplashScreen</h4>
+          <p>Pantalla de carga con logo mientras la app inicializa. Muestra el azul corporativo por 2 segundos.</p>
+        </div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-icon">📊</div>
+        <div class="plugin-info">
+          <h4>StatusBar</h4>
+          <p>Personaliza la barra de estado del sistema. En POLIProject: fondo azul con iconos claros.</p>
+        </div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-icon">⌨️</div>
+        <div class="plugin-info">
+          <h4>Keyboard</h4>
+          <p>Controla el teclado virtual. Redimensiona el contenido cuando aparece para evitar que oculte inputs.</p>
+        </div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-icon">📁</div>
+        <div class="plugin-info">
+          <h4>Filesystem</h4>
+          <p>Lee/escribe archivos en el dispositivo. Usado para exportar CSVs y backups de datos.</p>
+        </div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-icon">🗄️</div>
+        <div class="plugin-info">
+          <h4>SQLite (Community)</h4>
+          <p>Base de datos SQL nativa. Almacena cursos, estudiantes, evaluaciones y rúbricas offline.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CICLO DE SINCRONIZACIÓN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔄 Ciclo de Sincronización</h2>
+
+      <p>El proceso para actualizar las apps nativas con código nuevo:</p>
+
+      <div class="sync-flow">
+        <div class="sync-step">
+          <div class="icon">📝</div>
+          <div class="label">Editar Código</div>
+          <div class="sublabel">src/app/</div>
+        </div>
+        <div class="sync-arrow">→</div>
+        <div class="sync-step">
+          <div class="icon">🔨</div>
+          <div class="label">Build</div>
+          <div class="sublabel">ionic build</div>
+        </div>
+        <div class="sync-arrow">→</div>
+        <div class="sync-step">
+          <div class="icon">📦</div>
+          <div class="label">www/</div>
+          <div class="sublabel">Assets web</div>
+        </div>
+        <div class="sync-arrow">→</div>
+        <div class="sync-step">
+          <div class="icon">🔄</div>
+          <div class="label">Sync</div>
+          <div class="sublabel">cap sync</div>
+        </div>
+        <div class="sync-arrow">→</div>
+        <div class="sync-step">
+          <div class="icon">📱</div>
+          <div class="label">Nativos</div>
+          <div class="sublabel">android/, ios/</div>
+        </div>
+      </div>
+
+      <div class="file-header">📄 Comandos de sincronización</div>
+      <div class="code-block">
+        <code>
+<span class="comment"># 1. Compilar código web (genera www/)</span>
+ionic build --prod
+
+<span class="comment"># 2. Copiar www/ a proyectos nativos + instalar plugins</span>
+npx cap sync
+
+<span class="comment"># 3. Abrir en IDE nativo para compilar/depurar</span>
+npx cap open android  <span class="comment"># Abre Android Studio</span>
+npx cap open ios      <span class="comment"># Abre Xcode</span>
+
+<span class="comment"># Shortcut: Todo en un comando</span>
+npm run build:all     <span class="comment"># Ejecuta scripts/build-all-platforms.ps1</span>
+        </code>
+      </div>
+
+      <div class="analogy-box">
+        <h4>📦 Analogía: El Sistema de Envíos</h4>
+        <p><code>cap sync</code> es como un servicio de paquetería:</p>
+        <ul>
+          <li><strong>www/</strong> es el paquete que enviamos</li>
+          <li><strong>cap sync</strong> lo empaca y lo envía a dos destinos</li>
+          <li><strong>android/</strong> y <strong>ios/</strong> son las oficinas de destino</li>
+        </ul>
+        <p style="margin-top: 10px;">Cada oficina tiene su propio sistema (Gradle/Xcode) para procesar el paquete.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN PARTE 1 -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📝 Resumen de Configuración Ionic + Capacitor</h2>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Archivo</th>
+            <th>Propósito</th>
+            <th>Impacto en POLIProject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ionic.config.json</code></td>
+            <td>Configuración CLI Ionic</td>
+            <td>Define tipo angular-standalone</td>
+          </tr>
+          <tr>
+            <td><code>capacitor.config.ts</code></td>
+            <td>Configuración runtime nativo</td>
+            <td>appId, plugins, colores</td>
+          </tr>
+          <tr>
+            <td><code>android/</code></td>
+            <td>Proyecto Android Studio</td>
+            <td>Build para Google Play</td>
+          </tr>
+          <tr>
+            <td><code>ios/</code></td>
+            <td>Proyecto Xcode</td>
+            <td>Build para App Store</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- BANNER DE COMPLETACIÓN -->
+    <!-- ============================================ -->
+    <div class="completion-banner">
+      <h3>🎉 ¡Parte 1 Completa!</h3>
+      <p>Has completado la documentación de configuración de POLIProject.</p>
+      <p style="margin-top: 15px; font-size: 0.9rem;">
+        1.1 Stack &nbsp;|&nbsp;
+        1.2 Dependencies &nbsp;|&nbsp;
+        1.3 TypeScript &nbsp;|&nbsp;
+        1.4 Angular &nbsp;|&nbsp;
+        1.5 Ionic+Capacitor
+      </p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GLOSARIO -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📖 Glosario de Términos</h2>
+
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>Término</th>
+            <th>Definición</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>WebView</strong></td>
+            <td>Componente nativo que renderiza contenido web. Capacitor ejecuta tu app dentro de un WebView.</td>
+          </tr>
+          <tr>
+            <td><strong>Plugin</strong></td>
+            <td>Módulo que expone funcionalidad nativa a JavaScript. Ejemplo: @capacitor/filesystem.</td>
+          </tr>
+          <tr>
+            <td><strong>Bundle ID</strong></td>
+            <td>Identificador único de la app en stores (com.poligran.gestorproyectos).</td>
+          </tr>
+          <tr>
+            <td><strong>cap sync</strong></td>
+            <td>Comando que copia www/ a nativos e instala/actualiza plugins.</td>
+          </tr>
+          <tr>
+            <td><strong>PWA</strong></td>
+            <td>Progressive Web App: app web instalable con capacidades offline.</td>
+          </tr>
+          <tr>
+            <td><strong>Service Worker</strong></td>
+            <td>Script que intercepta requests para funcionalidad offline en PWAs.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 1.5 de 5 (Final de Parte 1) | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-4.html">← Anterior: 1.4 Angular</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Siguiente: Parte 2 - Estructura →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

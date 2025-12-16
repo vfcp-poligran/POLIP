@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 1.1: Stack Tecnológico y Filosofía</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --accent-color: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--bg-gradient); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+    .section h4 { color: var(--accent-color); margin: 20px 0 10px 0; font-size: 1.1rem; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: help;
+      border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .philosophy-box {
+      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+      border-left: 5px solid var(--secondary-color);
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .philosophy-box h4 { color: var(--primary-color); margin-bottom: 12px; font-size: 1.15rem; }
+    .philosophy-box ul { margin-left: 20px; margin-top: 10px; }
+    .philosophy-box li { margin: 8px 0; }
+
+    .analogy-box {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 5px solid #f39c12;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
+    .analogy-box .analogy-icon { font-size: 1.5rem; margin-right: 10px; }
+
+    .project-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .project-box h4 { color: #155724; margin-bottom: 10px; }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 25px 0;
+    }
+
+    .stack-card {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 25px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stack-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-color: var(--secondary-color);
+    }
+
+    .stack-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .stack-card.ionic::before { background: #3880ff; }
+    .stack-card.angular::before { background: #dd0031; }
+    .stack-card.capacitor::before { background: #53b9ff; }
+    .stack-card.typescript::before { background: #3178c6; }
+
+    .stack-card h4 { font-size: 1.2rem; margin-bottom: 12px; color: var(--primary-color); }
+    .stack-card .version {
+      display: inline-block;
+      background: #e9ecef;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .stack-card p { color: #666; font-size: 0.95rem; line-height: 1.7; }
+
+    .layer-diagram {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 25px 0;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    }
+
+    .layer {
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      margin: 5px 0;
+      position: relative;
+    }
+
+    .layer-1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .layer-2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .layer-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .layer-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .layer-5 { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+    .layer small { display: block; font-weight: normal; opacity: 0.9; margin-top: 5px; }
+
+    .layer-arrow {
+      text-align: center;
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      padding: 5px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 3px;
+    }
+
+    .badge-ionic { background: #3880ff; color: white; }
+    .badge-angular { background: #dd0031; color: white; }
+    .badge-capacitor { background: #53b9ff; color: white; }
+    .badge-typescript { background: #3178c6; color: white; }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 15px 0;
+    }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .class-name { color: #4ec9b0; }
+
+    .info-box {
+      background: #cce5ff;
+      border: 1px solid #007bff;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+    footer a { color: var(--secondary-color); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📚 Parte 1.1: Stack Tecnológico y Filosofía</span>
+      <div style="margin-top: 15px;">
+        <span class="badge badge-ionic">Ionic 8</span>
+        <span class="badge badge-angular">Angular 20</span>
+        <span class="badge badge-capacitor">Capacitor 7</span>
+        <span class="badge badge-typescript">TypeScript 5.8</span>
+      </div>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html" class="active">1.1: Stack</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-2.html">1.2: Dependencies</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-3.html">1.3: TypeScript</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-4.html">1.4: Angular</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html">1.5: Ionic+Capacitor</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN AL PROYECTO -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎯 Introducción a POLIProject</h2>
+
+      <p><strong>POLIProject</strong> (Gestor de Seguimiento de Proyectos) es una aplicación multiplataforma desarrollada para el <strong>Politécnico Grancolombiano</strong>, diseñada para gestionar evaluaciones educativas mediante rúbricas digitales.</p>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>La aplicación permite a los docentes:</p>
+        <ul>
+          <li>📚 Gestionar múltiples cursos con estudiantes organizados por grupos</li>
+          <li>📋 Crear y aplicar rúbricas de evaluación para entregas E1, E2 y EF</li>
+          <li>📊 Evaluar proyectos grupales (PG) e individuales (PI)</li>
+          <li>📱 Trabajar desde cualquier dispositivo: Web, Android o iOS</li>
+          <li>💾 Almacenar datos offline con sincronización automática</li>
+        </ul>
+      </div>
+
+      <h3>🏗️ Arquitectura "Write Once, Run Anywhere"</h3>
+
+      <div class="analogy-box">
+        <h4><span class="analogy-icon">🏭</span> Analogía: La Fábrica Universal</h4>
+        <p>Imagina una fábrica que produce un producto único, pero con líneas de empaque diferentes para cada mercado. El <strong>producto core</strong> (código web) es el mismo, pero cada <strong>línea de empaque</strong> (Capacitor) lo adapta para su destino final:</p>
+        <ul>
+          <li>📦 <strong>Empaque Web:</strong> Service Workers + PWA</li>
+          <li>📦 <strong>Empaque Android:</strong> WebView + Plugins nativos Java/Kotlin</li>
+          <li>📦 <strong>Empaque iOS:</strong> WKWebView + Plugins nativos Swift</li>
+        </ul>
+        <p style="margin-top: 10px;"><em>El código de POLIProject es el "producto", y Capacitor es la "línea de empaque universal".</em></p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- STACK TECNOLÓGICO -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔧 Stack Tecnológico Principal</h2>
+
+      <div class="stack-grid">
+        <div class="stack-card ionic">
+          <h4>🎨 Ionic Framework</h4>
+          <span class="version">v8.0.0</span>
+          <p><strong>Rol:</strong> Capa de UI/UX. Proporciona más de 100 componentes web optimizados (botones, listas, modales, tabs) que se adaptan automáticamente al estilo de cada plataforma.</p>
+          <p style="margin-top: 10px;"><strong>Filosofía:</strong> "Mobile-first, web-native"</p>
+        </div>
+
+        <div class="stack-card angular">
+          <h4>⚡ Angular</h4>
+          <span class="version">v20.0.0</span>
+          <p><strong>Rol:</strong> Framework de aplicación. Gestiona arquitectura de componentes, routing, inyección de dependencias, y estado reactivo con Signals.</p>
+          <p style="margin-top: 10px;"><strong>Filosofía:</strong> "Opinionated, batteries-included"</p>
+        </div>
+
+        <div class="stack-card capacitor">
+          <h4>📱 Capacitor</h4>
+          <span class="version">v7.4.4</span>
+          <p><strong>Rol:</strong> Runtime nativo. Puente entre código web y APIs nativas. Ejecuta la app en WebView con acceso a cámara, archivos, SQLite, etc.</p>
+          <p style="margin-top: 10px;"><strong>Filosofía:</strong> "Web-first, native when needed"</p>
+        </div>
+
+        <div class="stack-card typescript">
+          <h4>🔷 TypeScript</h4>
+          <span class="version">v5.8.0</span>
+          <p><strong>Rol:</strong> Lenguaje de desarrollo. Superset de JavaScript con tipado estático, interfaces, y características ES2022+ que se compila a JS.</p>
+          <p style="margin-top: 10px;"><strong>Filosofía:</strong> "JavaScript that scales"</p>
+        </div>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>El stack se integra así:</p>
+        <ul>
+          <li><strong>TypeScript</strong> define los modelos (Estudiante, Evaluacion, RubricaDefinicion)</li>
+          <li><strong>Angular</strong> orquesta los servicios (DataService, SeguimientoService) y componentes</li>
+          <li><strong>Ionic</strong> renderiza la UI (ion-card, ion-tabs, ion-modal)</li>
+          <li><strong>Capacitor</strong> persiste datos en SQLite (móvil) o IndexedDB (web)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ARQUITECTURA DE CAPAS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🏛️ Arquitectura de Capas</h2>
+
+      <div class="analogy-box">
+        <h4><span class="analogy-icon">🏢</span> Analogía: El Edificio Corporativo</h4>
+        <p>Piensa en la arquitectura como un edificio de oficinas:</p>
+        <ul>
+          <li><strong>Piso 5 (Recepción):</strong> UI - Lo que ve el usuario</li>
+          <li><strong>Piso 4 (Gerencia):</strong> Lógica de negocio - Donde se toman decisiones</li>
+          <li><strong>Piso 3 (Archivo):</strong> Acceso a datos - Donde se guarda información</li>
+          <li><strong>Piso 2 (Infraestructura):</strong> Runtime nativo - Servicios básicos</li>
+          <li><strong>Piso 1 (Cimientos):</strong> Plataforma nativa - El sistema operativo</li>
+        </ul>
+        <p style="margin-top: 10px;"><em>Cada piso solo habla con el piso de arriba/abajo, nunca salta niveles.</em></p>
+      </div>
+
+      <div class="layer-diagram">
+        <div class="layer layer-1">
+          <strong>Capa de Presentación (UI)</strong>
+          <small>Ionic Components + Angular Templates + SCSS</small>
+        </div>
+        <div class="layer-arrow">⬇️</div>
+        <div class="layer layer-2">
+          <strong>Capa de Lógica de Negocio</strong>
+          <small>Angular Services + RxJS Observables + Signals</small>
+        </div>
+        <div class="layer-arrow">⬇️</div>
+        <div class="layer layer-3">
+          <strong>Capa de Acceso a Datos</strong>
+          <small>UnifiedStorageService + SQLite + IndexedDB</small>
+        </div>
+        <div class="layer-arrow">⬇️</div>
+        <div class="layer layer-4">
+          <strong>Capa de Runtime Nativo</strong>
+          <small>Capacitor Plugins (Filesystem, Keyboard, StatusBar)</small>
+        </div>
+        <div class="layer-arrow">⬇️</div>
+        <div class="layer layer-5">
+          <strong>Plataforma Nativa</strong>
+          <small>iOS (Swift) | Android (Kotlin) | Web (Browser APIs)</small>
+        </div>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>Flujo de una evaluación:</p>
+        <ol>
+          <li><strong>UI:</strong> Usuario hace click en celda de calificación (ion-button)</li>
+          <li><strong>Lógica:</strong> InicioPage llama a SeguimientoService.setSeguimiento()</li>
+          <li><strong>Datos:</strong> DataService.guardarEvaluacion() persiste via UnifiedStorageService</li>
+          <li><strong>Runtime:</strong> UnifiedStorageService detecta plataforma y usa SQLite o IndexedDB</li>
+          <li><strong>Nativo:</strong> SQLite escribe en el filesystem del dispositivo</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FILOSOFÍA IONIC -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎨 Filosofía de Ionic Framework</h2>
+
+      <div class="philosophy-box">
+        <h4>📐 Principio: "Adaptive Design"</h4>
+        <p>Ionic detecta automáticamente la plataforma y aplica estilos específicos:</p>
+        <ul>
+          <li><strong>iOS:</strong> Estilo Cupertino con esquinas redondeadas, blur effects, y gestos de swipe</li>
+          <li><strong>Android:</strong> Material Design 3 con elevation, ripple effects, y FABs</li>
+          <li><strong>Web:</strong> Estilos neutrales optimizados para desktop y responsive</li>
+        </ul>
+      </div>
+
+      <div class="analogy-box">
+        <h4><span class="analogy-icon">🎭</span> Analogía: El Actor Camaleón</h4>
+        <p>Ionic es como un actor profesional que puede interpretar el mismo personaje en diferentes países, adaptando su acento y modales a cada cultura, pero manteniendo la esencia del personaje.</p>
+        <p style="margin-top: 10px;">Un <code>&lt;ion-button&gt;</code> es el "personaje", y en iOS habla con acento de Cupertino, en Android con acento Material, pero la función (hacer click) es idéntica.</p>
+      </div>
+
+      <h3>🧱 Web Components: La Base</h3>
+      <p>Ionic está construido sobre <span class="tech-term" title="Estándares web para componentes reutilizables">Web Components</span>, específicamente:</p>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// Custom Elements - Define elementos HTML personalizados</span>
+&lt;<span class="keyword">ion-button</span>&gt;Guardar&lt;/<span class="keyword">ion-button</span>&gt;
+
+<span class="comment">// Shadow DOM - Encapsula estilos (no afecta ni es afectado por CSS externo)</span>
+<span class="comment">// Cada ion-button tiene su propio "universo" de estilos</span>
+
+<span class="comment">// HTML Templates - Plantillas declarativas</span>
+<span class="comment">// El template del componente es compilado, no interpretado</span>
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 Beneficio:</strong> Al usar estándares web, los componentes Ionic funcionan con cualquier framework (Angular, React, Vue) o sin framework (vanilla JS).
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FILOSOFÍA ANGULAR -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>⚡ Filosofía de Angular</h2>
+
+      <div class="philosophy-box">
+        <h4>📐 Principio: "Convention over Configuration"</h4>
+        <p>Angular es un framework "opinionated" (con opiniones fuertes). Define cómo organizar código, nombrar archivos, y estructurar aplicaciones. Esto:</p>
+        <ul>
+          <li>✅ Reduce decisiones de arquitectura</li>
+          <li>✅ Facilita onboarding de nuevos desarrolladores</li>
+          <li>✅ Garantiza consistencia en proyectos grandes</li>
+        </ul>
+      </div>
+
+      <div class="analogy-box">
+        <h4><span class="analogy-icon">🚂</span> Analogía: El Tren de Alta Velocidad</h4>
+        <p>Angular es como un tren de alta velocidad: tiene rutas definidas (arquitectura), horarios estrictos (lifecycle hooks), y vagones especializados (modules/components). No puedes salirte de las vías, pero llegas rapidísimo a tu destino.</p>
+        <p style="margin-top: 10px;">React sería más como un auto particular: más libertad, pero debes decidir qué camino tomar y a qué velocidad ir.</p>
+      </div>
+
+      <h3>🔄 Standalone Components (Angular 20)</h3>
+      <p>Angular 20 consolida el paradigma de <span class="tech-term" title="Componentes que no requieren NgModules">Standalone Components</span>:</p>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// Antes (NgModules - Angular 13 y anteriores):</span>
+<span class="keyword">@NgModule</span>({
+  declarations: [MiComponente],
+  imports: [CommonModule, IonicModule]
+})
+<span class="keyword">export class</span> <span class="class-name">MiModulo</span> {}
+
+<span class="comment">// Ahora (Standalone - Angular 20):</span>
+<span class="keyword">@Component</span>({
+  <span class="string">selector</span>: <span class="string">'app-mi-componente'</span>,
+  <span class="string">standalone</span>: <span class="keyword">true</span>,
+  <span class="string">imports</span>: [CommonModule, IonButton, IonCard]  <span class="comment">// Importa directamente</span>
+})
+<span class="keyword">export class</span> <span class="class-name">MiComponente</span> {}
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>Todos los componentes y páginas son standalone. Por ejemplo, <code>InicioPage</code> importa directamente:</p>
+        <ul>
+          <li>Componentes Ionic: <code>IonContent</code>, <code>IonButton</code>, <code>IonCard</code></li>
+          <li>Componentes propios: <code>EvaluacionRubricaComponent</code></li>
+          <li>Directivas Angular: <code>CommonModule</code>, <code>FormsModule</code></li>
+        </ul>
+      </div>
+
+      <h3>📡 Signals: Reactividad Fine-Grained</h3>
+      <p>Angular 20 introduce <span class="tech-term" title="Primitivas de reactividad granular">Signals</span> como alternativa moderna a Zone.js:</p>
+
+      <div class="analogy-box">
+        <h4><span class="analogy-icon">📻</span> Analogía: Radio vs Teléfono</h4>
+        <p><strong>Zone.js (antes):</strong> Como una radio que transmite a todos. Cualquier cambio asíncrono dispara detección de cambios en TODA la app.</p>
+        <p><strong>Signals (ahora):</strong> Como llamadas telefónicas directas. Solo notifica a los componentes que dependen de ese valor específico.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FILOSOFÍA TYPESCRIPT -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔷 Filosofía de TypeScript</h2>
+
+      <div class="philosophy-box">
+        <h4>📐 Principio: "JavaScript that Scales"</h4>
+        <p>TypeScript agrega tipado estático opcional a JavaScript, permitiendo:</p>
+        <ul>
+          <li><strong>Detección temprana de errores:</strong> En compilación, no en runtime</li>
+          <li><strong>IntelliSense superior:</strong> Autocompletado preciso en IDEs</li>
+          <li><strong>Refactoring seguro:</strong> El compilador encuentra todos los usos</li>
+          <li><strong>Documentación implícita:</strong> Los tipos son documentación ejecutable</li>
+        </ul>
+      </div>
+
+      <div class="analogy-box">
+        <h4><span class="analogy-icon">🔬</span> Analogía: El Microscopio del Código</h4>
+        <p>TypeScript es como usar un microscopio mientras escribes código. Te permite ver "bacterias" (bugs) que a simple vista (JavaScript puro) no notarías.</p>
+        <p style="margin-top: 10px;">Puedes escribir código sin el microscopio (<code>any</code>), pero te arriesgas a infecciones (bugs en producción).</p>
+      </div>
+
+      <h3>📝 Interfaces: Contratos de Datos</h3>
+      <p>Las interfaces definen la "forma" de los objetos:</p>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// POLIProject: Contrato para un estudiante</span>
+<span class="keyword">export interface</span> <span class="class-name">Estudiante</span> {
+  <span class="string">correo</span>: <span class="keyword">string</span>;      <span class="comment">// Primary key</span>
+  <span class="string">nombre</span>: <span class="keyword">string</span>;
+  <span class="string">apellido</span>: <span class="keyword">string</span>;
+  <span class="string">subgrupo</span>: <span class="keyword">string</span>;    <span class="comment">// Grupo PG (ej: "G01")</span>
+  <span class="string">curso</span>: <span class="keyword">string</span>;       <span class="comment">// Nombre del curso</span>
+}
+
+<span class="comment">// TypeScript garantiza que TODOS los estudiantes</span>
+<span class="comment">// tengan exactamente estas propiedades con estos tipos</span>
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>Las interfaces en <code>src/app/models/</code> definen contratos estrictos:</p>
+        <ul>
+          <li><code>Estudiante</code>: Datos del estudiante (correo, nombre, grupo)</li>
+          <li><code>Evaluacion</code>: Evaluación con curso, entrega, tipo, puntuaciones</li>
+          <li><code>RubricaDefinicion</code>: Estructura completa de una rúbrica</li>
+          <li><code>UIState</code>: Estado persistente de la interfaz</li>
+        </ul>
+        <p>El compilador rechaza cualquier código que no cumpla estos contratos.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📝 Resumen de Filosofías</h2>
+
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: var(--primary-color); color: white;">
+          <tr>
+            <th style="padding: 15px; text-align: left;">Tecnología</th>
+            <th style="padding: 15px; text-align: left;">Filosofía</th>
+            <th style="padding: 15px; text-align: left;">Rol en POLIProject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 15px;"><strong>Ionic</strong></td>
+            <td style="padding: 15px;">Mobile-first, Adaptive Design</td>
+            <td style="padding: 15px;">Componentes UI multiplataforma</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
+            <td style="padding: 15px;"><strong>Angular</strong></td>
+            <td style="padding: 15px;">Convention over Configuration</td>
+            <td style="padding: 15px;">Arquitectura de aplicación</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 15px;"><strong>Capacitor</strong></td>
+            <td style="padding: 15px;">Web-first, Native when needed</td>
+            <td style="padding: 15px;">Acceso a APIs nativas</td>
+          </tr>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 15px;"><strong>TypeScript</strong></td>
+            <td style="padding: 15px;">JavaScript that Scales</td>
+            <td style="padding: 15px;">Tipado y contratos de datos</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 1.1 de 5 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-2.html">Siguiente: 1.2 Dependencias →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

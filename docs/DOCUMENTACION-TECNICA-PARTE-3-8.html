@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.8: Pages</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --accent-color: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--bg-gradient); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+
+    .file-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+      font-family: 'Consolas', monospace;
+      font-size: 1rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 0 0 10px 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .code-block code {
+      display: block;
+      padding: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--code-text);
+    }
+
+    .code-line { display: block; padding: 2px 0; }
+    .code-line:hover { background: rgba(255,255,255,0.05); }
+
+    .keyword { color: #569cd6; }
+    .string { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .class-name { color: #4ec9b0; }
+    .type { color: #4ec9b0; }
+    .property { color: #9cdcfe; }
+    .number { color: #b5cea8; }
+    .decorator { color: #dcdcaa; }
+    .method { color: #dcdcaa; }
+
+    .explanation {
+      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+      border-left: 4px solid var(--secondary-color);
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .explanation h4 { color: var(--primary-color); margin-bottom: 10px; }
+    .explanation ul { margin-left: 20px; }
+    .explanation li { margin: 8px 0; }
+
+    .tech-term {
+      background: linear-gradient(135deg, #667eea20, #764ba220);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-color);
+      cursor: help;
+      border-bottom: 1px dashed var(--secondary-color);
+    }
+
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+    .info-box.success { background: #d4edda; border-color: #28a745; }
+    .info-box.primary { background: #cce5ff; border-color: #007bff; }
+    .info-box.danger { background: #f8d7da; border-color: #dc3545; }
+
+    .page-card {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .page-card-header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-card-header .icon { font-size: 1.5rem; }
+    .page-card-header .name { font-family: 'Consolas', monospace; font-size: 1.1rem; }
+    .page-card-header .badge {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-left: auto;
+    }
+
+    .page-card-body { padding: 20px; }
+
+    .feature-list { list-style: none; padding: 0; }
+    .feature-list li {
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .feature-list li:last-child { border-bottom: none; }
+    .feature-list .feature-icon { font-size: 1.2rem; }
+    .feature-list .feature-name { font-weight: 600; color: var(--primary-color); }
+    .feature-list .feature-desc { color: #666; font-size: 0.9rem; margin-left: auto; }
+
+    .property-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    .property-table th, .property-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .property-table th { background: var(--primary-color); color: white; font-size: 0.9rem; }
+    .property-table tr:nth-child(even) { background: #f8f9fa; }
+    .property-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+
+    .route-badge {
+      display: inline-block;
+      background: var(--secondary-color);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+    }
+
+    .tabs-diagram {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .tab-box {
+      background: #f8f9fa;
+      border: 2px solid var(--secondary-color);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .tab-box.active { background: var(--bg-gradient); color: white; }
+    .tab-box .tab-icon { font-size: 1.5rem; margin-bottom: 5px; }
+    .tab-box .tab-name { font-size: 0.85rem; font-weight: 600; }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+    footer a { color: var(--secondary-color); }
+
+    .completion-banner {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      margin: 30px 0;
+    }
+    .completion-banner h3 { font-size: 1.5rem; margin-bottom: 10px; }
+    .completion-banner p { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📄 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.8: Pages (Páginas de la Aplicación)</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html" class="active">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📄 Páginas de la Aplicación</h2>
+      <p>Las <span class="tech-term" title="Vistas principales de la aplicación">Pages</span> son componentes standalone que representan las vistas principales de la aplicación, accesibles mediante navegación por tabs.</p>
+
+      <div class="tabs-diagram">
+        <div class="tab-box">
+          <div class="tab-icon">🏠</div>
+          <div class="tab-name">Inicio</div>
+        </div>
+        <div class="tab-box active">
+          <div class="tab-icon">📚</div>
+          <div class="tab-name">Cursos</div>
+        </div>
+        <div class="tab-box">
+          <div class="tab-icon">📋</div>
+          <div class="tab-name">Rúbricas</div>
+        </div>
+        <div class="tab-box">
+          <div class="tab-icon">📊</div>
+          <div class="tab-name">Calificaciones</div>
+        </div>
+        <div class="tab-box">
+          <div class="tab-icon">⚙️</div>
+          <div class="tab-name">Sistema</div>
+        </div>
+      </div>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Page</th>
+            <th>Ruta</th>
+            <th>Líneas</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>InicioPage</code></td>
+            <td><span class="route-badge">/tabs/inicio</span></td>
+            <td>~4765</td>
+            <td>Dashboard principal con tabla de estudiantes y evaluación</td>
+          </tr>
+          <tr>
+            <td><code>CursosPage</code></td>
+            <td><span class="route-badge">/tabs/cursos</span></td>
+            <td>~1341</td>
+            <td>Gestión de cursos e importación de estudiantes</td>
+          </tr>
+          <tr>
+            <td><code>RubricasPage</code></td>
+            <td><span class="route-badge">/tabs/rubricas</span></td>
+            <td>~1956</td>
+            <td>Administración y edición de rúbricas</td>
+          </tr>
+          <tr>
+            <td><code>CalificacionesPage</code></td>
+            <td><span class="route-badge">/tabs/calificaciones</span></td>
+            <td>~1074</td>
+            <td>Gestión de archivos CSV de Canvas</td>
+          </tr>
+          <tr>
+            <td><code>SistemaPage</code></td>
+            <td><span class="route-badge">/tabs/sistema</span></td>
+            <td>~284</td>
+            <td>Configuración, backup y preferencias</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- INICIO PAGE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🏠 InicioPage</h2>
+      <p>La página más compleja. Dashboard principal con tabla de estudiantes, evaluación con rúbricas y panel de seguimiento.</p>
+
+      <div class="page-card">
+        <div class="page-card-header">
+          <span class="icon">🏠</span>
+          <span class="name">InicioPage</span>
+          <span class="badge">~4765 líneas</span>
+        </div>
+        <div class="page-card-body">
+          <p><strong>Ruta:</strong> <code>/tabs/inicio</code></p>
+          <p><strong>Archivo:</strong> <code>pages/inicio/inicio.page.ts</code></p>
+        </div>
+      </div>
+
+      <h3>Funcionalidades Principales</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="feature-icon">📊</span>
+          <span class="feature-name">Tabla de Estudiantes</span>
+          <span class="feature-desc">Muestra estudiantes filtrados por grupo con columnas E1, E2, EF</span>
+        </li>
+        <li>
+          <span class="feature-icon">📋</span>
+          <span class="feature-name">Evaluación con Rúbrica</span>
+          <span class="feature-desc">Click en celda abre componente EvaluacionRubricaComponent</span>
+        </li>
+        <li>
+          <span class="feature-icon">👁️</span>
+          <span class="feature-name">Panel de Seguimiento</span>
+          <span class="feature-desc">Sincronizado con SeguimientoService en tiempo real</span>
+        </li>
+        <li>
+          <span class="feature-icon">🔍</span>
+          <span class="feature-name">Filtro de Grupos</span>
+          <span class="feature-desc">Selector de grupo con actualización reactiva</span>
+        </li>
+        <li>
+          <span class="feature-icon">↩️</span>
+          <span class="feature-name">Undo/Redo</span>
+          <span class="feature-desc">Historial de cambios en evaluaciones</span>
+        </li>
+      </ul>
+
+      <h3>Servicios Inyectados</h3>
+      <div class="file-header">📄 Dependencias principales</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">DataService</span> } <span class="keyword">from</span> <span class="string">'../../services/data.service'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">SeguimientoService</span>, <span class="type">EvaluacionRubrica</span> } <span class="keyword">from</span> <span class="string">'../../services/seguimiento.service'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">ToastService</span> } <span class="keyword">from</span> <span class="string">'../../services/toast.service'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { <span class="type">Estudiante</span>, <span class="type">RubricaDefinicion</span>, <span class="type">Evaluacion</span> } <span class="keyword">from</span> <span class="string">'../../models'</span>;</span>
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>⚡ Optimización:</strong> Usa <code>ChangeDetectionStrategy.OnPush</code> para mejor rendimiento con tablas grandes.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CURSOS PAGE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📚 CursosPage</h2>
+      <p>Gestión completa de cursos: creación, importación de estudiantes desde CSV, y asociación de rúbricas.</p>
+
+      <div class="page-card">
+        <div class="page-card-header">
+          <span class="icon">📚</span>
+          <span class="name">CursosPage</span>
+          <span class="badge">~1341 líneas</span>
+        </div>
+        <div class="page-card-body">
+          <p><strong>Ruta:</strong> <code>/tabs/cursos</code></p>
+          <p><strong>Archivo:</strong> <code>pages/cursos/cursos.page.ts</code></p>
+        </div>
+      </div>
+
+      <h3>Funcionalidades Principales</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="feature-icon">➕</span>
+          <span class="feature-name">Crear Curso</span>
+          <span class="feature-desc">Genera código único con formato EPM-B01-BLQ2-V</span>
+        </li>
+        <li>
+          <span class="feature-icon">📄</span>
+          <span class="feature-name">Importar CSV</span>
+          <span class="feature-desc">Carga estudiantes desde archivo CSV de Canvas</span>
+        </li>
+        <li>
+          <span class="feature-icon">📋</span>
+          <span class="feature-name">Asociar Rúbricas</span>
+          <span class="feature-desc">Vincula rúbricas PG/PI a cada entrega E1, E2, EF</span>
+        </li>
+        <li>
+          <span class="feature-icon">🎨</span>
+          <span class="feature-name">Color de Curso</span>
+          <span class="feature-desc">Personaliza color del botón de selección</span>
+        </li>
+        <li>
+          <span class="feature-icon">🗑️</span>
+          <span class="feature-name">Eliminar Curso</span>
+          <span class="feature-desc">Con confirmación y limpieza de datos asociados</span>
+        </li>
+      </ul>
+
+      <h3>ViewChild Referencias</h3>
+      <div class="file-header">📄 Inputs de archivo</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="decorator">@ViewChild</span>(<span class="string">'estudiantesFileInput'</span>) estudiantesFileInput!: <span class="type">ElementRef</span>&lt;<span class="type">HTMLInputElement</span>&gt;;</span>
+<span class="code-line"><span class="decorator">@ViewChild</span>(<span class="string">'calificacionesFileInput'</span>) calificacionesFileInput!: <span class="type">ElementRef</span>&lt;<span class="type">HTMLInputElement</span>&gt;;</span>
+<span class="code-line"><span class="decorator">@ViewChild</span>(<span class="string">'rubricaFileInput'</span>) rubricaFileInput!: <span class="type">ElementRef</span>&lt;<span class="type">HTMLInputElement</span>&gt;;</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RUBRICAS PAGE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📋 RubricasPage</h2>
+      <p>Centro de administración de rúbricas: crear, editar, importar desde JSON/TXT, y gestionar versiones.</p>
+
+      <div class="page-card">
+        <div class="page-card-header">
+          <span class="icon">📋</span>
+          <span class="name">RubricasPage</span>
+          <span class="badge">~1956 líneas</span>
+        </div>
+        <div class="page-card-body">
+          <p><strong>Ruta:</strong> <code>/tabs/rubricas</code></p>
+          <p><strong>Archivo:</strong> <code>pages/rubricas/rubricas.page.ts</code></p>
+        </div>
+      </div>
+
+      <h3>Funcionalidades Principales</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="feature-icon">✏️</span>
+          <span class="feature-name">Editor de Rúbricas</span>
+          <span class="feature-desc">Abre RubricaEditorComponent como modal</span>
+        </li>
+        <li>
+          <span class="feature-icon">📥</span>
+          <span class="feature-name">Importar JSON/TXT</span>
+          <span class="feature-desc">Carga rúbricas desde archivos estructurados</span>
+        </li>
+        <li>
+          <span class="feature-icon">📜</span>
+          <span class="feature-name">Historial de Versiones</span>
+          <span class="feature-desc">RubricaVersionHistoryComponent para comparar cambios</span>
+        </li>
+        <li>
+          <span class="feature-icon">👁️</span>
+          <span class="feature-name">Vista Previa</span>
+          <span class="feature-desc">EvaluacionRubricaComponent en modo solo lectura</span>
+        </li>
+        <li>
+          <span class="feature-icon">📤</span>
+          <span class="feature-name">Exportar</span>
+          <span class="feature-desc">Descarga rúbrica como JSON</span>
+        </li>
+      </ul>
+
+      <h3>Componentes Importados</h3>
+      <div class="file-header">📄 Componentes usados</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">EvaluacionRubricaComponent</span> } <span class="keyword">from</span></span>
+<span class="code-line">  <span class="string">'../../components/evaluacion-rubrica/evaluacion-rubrica.component'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">RubricaEditorComponent</span> } <span class="keyword">from</span></span>
+<span class="code-line">  <span class="string">'../../components/rubrica-editor/rubrica-editor.component'</span>;</span>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">RubricaVersionHistoryComponent</span> } <span class="keyword">from</span></span>
+<span class="code-line">  <span class="string">'../../components/rubrica-version-history/rubrica-version-history.component'</span>;</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CALIFICACIONES PAGE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📊 CalificacionesPage</h2>
+      <p>Gestión de archivos CSV de Canvas para importar/exportar calificaciones.</p>
+
+      <div class="page-card">
+        <div class="page-card-header">
+          <span class="icon">📊</span>
+          <span class="name">CalificacionesPage</span>
+          <span class="badge">~1074 líneas</span>
+        </div>
+        <div class="page-card-body">
+          <p><strong>Ruta:</strong> <code>/tabs/calificaciones</code></p>
+          <p><strong>Archivo:</strong> <code>pages/calificaciones/calificaciones.page.ts</code></p>
+        </div>
+      </div>
+
+      <h3>Interfaces de Datos</h3>
+      <div class="file-header">📄 Estructuras para CSV</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">interface</span> <span class="class-name">CsvTabla</span> {</span>
+<span class="code-line">  <span class="property">headers</span>: <span class="type">string[]</span>;              <span class="comment">// Cabeceras del CSV</span></span>
+<span class="code-line">  <span class="property">filas</span>: <span class="type">string[][]</span>;              <span class="comment">// Datos de cada fila</span></span>
+<span class="code-line">  <span class="property">indicesOriginales</span>: <span class="type">number[]</span>;   <span class="comment">// Mapeo a columnas originales</span></span>
+<span class="code-line">  <span class="property">indiceIdOriginal</span>: <span class="type">number</span>;      <span class="comment">// Índice columna ID</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">interface</span> <span class="class-name">FilaCalificacion</span> {</span>
+<span class="code-line">  <span class="property">studentId</span>: <span class="type">string</span>;   <span class="comment">// ID de Canvas</span></span>
+<span class="code-line">  <span class="property">student</span>: <span class="type">string</span>;     <span class="comment">// Nombre completo</span></span>
+<span class="code-line">  <span class="property">grupo</span>: <span class="type">string</span>;       <span class="comment">// Obtenido del curso</span></span>
+<span class="code-line">  <span class="property">e1</span>: <span class="type">string</span>;          <span class="comment">// Calificación E1</span></span>
+<span class="code-line">  <span class="property">e2</span>: <span class="type">string</span>;          <span class="comment">// Calificación E2</span></span>
+<span class="code-line">  <span class="property">ef</span>: <span class="type">string</span>;          <span class="comment">// Calificación EF</span></span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <h3>Funcionalidades</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="feature-icon">📥</span>
+          <span class="feature-name">Cargar CSV Canvas</span>
+          <span class="feature-desc">Importa archivo de calificaciones de Canvas LMS</span>
+        </li>
+        <li>
+          <span class="feature-icon">📊</span>
+          <span class="feature-name">Visualizar Tabla</span>
+          <span class="feature-desc">Muestra calificaciones con filtro por grupo</span>
+        </li>
+        <li>
+          <span class="feature-icon">📤</span>
+          <span class="feature-name">Exportar CSV</span>
+          <span class="feature-desc">Genera archivo actualizado para subir a Canvas</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SISTEMA PAGE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>⚙️ SistemaPage</h2>
+      <p>Configuración del sistema, gestión de backups y preferencias de usuario.</p>
+
+      <div class="page-card">
+        <div class="page-card-header">
+          <span class="icon">⚙️</span>
+          <span class="name">SistemaPage</span>
+          <span class="badge">~284 líneas</span>
+        </div>
+        <div class="page-card-body">
+          <p><strong>Ruta:</strong> <code>/tabs/sistema</code></p>
+          <p><strong>Archivo:</strong> <code>pages/sistema/sistema.page.ts</code></p>
+        </div>
+      </div>
+
+      <h3>Funcionalidades</h3>
+      <ul class="feature-list">
+        <li>
+          <span class="feature-icon">📱</span>
+          <span class="feature-name">Info Plataforma</span>
+          <span class="feature-desc">Detecta Web/iOS/Android y tipo de storage</span>
+        </li>
+        <li>
+          <span class="feature-icon">💾</span>
+          <span class="feature-name">Backup Completo</span>
+          <span class="feature-desc">Descarga JSON con todos los datos</span>
+        </li>
+        <li>
+          <span class="feature-icon">📥</span>
+          <span class="feature-name">Restaurar Backup</span>
+          <span class="feature-desc">Importa archivo JSON de backup</span>
+        </li>
+        <li>
+          <span class="feature-icon">🗑️</span>
+          <span class="feature-name">Limpiar Datos</span>
+          <span class="feature-desc">Elimina todos los datos con confirmación</span>
+        </li>
+        <li>
+          <span class="feature-icon">🔔</span>
+          <span class="feature-name">Preferencias Toast</span>
+          <span class="feature-desc">Habilitar/deshabilitar y duración (1-4s)</span>
+        </li>
+      </ul>
+
+      <h3>Detección de Plataforma</h3>
+      <div class="file-header">📄 Uso de Capacitor</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { <span class="class-name">Capacitor</span> } <span class="keyword">from</span> <span class="string">'@capacitor/core'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="property">storageInfo</span> = {</span>
+<span class="code-line">  <span class="property">platform</span>: <span class="string">'web'</span>,        <span class="comment">// 'web' | 'ios' | 'android'</span></span>
+<span class="code-line">  <span class="property">storage</span>: <span class="string">'ionic-storage'</span> <span class="comment">// Driver activo</span></span>
+<span class="code-line">};</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">async</span> <span class="method">detectarPlataforma</span>() {</span>
+<span class="code-line">  <span class="keyword">const</span> platform = <span class="class-name">Capacitor</span>.<span class="method">getPlatform</span>();</span>
+<span class="code-line">  <span class="keyword">const</span> info = <span class="keyword">this</span>.unifiedStorageService.<span class="method">getPlatformInfo</span>();</span>
+<span class="code-line">  <span class="keyword">this</span>.storageInfo = { platform, storage: info.storage };</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- LIFECYCLE HOOKS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔄 Lifecycle Hooks de Ionic</h2>
+      <p>Las pages usan hooks específicos de Ionic para manejar el ciclo de vida de navegación.</p>
+
+      <div class="file-header">📄 Hooks implementados</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export class</span> <span class="class-name">MiPage</span> <span class="keyword">implements</span> <span class="type">OnInit</span>, <span class="type">OnDestroy</span>, <span class="type">ViewWillEnter</span> {</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">// Angular lifecycle</span></span>
+<span class="code-line">  <span class="method">ngOnInit</span>() { ... }       <span class="comment">// Al crear componente</span></span>
+<span class="code-line">  <span class="method">ngOnDestroy</span>() { ... }    <span class="comment">// Al destruir componente</span></span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="comment">// Ionic lifecycle</span></span>
+<span class="code-line">  <span class="method">ionViewWillEnter</span>() { ... }  <span class="comment">// Antes de mostrar vista</span></span>
+<span class="code-line">  <span class="method">ionViewDidEnter</span>() { ... }   <span class="comment">// Después de mostrar vista</span></span>
+<span class="code-line">  <span class="method">ionViewWillLeave</span>() { ... }  <span class="comment">// Antes de ocultar vista</span></span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 ¿Por qué ViewWillEnter?</h4>
+        <p>A diferencia de <code>ngOnInit</code> (que se ejecuta solo al crear el componente), <code>ionViewWillEnter</code> se ejecuta cada vez que la página se hace visible. Esto es útil para:</p>
+        <ul>
+          <li>Refrescar datos al volver a la página</li>
+          <li>Sincronizar estado con servicios</li>
+          <li>Actualizar UI después de cambios en otras páginas</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📋 Resumen de Pages</h2>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Page</th>
+            <th>Selector</th>
+            <th>Funcionalidad Principal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>InicioPage</code></td>
+            <td><code>app-inicio</code></td>
+            <td>Dashboard con tabla de estudiantes y evaluación</td>
+          </tr>
+          <tr>
+            <td><code>CursosPage</code></td>
+            <td><code>app-cursos</code></td>
+            <td>CRUD de cursos e importación CSV</td>
+          </tr>
+          <tr>
+            <td><code>RubricasPage</code></td>
+            <td><code>app-rubricas</code></td>
+            <td>Gestión completa de rúbricas</td>
+          </tr>
+          <tr>
+            <td><code>CalificacionesPage</code></td>
+            <td><code>app-calificaciones</code></td>
+            <td>Manejo de archivos CSV de Canvas</td>
+          </tr>
+          <tr>
+            <td><code>SistemaPage</code></td>
+            <td><code>app-sistema</code></td>
+            <td>Configuración y backup</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- BANNER DE COMPLETACIÓN -->
+    <!-- ============================================ -->
+    <div class="completion-banner">
+      <h3>🎉 ¡Documentación Completa!</h3>
+      <p>Has completado las 8 partes de la documentación técnica de POLIProject.</p>
+      <p style="margin-top: 15px; font-size: 0.9rem;">
+        Partes 1-2: Configuración y Estructura &nbsp;|&nbsp;
+        Partes 3.1-3.8: Código Fuente (src/app/)
+      </p>
+    </div>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.8 de 8 (Final) | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">← Anterior: 3.7 Components</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Volver al Inicio →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

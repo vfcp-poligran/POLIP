@@ -209,6 +209,13 @@ export class SeguimientoService {
     }
   }
 
+  /**
+   * Limpia completamente el seguimiento actual
+   */
+  limpiarSeguimiento(): void {
+    this.seguimientoActualSubject.next(null);
+  }
+
   // === MÉTODOS PARA ESTADOS DE ESTUDIANTES ===
 
   /**
