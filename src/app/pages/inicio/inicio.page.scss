@@ -74,9 +74,9 @@ ion-content {
   justify-content: flex-start;
   padding: 4px 8px;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  background: transparent;
   border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
   overflow: hidden;
   min-height: 40px;
 
@@ -3778,7 +3778,7 @@ ion-badge {
   .entregas-resumen-panel {
     background: white;
     border-radius: 12px;
-    padding: 20px;
+    padding: 8px;
     box-shadow: 0 2px 12px rgba(15, 56, 90, 0.08);
 
     .entregas-header {
@@ -3811,6 +3811,7 @@ ion-badge {
       thead {
         tr {
           background: linear-gradient(135deg, var(--azul-oscuro) 0%, #1e4b6e 100%);
+          border-radius: var(--rad-sm, 8px) var(--rad-sm, 8px) 0 0;
 
           th {
             padding: 12px 16px;
@@ -3820,6 +3821,14 @@ ion-badge {
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+
+            &:first-child {
+              border-radius: var(--rad-sm, 8px) 0 0 0;
+            }
+
+            &:last-child {
+              border-radius: 0 var(--rad-sm, 8px) 0 0;
+            }
 
             ion-icon {
               vertical-align: middle;
