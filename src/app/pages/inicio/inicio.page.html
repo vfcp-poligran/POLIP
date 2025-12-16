@@ -155,24 +155,36 @@
         <!-- Panel General -->
         <ion-card class="dashboard-options">
           <ion-card-header class="header-con-toggle">
-            <!-- Ícono de información del panel -->
-            <div class="info-icon-header">
-              <ion-icon name="information-circle" class="header-info-icon"></ion-icon>
+            <!-- Breadcrumb de navegación -->
+            <div class="breadcrumb-navigation">
+              <ion-icon name="home-outline" class="breadcrumb-icon"></ion-icon>
+              @if (cursoActivo) {
+                <span class="breadcrumb-item curso-name" [title]="cursoActivo">
+                  {{ getCursoMetadataForCourse(cursoActivo)?.codigo || cursoActivo }}
+                </span>
+                @if (filtroGrupo !== 'todos') {
+                  <ion-icon name="chevron-forward-outline" class="breadcrumb-separator"></ion-icon>
+                  <span class="breadcrumb-item grupo-name">G{{ filtroGrupo }}</span>
+                  @if (entregaEvaluando) {
+                    <ion-icon name="chevron-forward-outline" class="breadcrumb-separator"></ion-icon>
+                    <span class="breadcrumb-item entrega-name">{{ entregaEvaluando }}</span>
+                  }
+                }
+              }
             </div>
-            <!-- Nombre del grupo cuando está seleccionado -->
-            @if (filtroGrupo !== 'todos') {
-            <div class="grupo-header-inline">
-              <ion-icon name="people-circle"></ion-icon>
-              <span class="grupo-nombre">Grupo {{ filtroGrupo }}</span>
-              <span class="integrantes-count">{{ obtenerIntegrantesGrupo().length }} integrantes</span>
-            </div>
-            }
-            <!-- Toggle para modo de selección de encabezado -->
+            <!-- Toggle para modo de vista de encabezado -->
             @if (filtroGrupo === 'todos') {
             <div class="modo-vista-toggle" (click)="modoMantenerVistaMatriz = !modoMantenerVistaMatriz"
                  [title]="modoMantenerVistaMatriz ? 'Vista bloqueada - Clic para desbloquear' : 'Vista libre - Clic para bloquear'">
               <ion-icon [name]="modoMantenerVistaMatriz ? 'lock-closed' : 'lock-open'" class="lock-icon"></ion-icon>
             </div>
+            }
+            <!-- Botón volver cuando está en grupo específico -->
+            @if (filtroGrupo !== 'todos') {
+            <ion-button fill="clear" size="small" class="btn-volver-matriz" (click)="volverAMatriz()" title="Volver a vista general">
+              <ion-icon name="grid-outline" slot="start"></ion-icon>
+              <span class="btn-text">Vista general</span>
+            </ion-button>
             }
           </ion-card-header>
           <ion-card-content>
@@ -273,7 +285,33 @@
                         @if (entregaEvaluando) {
                         <ion-badge color="tertiary" mode="ios">{{ entregaEvaluando }}</ion-badge>
                         }
+                        <span class="integrantes-badge" title="Integrantes del grupo">
+                          <ion-icon name="people-outline"></ion-icon>
+                          {{ obtenerIntegrantesGrupo().length }}
+                        </span>
                       </div>
+
+                      <!-- Resumen de estados de integrantes -->
+                      @if (entregaEvaluando && obtenerIntegrantesGrupo().length > 0) {
+                      <div class="estados-resumen">
+                        <span class="estado-count ok" title="Presentes OK">
+                          <ion-icon name="checkmark-circle"></ion-icon>
+                          {{ contarEstadosIntegrantes('ok') }}
+                        </span>
+                        <span class="estado-count solo" title="Solo/Sin grupo">
+                          <ion-icon name="git-merge"></ion-icon>
+                          {{ contarEstadosIntegrantes('solo') }}
+                        </span>
+                        <span class="estado-count ausente" title="Ausentes">
+                          <ion-icon name="close-circle"></ion-icon>
+                          {{ contarEstadosIntegrantes('ausente') }}
+                        </span>
+                        <span class="estado-count pendiente" title="Sin estado asignado">
+                          <ion-icon name="help-circle-outline"></ion-icon>
+                          {{ contarEstadosIntegrantes(null) }}
+                        </span>
+                      </div>
+                      }
 
                       <!-- Botones de estado -->
                       <div class="estados-toolbar">
@@ -283,8 +321,9 @@
                           color="success"
                           (click)="toggleModoSeleccionEstado('ok')"
                           [disabled]="!entregaEvaluando"
-                          title="Ok">
-                          <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
+                          title="Marcar como OK - Presente">
+                          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                          <span class="btn-estado-text">OK</span>
                         </ion-button>
                         <ion-button
                           [fill]="modoSeleccionEstado === 'solo' ? 'solid' : 'outline'"
@@ -292,8 +331,9 @@
                           color="warning"
                           (click)="toggleModoSeleccionEstado('solo')"
                           [disabled]="!entregaEvaluando"
-                          title="Solo">
-                          <ion-icon name="git-merge" slot="icon-only"></ion-icon>
+                          title="Marcar como Solo - Sin compañeros">
+                          <ion-icon name="git-merge" slot="start"></ion-icon>
+                          <span class="btn-estado-text">Solo</span>
                         </ion-button>
                         <ion-button
                           [fill]="modoSeleccionEstado === 'ausente' ? 'solid' : 'outline'"
@@ -301,8 +341,9 @@
                           color="danger"
                           (click)="toggleModoSeleccionEstado('ausente')"
                           [disabled]="!entregaEvaluando"
-                          title="Ausente">
-                          <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+                          title="Marcar como Ausente">
+                          <ion-icon name="close-circle" slot="start"></ion-icon>
+                          <span class="btn-estado-text">Ausente</span>
                         </ion-button>
                       </div>
 

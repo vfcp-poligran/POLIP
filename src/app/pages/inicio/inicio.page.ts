@@ -85,7 +85,7 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { ToastService } from '../../services/toast.service';
@@ -332,7 +332,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,home,ellipsisVertical,closeOutline,checkmarkCircle,hourglassOutline,library,speedometer,informationCircle,peopleCircle,rocket,saveOutline,documentTextOutline,createOutline,gitMerge,closeCircle,trashOutline,alertCircle,book,grid,schoolOutline,clipboardOutline,documentText,checkmarkOutline,people,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,peopleOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,chevronForwardOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,home,ellipsisVertical,closeOutline,checkmarkCircle,hourglassOutline,library,speedometer,homeOutline,chevronForwardOutline,gridOutline,rocket,saveOutline,documentTextOutline,createOutline,peopleOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,alertCircle,informationCircle,peopleCircle,book,grid,schoolOutline,clipboardOutline,documentText,checkmarkOutline,people,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,informationCircleOutline,alertCircleOutline,listOutline,copyOutline,personOutline,analyticsOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -3212,6 +3212,39 @@ export class InicioPage implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Vuelve a la vista matricial de todos los grupos
+   */
+  volverAMatriz(): void {
+    Logger.log('🔙 [volverAMatriz] Regresando a vista de matriz');
+    
+    // Cerrar rúbrica si está abierta
+    if (this.mostrarRubrica) {
+      this.cerrarRubrica();
+    }
+
+    // Limpiar estado de grupo y evaluación
+    this.grupoSeguimientoActivo = null;
+    this.filtroGrupo = 'todos';
+    this.entregaEvaluando = null;
+    this.tipoEvaluando = null;
+
+    // Actualizar el servicio de seguimiento
+    this.seguimientoService.setGrupoSeleccionado(0);
+
+    // Limpiar panel de seguimiento
+    this.limpiarPanelSeguimiento();
+
+    // Guardar en CourseState
+    if (this.cursoActivo) {
+      this.dataService.updateCourseState(this.cursoActivo, {
+        filtroGrupo: 'todos'
+      });
+    }
+
+    this.cdr.markForCheck();
+  }
+
   // === MÉTODOS PARA PERSISTENCIA POR SUBGRUPO ===
 
   /**
@@ -3559,6 +3592,24 @@ export class InicioPage implements OnInit, OnDestroy {
   getEstadoEstudiante(correo: string): EstadoEstudiante {
     if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return null;
     return this.seguimientoService.getEstadoEstudiante(this.filtroGrupo, this.entregaEvaluando, correo);
+  }
+
+  /**
+   * Cuenta los integrantes con un estado específico
+   * @param estado Estado a contar: 'ok' | 'solo' | 'ausente' | null (sin estado)
+   */
+  contarEstadosIntegrantes(estado: 'ok' | 'solo' | 'ausente' | null): number {
+    if (this.filtroGrupo === 'todos' || !this.entregaEvaluando) return 0;
+    
+    const integrantes = this.obtenerIntegrantesGrupo();
+    return integrantes.filter(est => {
+      const estadoActual = this.seguimientoService.getEstadoEstudiante(
+        this.filtroGrupo, 
+        this.entregaEvaluando!, 
+        est.correo
+      );
+      return estadoActual === estado;
+    }).length;
   }
 
   /**
