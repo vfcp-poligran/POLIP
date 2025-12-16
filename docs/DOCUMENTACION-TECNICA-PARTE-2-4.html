@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 2.4: Archivos Base de src/</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --bootstrap-blue: #0d6efd;
+      --init-orange: #fd7e14;
+      --bg-gradient: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(13, 110, 253, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--bootstrap-blue); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--bootstrap-blue);
+      border-bottom: 3px solid var(--bootstrap-blue);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+
+    .file-card {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 20px 0;
+      transition: all 0.3s ease;
+    }
+
+    .file-card:hover { border-color: var(--bootstrap-blue); box-shadow: 0 5px 20px rgba(13, 110, 253, 0.15); }
+    .file-card h4 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; }
+
+    .file-icon {
+      display: inline-block;
+      background: var(--bootstrap-blue);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .file-icon.html { background: #e44d26; }
+    .file-icon.scss { background: #c6538c; }
+    .file-icon.ts { background: #3178c6; }
+    .file-icon.config { background: #6f42c1; }
+
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+
+    .code-block code { color: var(--code-text); }
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .comment { color: #6a9955; }
+    .code-block .function { color: #dcdcaa; }
+
+    .philosophy-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border-left: 5px solid var(--bootstrap-blue);
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .philosophy-box h4 { color: #1565c0; margin-bottom: 12px; }
+
+    .analogy-box {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 5px solid #f39c12;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
+
+    .project-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .project-box h4 { color: #155724; margin-bottom: 10px; }
+
+    .info-box {
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .boot-sequence {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 12px;
+      padding: 25px;
+      margin: 25px 0;
+    }
+
+    .boot-step {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid var(--bootstrap-blue);
+    }
+
+    .boot-step .number {
+      background: var(--bootstrap-blue);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .boot-step .content { flex: 1; }
+    .boot-step .file { font-family: monospace; color: var(--bootstrap-blue); font-weight: 600; }
+
+    .content-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .content-item {
+      background: #f8f9fa;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border-left: 3px solid var(--secondary-color);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+
+    footer a { color: var(--bootstrap-blue); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📋 Parte 2.4: Archivos Base de src/</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">2.3: src/app/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html" class="active">2.4: Archivos Base</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html">2.5: Config Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- SECUENCIA DE ARRANQUE -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🚀 Secuencia de Arranque de la Aplicación</h2>
+
+      <p>Antes de analizar cada archivo, es importante entender <strong>en qué orden se ejecutan</strong> cuando la aplicación arranca:</p>
+
+      <div class="boot-sequence">
+        <div class="boot-step">
+          <div class="number">1</div>
+          <div class="content">
+            <span class="file">index.html</span> - El navegador carga este archivo primero
+          </div>
+        </div>
+        <div class="boot-step">
+          <div class="number">2</div>
+          <div class="content">
+            <span class="file">zone-flags.ts</span> - Configura optimizaciones de Zone.js
+          </div>
+        </div>
+        <div class="boot-step">
+          <div class="number">3</div>
+          <div class="content">
+            <span class="file">polyfills.ts</span> - Carga compatibilidad y Zone.js
+          </div>
+        </div>
+        <div class="boot-step">
+          <div class="number">4</div>
+          <div class="content">
+            <span class="file">main.ts</span> - Arranca Angular con <code>bootstrapApplication()</code>
+          </div>
+        </div>
+        <div class="boot-step">
+          <div class="number">5</div>
+          <div class="content">
+            Angular renderiza <span class="file">AppComponent</span> en <code>&lt;app-root&gt;</code>
+          </div>
+        </div>
+        <div class="boot-step">
+          <div class="number">6</div>
+          <div class="content">
+            <span class="file">global.scss</span> - Se aplican los estilos globales
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🚗 Analogía: Encender un Auto</h4>
+        <p>La secuencia de arranque es como <strong>encender un automóvil</strong>:</p>
+        <ul>
+          <li><strong>index.html:</strong> Abrir la puerta del auto (acceso inicial)</li>
+          <li><strong>zone-flags.ts:</strong> Ajustar los espejos antes de arrancar</li>
+          <li><strong>polyfills.ts:</strong> Poner la llave en el contacto</li>
+          <li><strong>main.ts:</strong> Girar la llave y arrancar el motor</li>
+          <li><strong>AppComponent:</strong> El motor ya está funcionando</li>
+          <li><strong>global.scss:</strong> Encender las luces y el aire acondicionado</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- INDEX.HTML -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📄 index.html - Punto de Entrada HTML</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon html">HTML</span>index.html</h4>
+        <p><strong>Propósito:</strong> Archivo HTML raíz de la aplicación. Es el <strong>primer archivo</strong> que carga el navegador.</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Single Page Application"</h4>
+        <p>En una SPA como POLIProject, <code>index.html</code> es el <strong>único HTML</strong> que el servidor envía:</p>
+        <ul>
+          <li>Angular toma el control y genera todo el contenido dinámicamente</li>
+          <li>La navegación es manejada por JavaScript (no recarga la página)</li>
+          <li>El HTML base solo proporciona el "cascarón" inicial</li>
+        </ul>
+      </div>
+
+      <h3>📋 Contenido Clave</h3>
+
+      <div class="content-list">
+        <div class="content-item">
+          <strong><code>&lt;app-root&gt;</code></strong><br>
+          Selector donde Angular inyecta la app
+        </div>
+        <div class="content-item">
+          <strong><code>&lt;meta viewport&gt;</code></strong><br>
+          Responsividad en móviles
+        </div>
+        <div class="content-item">
+          <strong><code>&lt;link rel="manifest"&gt;</code></strong><br>
+          Referencia PWA manifest
+        </div>
+        <div class="content-item">
+          <strong><code>&lt;meta theme-color&gt;</code></strong><br>
+          Color de barra de direcciones
+        </div>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">&lt;!-- Contenido típico de index.html --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=<span class="string">"es"</span>&gt;
+&lt;head&gt;
+  &lt;meta charset=<span class="string">"UTF-8"</span>&gt;
+  &lt;meta name=<span class="string">"viewport"</span> content=<span class="string">"width=device-width, initial-scale=1.0"</span>&gt;
+  &lt;title&gt;POLIProject&lt;/title&gt;
+
+  <span class="comment">&lt;!-- PWA --&gt;</span>
+  &lt;link rel=<span class="string">"manifest"</span> href=<span class="string">"manifest.webmanifest"</span>&gt;
+  &lt;meta name=<span class="string">"theme-color"</span> content=<span class="string">"#0f385a"</span>&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  <span class="comment">&lt;!-- Angular inyecta AppComponent aquí --&gt;</span>
+  &lt;app-root&gt;&lt;/app-root&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 Nota:</strong> Angular CLI <strong>inyecta automáticamente</strong> los scripts JavaScript compilados al final del <code>&lt;body&gt;</code> durante el build. No necesitas agregarlos manualmente.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- MAIN.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>⚡ main.ts - Bootstrap de Angular</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon ts">TS</span>main.ts</h4>
+        <p><strong>Propósito:</strong> Punto de entrada TypeScript. Es el <strong>primer código</strong> que se ejecuta al iniciar la app.</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Standalone Bootstrap"</h4>
+        <p>Angular 20 con <strong>standalone components</strong> simplifica el arranque:</p>
+        <ul>
+          <li>No necesita NgModules (AppModule)</li>
+          <li>Usa <code>bootstrapApplication()</code> directamente</li>
+          <li>Providers se configuran inline</li>
+          <li>Más ligero y fácil de entender</li>
+        </ul>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// main.ts - Arranque de POLIProject</span>
+<span class="keyword">import</span> { <span class="function">bootstrapApplication</span> } <span class="keyword">from</span> <span class="string">'@angular/platform-browser'</span>;
+<span class="keyword">import</span> { AppComponent } <span class="keyword">from</span> <span class="string">'./app/app.component'</span>;
+<span class="keyword">import</span> { appConfig } <span class="keyword">from</span> <span class="string">'./app/app.config'</span>;
+
+<span class="comment">// Arranca la aplicación Angular</span>
+<span class="function">bootstrapApplication</span>(AppComponent, appConfig)
+  .<span class="function">catch</span>(err => console.<span class="function">error</span>(err));
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject, appConfig incluye:</h4>
+        <ul style="margin-left: 20px; line-height: 2;">
+          <li><strong>Router:</strong> Configuración de rutas con <code>provideRouter(routes)</code></li>
+          <li><strong>IonicAngular:</strong> Providers de Ionic para Angular</li>
+          <li><strong>HttpClient:</strong> Para llamadas HTTP si se necesitan</li>
+          <li><strong>ServiceWorker:</strong> Para funcionalidad PWA</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- GLOBAL.SCSS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎨 global.scss - Estilos Globales</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon scss">SCSS</span>global.scss</h4>
+        <p><strong>Propósito:</strong> Contiene estilos CSS globales que se aplican a <strong>toda la aplicación</strong>, independientemente del componente.</p>
+      </div>
+
+      <h3>📋 Contenido Típico</h3>
+
+      <div class="content-list">
+        <div class="content-item">
+          <strong>Imports de Ionic</strong><br>
+          Core CSS de Ionic Framework
+        </div>
+        <div class="content-item">
+          <strong>Resets CSS</strong><br>
+          Normalización de estilos base
+        </div>
+        <div class="content-item">
+          <strong>Utility Classes</strong><br>
+          .m-0, .p-10, .flex, etc.
+        </div>
+        <div class="content-item">
+          <strong>Variables Custom</strong><br>
+          CSS variables del proyecto
+        </div>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">/* global.scss - Estilos globales de POLIProject */</span>
+
+<span class="comment">/* Imports de Ionic Core */</span>
+@<span class="keyword">import</span> <span class="string">"@ionic/angular/css/core.css"</span>;
+@<span class="keyword">import</span> <span class="string">"@ionic/angular/css/normalize.css"</span>;
+@<span class="keyword">import</span> <span class="string">"@ionic/angular/css/structure.css"</span>;
+@<span class="keyword">import</span> <span class="string">"@ionic/angular/css/typography.css"</span>;
+
+<span class="comment">/* Ionic utilities (opcional) */</span>
+@<span class="keyword">import</span> <span class="string">"@ionic/angular/css/padding.css"</span>;
+@<span class="keyword">import</span> <span class="string">"@ionic/angular/css/flex-utils.css"</span>;
+
+<span class="comment">/* Estilos custom globales */</span>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: <span class="string">'Segoe UI'</span>, sans-serif;
+}
+        </code>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🏠 Analogía: Las Reglas de la Casa</h4>
+        <p><code>global.scss</code> es como las <strong>reglas generales</strong> de una casa:</p>
+        <ul>
+          <li>Aplican a todos los que viven ahí (todos los componentes)</li>
+          <li>No necesitas repetirlas en cada habitación</li>
+          <li>"Quitarse los zapatos al entrar" = <code>* { box-sizing: border-box; }</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- POLYFILLS.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔧 polyfills.ts - Compatibilidad</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon ts">TS</span>polyfills.ts</h4>
+        <p><strong>Propósito:</strong> Importa <strong>polyfills</strong> necesarios para compatibilidad con navegadores antiguos que no soportan características modernas de JavaScript.</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Write Once, Run Everywhere"</h4>
+        <p>Los polyfills permiten usar <strong>código moderno</strong> en navegadores antiguos:</p>
+        <ul>
+          <li>Proporcionan implementaciones de APIs que el navegador no tiene</li>
+          <li>El código se escribe una vez con sintaxis moderna</li>
+          <li>Los polyfills "rellenan los huecos" en navegadores legacy</li>
+        </ul>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// polyfills.ts</span>
+
+<span class="comment">// Zone.js es REQUERIDO por Angular para detección de cambios</span>
+<span class="comment">// Debe cargarse DESPUÉS de zone-flags.ts</span>
+<span class="keyword">import</span> <span class="string">'zone.js'</span>;
+
+<span class="comment">// Otros polyfills se agregan aquí si son necesarios</span>
+<span class="comment">// Con ES2022 y navegadores modernos, generalmente no se necesitan más</span>
+        </code>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Zone.js es obligatorio:</strong><br>
+        Angular usa Zone.js para su <strong>detección de cambios</strong>. Sin él, los componentes no se actualizan cuando cambian los datos. Siempre debe importarse en polyfills.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ZONE-FLAGS.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🚩 zone-flags.ts - Optimización de Zone.js</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon config">CONFIG</span>zone-flags.ts</h4>
+        <p><strong>Propósito:</strong> Configura <strong>flags de optimización</strong> para Zone.js, desactivando patching innecesario de APIs.</p>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// zone-flags.ts - DEBE cargarse ANTES de zone.js</span>
+
+<span class="comment">// Desactiva patching de eventos que no usamos</span>
+(window <span class="keyword">as</span> any).__Zone_disable_requestAnimationFrame = <span class="keyword">true</span>;
+(window <span class="keyword">as</span> any).__Zone_disable_on_property = <span class="keyword">true</span>;
+
+<span class="comment">// Mejora rendimiento al reducir overhead de Zone.js</span>
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 ¿Qué es "patching"?</strong><br>
+        Zone.js "parchea" (modifica) APIs del navegador para detectar cuándo terminan operaciones asíncronas. Desactivar el patching de APIs que no usamos mejora el rendimiento.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- TEST.TS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🧪 test.ts - Configuración de Testing</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon ts">TS</span>test.ts</h4>
+        <p><strong>Propósito:</strong> Inicializa el entorno de <strong>testing</strong> de Angular. Configura TestBed y carga archivos <code>*.spec.ts</code>.</p>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// test.ts - Configuración de tests unitarios</span>
+<span class="keyword">import</span> { getTestBed } <span class="keyword">from</span> <span class="string">'@angular/core/testing'</span>;
+<span class="keyword">import</span> {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting
+} <span class="keyword">from</span> <span class="string">'@angular/platform-browser-dynamic/testing'</span>;
+
+<span class="comment">// Inicializa el entorno de testing de Angular</span>
+getTestBed().<span class="function">initTestEnvironment</span>(
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting()
+);
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>Este archivo se ejecuta automáticamente al correr:</p>
+        <pre style="background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 6px; margin-top: 10px;"><code>npm test</code> o <code>ng test</code></pre>
+        <p style="margin-top: 10px;">Karma busca todos los archivos <code>*.spec.ts</code> y los ejecuta.</p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📝 Resumen de Archivos Base</h2>
+
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: var(--bootstrap-blue); color: white;">
+          <tr>
+            <th style="padding: 12px; text-align: left;">Archivo</th>
+            <th style="padding: 12px; text-align: left;">Tipo</th>
+            <th style="padding: 12px; text-align: left;">Función</th>
+            <th style="padding: 12px; text-align: left;">Orden de Carga</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;"><code>index.html</code></td>
+            <td style="padding: 12px;"><span class="file-icon html" style="font-size: 0.7rem;">HTML</span></td>
+            <td style="padding: 12px;">Punto de entrada del navegador</td>
+            <td style="padding: 12px;">1º</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
+            <td style="padding: 12px;"><code>zone-flags.ts</code></td>
+            <td style="padding: 12px;"><span class="file-icon config" style="font-size: 0.7rem;">CFG</span></td>
+            <td style="padding: 12px;">Optimización Zone.js</td>
+            <td style="padding: 12px;">2º</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;"><code>polyfills.ts</code></td>
+            <td style="padding: 12px;"><span class="file-icon ts" style="font-size: 0.7rem;">TS</span></td>
+            <td style="padding: 12px;">Compatibilidad + Zone.js</td>
+            <td style="padding: 12px;">3º</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd; background: #f8f9fa;">
+            <td style="padding: 12px;"><code>main.ts</code></td>
+            <td style="padding: 12px;"><span class="file-icon ts" style="font-size: 0.7rem;">TS</span></td>
+            <td style="padding: 12px;">Bootstrap Angular</td>
+            <td style="padding: 12px;">4º</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;"><code>global.scss</code></td>
+            <td style="padding: 12px;"><span class="file-icon scss" style="font-size: 0.7rem;">SCSS</span></td>
+            <td style="padding: 12px;">Estilos globales</td>
+            <td style="padding: 12px;">Con build</td>
+          </tr>
+          <tr style="background: #f8f9fa;">
+            <td style="padding: 12px;"><code>test.ts</code></td>
+            <td style="padding: 12px;"><span class="file-icon ts" style="font-size: 0.7rem;">TS</span></td>
+            <td style="padding: 12px;">Config testing</td>
+            <td style="padding: 12px;">Solo tests</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 2.4 de 5 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">← Anterior: 2.3 src/app/</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html">Siguiente: 2.5 Config Raíz →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

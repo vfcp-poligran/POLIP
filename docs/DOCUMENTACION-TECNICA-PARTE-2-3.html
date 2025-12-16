@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 2.3: src/app/ - Aplicación Principal</title>
+  <style>
+    :root {
+      --primary-color: #0f385a;
+      --secondary-color: #667eea;
+      --angular-red: #dd0031;
+      --app-purple: #6f42c1;
+      --bg-gradient: linear-gradient(135deg, #6f42c1 0%, #667eea 100%);
+      --code-bg: #1e1e1e;
+      --code-text: #d4d4d4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    header {
+      background: var(--bg-gradient);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(111, 66, 193, 0.3);
+    }
+
+    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
+    header .part-indicator {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+    .nav-parts a {
+      padding: 10px 20px;
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav-parts a:hover, .nav-parts a.active { background: var(--app-purple); color: white; }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: var(--app-purple);
+      border-bottom: 3px solid var(--app-purple);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
+    .section h4 { color: var(--angular-red); margin: 20px 0 10px 0; font-size: 1.1rem; }
+
+    .folder-card {
+      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+      border-left: 5px solid var(--app-purple);
+      border-radius: 0 12px 12px 0;
+      padding: 25px;
+      margin: 20px 0;
+      transition: transform 0.3s ease;
+    }
+
+    .folder-card:hover { transform: translateX(5px); }
+    .folder-card h4 { color: var(--primary-color); margin-top: 0; font-size: 1.2rem; }
+    .folder-card .icon { font-size: 1.5rem; margin-right: 10px; }
+
+    .file-card {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+      transition: border-color 0.3s ease;
+    }
+
+    .file-card:hover { border-color: var(--app-purple); }
+    .file-card h4 { color: var(--primary-color); margin-bottom: 10px; }
+    .file-card .file-icon {
+      display: inline-block;
+      background: var(--angular-red);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .tree-structure {
+      background: var(--code-bg);
+      border-radius: 12px;
+      padding: 25px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      line-height: 2;
+    }
+
+    .tree-structure .folder { color: #569cd6; font-weight: bold; }
+    .tree-structure .file { color: #ce9178; }
+    .tree-structure .comment { color: #6a9955; }
+
+    .philosophy-box {
+      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+      border-left: 5px solid var(--app-purple);
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .philosophy-box h4 { color: #6a1b9a; margin-bottom: 12px; }
+
+    .analogy-box {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      border-left: 5px solid #f39c12;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
+
+    .project-box {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-left: 5px solid #28a745;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .project-box h4 { color: #155724; margin-bottom: 10px; }
+
+    .info-box {
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 25px 0;
+    }
+
+    .folder-grid-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid var(--secondary-color);
+      transition: all 0.3s ease;
+    }
+
+    .folder-grid-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .folder-grid-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .folder-grid-card h4 { color: var(--primary-color); margin-bottom: 8px; }
+    .folder-grid-card code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
+
+    .service-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .service-table th, .service-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .service-table th {
+      background: var(--app-purple);
+      color: white;
+    }
+
+    .service-table tr:nth-child(even) { background: #f8f9fa; }
+    .service-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+      border-top: 1px solid #ddd;
+      margin-top: 40px;
+    }
+
+    footer a { color: var(--app-purple); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚙️ POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">🎯 Parte 2.3: src/app/ - Aplicación Principal</span>
+    </header>
+
+    <nav class="nav-parts">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html" class="active">2.3: src/app/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">2.4: Archivos Base</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html">2.5: Config Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN APP -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🎯 La Carpeta app/ - El Corazón de POLIProject</h2>
+
+      <p>Dentro de <code>src/app/</code> se encuentra <strong>toda la lógica de la aplicación</strong>. Es donde reside el código que hace que POLIProject funcione: componentes, servicios, modelos y páginas.</p>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía Angular: "Componentes + Servicios"</h4>
+        <p>Angular 20 con standalone components sigue una arquitectura clara:</p>
+        <ul>
+          <li><strong>Componentes:</strong> Piezas de UI que el usuario ve e interactúa</li>
+          <li><strong>Servicios:</strong> Lógica compartida, acceso a datos, estado</li>
+          <li><strong>Modelos:</strong> Estructura de datos tipada (TypeScript interfaces)</li>
+          <li><strong>Inyección de Dependencias:</strong> Los servicios se "inyectan" donde se necesitan</li>
+        </ul>
+      </div>
+
+      <div class="tree-structure">
+<span class="folder">src/app/</span>
+├── <span class="folder">components/</span>         <span class="comment"># 🧩 Componentes reutilizables</span>
+│   ├── <span class="folder">texto-seguimiento-seccion/</span>
+│   ├── <span class="folder">barra-de-grupos/</span>
+│   └── <span class="folder">...</span>
+│
+├── <span class="folder">core/</span>               <span class="comment"># 🔧 Servicios core y guards</span>
+│
+├── <span class="folder">models/</span>             <span class="comment"># 📊 Interfaces TypeScript</span>
+│   ├── <span class="file">estudiante.model.ts</span>
+│   ├── <span class="file">evaluacion.model.ts</span>
+│   ├── <span class="file">rubrica.model.ts</span>
+│   └── <span class="file">index.ts</span>            <span class="comment"># Barrel export</span>
+│
+├── <span class="folder">pages/</span>              <span class="comment"># 📄 Páginas de la aplicación</span>
+│   ├── <span class="folder">inicio/</span>
+│   ├── <span class="folder">cursos/</span>
+│   ├── <span class="folder">rubricas/</span>
+│   ├── <span class="folder">calificaciones/</span>
+│   └── <span class="folder">sistema/</span>
+│
+├── <span class="folder">services/</span>           <span class="comment"># ⚙️ Servicios inyectables</span>
+│   ├── <span class="file">data.service.ts</span>
+│   ├── <span class="file">unified-storage.service.ts</span>
+│   ├── <span class="file">seguimiento.service.ts</span>
+│   └── <span class="file">state-manager.service.ts</span>
+│
+├── <span class="folder">styles/</span>             <span class="comment"># 🎨 SCSS compartidos</span>
+│
+├── <span class="folder">tabs/</span>               <span class="comment"># 🔖 Sistema de navegación</span>
+│
+├── <span class="file">app.component.ts</span>    <span class="comment"># Componente raíz</span>
+├── <span class="file">app.component.html</span>
+├── <span class="file">app.component.scss</span>
+└── <span class="file">app.routes.ts</span>       <span class="comment"># Configuración de rutas</span>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ARCHIVOS RAÍZ DE APP -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📋 Archivos Raíz de app/</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon">TS</span>app.component.ts</h4>
+        <p><strong>Propósito:</strong> Componente raíz de la aplicación. Es el <strong>primer componente</strong> que se carga y contiene la estructura general de la app.</p>
+        <p style="margin-top: 10px;"><strong>Función:</strong> Inicializa servicios globales, maneja eventos del ciclo de vida, establece la estructura base del DOM.</p>
+      </div>
+
+      <div class="file-card">
+        <h4><span class="file-icon">HTML</span>app.component.html</h4>
+        <p><strong>Propósito:</strong> Template HTML del componente raíz.</p>
+        <p style="margin-top: 10px;"><strong>Contenido típico:</strong> <code>&lt;ion-app&gt;</code>, <code>&lt;ion-router-outlet&gt;</code> para la navegación.</p>
+      </div>
+
+      <div class="file-card">
+        <h4><span class="file-icon">SCSS</span>app.component.scss</h4>
+        <p><strong>Propósito:</strong> Estilos específicos del componente raíz.</p>
+        <p style="margin-top: 10px;"><strong>Alcance:</strong> Estilos que afectan al layout principal de toda la aplicación.</p>
+      </div>
+
+      <div class="file-card">
+        <h4><span class="file-icon">🗺️</span>app.routes.ts</h4>
+        <p><strong>Propósito:</strong> Define la <strong>configuración de rutas</strong> (routing) de la aplicación.</p>
+        <p style="margin-top: 10px;"><strong>Función:</strong> Mapea URLs a componentes/páginas:</p>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+          <li><code>/tabs/inicio</code> → <code>InicioPage</code></li>
+          <li><code>/tabs/cursos</code> → <code>CursosPage</code></li>
+          <li><code>/tabs/calificaciones</code> → <code>CalificacionesPage</code></li>
+        </ul>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🏠 Analogía: La Casa</h4>
+        <p>Si <code>app/</code> es una casa:</p>
+        <ul>
+          <li><strong>app.component:</strong> Los cimientos y estructura principal</li>
+          <li><strong>app.routes:</strong> Los pasillos que conectan las habitaciones</li>
+          <li><strong>pages/:</strong> Las habitaciones individuales</li>
+          <li><strong>components/:</strong> Los muebles reutilizables</li>
+          <li><strong>services/:</strong> Las tuberías y electricidad (infraestructura invisible)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SUBCARPETAS DE APP -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📂 Subcarpetas de app/</h2>
+
+      <div class="folder-grid">
+        <div class="folder-grid-card">
+          <div class="icon">🧩</div>
+          <h4>components/</h4>
+          <p>Componentes <strong>reutilizables</strong> que se usan en múltiples páginas.</p>
+          <p style="margin-top: 10px;"><code>barra-de-grupos/</code></p>
+          <p><code>texto-seguimiento-seccion/</code></p>
+        </div>
+
+        <div class="folder-grid-card">
+          <div class="icon">🔧</div>
+          <h4>core/</h4>
+          <p>Servicios <strong>fundamentales</strong>, guards de navegación, interceptors HTTP.</p>
+          <p style="margin-top: 10px;">Se cargan una sola vez (singleton).</p>
+        </div>
+
+        <div class="folder-grid-card">
+          <div class="icon">📊</div>
+          <h4>models/</h4>
+          <p>Interfaces y tipos <strong>TypeScript</strong> que definen la estructura de datos.</p>
+          <p style="margin-top: 10px;"><code>Estudiante</code>, <code>Evaluacion</code>, <code>Rubrica</code></p>
+        </div>
+
+        <div class="folder-grid-card">
+          <div class="icon">📄</div>
+          <h4>pages/</h4>
+          <p><strong>Páginas/vistas</strong> de la aplicación. Cada una en su propia carpeta.</p>
+          <p style="margin-top: 10px;"><code>inicio/</code>, <code>cursos/</code>, <code>calificaciones/</code></p>
+        </div>
+
+        <div class="folder-grid-card">
+          <div class="icon">⚙️</div>
+          <h4>services/</h4>
+          <p>Servicios <strong>inyectables</strong> con lógica de negocio y acceso a datos.</p>
+          <p style="margin-top: 10px;"><code>DataService</code>, <code>StorageService</code></p>
+        </div>
+
+        <div class="folder-grid-card">
+          <div class="icon">🎨</div>
+          <h4>styles/</h4>
+          <p>Archivos <strong>SCSS compartidos</strong>: mixins, variables custom, utilities.</p>
+          <p style="margin-top: 10px;">Diferente de theme/ (variables Ionic)</p>
+        </div>
+
+        <div class="folder-grid-card">
+          <div class="icon">🔖</div>
+          <h4>tabs/</h4>
+          <p>Sistema de <strong>navegación por pestañas</strong> de la aplicación.</p>
+          <p style="margin-top: 10px;"><code>tabs.page.ts/html/scss</code></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- MODELS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📊 models/ - Estructura de Datos</h2>
+
+      <div class="folder-card">
+        <h4><span class="icon">📊</span>models/</h4>
+        <p><strong>Propósito:</strong> Define la estructura de datos del dominio mediante <strong>interfaces TypeScript</strong>. Son contratos que garantizan la forma de los datos.</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Types as Documentation"</h4>
+        <p>Las interfaces TypeScript sirven como <strong>documentación ejecutable</strong>:</p>
+        <ul>
+          <li><strong>Auto-documentado:</strong> El código dice qué forma tienen los datos</li>
+          <li><strong>Validación en compilación:</strong> TypeScript detecta errores antes de ejecutar</li>
+          <li><strong>IntelliSense:</strong> VS Code sugiere propiedades automáticamente</li>
+          <li><strong>Refactoring seguro:</strong> Cambiar un tipo muestra todos los lugares afectados</li>
+        </ul>
+      </div>
+
+      <h3>📋 Modelos Principales de POLIProject</h3>
+
+      <table class="service-table">
+        <thead>
+          <tr>
+            <th>Modelo</th>
+            <th>Archivo</th>
+            <th>Propiedades Clave</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Estudiante</strong></td>
+            <td><code>estudiante.model.ts</code></td>
+            <td><code>correo</code>, <code>nombre</code>, <code>apellido</code>, <code>curso</code>, <code>pg</code>, <code>pi</code></td>
+          </tr>
+          <tr>
+            <td><strong>Evaluacion</strong></td>
+            <td><code>evaluacion.model.ts</code></td>
+            <td><code>cursoNombre</code>, <code>entrega</code>, <code>tipo</code>, <code>criterios</code>, <code>puntajeTotal</code></td>
+          </tr>
+          <tr>
+            <td><strong>RubricaDefinicion</strong></td>
+            <td><code>rubrica.model.ts</code></td>
+            <td><code>rubrica_id</code>, <code>criterios</code>, <code>nivelesDetalle</code>, <code>escalaCalificacion</code></td>
+          </tr>
+          <tr>
+            <td><strong>UIState</strong></td>
+            <td><code>ui-state.model.ts</code></td>
+            <td><code>cursoActivo</code>, <code>courseStates</code>, <code>selectedTab</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>💡 Barrel Export:</strong><br>
+        El archivo <code>index.ts</code> re-exporta todos los modelos, permitiendo imports limpios:
+        <pre style="margin-top: 10px; background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 6px;"><span style="color: #569cd6;">import</span> { Estudiante, Evaluacion, RubricaDefinicion } <span style="color: #569cd6;">from</span> <span style="color: #ce9178;">'@app/models'</span>;</pre>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SERVICES -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>⚙️ services/ - Lógica de Negocio</h2>
+
+      <div class="folder-card">
+        <h4><span class="icon">⚙️</span>services/</h4>
+        <p><strong>Propósito:</strong> Servicios inyectables que manejan <strong>lógica de negocio</strong>, <strong>acceso a datos</strong>, y <strong>estado de la aplicación</strong>.</p>
+        <p style="margin-top: 10px;"><strong>Patrón:</strong> Singleton con <code>providedIn: 'root'</code></p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Separation of Concerns"</h4>
+        <p>Los servicios separan la <strong>lógica</strong> de la <strong>presentación</strong>:</p>
+        <ul>
+          <li><strong>Componentes:</strong> Solo se preocupan por mostrar datos y capturar eventos</li>
+          <li><strong>Servicios:</strong> Procesan datos, aplican reglas, se comunican con storage</li>
+          <li><strong>Beneficio:</strong> Componentes simples, lógica testeable y reutilizable</li>
+        </ul>
+      </div>
+
+      <h3>🔧 Servicios Principales de POLIProject</h3>
+
+      <table class="service-table">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Responsabilidad</th>
+            <th>Observables Clave</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DataService</strong></td>
+            <td>Gestión centralizada de datos. CRUD de cursos, estudiantes, evaluaciones.</td>
+            <td><code>cursos$</code>, <code>evaluaciones$</code>, <code>uiState$</code></td>
+          </tr>
+          <tr>
+            <td><strong>UnifiedStorageService</strong></td>
+            <td>Abstracción de almacenamiento. SQLite en móvil, IndexedDB en web.</td>
+            <td>N/A (métodos async)</td>
+          </tr>
+          <tr>
+            <td><strong>SeguimientoService</strong></td>
+            <td>Estado del panel de seguimiento. Comunicación entre componentes.</td>
+            <td><code>seguimientoActual$</code>, <code>grupoSeleccionado$</code></td>
+          </tr>
+          <tr>
+            <td><strong>StateManagerService</strong></td>
+            <td>Gestión de estado de evaluaciones. Undo/redo, persistencia.</td>
+            <td><code>currentState$</code>, <code>canUndo$</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="project-box">
+        <h4>📋 Flujo de Datos en POLIProject:</h4>
+        <ol style="margin-left: 20px; line-height: 2;">
+          <li><strong>Componente</strong> llama a <code>DataService.guardarEvaluacion(eval)</code></li>
+          <li><strong>DataService</strong> valida los datos</li>
+          <li><strong>DataService</strong> usa <code>UnifiedStorageService</code> para persistir</li>
+          <li><strong>DataService</strong> actualiza su <code>BehaviorSubject</code></li>
+          <li>Todos los <strong>subscriptores</strong> reciben el nuevo dato automáticamente</li>
+        </ol>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🏭 Analogía: La Fábrica</h4>
+        <p>Los servicios son como <strong>departamentos de una fábrica</strong>:</p>
+        <ul>
+          <li><strong>DataService:</strong> El almacén central - guarda y distribuye productos (datos)</li>
+          <li><strong>UnifiedStorageService:</strong> El sistema de inventario - sabe dónde guardar físicamente</li>
+          <li><strong>SeguimientoService:</strong> El sistema de intercomunicadores - transmite información entre departamentos</li>
+          <li><strong>StateManagerService:</strong> El control de calidad - puede deshacer errores</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- PAGES Y COMPONENTS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>📄 pages/ y 🧩 components/</h2>
+
+      <div class="folder-card">
+        <h4><span class="icon">📄</span>pages/</h4>
+        <p><strong>Propósito:</strong> Páginas/vistas completas de la aplicación. Cada página representa una <strong>pantalla navegable</strong>.</p>
+        <p style="margin-top: 10px;"><strong>Estructura típica:</strong> <code>nombre.page.ts</code>, <code>nombre.page.html</code>, <code>nombre.page.scss</code></p>
+      </div>
+
+      <div class="folder-card">
+        <h4><span class="icon">🧩</span>components/</h4>
+        <p><strong>Propósito:</strong> Componentes <strong>reutilizables</strong> que se usan en múltiples páginas. Piezas de UI modulares.</p>
+        <p style="margin-top: 10px;"><strong>Característica:</strong> Componentes standalone que se importan directamente.</p>
+      </div>
+
+      <h3>📋 Páginas de POLIProject</h3>
+
+      <table class="service-table">
+        <thead>
+          <tr>
+            <th>Página</th>
+            <th>Ruta</th>
+            <th>Función</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>InicioPage</code></td>
+            <td>/tabs/inicio</td>
+            <td>Dashboard principal, resumen de cursos y evaluaciones pendientes</td>
+          </tr>
+          <tr>
+            <td><code>CursosPage</code></td>
+            <td>/tabs/cursos</td>
+            <td>Gestión de cursos y estudiantes, importación CSV</td>
+          </tr>
+          <tr>
+            <td><code>RubricasPage</code></td>
+            <td>/tabs/rubricas</td>
+            <td>Gestión de definiciones de rúbricas, importación JSON/TXT</td>
+          </tr>
+          <tr>
+            <td><code>CalificacionesPage</code></td>
+            <td>/tabs/calificaciones</td>
+            <td>Evaluación de estudiantes con rúbricas, panel de seguimiento</td>
+          </tr>
+          <tr>
+            <td><code>SistemaPage</code></td>
+            <td>/tabs/sistema</td>
+            <td>Configuración, backup/restore, información de la app</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>💡 Diferencia Page vs Component:</strong>
+        <ul style="margin-top: 10px; margin-left: 20px;">
+          <li><strong>Page:</strong> Pantalla completa, tiene su propia ruta, se navega hacia ella</li>
+          <li><strong>Component:</strong> Pieza reutilizable, se incluye dentro de pages u otros components</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- TABS -->
+    <!-- ============================================ -->
+    <section class="section">
+      <h2>🔖 tabs/ - Sistema de Navegación</h2>
+
+      <div class="folder-card">
+        <h4><span class="icon">🔖</span>tabs/</h4>
+        <p><strong>Propósito:</strong> Implementa el sistema de <strong>navegación por pestañas</strong> (tabs) de la aplicación.</p>
+        <p style="margin-top: 10px;"><strong>Contenido:</strong> <code>tabs.page.ts/html/scss</code> que define la estructura de tabs.</p>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 Tabs de POLIProject:</h4>
+        <ul style="margin-left: 20px; line-height: 2;">
+          <li>🏠 <strong>Inicio</strong> - Dashboard principal</li>
+          <li>📚 <strong>Cursos</strong> - Gestión de cursos</li>
+          <li>📋 <strong>Rúbricas</strong> - Definiciones de rúbricas</li>
+          <li>✅ <strong>Calificaciones</strong> - Evaluación con rúbricas</li>
+          <li>⚙️ <strong>Sistema</strong> - Configuración</li>
+        </ul>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Navigation as State"</h4>
+        <p>En Ionic/Angular, la navegación es parte del <strong>estado de la aplicación</strong>:</p>
+        <ul>
+          <li>Cada tab mantiene su propio stack de navegación</li>
+          <li>El estado del tab se preserva al cambiar entre tabs</li>
+          <li>La URL refleja la ubicación actual (deep linking)</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 2.3 de 5 | Politécnico Grancolombiano</p>
+      <p style="margin-top: 10px;">
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">← Anterior: 2.2 docs/ y src/</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">Siguiente: 2.4 Archivos Base →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
