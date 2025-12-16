@@ -2,7 +2,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
@@ -22,10 +21,10 @@
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@core/*": ["src/app/core/*"],
-      "@models/*": ["src/app/models/*"],
-      "@services/*": ["src/app/services/*"]
+      "@app/*": ["./src/app/*"],
+      "@core/*": ["./src/app/core/*"],
+      "@models/*": ["./src/app/models/*"],
+      "@services/*": ["./src/app/services/*"]
     }
   },
   "angularCompilerOptions": {

@@ -9,7 +9,6 @@ import {
   IonIcon,
   IonChip,
   IonLabel,
-  ToastController,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -53,6 +52,7 @@ import {
   createOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
+import { ToastService } from '../../services/toast.service';
 
 interface CsvTabla {
   headers: string[];
@@ -112,7 +112,7 @@ interface ArchivoCalificacionesVisualizacion {
 })
 export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
   private dataService = inject(DataService);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private alertController = inject(AlertController);
 
   cursoCalificacionesSeleccionado: string | null = null;
@@ -380,13 +380,7 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       // IMPORTANTE: Usar csvOriginalLineas que contiene los valores actualizados
       // Este array se actualiza cada vez que se edita una celda mediante actualizarLineaCSV()
       if (this.csvOriginalLineas.length === 0) {
-        const toast = await this.toastController.create({
-          message: 'No hay datos para exportar',
-          duration: 2000,
-          color: 'warning',
-          position: 'top'
-        });
-        await toast.present();
+        await this.toastService.warning('No hay datos para exportar');
         return;
       }
 
@@ -410,25 +404,10 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       a.click();
       window.URL.revokeObjectURL(url);
 
-      const toast = await this.toastController.create({
-        message: `Calificaciones exportadas (${this.csvOriginalLineas.length} filas)`,
-        duration: 2000,
-        color: 'success',
-        position: 'top',
-        icon: 'checkmark-circle'
-      });
-      await toast.present();
+      await this.toastService.success(`Calificaciones exportadas (${this.csvOriginalLineas.length} filas)`);
     } catch (error) {
       Logger.error('Error exportando calificaciones:', error);
-
-      const toast = await this.toastController.create({
-        message: 'Error al exportar calificaciones',
-        duration: 3000,
-        color: 'danger',
-        position: 'top',
-        icon: 'alert-circle'
-      });
-      await toast.present();
+      await this.toastService.error('Error al exportar calificaciones');
     }
   }
 
@@ -536,14 +515,6 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
 
       // Actualizar también en el archivo de calificaciones almacenado
       await this.actualizarCalificacionEnStorage(fila);
-
-      const toast = await this.toastController.create({
-        message: 'Calificación actualizada',
-        duration: 1500,
-        color: 'success',
-        position: 'top'
-      });
-      await toast.present();
     }
 
     this.cancelarEdicion();
@@ -720,14 +691,6 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
 
       // Guardar en storage (base de datos)
       await this.guardarCambiosEnStorage();
-
-      const toast = await this.toastController.create({
-        message: 'Calificación actualizada',
-        duration: 1500,
-        color: 'success',
-        position: 'top'
-      });
-      await toast.present();
     }
 
     this.cancelarEdicion();
@@ -940,8 +903,9 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
 
   private async eliminarCalificaciones(codigo: string) {
     const alert = await this.alertController.create({
-      header: '⚠️ Confirmar Eliminación de Calificaciones',
+      header: '🗑️ Confirmar Eliminación',
       message: '¿Estás seguro de eliminar el archivo de calificaciones de Canvas?<br><br><strong>Nota:</strong> Esta acción solo elimina el archivo cargado. Las evaluaciones realizadas con rúbricas se mantienen intactas.<br><br>Podrás volver a cargar otro archivo más tarde.',
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -974,27 +938,11 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
                   this.csvCalificacionesTabla = null;
                   this.archivoCalificacionesVisualizacion = null;
                 }
-
-                const toast = await this.toastController.create({
-                  message: 'Archivo de calificaciones eliminado',
-                  duration: 2000,
-                  color: 'success',
-                  position: 'top',
-                  icon: 'checkmark-circle'
-                });
-                await toast.present();
+                await this.toastService.success('Archivo de calificaciones eliminado');
               }
             } catch (error) {
               Logger.error('Error eliminando archivo:', error);
-
-              const toast = await this.toastController.create({
-                message: 'Error al eliminar archivo',
-                duration: 3000,
-                color: 'danger',
-                position: 'top',
-                icon: 'alert-circle'
-              });
-              await toast.present();
+              await this.toastService.error('Error al eliminar archivo');
             }
           }
         }
@@ -1006,15 +954,6 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
 
   async recargarCalificaciones(codigo: string) {
     await this.cargarCalificacionesVisualizacion(codigo);
-
-    const toast = await this.toastController.create({
-      message: 'Calificaciones recargadas',
-      duration: 1500,
-      color: 'success',
-      position: 'top',
-      icon: 'refresh-outline'
-    });
-    await toast.present();
   }
 
   // Método para determinar si una columna debe mostrarse

@@ -24,7 +24,6 @@ import {
   IonText,
   MenuController,
   AlertController,
-  ToastController,
   LoadingController,
   PopoverController,
   ModalController,
@@ -89,6 +88,7 @@ import {
   alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
+import { ToastService } from '../../services/toast.service';
 import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
 import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/evaluacion-rubrica.component';
 
@@ -325,7 +325,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private menuController = inject(MenuController);
   private alertController = inject(AlertController);
   private seguimientoService = inject(SeguimientoService);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private loadingController = inject(LoadingController);
   private popoverController = inject(PopoverController);
   private gestureCtrl = inject(GestureController);
@@ -1129,8 +1129,9 @@ export class InicioPage implements OnInit, OnDestroy {
     const nombreActual = courseState?.metadata?.nombre || this.cursoActivo;
 
     const alert = await this.alertController.create({
-      header: 'Actualizar Nombre del Curso',
+      header: '✏️ Actualizar Nombre del Curso',
       message: 'El código del curso no cambiará, solo su nombre descriptivo:',
+      cssClass: 'alert-confirm',
       inputs: [
         {
           name: 'nuevoNombre',
@@ -1151,14 +1152,7 @@ export class InicioPage implements OnInit, OnDestroy {
               try {
                 await this.dataService.actualizarNombreCurso(this.cursoActivo!, data.nuevoNombre.trim());
                 // NO cambiamos cursoActivo porque el código único no cambia
-                const toast = await this.toastController.create({
-                  message: 'Nombre actualizado correctamente',
-                  duration: 2000,
-                  color: 'success',
-                  position: 'top',
-                  cssClass: 'toast-success'
-                });
-                await toast.present();
+                await this.toastService.success('Nombre actualizado correctamente');
               } catch (error: any) {
                 this.mostrarError('Error al actualizar nombre', error.message);
               }
@@ -1190,17 +1184,7 @@ export class InicioPage implements OnInit, OnDestroy {
 
     try {
       await this.dataService.sincronizarArchivoCalificaciones(this.cursoActivo);
-
-
-
-      const toast = await this.toastController.create({
-        message: '✅ Archivo de calificaciones sincronizado correctamente\n📊 Los cambios ya están disponibles en Canvas',
-        duration: 4000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.toastService.success('Archivo de calificaciones sincronizado correctamente', undefined, 4000);
     } catch (error) {
       Logger.error('Error sincronizando archivo:', error);
       await this.mostrarError('Error', 'No se pudo sincronizar el archivo de calificaciones');
@@ -1209,8 +1193,9 @@ export class InicioPage implements OnInit, OnDestroy {
 
   private async mostrarError(titulo: string, mensaje: string) {
     const alert = await this.alertController.create({
-      header: titulo,
+      header: '❌ ' + titulo,
       message: mensaje,
+      cssClass: 'alert-danger',
       buttons: ['OK']
     });
     await alert.present();
@@ -1221,6 +1206,7 @@ export class InicioPage implements OnInit, OnDestroy {
       const alert = await this.alertController.create({
         header: titulo,
         message: mensaje,
+        cssClass: 'alert-confirm',
         buttons: [
           {
             text: 'Cancelar',
@@ -2425,8 +2411,9 @@ export class InicioPage implements OnInit, OnDestroy {
       : `¿Estás seguro de que deseas eliminar la evaluación ${tipoTexto} de este estudiante ? Esta acción no se puede deshacer.`;
 
     const alert = await this.alertController.create({
-      header: 'Confirmar borrado',
+      header: '🗑️ Confirmar Borrado',
       message: mensaje,
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -2685,8 +2672,9 @@ export class InicioPage implements OnInit, OnDestroy {
 
   private async mostrarMensajeExito(mensaje: string) {
     const alert = await this.alertController.create({
-      header: 'Éxito',
+      header: '✅ Éxito',
       message: mensaje,
+      cssClass: 'alert-success',
       buttons: ['OK']
     });
     await alert.present();
@@ -2971,8 +2959,9 @@ export class InicioPage implements OnInit, OnDestroy {
     }
 
     const alert = await this.alertController.create({
-      header: 'Confirmar eliminación',
+      header: '🗑️ Confirmar Eliminación',
       message: '¿Está seguro de eliminar este comentario?',
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -2989,15 +2978,7 @@ export class InicioPage implements OnInit, OnDestroy {
             );
             this.cargarComentariosGrupo();
             Logger.log('🗑️ [InicioPage] Comentario eliminado');
-
-            const toast = await this.toastController.create({
-              message: 'Comentario eliminado',
-              duration: 2000,
-              color: 'success',
-              position: 'top',
-              cssClass: 'toast-success'
-            });
-            await toast.present();
+            await this.toastService.success('Comentario eliminado');
           }
         }
       ]
@@ -3045,15 +3026,7 @@ export class InicioPage implements OnInit, OnDestroy {
     this.cargarComentariosGrupo();
 
     Logger.log('✅ [InicioPage] Comentario actualizado exitosamente');
-
-    const toast = await this.toastController.create({
-      message: 'Comentario actualizado',
-      duration: 2000,
-      color: 'success',
-      position: 'top',
-      cssClass: 'toast-success'
-    });
-    await toast.present();
+    await this.toastService.success('Comentario actualizado');
   }
 
   /**
@@ -3537,25 +3510,6 @@ export class InicioPage implements OnInit, OnDestroy {
     }
 
     this.estudianteSeleccionado = correo;
-
-    // Mostrar correo en un toast
-    const estudiante = this.estudiantesFiltrados.find(e => e.correo === correo);
-    if (estudiante) {
-      const toast = await this.toastController.create({
-        message: `📧 ${estudiante.nombres} ${estudiante.apellidos}: ${correo} `,
-        duration: 3000,
-        position: 'bottom',
-        color: 'primary',
-        buttons: [
-          {
-            text: 'Cerrar',
-            role: 'cancel'
-          }
-        ]
-      });
-      await toast.present();
-    }
-
     this.cdr.detectChanges();
   }
 
@@ -3999,15 +3953,7 @@ export class InicioPage implements OnInit, OnDestroy {
         const content = await this.leerArchivoTexto(file);
         await this.procesarCSVSumatorias(content);
         await loading.dismiss();
-
-        const toast = await this.toastController.create({
-          message: '✅ CSV de sumatorias importado y sincronizado con Canvas',
-          duration: 4000,
-          position: 'top',
-          color: 'success',
-          cssClass: 'toast-success'
-        });
-        await toast.present();
+        await this.toastService.success('CSV de sumatorias importado y sincronizado', undefined, 4000);
 
       } catch (error) {
         await loading.dismiss();
@@ -4169,14 +4115,7 @@ export class InicioPage implements OnInit, OnDestroy {
    */
   async exportarCSVSumatorias() {
     if (!this.cursoActivo || this.estudiantesActuales.length === 0) {
-      const toast = await this.toastController.create({
-        message: 'No hay datos para exportar',
-        duration: 3000,
-        position: 'top',
-        color: 'warning',
-        cssClass: 'toast-warning'
-      });
-      await toast.present();
+      await this.toastService.warning('No hay datos para exportar');
       return;
     }
 
@@ -4221,29 +4160,11 @@ export class InicioPage implements OnInit, OnDestroy {
       }
 
       // Mostrar confirmación
-      const toast = await this.toastController.create({
-        message: `📊 CSV de Sumatorias exportado: ${nombreArchivo} `,
-        duration: 4000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success',
-        buttons: [{
-          text: 'OK',
-          role: 'cancel'
-        }]
-      });
-      await toast.present();
+      await this.toastService.success(`CSV de Sumatorias exportado: ${nombreArchivo}`, undefined, 4000);
 
     } catch (error) {
       Logger.error('Error al exportar CSV:', error);
-      const toast = await this.toastController.create({
-        message: 'Error al exportar CSV: ' + (error as Error).message,
-        duration: 4000,
-        position: 'top',
-        color: 'danger',
-        cssClass: 'toast-danger'
-      });
-      await toast.present();
+      await this.toastService.error('Error al exportar CSV: ' + (error as Error).message, undefined, 4000);
     }
   }
 
@@ -4358,9 +4279,10 @@ export class InicioPage implements OnInit, OnDestroy {
     const lineas = archivo.contenidoOriginal.split('\n');
     const previewText = lineas.slice(0, 11).join('\n');  // Primeras 11 líneas
     const totalLineas = lineas.length; const alert = await this.alertController.create({
-      header: 'Vista Previa Canvas',
-      subHeader: `${archivo.nombre} (${totalLineas} líneas) - Curso: ${this.cursoActivo} `,
-      message: `< pre style = "font-size: 0.7rem; overflow-x: auto; max-width: 100%;" > ${this.escapeHtml(previewText)} </pre>`,
+      header: '📄 Vista Previa Canvas',
+      subHeader: `${archivo.nombre} (${totalLineas} líneas) - Curso: ${this.cursoActivo}`,
+      message: `<pre style="font-size: 0.7rem; overflow-x: auto; max-width: 100%;">${this.escapeHtml(previewText)}</pre>`,
+      cssClass: 'alert-info',
       buttons: [
         {
           text: 'Exportar',
@@ -4402,14 +4324,7 @@ export class InicioPage implements OnInit, OnDestroy {
       link.click();
       window.URL.revokeObjectURL(link.href);
 
-      const toast = await this.toastController.create({
-        message: `📥 Archivo Canvas exportado: ${nombreArchivo}`,
-        duration: 3000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.toastService.success(`Archivo Canvas exportado: ${nombreArchivo}`);
 
     } catch (error) {
       Logger.error('Error exportando Canvas:', error);
@@ -4509,38 +4424,17 @@ export class InicioPage implements OnInit, OnDestroy {
 
       await loading.dismiss();
 
-      const toast = await this.toastController.create({
-        message: `✅ Calificaciones actualizadas en Canvas\n📊 Archivo: ${this.getArchivoCanvasInfo()?.nombre}\n🎯 ${this.estudiantesActuales.length} estudiantes procesados`,
-        duration: 5000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success',
-        buttons: [{
-          text: 'OK',
-          role: 'cancel'
-        }]
-      });
-      await toast.present();
+      await this.toastService.success(
+        `Calificaciones actualizadas - Archivo: ${this.getArchivoCanvasInfo()?.nombre} - ${this.estudiantesActuales.length} estudiantes procesados`,
+        undefined,
+        5000
+      );
 
     } catch (error) {
       await loading.dismiss();
       Logger.error('Error en actualización Canvas:', error);
-
-      const toast = await this.toastController.create({
-        message: '❌ Error actualizando Canvas: ' + (error as Error).message,
-        duration: 4000,
-        position: 'top',
-        color: 'danger',
-        cssClass: 'toast-danger'
-      });
-      await toast.present();
+      await this.toastService.error('Error actualizando Canvas: ' + (error as Error).message, undefined, 4000);
     }
   }
 }
-
-
-
-
-
-
 

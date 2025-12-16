@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -17,16 +17,21 @@ import {
   IonItem,
   IonLabel,
   IonChip,
-  ToastController,
+  IonSegment,
+  IonSegmentButton,
   AlertController,
   LoadingController,
   ModalController,
-  ViewWillEnter
+  ViewWillEnter,
+  ViewWillLeave
 } from '@ionic/angular/standalone';
 import { ExportService } from '../../services/export.service';
 import { DataService } from '../../services/data.service';
+import { ToastService } from '../../services/toast.service';
 import { RubricaDefinicion } from '../../models';
 import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/evaluacion-rubrica.component';
+import { RubricaEditorComponent } from '../../components/rubrica-editor/rubrica-editor.component';
+import { RubricaVersionHistoryComponent } from '../../components/rubrica-version-history/rubrica-version-history.component';
 import { addIcons } from 'ionicons';
 import {
   // Iconos filled
@@ -47,6 +52,7 @@ import {
   list,
   trophy,
   clipboard,
+  create,
   // Iconos outline
   documentTextOutline,
   cloudUploadOutline,
@@ -70,7 +76,10 @@ import {
   documentOutline,
   downloadOutline,
   phonePortraitOutline,
-  pencilOutline
+  pencilOutline,
+  addOutline,
+  gitBranchOutline,
+  copyOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -92,48 +101,190 @@ import {
     IonList,
     IonItem,
     IonLabel,
-    IonChip,
+    IonSegment,
+    IonSegmentButton,
     CommonModule,
-    FormsModule
-  ]
+    FormsModule,
+    RubricaEditorComponent,
+    RubricaVersionHistoryComponent
+]
 })
-export class RubricasPage implements OnInit, ViewWillEnter {
+export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   private exportService = inject(ExportService);
   private dataService = inject(DataService);
   private alertController = inject(AlertController);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private loadingController = inject(LoadingController);
   private modalController = inject(ModalController);
 
+  /** Referencia al input de archivo para importación directa */
+  @ViewChild('rubricaFileInput') rubricaFileInput!: ElementRef<HTMLInputElement>;
+
+  /** Lista de rúbricas disponibles */
   rubricas: RubricaDefinicion[] = [];
+  /** Rúbrica actualmente seleccionada para mostrar detalle */
   rubricaSeleccionada: RubricaDefinicion | null = null;
-  modoEdicion = false;
-  rubricaFileName = '';
-  rubricaCargada: RubricaDefinicion | null = null;
-  cursosDisponibles: any[] = [];
+  /** Indica si está en modo selección de tipo de creación */
+  modoSeleccionCrear = false;
+  /** Indica si el texto informativo está expandido */
   infoExpanded = false;
+  /** Indica si está en modo edición (importar archivo) */
+  modoEdicion = false;
+  /** Indica si está en modo creación (formulario inline) */
+  modoCreacion = false;
+  /** Tab activo en el panel de detalle ('detalle' | 'historial') */
+  tabActivo: 'detalle' | 'historial' = 'detalle';
+  /** Código de categoría para el historial de versiones */
+  codigoCategoriaHistorial: string = '';
+  /** Rúbrica en edición para el formulario inline */
+  rubricaEnEdicion: RubricaDefinicion | null = null;
+  /** Nombre del archivo de rúbrica cargado */
+  rubricaFileName = '';
+  /** Rúbrica cargada desde archivo pendiente de guardar */
+  rubricaCargada: RubricaDefinicion | null = null;
+  /** Cursos disponibles para asociar rúbricas */
+  cursosDisponibles: Array<{ codigo: string; nombre: string; titulo: string }> = [];
+
+  /** Columna actual de ordenamiento */
+  columnaOrdenamiento: 'nombre' | 'codigo' | 'curso' | 'entrega' | null = null;
+  /** Dirección del ordenamiento */
+  direccionOrdenamiento: 'asc' | 'desc' = 'asc';
+
+  /** Orden de entregas para ordenamiento */
+  private readonly ORDEN_ENTREGAS: Record<string, number> = {
+    'E1': 1, 'E2': 2, 'EF': 3
+  };
+
+  /** Getter que devuelve las rúbricas ordenadas */
+  get rubricasOrdenadas(): RubricaDefinicion[] {
+    if (!this.columnaOrdenamiento) {
+      return this.rubricas;
+    }
+
+    return [...this.rubricas].sort((a, b) => {
+      let comparacion = 0;
+
+      switch (this.columnaOrdenamiento) {
+        case 'entrega':
+          // Ordenar por: Curso -> Tipo (PG/PI) -> Entrega (E1, E2, EF)
+          const cursoA = a.cursosCodigos?.[0] || '';
+          const cursoB = b.cursosCodigos?.[0] || '';
+          comparacion = cursoA.localeCompare(cursoB);
+
+          if (comparacion === 0) {
+            // Mismo curso, ordenar por tipo (PG primero, luego PI)
+            const tipoA = a.tipoRubrica === 'PG' ? 0 : 1;
+            const tipoB = b.tipoRubrica === 'PG' ? 0 : 1;
+            comparacion = tipoA - tipoB;
+          }
+
+          if (comparacion === 0) {
+            // Mismo tipo, ordenar por entrega
+            const ordenA = this.ORDEN_ENTREGAS[a.tipoEntrega || 'E1'] || 99;
+            const ordenB = this.ORDEN_ENTREGAS[b.tipoEntrega || 'E1'] || 99;
+            comparacion = ordenA - ordenB;
+          }
+          break;
+
+        case 'nombre':
+          comparacion = (a.nombre || '').localeCompare(b.nombre || '');
+          break;
+
+        case 'codigo':
+          comparacion = (a.codigo || '').localeCompare(b.codigo || '');
+          break;
+
+        case 'curso':
+          const nombreCursoA = this.obtenerNombreCurso(a);
+          const nombreCursoB = this.obtenerNombreCurso(b);
+          comparacion = nombreCursoA.localeCompare(nombreCursoB);
+          break;
+      }
+
+      return this.direccionOrdenamiento === 'asc' ? comparacion : -comparacion;
+    });
+  }
+
+  /** Cambia el ordenamiento al hacer clic en una cabecera */
+  ordenarPor(columna: 'nombre' | 'codigo' | 'curso' | 'entrega'): void {
+    if (this.columnaOrdenamiento === columna) {
+      // Si ya está ordenado por esta columna, cambiar dirección o quitar ordenamiento
+      if (this.direccionOrdenamiento === 'asc') {
+        this.direccionOrdenamiento = 'desc';
+      } else {
+        // Quitar ordenamiento
+        this.columnaOrdenamiento = null;
+        this.direccionOrdenamiento = 'asc';
+      }
+    } else {
+      // Nueva columna de ordenamiento
+      this.columnaOrdenamiento = columna;
+      this.direccionOrdenamiento = 'asc';
+    }
+  }
+
+  /** Obtiene el icono de ordenamiento para una columna */
+  getIconoOrdenamiento(columna: string): string {
+    if (this.columnaOrdenamiento !== columna) {
+      return '';
+    }
+    return this.direccionOrdenamiento === 'asc' ? '↑' : '↓';
+  }
+
+  /** Indica si hay contenido activo que requiere contraer la lista de rúbricas */
+  get tieneContenidoActivo(): boolean {
+    return this.rubricaSeleccionada !== null ||
+           this.modoEdicion ||
+           this.modoCreacion ||
+           this.rubricaCargada !== null;
+  }
+
+  /** Obtiene las versiones de una rúbrica por su código base */
+  obtenerVersionesRubrica(rubrica: RubricaDefinicion): RubricaDefinicion[] {
+    if (!rubrica.codigo) return [rubrica];
+
+    // Extraer código base (sin versión)
+    const codigoBase = rubrica.codigo.replace(/V\d+$/, '');
+
+    return this.rubricas
+      .filter(r => r.codigo?.startsWith(codigoBase + 'V'))
+      .sort((a, b) => (b.version || 0) - (a.version || 0)); // Orden descendente por versión
+  }
 
   // Imports de iconos
   constructor() {
     addIcons({
       // Filled icons
       phonePortrait, documentText, cloudUpload, closeCircle, addCircle, close, save,
-      calendar, pencil, trash, informationCircle, school, library, checkbox, list, trophy, clipboard,
+      calendar, pencil, trash, informationCircle, school, library, checkbox, list, trophy, clipboard, create,
       // Outline icons
       addCircleOutline, closeOutline, saveOutline, calendarOutline, createOutline,
       trashOutline, informationCircleOutline, schoolOutline, documentTextOutline,
       listOutline, cloudUploadOutline, documentsOutline, eyeOutline, eyeOffOutline,
       timeOutline, barChartOutline, peopleOutline, trophyOutline, documentOutline,
-      downloadOutline, phonePortraitOutline, checkboxOutline
+      downloadOutline, phonePortraitOutline, checkboxOutline, pencilOutline, addOutline,
+      gitBranchOutline, copyOutline
     });
-  }
-
-  ngOnInit() {
   }
 
   ionViewWillEnter() {
     this.cargarRubricas();
     this.cargarCursosDisponibles();
+    // Restaurar estado de modoSeleccionCrear desde UIState
+    const uiState = this.dataService.getUIState();
+    if (uiState.rubricasModoSeleccionCrear) {
+      this.modoSeleccionCrear = true;
+    }
+  }
+
+  /**
+   * Ciclo de vida Ionic: se ejecuta cuando la vista está a punto de salir.
+   * Ideal para limpiar recursos que no deben estar activos cuando la página no está visible.
+   * @see https://ionicframework.com/docs/angular/lifecycle
+   */
+  ionViewWillLeave() {
+    // Cerrar paneles expandidos al salir de la vista
+    this.infoExpanded = false;
   }
 
   cargarRubricas() {
@@ -155,15 +306,180 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     });
   }
 
+  /**
+   * Obtiene el nombre del curso asociado a la rúbrica.
+   * Como la rúbrica aplica al curso en general (no a grupos específicos),
+   * solo muestra el nombre base del curso sin indicar grupos individuales.
+   */
+  obtenerNombreCurso(rubrica: RubricaDefinicion): string {
+    // Primero intentar obtener el nombre desde cursoAsociado
+    if (rubrica.cursoAsociado) {
+      return rubrica.cursoAsociado;
+    }
+
+    // Si no hay cursoAsociado, usar descripcion
+    if (rubrica.descripcion) {
+      return rubrica.descripcion;
+    }
+
+    // Fallback: buscar en cursosCodigos
+    if (!rubrica.cursosCodigos || rubrica.cursosCodigos.length === 0) {
+      return '—';
+    }
+
+    // Buscar el primer curso para obtener el nombre base
+    const primerCodigo = rubrica.cursosCodigos[0];
+    const curso = this.cursosDisponibles.find(c => c.codigo === primerCodigo);
+
+    if (curso && curso.nombre) {
+      return curso.nombre;
+    }
+
+    return primerCodigo;
+  }
+
+  /**
+   * Obtiene el código base de la rúbrica sin la versión.
+   * Ejemplo: "RGE1-EPMV2" → "RGE1-EPM"
+   */
+  obtenerCodigoBase(rubrica: RubricaDefinicion): string {
+    if (!rubrica.codigo) {
+      return rubrica.id || '—';
+    }
+    // Remover la versión (V1, V2, etc.) del final
+    return rubrica.codigo.replace(/V\d+$/, '');
+  }
+
+  /**
+   * Activa o desactiva una versión de rúbrica.
+   * Al activar, muestra selector de versiones disponibles.
+   * @param rubrica - Rúbrica a activar/desactivar
+   * @param event - Evento del click (para stopPropagation)
+   */
+  async toggleActivaRubrica(rubrica: RubricaDefinicion, event?: Event): Promise<void> {
+    event?.stopPropagation();
+
+    const estaActiva = rubrica.activa !== false;
+
+    // Si ya está activa, preguntar si quiere desactivar
+    if (estaActiva) {
+      const alert = await this.alertController.create({
+        header: '⚠️ Desactivar Rúbrica',
+        message: `¿Deseas desactivar <strong>${rubrica.codigo}</strong>?<br><br>
+                  <small>La rúbrica quedará inactiva y no podrá ser usada para evaluaciones.</small>`,
+        cssClass: 'alert-warning',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          },
+          {
+            text: 'Desactivar',
+            cssClass: 'alert-button-danger',
+            handler: async () => {
+              rubrica.activa = false;
+              await this.dataService.guardarRubrica(rubrica);
+              this.cargarRubricas();
+              await this.mostrarToast(`Rúbrica ${rubrica.codigo} desactivada`, 'warning');
+            }
+          }
+        ]
+      });
+      await alert.present();
+      return;
+    }
+
+    // Si está inactiva, mostrar selector de versiones para activar
+    await this.mostrarSelectorVersiones(rubrica);
+  }
+
+  /**
+   * Muestra un selector con todas las versiones disponibles para activar
+   */
+  private async mostrarSelectorVersiones(rubrica: RubricaDefinicion): Promise<void> {
+    const versiones = this.obtenerVersionesRubrica(rubrica);
+
+    // Si solo hay una versión, activar directamente
+    if (versiones.length <= 1) {
+      await this.activarVersionDirectamente(rubrica);
+      return;
+    }
+
+    // Encontrar la versión actualmente activa
+    const versionActiva = versiones.find(v => v.activa !== false);
+
+    // Crear inputs de tipo radio para cada versión
+    const inputs = versiones.map(v => ({
+      type: 'radio' as const,
+      label: `v${v.version || 1} - ${v.nombre}${v.activa !== false ? ' (Activa)' : ''}`,
+      value: v.id,
+      checked: v.id === rubrica.id // Pre-seleccionar la versión clickeada
+    }));
+
+    const alert = await this.alertController.create({
+      header: '🔄 Activar Versión',
+      subHeader: `Código: ${rubrica.codigo?.replace(/V\d+$/, '')}`,
+      message: `<small>Selecciona la versión que deseas activar.<br>Las demás versiones se desactivarán automáticamente.</small>`,
+      cssClass: 'alert-selector-version',
+      inputs,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Activar',
+          handler: async (versionId: string) => {
+            if (!versionId) {
+              this.mostrarToast('Selecciona una versión', 'warning');
+              return false;
+            }
+            await this.dataService.activarVersionRubrica(versionId);
+            this.cargarRubricas();
+            const versionActivada = versiones.find(v => v.id === versionId);
+            await this.mostrarToast(`✅ Versión v${versionActivada?.version || 1} activada`, 'success');
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Activa una versión directamente sin mostrar selector
+   */
+  private async activarVersionDirectamente(rubrica: RubricaDefinicion): Promise<void> {
+    const alert = await this.alertController.create({
+      header: '🔄 Activar Versión',
+      message: `¿Deseas activar <strong>${rubrica.codigo}</strong>?<br><br>
+                <small>Se desactivarán las demás versiones del mismo tipo automáticamente.</small>`,
+      cssClass: 'alert-confirm',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Activar',
+          handler: async () => {
+            await this.dataService.activarVersionRubrica(rubrica.id);
+            this.cargarRubricas();
+            await this.mostrarToast(`✅ Versión ${rubrica.codigo} activada`, 'success');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   async mostrarVistaPrevia(rubrica: RubricaDefinicion) {
     const alert = await this.alertController.create({
-      header: 'Vista Previa de Rúbrica',
-      message: `
-  < strong > Título: </strong> ${rubrica.nombre}<br>
-    < strong > Puntuación Total: </strong> ${rubrica.puntuacionTotal || 'N/A'}<br>
-      < strong > Criterios: </strong> ${rubrica.criterios.length}<br>
-        < strong > Escalas: </strong> ${rubrica.escalaCalificacion?.length || 0}
-          `,
+      header: '📋 Vista Previa de Rúbrica',
+      message: `<strong>Título:</strong> ${rubrica.nombre}<br><strong>Puntuación Total:</strong> ${rubrica.puntuacionTotal || 'N/A'}<br><strong>Criterios:</strong> ${rubrica.criterios.length}<br><strong>Escalas:</strong> ${rubrica.escalaCalificacion?.length || 0}`,
+      cssClass: 'alert-info',
       buttons: [
         {
           text: 'Cancelar',
@@ -183,27 +499,28 @@ export class RubricasPage implements OnInit, ViewWillEnter {
 
   async configurarRubrica(rubrica: RubricaDefinicion) {
     const alert = await this.alertController.create({
-      header: 'Configurar Rúbrica',
+      header: '⚙️ Configurar Rúbrica',
       message: 'Asocia la rúbrica con cursos y especifica el tipo de entrega:',
+      cssClass: 'alert-confirm',
       inputs: [
         {
           name: 'tipoEntrega',
           type: 'radio',
-          label: 'Entrega 1',
-          value: 'Entrega 1',
+          label: 'Entrega 1 (E1)',
+          value: 'E1',
           checked: true
         },
         {
           name: 'tipoEntrega',
           type: 'radio',
-          label: 'Entrega 2',
-          value: 'Entrega 2'
+          label: 'Entrega 2 (E2)',
+          value: 'E2'
         },
         {
           name: 'tipoEntrega',
           type: 'radio',
-          label: 'Entrega Final',
-          value: 'Entrega Final'
+          label: 'Entrega Final (EF)',
+          value: 'EF'
         }
       ],
       buttons: [
@@ -232,8 +549,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     }));
 
     const alert = await this.alertController.create({
-      header: 'Seleccionar Cursos',
-      message: `Selecciona los cursos para la rúbrica "${rubrica.nombre}" - ${tipoEntrega}: `,
+      header: '📚 Seleccionar Cursos',
+      message: `Selecciona los cursos para la rúbrica "${rubrica.nombre}" - ${tipoEntrega}:`,
+      cssClass: 'alert-confirm',
       inputs: inputs,
       buttons: [
         {
@@ -244,7 +562,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
           text: 'Guardar',
           handler: (cursosSeleccionados) => {
             rubrica.cursosCodigos = cursosSeleccionados || [];
-            rubrica.tipoEntrega = tipoEntrega;
+            rubrica.tipoEntrega = tipoEntrega as 'E1' | 'E2' | 'EF';
             this.guardarRubrica(rubrica);
           }
         }
@@ -278,8 +596,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     }
 
     const alert = await this.alertController.create({
-      header: '⚠️ Confirmar Eliminación de Rúbrica',
-      message: `¿Estás seguro de eliminar la rúbrica "${rubrica.nombre}" ? <br><br><strong>Información de la rúbrica: </strong><br>• Tipo: ${rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual'}<br>• Entrega: ${rubrica.tipoEntrega || 'No especificada'}<br>• Puntos totales: ${rubrica.puntuacionTotal}<br>• Criterios: ${rubrica.criterios.length}<br><br>Esta acción no se puede deshacer.`,
+      header: '🗑️ Confirmar Eliminación',
+      message: `¿Estás seguro de eliminar la rúbrica "${rubrica.nombre}"?<br><br><strong>Información:</strong><br>• Tipo: ${rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual'}<br>• Entrega: ${rubrica.tipoEntrega || 'No especificada'}<br>• Puntos totales: ${rubrica.puntuacionTotal}<br>• Criterios: ${rubrica.criterios.length}<br><br>Esta acción no se puede deshacer.`,
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -311,8 +630,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
 
   async usarRubrica(rubrica: RubricaDefinicion) {
     const alert = await this.alertController.create({
-      header: 'Evaluar con Rúbrica',
+      header: '📝 Evaluar con Rúbrica',
       message: 'Ingresa los datos del estudiante a evaluar:',
+      cssClass: 'alert-confirm',
       inputs: [
         {
           name: 'estudianteId',
@@ -368,24 +688,59 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     await modal.present();
   }
 
-  async exportarRubrica(rubrica: RubricaDefinicion) {
+  /**
+   * Exporta una rúbrica al formato seleccionado
+   * @param rubrica - Rúbrica a exportar
+   * @param formato - 'json' | 'txt' (default: 'json')
+   */
+  async exportarRubrica(rubrica: RubricaDefinicion, formato: 'json' | 'txt' = 'json') {
     try {
-      const contenido = this.generarTextoRubrica(rubrica);
-      const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
-      const url = window.URL.createObjectURL(blob);
+      if (formato === 'json') {
+        this.dataService.descargarRubricaComoJSON(rubrica);
+      } else {
+        const contenido = this.generarTextoRubrica(rubrica);
+        const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+        const url = window.URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${rubrica.nombre.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${rubrica.nombre.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }
 
-      await this.mostrarToast('Rúbrica exportada exitosamente', 'success');
+      await this.mostrarToast(`Rúbrica exportada como ${formato.toUpperCase()}`, 'success');
     } catch (error: any) {
       await this.mostrarToast(`Error al exportar: ${error.message}`, 'danger');
     }
+  }
+
+  /**
+   * Muestra opciones de exportación para una rúbrica
+   */
+  async mostrarOpcionesExportacion(rubrica: RubricaDefinicion) {
+    const alert = await this.alertController.create({
+      header: 'Exportar Rúbrica',
+      message: 'Selecciona el formato de exportación:',
+      buttons: [
+        {
+          text: 'JSON (Recomendado)',
+          handler: () => this.exportarRubrica(rubrica, 'json')
+        },
+        {
+          text: 'TXT (Legacy)',
+          handler: () => this.exportarRubrica(rubrica, 'txt')
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   private generarTextoRubrica(rubrica: RubricaDefinicion): string {
@@ -462,8 +817,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     });
 
     const alert = await this.alertController.create({
-      header: 'Exportar Datos de Cursos',
+      header: '📤 Exportar Datos de Cursos',
       message: 'Selecciona qué curso exportar:',
+      cssClass: 'alert-confirm',
       inputs: inputs,
       buttons: [
         {
@@ -509,6 +865,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     const alert = await this.alertController.create({
       header: titulo,
       message: mensaje,
+      cssClass: 'alert-info',
       buttons: ['OK']
     });
     await alert.present();
@@ -524,9 +881,11 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     const file = input.files[0];
     this.rubricaFileName = file.name;
 
-    // Validar extensión
-    if (!file.name.endsWith('.txt')) {
-      await this.mostrarToast('Solo se permiten archivos .txt', 'warning');
+    // Validar extensión (JSON o TXT)
+    const extension = file.name.toLowerCase();
+    if (!extension.endsWith('.txt') && !extension.endsWith('.json')) {
+      await this.mostrarToast('Solo se permiten archivos .json o .txt', 'warning');
+      this.rubricaFileName = '';
       return;
     }
 
@@ -586,8 +945,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
 
       // Mostrar alert con el mensaje de error específico
       const alert = await this.alertController.create({
-        header: 'Error al Importar Rúbrica',
+        header: '❌ Error al Importar Rúbrica',
         message: error.message || 'Error desconocido al importar la rúbrica',
+        cssClass: 'alert-danger',
         buttons: ['Entendido']
       });
       await alert.present();
@@ -610,8 +970,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     const tipoActual = rubrica.tipoRubrica || 'PG';
 
     const alert = await this.alertController.create({
-      header: 'Tipo de Rúbrica',
+      header: '📋 Tipo de Rúbrica',
       message: 'Selecciona el tipo de evaluación para esta rúbrica:',
+      cssClass: 'alert-confirm',
       inputs: [
         {
           type: 'radio',
@@ -641,8 +1002,6 @@ export class RubricasPage implements OnInit, ViewWillEnter {
           handler: (tipoSeleccionado: 'PG' | 'PI') => {
             rubrica.tipoRubrica = tipoSeleccionado;
             rubrica.fechaModificacion = new Date();
-            const tipoTexto = tipoSeleccionado === 'PG' ? 'Grupal' : 'Individual';
-            this.mostrarToast(`Rúbrica configurada como ${tipoTexto}`, 'success');
           }
         }
       ]
@@ -658,8 +1017,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     const tipoActual = rubrica.tipoEntrega || 'E1';
 
     const alert = await this.alertController.create({
-      header: 'Tipo de Entrega',
+      header: '📦 Tipo de Entrega',
       message: 'Selecciona la entrega a la que corresponde esta rúbrica:',
+      cssClass: 'alert-confirm',
       inputs: [
         {
           type: 'radio',
@@ -693,9 +1053,8 @@ export class RubricasPage implements OnInit, ViewWillEnter {
         {
           text: 'Confirmar',
           handler: (tipoSeleccionado: string) => {
-            rubrica.tipoEntrega = tipoSeleccionado;
+            rubrica.tipoEntrega = tipoSeleccionado as 'E1' | 'E2' | 'EF';
             rubrica.fechaModificacion = new Date();
-            this.mostrarToast(`Rúbrica asignada a ${tipoSeleccionado}`, 'success');
           }
         }
       ]
@@ -883,22 +1242,194 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     // Toggle: si ya está seleccionada, la oculta; si no, la muestra
     if (this.rubricaSeleccionada?.id === rubrica.id) {
       this.rubricaSeleccionada = null;
+      this.codigoCategoriaHistorial = '';
+      this.tabActivo = 'detalle';
     } else {
       this.rubricaSeleccionada = rubrica;
+      // Extraer código de categoría para el historial
+      this.codigoCategoriaHistorial = rubrica.codigo?.replace(/V\d+$/, '') || '';
+      this.tabActivo = 'detalle';
     }
   }
 
-  nuevaRubrica() {
-    this.modoEdicion = true;
+  /**
+   * Activa el modo de selección de tipo de creación en el área principal
+   */
+  mostrarOpcionesCrear(): void {
+    this.modoSeleccionCrear = true;
+    this.modoEdicion = false;
+    this.modoCreacion = false;
     this.rubricaSeleccionada = null;
-    this.infoExpanded = true;
-    this.mostrarToast('Importa un archivo de rúbrica para crear una nueva', 'primary');
+    // Persistir estado en UIState
+    this.dataService.updateUIState({ rubricasModoSeleccionCrear: true });
   }
 
-  editarRubrica(rubrica: RubricaDefinicion) {
-    this.rubricaSeleccionada = rubrica;
-    this.modoEdicion = true;
-    this.mostrarToast(`Editando rúbrica: ${rubrica.nombre}`, 'primary');
+  /**
+   * Toggle para expandir/colapsar el texto informativo
+   */
+  toggleInfo(): void {
+    this.infoExpanded = !this.infoExpanded;
+  }
+
+  /**
+   * Cancela el modo de selección y vuelve a la lista
+   */
+  cancelarSeleccionCrear(): void {
+    this.modoSeleccionCrear = false;
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ rubricasModoSeleccionCrear: false });
+  }
+
+  /**
+   * Activa el modo de creación con formulario inline (desktop)
+   */
+  activarModoCreacion(rubrica?: RubricaDefinicion): void {
+    this.modoSeleccionCrear = false;
+    this.modoCreacion = true;
+    this.modoEdicion = false;
+    this.rubricaEnEdicion = rubrica || null;
+    this.rubricaSeleccionada = null;
+    // Limpiar estado en UIState ya que pasamos a modo creación
+    this.dataService.updateUIState({ rubricasModoSeleccionCrear: false });
+  }
+
+  /**
+   * Cancela el modo de creación y vuelve a la lista
+   */
+  cancelarModoCreacion(): void {
+    this.modoCreacion = false;
+    this.rubricaEnEdicion = null;
+  }
+
+  /**
+   * Callback cuando se guarda una rúbrica desde el editor inline
+   */
+  onRubricaGuardada(evento: { guardado: boolean; rubrica?: RubricaDefinicion }): void {
+    if (evento.guardado) {
+      this.cargarRubricas();
+      const estado = evento.rubrica?.estado === 'borrador' ? 'guardada como borrador' : 'publicada';
+      this.mostrarToast(`Rúbrica ${estado} exitosamente`, 'success');
+    }
+    this.cancelarModoCreacion();
+  }
+
+  /**
+   * Activa el modo de importación abriendo directamente el selector de archivos.
+   * Flujo simplificado: elimina el paso intermedio del panel de carga.
+   */
+  activarModoImportar(): void {
+    this.modoSeleccionCrear = false;
+    this.infoExpanded = false;
+    // Limpiar estado persistido
+    this.dataService.updateUIState({ rubricasModoSeleccionCrear: false });
+
+    // Abrir selector de archivos directamente (flujo simplificado)
+    // Usar setTimeout para asegurar que el DOM esté actualizado
+    setTimeout(() => {
+      if (this.rubricaFileInput?.nativeElement) {
+        this.rubricaFileInput.nativeElement.click();
+      } else {
+        // Fallback: activar modoEdicion si el input no está disponible
+        this.modoEdicion = true;
+      }
+    }, 0);
+  }
+
+  /**
+   * Muestra un diálogo para seleccionar una rúbrica existente como base para crear una nueva.
+   * La rúbrica seleccionada se clonará con nuevo ID y sin código (se generará automáticamente).
+   */
+  async mostrarSelectorRubricaBase(): Promise<void> {
+    if (this.rubricas.length === 0) {
+      await this.mostrarToast('No hay rúbricas disponibles para usar como base', 'warning');
+      return;
+    }
+
+    // Agrupar rúbricas por código base para mostrar solo la versión más reciente de cada una
+    const rubricasPorCodigoBase = new Map<string, RubricaDefinicion>();
+    for (const rubrica of this.rubricas) {
+      const codigoBase = rubrica.codigo?.replace(/-?[Vv]\d+$/, '') || rubrica.id;
+      const existente = rubricasPorCodigoBase.get(codigoBase);
+      if (!existente || (rubrica.version || 1) > (existente.version || 1)) {
+        rubricasPorCodigoBase.set(codigoBase, rubrica);
+      }
+    }
+
+    const rubricasUnicas = Array.from(rubricasPorCodigoBase.values());
+
+    const inputs = rubricasUnicas.map((rubrica, index) => ({
+      type: 'radio' as const,
+      label: `${rubrica.codigo || rubrica.id} - ${rubrica.nombre}`,
+      value: rubrica.id,
+      checked: index === 0
+    }));
+
+    const alert = await this.alertController.create({
+      header: 'Seleccionar Rúbrica Base',
+      message: 'Selecciona una rúbrica existente para crear una copia editable:',
+      cssClass: 'alert-selector-rubrica-base',
+      inputs,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Crear Copia',
+          handler: (rubricaId: string) => {
+            if (rubricaId) {
+              this.crearRubricaBasadaEn(rubricaId);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Crea una nueva rúbrica basada en una existente, clonando sus datos
+   * pero con nuevo ID y permitiendo edición completa.
+   */
+  private crearRubricaBasadaEn(rubricaBaseId: string): void {
+    const rubricaBase = this.rubricas.find(r => r.id === rubricaBaseId);
+    if (!rubricaBase) {
+      this.mostrarToast('No se encontró la rúbrica seleccionada', 'danger');
+      return;
+    }
+
+    // Crear una copia profunda de la rúbrica
+    const rubricaCopia: RubricaDefinicion = {
+      ...JSON.parse(JSON.stringify(rubricaBase)),
+      id: this.generarIdUnico(),
+      codigo: undefined, // Se generará nuevo código al guardar
+      version: undefined, // Se calculará automáticamente
+      nombre: `${rubricaBase.nombre} (copia)`,
+      activa: false, // Copias siempre inactivas por defecto
+      estado: 'borrador',
+      fechaCreacion: new Date(),
+      fechaModificacion: new Date()
+    };
+
+    // Abrir el editor con la copia para que el usuario pueda modificarla
+    this.modoSeleccionCrear = false;
+    this.dataService.updateUIState({ rubricasModoSeleccionCrear: false });
+    this.activarModoCreacion(rubricaCopia);
+
+    this.mostrarToast('Rúbrica cargada como borrador. Modifica y guarda para crear la nueva versión.', 'success');
+  }
+
+  /**
+   * Genera un ID único para nuevas rúbricas
+   */
+  private generarIdUnico(): string {
+    return `rubrica_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  }
+
+  editarRubrica(rubrica: RubricaDefinicion): void {
+    // Abrir el editor inline con la rúbrica existente para edición
+    this.activarModoCreacion(rubrica);
   }
 
   async editarRubricaSeleccionada() {
@@ -906,9 +1437,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
       await this.mostrarToast('Selecciona una rúbrica primero', 'warning');
       return;
     }
-
     this.modoEdicion = true;
-    await this.mostrarToast('Modo edición activado', 'primary');
   }
 
   async guardarRubricaEditada() {
@@ -949,21 +1478,78 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     this.rubricaCargada = null;
     this.rubricaFileName = '';
     this.infoExpanded = false;
-    this.mostrarToast('Creación de rúbrica cancelada', 'warning');
   }
 
-  toggleInfo() {
-    this.infoExpanded = !this.infoExpanded;
-  }
-
-  limpiarRubrica() {
+  /**
+   * Limpia la rúbrica cargada desde archivo.
+   * Si no hay rúbrica seleccionada para editar, también cancela el modo edición.
+   */
+  limpiarRubrica(): void {
     this.rubricaCargada = null;
     this.rubricaFileName = '';
-    this.mostrarToast('Archivo de rúbrica eliminado', 'warning');
+
+    // Si no hay rúbrica seleccionada, cancelar modo edición
+    if (!this.rubricaSeleccionada) {
+      this.modoEdicion = false;
+    }
   }
 
   async confirmarEliminarRubrica(rubrica: RubricaDefinicion) {
     await this.eliminarRubrica(rubrica);
+  }
+
+  /**
+   * Muestra el historial de versiones para una rúbrica en el área principal.
+   * Muestra todas las versiones de rúbricas con el mismo código base.
+   */
+  verHistorialVersiones(rubrica: RubricaDefinicion, event?: Event) {
+    event?.stopPropagation();
+
+    if (!rubrica.codigo) {
+      this.mostrarToast('Esta rúbrica no tiene código de versión', 'warning');
+      return;
+    }
+
+    // Extraer código de categoría (sin versión): RGE1-EPMV2 → RGE1-EPM
+    this.codigoCategoriaHistorial = rubrica.codigo.replace(/V\d+$/, '');
+    this.rubricaSeleccionada = rubrica;
+    this.tabActivo = 'historial';
+  }
+
+  /**
+   * Cambia el tab activo en el panel de detalle
+   */
+  onTabChange(event: CustomEvent) {
+    this.tabActivo = event.detail.value as 'detalle' | 'historial';
+  }
+
+  /**
+   * Cierra el panel de detalle/historial
+   */
+  cerrarPanelDetalle() {
+    this.rubricaSeleccionada = null;
+    this.codigoCategoriaHistorial = '';
+    this.tabActivo = 'detalle';
+  }
+
+  /**
+   * Maneja el evento de activación de versión desde el componente de historial
+   */
+  onVersionActivada(version: RubricaDefinicion) {
+    this.cargarRubricas();
+    this.mostrarToast(`Versión ${version.version} de ${version.codigo} activada`, 'success');
+  }
+
+  /**
+   * Verifica si una rúbrica tiene múltiples versiones
+   */
+  tieneMultiplesVersiones(rubrica: RubricaDefinicion): boolean {
+    if (!rubrica.codigo) return false;
+    const codigoBase = rubrica.codigo.replace(/V\d+$/, '');
+    return this.rubricas.some(r =>
+      r.id !== rubrica.id &&
+      r.codigo?.replace(/V\d+$/, '') === codigoBase
+    );
   }
 
   async guardarRubricaSeleccionada() {
@@ -996,8 +1582,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     }
 
     const alert = await this.alertController.create({
-      header: 'Confirmar Eliminación',
+      header: '🗑️ Confirmar Eliminación',
       message: `¿Estás seguro de eliminar la rúbrica "${this.rubricaSeleccionada.nombre}"?`,
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -1025,8 +1612,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     const textoRubrica = this.generarTextoRubrica(rubrica);
 
     const alert = await this.alertController.create({
-      header: 'Editar Texto de Rúbrica',
+      header: '✏️ Editar Texto de Rúbrica',
       message: 'Edita el contenido de la rúbrica en formato texto:',
+      cssClass: 'alert-confirm alert-large',
       inputs: [
         {
           name: 'textoEditado',
@@ -1051,8 +1639,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
             }
           }
         }
-      ],
-      cssClass: 'alert-large'
+      ]
     });
 
     await alert.present();
@@ -1104,8 +1691,9 @@ export class RubricasPage implements OnInit, ViewWillEnter {
    */
   async crearRubricaEnBlanco() {
     const alert = await this.alertController.create({
-      header: 'Crear Rúbrica en Blanco',
+      header: '➕ Crear Rúbrica en Blanco',
       message: 'Ingresa los parámetros para la nueva rúbrica:',
+      cssClass: 'alert-confirm',
       inputs: [
         {
           name: 'nombre',
@@ -1213,7 +1801,7 @@ export class RubricasPage implements OnInit, ViewWillEnter {
         this.rubricaCargada = rubrica;
         this.modoEdicion = true;
 
-        await this.mostrarToast('Plantilla descargada y rúbrica creada. Asigna cursos y guarda.', 'success');
+        await this.mostrarToast('Rúbrica creada', 'success');
       }
     } catch (error: any) {
       Logger.error('Error generando rúbrica en blanco:', error);
@@ -1271,29 +1859,47 @@ export class RubricasPage implements OnInit, ViewWillEnter {
     // Limpiar emojis del mensaje ya que se agregan automáticamente con CSS
     const cleanMessage = mensaje.replace(/✅|⚠️|❌|🎉|📚|💾|🗑️|➕/g, '').trim();
 
-    // Determinar clase CSS estandarizada y color de Ionic
-    let cssClass: string;
-    let ionicColor: string;
+    // Mapear colores a tipos de toast
+    const typeMap: Record<string, 'success' | 'warning' | 'error' | 'info'> = {
+      success: 'success',
+      primary: 'info',
+      warning: 'warning',
+      danger: 'error'
+    };
 
-    if (color === 'success' || color === 'primary') {
-      cssClass = 'toast-success';
-      ionicColor = 'success';
-    } else if (color === 'warning') {
-      cssClass = 'toast-warning';
-      ionicColor = 'warning';
-    } else {
-      cssClass = 'toast-danger';
-      ionicColor = 'danger';
-    }
-
-    const toast = await this.toastController.create({
+    // Usar ToastService centralizado (respeta la preferencia del usuario)
+    await this.toastService.show({
       message: cleanMessage,
+      type: typeMap[color] || 'info',
       duration: 2000,
-      color: ionicColor,
-      position: 'middle',
-      cssClass: cssClass
+      position: 'middle'
     });
-    await toast.present();
+  }
+
+  /**
+   * Abre el editor de rúbricas para crear una nueva o editar existente
+   * @param rubricaExistente - Rúbrica a editar (opcional, si no se pasa crea una nueva)
+   */
+  async abrirEditorRubrica(rubricaExistente?: RubricaDefinicion): Promise<void> {
+    const modal = await this.modalController.create({
+      component: RubricaEditorComponent,
+      componentProps: {
+        rubricaExistente,
+        cursosDisponibles: this.cursosDisponibles
+      },
+      cssClass: 'rubrica-editor-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data?.guardado) {
+      // Recargar la lista de rúbricas después de guardar
+      this.cargarRubricas();
+      const estado = data.rubrica?.estado === 'borrador' ? 'guardada como borrador' : 'publicada';
+      await this.mostrarToast(`Rúbrica ${estado} exitosamente`, 'success');
+    }
   }
 }
 

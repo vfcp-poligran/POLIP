@@ -1,0 +1,467 @@
+@if (!sinEncabezado) {
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>
+        <ion-icon name="git-branch-outline"></ion-icon>
+        Historial de Versiones
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="cerrar()">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+
+    <!-- Tabs de modo de vista -->
+    <ion-toolbar>
+      <div class="vista-tabs">
+        <button
+          class="vista-tab"
+          [class.active]="modoVista === 'timeline'"
+          (click)="cambiarModo('timeline')">
+          <ion-icon name="git-commit-outline"></ion-icon>
+          Timeline
+        </button>
+        <button
+          class="vista-tab"
+          [class.active]="modoVista === 'comparacion'"
+          (click)="cambiarModo('comparacion')"
+          [disabled]="versiones.length < 2">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          Comparar
+        </button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+}
+
+<!-- Tabs inline cuando no hay encabezado -->
+@if (sinEncabezado) {
+  <div class="vista-tabs-inline">
+    <button
+      class="vista-tab"
+      [class.active]="modoVista === 'timeline'"
+      (click)="cambiarModo('timeline')">
+      Timeline
+    </button>
+    <button
+      class="vista-tab"
+      [class.active]="modoVista === 'comparacion'"
+      (click)="cambiarModo('comparacion')"
+      [disabled]="versiones.length < 2">
+      Comparar
+    </button>
+  </div>
+}
+
+<!-- Contenido con ion-content para modo modal -->
+@if (!sinEncabezado) {
+<ion-content class="ion-padding">
+  <!-- Grid principal para layout responsivo en Desktop -->
+  <ion-grid [fixed]="true" class="version-history-grid">
+    <ion-row>
+      <ion-col size="12" size-lg="10" offset-lg="1" size-xl="8" offset-xl="2">
+
+        <!-- Información de la categoría -->
+        <div class="categoria-header">
+          <div class="categoria-info">
+            <h2>{{ codigoCategoria }}</h2>
+            <p>{{ versiones.length }} versión{{ versiones.length !== 1 ? 'es' : '' }}</p>
+          </div>
+          @if (versionActiva) {
+            <ion-chip color="success">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <ion-label>v{{ versionActiva.version }} activa</ion-label>
+            </ion-chip>
+          }
+        </div>
+
+        <!-- VISTA TIMELINE -->
+        @if (modoVista === 'timeline') {
+          <div class="timeline-container">
+            @for (version of versiones; track version.id; let i = $index) {
+              <div class="timeline-item" [class.activa]="version.activa">
+                <!-- Línea del timeline -->
+                <div class="timeline-line">
+                  <div class="timeline-dot" [class.activa]="version.activa">
+                    @if (version.activa) {
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                    } @else {
+                      <span>{{ version.version }}</span>
+                    }
+                  </div>
+                  @if (i < versiones.length - 1) {
+                    <div class="timeline-connector"></div>
+                  }
+                </div>
+
+                <!-- Contenido del commit -->
+                <div class="timeline-content">
+                  <ion-card [class.card-activa]="version.activa">
+                    <ion-card-header>
+                      <div class="version-header">
+                        <div class="version-titulo">
+                          <ion-card-title>
+                            Versión {{ version.version }}
+                            <ion-badge [color]="getEstadoColor(version)">
+                              {{ getEstadoTexto(version) }}
+                            </ion-badge>
+                          </ion-card-title>
+                          <ion-note>{{ version.codigo }}</ion-note>
+                        </div>
+                        <div class="version-acciones">
+                          @if (!version.activa) {
+                            <ion-button
+                              fill="outline"
+                              size="small"
+                              (click)="activarVersion(version)">
+                              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                              Activar
+                            </ion-button>
+                          }
+                        </div>
+                      </div>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                      <div class="version-meta">
+                        <div class="meta-item">
+                          <ion-icon name="time-outline"></ion-icon>
+                          <span>{{ formatearFecha(version.fechaModificacion || version.fechaCreacion) }}</span>
+                        </div>
+                        <div class="meta-item">
+                          <ion-icon name="document-text-outline"></ion-icon>
+                          <span>{{ version.criterios.length }} criterios</span>
+                        </div>
+                        <div class="meta-item">
+                          <ion-icon name="alert-circle-outline"></ion-icon>
+                          <span>{{ version.puntuacionTotal || 0 }} pts</span>
+                        </div>
+                      </div>
+
+                      <!-- Mini resumen de criterios -->
+                      <div class="criterios-preview">
+                        @for (criterio of version.criterios.slice(0, 3); track criterio.titulo) {
+                          <ion-chip outline="true" size="small">
+                            <ion-label>{{ criterio.titulo }} ({{ criterio.peso }})</ion-label>
+                          </ion-chip>
+                        }
+                        @if (version.criterios.length > 3) {
+                          <ion-chip outline="true" size="small" color="medium">
+                            <ion-label>+{{ version.criterios.length - 3 }} más</ion-label>
+                          </ion-chip>
+                        }
+                      </div>
+                    </ion-card-content>
+                  </ion-card>
+                </div>
+              </div>
+            }
+
+            @if (versiones.length === 0) {
+              <div class="empty-state">
+                <ion-icon name="git-branch-outline"></ion-icon>
+                <h3>Sin versiones</h3>
+                <p>No hay versiones registradas para esta categoría</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- VISTA COMPARACIÓN (DIFF) -->
+        @if (modoVista === 'comparacion' && versiones.length >= 2) {
+          <div class="comparacion-container">
+            <!-- Selectores de versiones - Layout responsivo -->
+            <ion-grid class="comparacion-grid">
+              <ion-row class="ion-align-items-end">
+                <ion-col size="12" size-md="5">
+                  <div class="version-selector">
+                    <label>Versión base</label>
+                    <select
+                      title="Seleccionar versión base"
+                      [value]="versionBaseSeleccionada?.id"
+                      (change)="seleccionarVersionBase(versiones[$any($event.target).selectedIndex])">
+                      @for (version of versiones; track version.id) {
+                        <option [value]="version.id" [selected]="versionBaseSeleccionada?.id === version.id">
+                          v{{ version.version }} - {{ formatearFecha(version.fechaModificacion) }}
+                          {{ version.activa ? '(activa)' : '' }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+                </ion-col>
+
+                <ion-col size="12" size-md="2" class="ion-text-center ion-hide-sm-down">
+                  <button class="swap-button" title="Intercambiar versiones" (click)="intercambiarVersiones()">
+                    <ion-icon name="swap-horizontal-outline"></ion-icon>
+                  </button>
+                </ion-col>
+
+                <ion-col size="12" size-md="5">
+                  <div class="version-selector">
+                    <label>Comparar con</label>
+                    <select
+                      title="Seleccionar versión a comparar"
+                      [value]="versionComparadaSeleccionada?.id"
+                      (change)="seleccionarVersionComparada(versiones[$any($event.target).selectedIndex])">
+                      @for (version of versiones; track version.id) {
+                        <option [value]="version.id" [selected]="versionComparadaSeleccionada?.id === version.id">
+                          v{{ version.version }} - {{ formatearFecha(version.fechaModificacion) }}
+                          {{ version.activa ? '(activa)' : '' }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+                </ion-col>
+              </ion-row>
+
+              <!-- Botón swap para móvil -->
+              <ion-row class="ion-hide-md-up ion-justify-content-center">
+                <ion-col size="auto">
+                  <button class="swap-button swap-mobile" title="Intercambiar versiones" (click)="intercambiarVersiones()">
+                    <ion-icon name="swap-vertical-outline"></ion-icon>
+                    <span>Intercambiar</span>
+                  </button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
+            <!-- Resumen de cambios - Grid responsivo -->
+            @if (comparacionActual) {
+              <ion-grid class="diff-resumen-grid">
+                <ion-row class="ion-justify-content-center">
+                  <ion-col size="4" size-md="auto" class="ion-text-center">
+                    <div class="resumen-stat agregado">
+                      <ion-icon name="add-outline"></ion-icon>
+                      <span class="stat-numero">{{ comparacionActual.resumen.criteriosAgregados }}</span>
+                      <span class="stat-label ion-hide-sm-down">agregados</span>
+                    </div>
+                  </ion-col>
+                  <ion-col size="4" size-md="auto" class="ion-text-center">
+                    <div class="resumen-stat eliminado">
+                      <ion-icon name="remove-outline"></ion-icon>
+                      <span class="stat-numero">{{ comparacionActual.resumen.criteriosEliminados }}</span>
+                      <span class="stat-label ion-hide-sm-down">eliminados</span>
+                    </div>
+                  </ion-col>
+                  <ion-col size="4" size-md="auto" class="ion-text-center">
+                    <div class="resumen-stat modificado">
+                      <ion-icon name="create-outline"></ion-icon>
+                      <span class="stat-numero">{{ comparacionActual.resumen.criteriosModificados }}</span>
+                      <span class="stat-label ion-hide-sm-down">modificados</span>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+              <!-- Lista de cambios -->
+              <div class="diff-lista">
+                @if (comparacionActual.cambios.length === 0) {
+                  <div class="no-cambios">
+                    <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+                    <p>Las versiones son idénticas</p>
+                  </div>
+                } @else {
+                  <ion-accordion-group>
+                    @for (cambio of comparacionActual.cambios; track $index) {
+                      <ion-accordion [value]="$index.toString()">
+                        <ion-item slot="header" [class]="'cambio-' + cambio.tipo">
+                          <ion-icon
+                            [name]="getIconoCambio(cambio.tipo)"
+                            [color]="getColorCambio(cambio.tipo)"
+                            slot="start">
+                          </ion-icon>
+                          <ion-label>
+                            <h3>{{ cambio.descripcion }}</h3>
+                            @if (cambio.criterioTitulo) {
+                              <p>Criterio: {{ cambio.criterioTitulo }}</p>
+                            }
+                          </ion-label>
+                          <ion-badge [color]="getColorCambio(cambio.tipo)" slot="end">
+                            {{ cambio.tipo }}
+                          </ion-badge>
+                        </ion-item>
+
+                        <div class="ion-padding" slot="content">
+                          @if (cambio.valorAnterior !== undefined || cambio.valorNuevo !== undefined) {
+                            <div class="diff-valores">
+                              @if (cambio.valorAnterior !== undefined) {
+                                <div class="valor-anterior">
+                                  <span class="label">Antes:</span>
+                                  <code>{{ cambio.valorAnterior }}</code>
+                                </div>
+                              }
+                              @if (cambio.valorNuevo !== undefined) {
+                                <div class="valor-nuevo">
+                                  <span class="label">Después:</span>
+                                  <code>{{ cambio.valorNuevo }}</code>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </ion-accordion>
+                    }
+                  </ion-accordion-group>
+                }
+              </div>
+            }
+          </div>
+        }
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+}
+
+<!-- Contenido con div para modo embebido -->
+@if (sinEncabezado) {
+<div class="contenido-embebido">
+  <!-- Información de la categoría -->
+  <div class="categoria-header categoria-header-inline">
+    <div class="categoria-info">
+      <h3>{{ codigoCategoria }}</h3>
+      <span class="version-count">{{ versiones.length }} versión{{ versiones.length !== 1 ? 'es' : '' }}</span>
+    </div>
+    @if (versionActiva) {
+      <ion-chip color="success" class="chip-small">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <ion-label>v{{ versionActiva.version }} activa</ion-label>
+      </ion-chip>
+    }
+  </div>
+
+  <!-- VISTA TIMELINE EMBEBIDA -->
+  @if (modoVista === 'timeline') {
+    <div class="timeline-container timeline-embebido">
+      @for (version of versiones; track version.id; let i = $index) {
+        <div class="timeline-item" [class.activa]="version.activa">
+          <div class="timeline-line">
+            <div class="timeline-dot" [class.activa]="version.activa">
+              @if (version.activa) {
+                <ion-icon name="checkmark-outline"></ion-icon>
+              } @else {
+                <span>{{ version.version }}</span>
+              }
+            </div>
+            @if (i < versiones.length - 1) {
+              <div class="timeline-connector"></div>
+            }
+          </div>
+
+          <div class="timeline-content">
+            <ion-card [class.card-activa]="version.activa" class="card-compacto">
+              <ion-card-header>
+                <div class="version-header">
+                  <div class="version-titulo">
+                    <ion-card-title>
+                      v{{ version.version }}
+                      <ion-badge [color]="getEstadoColor(version)" class="badge-small">
+                        {{ getEstadoTexto(version) }}
+                      </ion-badge>
+                    </ion-card-title>
+                    <ion-note>{{ version.codigo }}</ion-note>
+                  </div>
+                  <div class="version-acciones">
+                    @if (!version.activa) {
+                      <ion-button fill="outline" size="small" (click)="activarVersion(version)">
+                        Activar
+                      </ion-button>
+                    }
+                  </div>
+                </div>
+              </ion-card-header>
+
+              <ion-card-content>
+                <div class="version-meta">
+                  <span class="meta-item">
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ formatearFecha(version.fechaModificacion || version.fechaCreacion) }}
+                  </span>
+                  <span class="meta-item">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                    {{ version.criterios.length }} criterios
+                  </span>
+                  <span class="meta-item">
+                    <ion-icon name="alert-circle-outline"></ion-icon>
+                    {{ version.puntuacionTotal || 0 }} pts
+                  </span>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </div>
+      }
+
+      @if (versiones.length === 0) {
+        <div class="empty-state empty-state-inline">
+          <ion-icon name="git-branch-outline"></ion-icon>
+          <p>No hay versiones registradas</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- VISTA COMPARACIÓN EMBEBIDA -->
+  @if (modoVista === 'comparacion' && versiones.length >= 2) {
+    <div class="comparacion-container comparacion-embebida">
+      <div class="selectores-version">
+        <div class="version-selector">
+          <label>Base</label>
+          <select
+            title="Versión base"
+            [value]="versionBaseSeleccionada?.id"
+            (change)="seleccionarVersionBase(versiones[$any($event.target).selectedIndex])">
+            @for (version of versiones; track version.id) {
+              <option [value]="version.id" [selected]="versionBaseSeleccionada?.id === version.id">
+                v{{ version.version }} {{ version.activa ? '(activa)' : '' }}
+              </option>
+            }
+          </select>
+        </div>
+        <button class="swap-button-small" title="Intercambiar" (click)="intercambiarVersiones()">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+        </button>
+        <div class="version-selector">
+          <label>Comparar</label>
+          <select
+            title="Comparar con"
+            [value]="versionComparadaSeleccionada?.id"
+            (change)="seleccionarVersionComparada(versiones[$any($event.target).selectedIndex])">
+            @for (version of versiones; track version.id) {
+              <option [value]="version.id" [selected]="versionComparadaSeleccionada?.id === version.id">
+                v{{ version.version }} {{ version.activa ? '(activa)' : '' }}
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (comparacionActual) {
+        <div class="diff-resumen-inline">
+          <span class="stat agregado">+{{ comparacionActual.resumen.criteriosAgregados }}</span>
+          <span class="stat eliminado">-{{ comparacionActual.resumen.criteriosEliminados }}</span>
+          <span class="stat modificado">~{{ comparacionActual.resumen.criteriosModificados }}</span>
+        </div>
+
+        @if (comparacionActual.cambios.length === 0) {
+          <div class="no-cambios-inline">
+            <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+            <span>Versiones idénticas</span>
+          </div>
+        } @else {
+          <div class="cambios-lista-inline">
+            @for (cambio of comparacionActual.cambios; track $index) {
+              <div class="cambio-item" [class]="'cambio-' + cambio.tipo">
+                <ion-icon [name]="getIconoCambio(cambio.tipo)" [color]="getColorCambio(cambio.tipo)"></ion-icon>
+                <span>{{ cambio.descripcion }}</span>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
+}

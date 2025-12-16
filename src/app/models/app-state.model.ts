@@ -2,6 +2,11 @@ export interface UIState {
   cursoActivo: string | null;
   grupoSeguimientoActivo: string | null; // Grupo seleccionado en seguimiento
   mostrarNombreCorto?: boolean; // Controla si se muestra nombre corto en los botones de curso
+  mostrarMensajesEmergentes?: boolean; // Controla si se muestran los mensajes emergentes (toasts)
+  duracionToast?: number; // Duración de los toasts en segundos (1-4), por defecto 2
+  // Estados de modo edición/creación para persistir entre navegaciones
+  cursosModoEdicion?: boolean; // Estado del panel de importación en Cursos
+  rubricasModoSeleccionCrear?: boolean; // Estado del panel de opciones en Rúbricas
   courseStates: { [cursoNombre: string]: CourseState };
 }
 

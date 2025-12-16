@@ -8,12 +8,17 @@
           <h2>Rúbricas</h2>
         </div>
         <div class="header-actions">
-          @if (!modoEdicion) {
-            <ion-button size="small" fill="solid" color="success" (click)="nuevaRubrica()" class="btn-add-rubrica">
+          @if (!modoEdicion && !modoCreacion && !modoSeleccionCrear) {
+            <ion-button size="small" fill="solid" color="success" (click)="mostrarOpcionesCrear()" class="btn-add-rubrica">
               <ion-icon name="add-circle-outline" slot="start"></ion-icon>
               Crear
             </ion-button>
-          } @else {
+          } @else if (modoSeleccionCrear) {
+            <ion-button size="small" fill="solid" color="warning" (click)="cancelarSeleccionCrear()">
+              <ion-icon name="close-outline" slot="start"></ion-icon>
+              Cancelar
+            </ion-button>
+          } @else if (modoEdicion) {
             <ion-button size="small" fill="solid" color="primary" (click)="guardarRubricaEditada()">
               <ion-icon name="save-outline" slot="start"></ion-icon>
               Guardar
@@ -21,185 +26,398 @@
             <ion-button size="small" fill="solid" color="warning" (click)="cancelarEdicion()">
               Cancelar
             </ion-button>
+          } @else if (modoCreacion) {
+            <ion-button size="small" fill="solid" color="warning" (click)="cancelarModoCreacion()">
+              <ion-icon name="close-outline" slot="start"></ion-icon>
+              Cancelar
+            </ion-button>
           }
         </div>
       </div>
 
-      @if (modoEdicion) {
-        <!-- Contenedor de carga de archivo de rúbrica -->
-        <div class="upload-wrapper" [class.expanded]="infoExpanded">
-          <!-- Mensaje instructivo con icono -->
-          <div class="upload-instructions">
-            <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
-            <span class="info-text">Cargue un archivo de rúbrica en formato TXT con la estructura definida</span>
+      @if (modoSeleccionCrear) {
+        <!-- Panel de selección de tipo de creación (Desktop) -->
+        <div class="crear-panel-wrapper desktop-only">
+          <!-- Barra de título -->
+          <div class="crear-panel-header">
+            <span class="crear-panel-title">Opciones de Creación</span>
           </div>
 
-          <!-- Barra de carga de archivo -->
-          <div class="tabla-info-bar">
-            <input
-              type="file"
-              #rubricaFileInput
-              accept=".txt"
-              (change)="onRubricaFileSelected($event)"
-              class="file-input-hidden"
-              aria-label="Cargar archivo TXT de rúbrica"
-            />
+          <div class="upload-wrapper" [class.expanded]="infoExpanded">
+            <!-- Mensaje instructivo con icono toggle -->
+            <div class="upload-instructions">
+              <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
+              <span class="info-text"><strong>Nueva:</strong> Desde cero. <strong>Importar:</strong> Archivo JSON/TXT. <strong>Basada en:</strong> Copiar existente.</span>
+            </div>
 
-            <div class="upload-section">
-              <div class="upload-btn-container" (click)="rubricaFileInput.click()">
-                <ion-icon name="cloud-upload"></ion-icon>
-                <span class="btn-label">Rúbrica TXT</span>
+            <!-- Botones de opciones -->
+            <div class="tabla-info-bar">
+              <div class="upload-btn-container" (click)="activarModoCreacion()">
+                <ion-icon name="create"></ion-icon>
+                <span class="btn-label">Nueva</span>
               </div>
-              @if (rubricaFileName) {
-                <div class="file-loaded-info">
-                  <div class="file-details">
-                    <span class="file-full-name">{{ rubricaFileName }}</span>
-                    <ion-icon name="close-circle" (click)="limpiarRubrica()" class="remove-file"></ion-icon>
-                  </div>
-                </div>
-              }
+              <div class="upload-btn-container" (click)="activarModoImportar()">
+                <ion-icon name="cloud-upload"></ion-icon>
+                <span class="btn-label">Importar</span>
+              </div>
+              <div class="upload-btn-container" (click)="mostrarSelectorRubricaBase()">
+                <ion-icon name="copy-outline"></ion-icon>
+                <span class="btn-label">Basada en</span>
+              </div>
             </div>
           </div>
         </div>
       }
 
-      <!-- Área principal: Tabla de rúbricas -->
-      <div class="tabla-area">
-        @if (rubricas.length > 0) {
+      @if (modoCreacion) {
+        <!-- Editor de rúbricas inline (Desktop) -->
+        <div class="editor-inline-container desktop-only">
+          <app-rubrica-editor
+            [rubricaExistente]="rubricaEnEdicion"
+            [cursosDisponiblesInput]="cursosDisponibles"
+            [modoInline]="true"
+            (guardado)="onRubricaGuardada($event)"
+            (cancelado)="cancelarModoCreacion()"
+          ></app-rubrica-editor>
+        </div>
+      }
 
-          <!-- Vista Desktop: Tabla tradicional -->
-          <div class="tabla-wrapper tabla-completa desktop-only">
-            <table class="tabla-rubricas">
-              <thead>
-                <tr>
-                  <th class="tabla-header col-nombre">Nombre de Rúbrica</th>
-                  <th class="tabla-header col-tipo">Tipo</th>
-                  <th class="tabla-header col-entrega">Entrega</th>
-                  <th class="tabla-header col-criterios">Criterios</th>
-                  <th class="tabla-header col-puntos">Puntos</th>
-                  <th class="tabla-header col-fecha">Fecha Creación</th>
-                  <th class="tabla-header col-acciones">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (rubrica of rubricas; track rubrica.id; let i = $index; let isOdd = $odd) {
-                  <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
-                    <td class="tabla-cell col-nombre">{{ rubrica.nombre }}</td>
-                    <td class="tabla-cell col-tipo">
-                      <span class="tipo-badge" [class.tipo-grupal]="rubrica.tipoRubrica === 'PG'" [class.tipo-individual]="rubrica.tipoRubrica === 'PI'">
-                        {{ rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }}
-                      </span>
-                    </td>
-                    <td class="tabla-cell col-entrega">
-                      <span class="entrega-badge">{{ rubrica.tipoEntrega || '—' }}</span>
-                    </td>
-                    <td class="tabla-cell col-criterios">{{ rubrica.criterios.length || 0 }}</td>
-                    <td class="tabla-cell col-puntos">{{ rubrica.puntuacionTotal || 0 }}</td>
-                    <td class="tabla-cell col-fecha">{{ rubrica.fechaCreacion || '—' }}</td>
-                    <td class="tabla-cell col-acciones">
-                      <ion-button size="small" fill="clear" color="primary" (click)="editarRubrica(rubrica)">
-                        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-                      </ion-button>
-                      <ion-button size="small" fill="clear" color="danger" (click)="confirmarEliminarRubrica(rubrica)">
-                        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                      </ion-button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+      <!-- Input de archivo oculto (siempre disponible para importación directa) -->
+      <input
+        type="file"
+        #rubricaFileInput
+        accept=".json,.txt"
+        (change)="onRubricaFileSelected($event)"
+        class="file-input-hidden"
+        aria-label="Cargar archivo JSON o TXT de rúbrica"
+      />
 
-          <!-- Vista Móvil: Cards con componentes Ionic -->
-          <ion-list class="mobile-only rubrica-cards">
-            @for (rubrica of rubricas; track rubrica.id) {
-              <ion-item lines="none" class="rubrica-card">
-                <ion-card>
-                  <ion-card-header>
-                    <ion-card-title>
-                      <span class="rubrica-nombre-mobile">{{ rubrica.nombre }}</span>
-                    </ion-card-title>
-                  </ion-card-header>
+      @if (modoEdicion) {
+        <!-- Panel de archivo cargado (solo se muestra cuando hay archivo o rúbrica cargada) -->
+        <div class="upload-wrapper" [class.expanded]="infoExpanded">
+          @if (rubricaFileName || rubricaCargada) {
+            <!-- Información del archivo cargado -->
+            <div class="file-loaded-panel">
+              <div class="file-info-header">
+                <ion-icon name="document-text"></ion-icon>
+                <span class="file-label">Archivo cargado:</span>
+              </div>
+              <div class="file-details">
+                <span class="file-full-name">{{ rubricaFileName }}</span>
+                <ion-icon name="close-circle" (click)="limpiarRubrica()" class="remove-file"></ion-icon>
+              </div>
+              @if (rubricaCargada) {
+                <div class="rubrica-preview-info">
+                  <span class="rubrica-name">{{ rubricaCargada.nombre }}</span>
+                  <span class="rubrica-meta">
+                    {{ rubricaCargada.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }} |
+                    {{ rubricaCargada.tipoEntrega || 'Sin entrega' }} |
+                    {{ rubricaCargada.criterios.length }} criterios
+                  </span>
+                </div>
+              }
+            </div>
+          } @else {
+            <!-- Mensaje de carga inicial -->
+            <div class="upload-instructions">
+              <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
+              <span class="info-text">Seleccione un archivo para importar o haga clic en "Cancelar" para volver.</span>
+            </div>
+            <div class="tabla-info-bar">
+              <div class="upload-btn-container" (click)="rubricaFileInput.click()">
+                <ion-icon name="cloud-upload"></ion-icon>
+                <span class="btn-label">Seleccionar Archivo</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
 
-                  <ion-card-content>
-                    <ion-grid>
-                      <ion-row>
-                        <ion-col size="6">
-                          <div class="info-item">
-                            <ion-icon name="people-outline"></ion-icon>
-                            <span class="info-label">Tipo:</span>
-                            <span class="info-value">{{ rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }}</span>
+      <!-- Área principal con Grid Ionic responsive -->
+      <ion-grid class="main-grid ion-no-padding">
+        <ion-row class="ion-no-padding">
+          <ion-col size="12" class="ion-no-padding">
+
+            @if (rubricas.length > 0) {
+              <!-- Tabla de rúbricas con altura expandible -->
+              <div class="tabla-rubricas-container" [class.contraido]="tieneContenidoActivo">
+                <!-- Vista Desktop: Tabla tradicional -->
+                <div class="tabla-wrapper desktop-only">
+                  <table class="tabla-rubricas">
+                    <thead>
+                      <tr>
+                        <th class="tabla-header col-codigo sortable" (click)="ordenarPor('codigo')" title="Ordenar por código">
+                          Código {{ getIconoOrdenamiento('codigo') }}
+                        </th>
+                        <th class="tabla-header col-version">V</th>
+                        <th class="tabla-header col-nombre sortable" (click)="ordenarPor('entrega')" title="Ordenar por Curso → Tipo → Entrega (E1, E2, EF)">
+                          Nombre {{ getIconoOrdenamiento('entrega') }}
+                        </th>
+                        <th class="tabla-header col-criterios">Crit.</th>
+                        <th class="tabla-header col-puntos">Pts</th>
+                        <th class="tabla-header col-fecha sortable" (click)="ordenarPor('curso')" title="Ordenar por curso">
+                          Curso {{ getIconoOrdenamiento('curso') }}
+                        </th>
+                        <th class="tabla-header col-estado">Estado</th>
+                        <th class="tabla-header col-acciones">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (rubrica of rubricasOrdenadas; track rubrica.id; let i = $index; let isOdd = $odd) {
+                        <tr
+                          [id]="'rubrica-row-' + rubrica.id"
+                          [class.fila-par]="!isOdd"
+                          [class.fila-impar]="isOdd"
+                          [class.fila-inactiva]="rubrica.activa === false"
+                          [class.fila-seleccionada]="rubricaSeleccionada?.id === rubrica.id"
+                          (click)="seleccionarRubrica(rubrica)"
+                          class="fila-clickable"
+                        >
+                          <td class="tabla-cell col-codigo">
+                            <span class="codigo-badge">{{ obtenerCodigoBase(rubrica) }}</span>
+                            @if (rubrica.estado === 'borrador') {
+                              <span class="estado-badge estado-borrador">Borrador</span>
+                            }
+                          </td>
+                          <td class="tabla-cell col-version">
+                            <span class="version-badge" [class.version-activa]="rubrica.activa !== false">v{{ rubrica.version || 1 }}</span>
+                          </td>
+                          <td class="tabla-cell col-nombre">{{ rubrica.nombre }}</td>
+                          <td class="tabla-cell col-criterios">{{ rubrica.criterios.length || 0 }}</td>
+                          <td class="tabla-cell col-puntos">{{ rubrica.puntuacionTotal || 0 }}</td>
+                          <td class="tabla-cell col-fecha">{{ obtenerNombreCurso(rubrica) }}</td>
+                          <td class="tabla-cell col-estado">
+                            <span
+                              class="estado-indicador"
+                              [class.estado-activo]="rubrica.activa !== false"
+                              [class.estado-inactivo]="rubrica.activa === false"
+                              (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()"
+                              title="Click para cambiar estado">
+                              {{ rubrica.activa !== false ? 'Activa' : 'Inactiva' }}
+                            </span>
+                          </td>
+                          <td class="tabla-cell col-acciones">
+                            <ion-button size="small" fill="clear" color="primary" (click)="editarRubrica(rubrica); $event.stopPropagation()">
+                              <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                            </ion-button>
+                            @if (rubrica.version && rubrica.version >= 1) {
+                              <ion-button size="small" fill="clear" color="tertiary" (click)="verHistorialVersiones(rubrica, $event)" title="Ver historial de versiones">
+                                <ion-icon name="git-branch-outline" slot="icon-only"></ion-icon>
+                              </ion-button>
+                            }
+                            <ion-button size="small" fill="clear" color="secondary" (click)="mostrarOpcionesExportacion(rubrica); $event.stopPropagation()" title="Exportar">
+                              <ion-icon name="download-outline" slot="icon-only"></ion-icon>
+                            </ion-button>
+                            <ion-button size="small" fill="clear" color="danger" (click)="confirmarEliminarRubrica(rubrica); $event.stopPropagation()">
+                              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                            </ion-button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Vista Móvil: Cards con componentes Ionic -->
+                <ion-list class="mobile-only rubrica-cards">
+                  @for (rubrica of rubricasOrdenadas; track rubrica.id) {
+                    <ion-item
+                      [id]="'rubrica-card-' + rubrica.id"
+                      lines="none"
+                      class="rubrica-card"
+                      [class.card-inactiva]="rubrica.activa === false"
+                      [class.card-seleccionada]="rubricaSeleccionada?.id === rubrica.id"
+                      (click)="seleccionarRubrica(rubrica)"
+                    >
+                      <ion-card>
+                        <ion-card-header>
+                          <div class="card-header-wrapper">
+                            <ion-card-title>
+                              <span class="rubrica-nombre-mobile">{{ rubrica.nombre }}</span>
+                            </ion-card-title>
+                            <div class="codigo-activa-wrapper">
+                              <span class="codigo-badge-mobile">{{ rubrica.codigo || rubrica.id }}</span>
+                              @if (rubrica.version && rubrica.version > 1) {
+                                <span class="version-badge-mobile">v{{ rubrica.version }}</span>
+                              }
+                              <span
+                                class="estado-indicador-mobile"
+                                [class.estado-activo]="rubrica.activa !== false"
+                                [class.estado-inactivo]="rubrica.activa === false"
+                                (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()">
+                                {{ rubrica.activa !== false ? 'Activa' : 'Inactiva' }}
+                              </span>
+                            </div>
                           </div>
-                        </ion-col>
-                        <ion-col size="6">
-                          <div class="info-item">
-                            <ion-icon name="document-outline"></ion-icon>
-                            <span class="info-label">Entrega:</span>
-                            <span class="info-value">{{ rubrica.tipoEntrega || '—' }}</span>
+                        </ion-card-header>
+
+                        <ion-card-content>
+                          <ion-grid class="ion-no-padding">
+                            <ion-row>
+                              <ion-col size="6">
+                                <div class="info-item">
+                                  <ion-icon name="list-outline"></ion-icon>
+                                  <span class="info-label">Criterios:</span>
+                                  <span class="info-value">{{ rubrica.criterios.length || 0 }}</span>
+                                </div>
+                              </ion-col>
+                              <ion-col size="6">
+                                <div class="info-item">
+                                  <ion-icon name="trophy-outline"></ion-icon>
+                                  <span class="info-label">Puntos:</span>
+                                  <span class="info-value">{{ rubrica.puntuacionTotal || 0 }}</span>
+                                </div>
+                              </ion-col>
+                            </ion-row>
+                            <ion-row>
+                              <ion-col size="12">
+                                <div class="acciones-mobile">
+                                  <ion-button expand="block" fill="outline" color="primary" (click)="editarRubrica(rubrica)">
+                                    <ion-icon name="create-outline" slot="start"></ion-icon>
+                                    Editar
+                                  </ion-button>
+                                  @if (rubrica.version && rubrica.version >= 1) {
+                                    <ion-button expand="block" fill="outline" color="tertiary" (click)="verHistorialVersiones(rubrica, $event)">
+                                      <ion-icon name="git-branch-outline" slot="start"></ion-icon>
+                                      Historial
+                                    </ion-button>
+                                  }
+                                  <ion-button expand="block" fill="outline" color="danger" (click)="confirmarEliminarRubrica(rubrica)">
+                                    <ion-icon name="trash-outline" slot="start"></ion-icon>
+                                    Eliminar
+                                  </ion-button>
+                                </div>
+                              </ion-col>
+                            </ion-row>
+                          </ion-grid>
+                        </ion-card-content>
+                      </ion-card>
+                    </ion-item>
+                  }
+                </ion-list>
+              </div>
+
+              <!-- Panel de Detalle de Rúbrica con Tabs - Ocupa espacio restante -->
+              @if (rubricaSeleccionada) {
+                <div class="rubrica-detalle-panel ion-flex-1">
+                  <!-- Barra de tabs con botón cerrar -->
+                  <div class="panel-toolbar">
+                    <ion-segment [value]="tabActivo" (ionChange)="onTabChange($event)">
+                      <ion-segment-button value="detalle">
+                        <ion-label>Detalle</ion-label>
+                      </ion-segment-button>
+                      <ion-segment-button value="historial" [disabled]="!rubricaSeleccionada.codigo">
+                        <ion-label>Historial</ion-label>
+                      </ion-segment-button>
+                    </ion-segment>
+                    <ion-button fill="clear" size="small" (click)="cerrarPanelDetalle()" class="btn-cerrar">
+                      <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                  <!-- Tab Content: Detalle -->
+                  @if (tabActivo === 'detalle') {
+                    <div class="detalle-contenido">
+                      <!-- Encabezado de la Rúbrica -->
+                      <div class="rubrica-header-grid">
+                        <div class="info-principal">
+                          <h3 class="rubrica-titulo">{{ rubricaSeleccionada.nombre }}</h3>
+                          <span class="rubrica-curso">{{ rubricaSeleccionada.descripcion || 'Sin curso asignado' }}</span>
+                        </div>
+                        <div class="info-meta">
+                          <div class="meta-item">
+                            <span class="meta-label">Código</span>
+                            <span class="meta-value">{{ rubricaSeleccionada.codigo || rubricaSeleccionada.id }}</span>
                           </div>
-                        </ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col size="6">
-                          <div class="info-item">
-                            <ion-icon name="list-outline"></ion-icon>
-                            <span class="info-label">Criterios:</span>
-                            <span class="info-value">{{ rubrica.criterios.length || 0 }}</span>
+                          <div class="meta-item">
+                            <span class="meta-label">Tipo</span>
+                            <span class="meta-value">{{ rubricaSeleccionada.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }}</span>
                           </div>
-                        </ion-col>
-                        <ion-col size="6">
-                          <div class="info-item">
-                            <ion-icon name="trophy-outline"></ion-icon>
-                            <span class="info-label">Puntos:</span>
-                            <span class="info-value">{{ rubrica.puntuacionTotal || 0 }}</span>
+                          <div class="meta-item">
+                            <span class="meta-label">Entrega</span>
+                            <span class="meta-value">{{ rubricaSeleccionada.tipoEntrega || '—' }}</span>
                           </div>
-                        </ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col size="12">
-                          <div class="badges-wrapper">
-                            <ion-chip [color]="rubrica.tipoRubrica === 'PG' ? 'primary' : 'tertiary'">
-                              <ion-icon name="people"></ion-icon>
-                              <ion-label>{{ rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }}</ion-label>
-                            </ion-chip>
-                            @if (rubrica.tipoEntrega) {
-                              <ion-chip color="secondary">
-                                <ion-icon name="document-text"></ion-icon>
-                                <ion-label>{{ rubrica.tipoEntrega }}</ion-label>
-                              </ion-chip>
+                          <div class="meta-item">
+                            <span class="meta-label">Puntos</span>
+                            <span class="meta-value puntos">{{ rubricaSeleccionada.puntuacionTotal || 0 }}</span>
+                          </div>
+                          <div class="meta-item">
+                            <span class="meta-label">Versión</span>
+                            <span class="meta-value">{{ rubricaSeleccionada.version || 1 }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Escala de Calificación en Cards -->
+                      @if (rubricaSeleccionada.escalaCalificacion && rubricaSeleccionada.escalaCalificacion.length > 0) {
+                        <div class="escala-calificacion">
+                          <h4>Escala de Calificación</h4>
+                          <div class="escala-cards-grid">
+                            @for (escala of rubricaSeleccionada.escalaCalificacion; track $index; let i = $index) {
+                              <div class="escala-card" [class.escala-baja]="i === rubricaSeleccionada.escalaCalificacion.length - 1" [class.escala-alta]="i === 0">
+                                <span class="escala-rango">{{ escala.rango }}</span>
+                                <span class="escala-descripcion">{{ escala.descripcion }}</span>
+                              </div>
                             }
                           </div>
-                        </ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col size="12">
-                          <div class="acciones-mobile">
-                            <ion-button expand="block" fill="outline" color="primary" (click)="editarRubrica(rubrica)">
-                              <ion-icon name="create-outline" slot="start"></ion-icon>
-                              Editar
-                            </ion-button>
-                            <ion-button expand="block" fill="outline" color="danger" (click)="confirmarEliminarRubrica(rubrica)">
-                              <ion-icon name="trash-outline" slot="start"></ion-icon>
-                              Eliminar
-                            </ion-button>
-                          </div>
-                        </ion-col>
-                      </ion-row>
-                    </ion-grid>
-                  </ion-card-content>
-                </ion-card>
-              </ion-item>
-            }
-          </ion-list>
+                        </div>
+                      }
 
-        } @else {
-          <!-- Empty state -->
-          <div class="empty-state">
-            <h3>No hay Rúbricas Registradas</h3>
-            <p>Seleccione "Crear" para agregar una nueva rúbrica</p>
-          </div>
-        }
-      </div>
+                      <!-- Criterios de la Rúbrica -->
+                      <div class="criterios-container">
+                        <h4>Criterios ({{ rubricaSeleccionada.criterios.length }})</h4>
+
+                        @for (criterio of rubricaSeleccionada.criterios; track $index; let i = $index) {
+                          <div class="criterio-card">
+                            <div class="criterio-header">
+                              <span class="criterio-numero">{{ i + 1 }}</span>
+                              <span class="criterio-titulo">{{ criterio.titulo }}</span>
+                              <span class="criterio-peso">{{ criterio.peso }}</span>
+                            </div>
+
+                            @if (criterio.nivelesDetalle && criterio.nivelesDetalle.length > 0) {
+                              <div class="niveles-container">
+                                @for (nivel of criterio.nivelesDetalle; track $index; let j = $index) {
+                                  <div class="nivel-item" [class.nivel-alto]="j === 0" [class.nivel-bajo]="j === criterio.nivelesDetalle.length - 1">
+                                    <div class="nivel-header">
+                                      <span class="nivel-titulo">{{ nivel.titulo }}</span>
+                                      <span class="nivel-puntos">{{ nivel.puntos }}</span>
+                                    </div>
+                                    <p class="nivel-descripcion">{{ nivel.descripcion }}</p>
+                                  </div>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Tab Content: Historial de Versiones -->
+                  @if (tabActivo === 'historial' && codigoCategoriaHistorial) {
+                    <div class="historial-contenido">
+                      <app-rubrica-version-history
+                        [codigoCategoria]="codigoCategoriaHistorial"
+                        [sinEncabezado]="true"
+                        (versionActivada)="onVersionActivada($event)">
+                      </app-rubrica-version-history>
+                    </div>
+                  }
+                </div>
+              }
+
+            } @else {
+              <!-- Empty state -->
+              <div class="empty-state">
+                <h3>No hay Rúbricas Registradas</h3>
+                <p>Seleccione "Crear" para agregar una nueva rúbrica</p>
+              </div>
+            }
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
     </div>
   </div>

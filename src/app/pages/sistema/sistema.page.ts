@@ -14,7 +14,7 @@ import {
   IonItem,
   IonLabel,
   IonBadge,
-  ToastController,
+  IonToggle,
   AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -33,11 +33,13 @@ import {
   logoAngular,
   logoJavascript,
   cloudOutline,
-  refreshOutline
-} from 'ionicons/icons';
+  refreshOutline,
+  settingsOutline,
+  notificationsOutline, timeOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { BackupService } from '../../services/backup.service';
 import { UnifiedStorageService } from '../../services/unified-storage.service';
+import { ToastService } from '../../services/toast.service';
 import { Capacitor } from '@capacitor/core';
 
 @Component({
@@ -58,14 +60,15 @@ import { Capacitor } from '@capacitor/core';
     IonList,
     IonItem,
     IonLabel,
-    IonBadge
+    IonBadge,
+    IonToggle
   ]
 })
 export class SistemaPage implements OnInit {
   private dataService = inject(DataService);
   private backupService = inject(BackupService);
   private unifiedStorageService = inject(UnifiedStorageService);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private alertController = inject(AlertController);
 
   @ViewChild('fileInputDB') fileInputDB!: ElementRef<HTMLInputElement>;
@@ -75,28 +78,50 @@ export class SistemaPage implements OnInit {
     storage: 'ionic-storage'
   };
 
+  mostrarMensajesEmergentes = true;
+  duracionToast = 2; // Duración en segundos (1-4)
+
   constructor() {
-    addIcons({
-      serverOutline,
-      desktopOutline,
-      phonePortraitOutline,
-      buildOutline,
-      cloudDownloadOutline,
-      cloudUploadOutline,
-      trashOutline,
-      informationCircleOutline,
-      checkmarkCircleOutline,
-      checkmarkCircle,
-      warningOutline,
-      logoAngular,
-      logoJavascript,
-      cloudOutline,
-      refreshOutline
-    });
+    addIcons({serverOutline,buildOutline,settingsOutline,notificationsOutline,timeOutline,removeCircleOutline,addCircleOutline,cloudDownloadOutline,cloudUploadOutline,informationCircleOutline,trashOutline,warningOutline,refreshOutline,logoAngular,phonePortraitOutline,logoJavascript,cloudOutline,desktopOutline,checkmarkCircleOutline,checkmarkCircle});
   }
 
   async ngOnInit() {
     await this.detectarPlataforma();
+    this.cargarPreferencias();
+  }
+
+  private cargarPreferencias() {
+    const uiState = this.dataService.getUIState();
+    // Por defecto habilitados si no existe la preferencia
+    this.mostrarMensajesEmergentes = uiState.mostrarMensajesEmergentes !== false;
+    // Duración por defecto 2 segundos
+    this.duracionToast = uiState.duracionToast ?? 2;
+  }
+
+  toggleMensajesEmergentes(event: any) {
+    const habilitado = event.detail.checked;
+    this.mostrarMensajesEmergentes = habilitado;
+    this.dataService.updateUIState({ mostrarMensajesEmergentes: habilitado });
+    Logger.log(`🔔 [Sistema] Mensajes emergentes ${habilitado ? 'habilitados' : 'deshabilitados'}`);
+  }
+
+  incrementarDuracion() {
+    if (this.duracionToast < 4) {
+      this.duracionToast++;
+      this.guardarDuracionToast();
+    }
+  }
+
+  decrementarDuracion() {
+    if (this.duracionToast > 1) {
+      this.duracionToast--;
+      this.guardarDuracionToast();
+    }
+  }
+
+  private guardarDuracionToast() {
+    this.dataService.updateUIState({ duracionToast: this.duracionToast });
+    Logger.log(`⏱️ [Sistema] Duración de toast: ${this.duracionToast}s`);
   }
 
   private async detectarPlataforma() {
@@ -117,25 +142,10 @@ export class SistemaPage implements OnInit {
       const fecha = new Date().toISOString().split('T')[0];
       this.backupService.downloadBackup(backup, `backup_completo_${fecha}.json`);
 
-      const toast = await this.toastController.create({
-        message: 'Base de datos exportada exitosamente',
-        duration: 2000,
-        color: 'success',
-        position: 'top',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.toastService.success('Base de datos exportada exitosamente');
     } catch (error) {
       Logger.error('Error exportando base de datos:', error);
-
-      const toast = await this.toastController.create({
-        message: 'Error al exportar base de datos',
-        duration: 3000,
-        color: 'danger',
-        position: 'top',
-        cssClass: 'toast-danger'
-      });
-      await toast.present();
+      await this.toastService.error('Error al exportar base de datos');
     }
   } onBaseDatosFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -162,56 +172,27 @@ export class SistemaPage implements OnInit {
           // Importar datos usando el método correcto
           await this.dataService.importarDatos(contenido);
 
-          const toast = await this.toastController.create({
-            message: 'Base de datos importada exitosamente',
-            duration: 2000,
-            color: 'success',
-            position: 'top',
-            cssClass: 'toast-success'
-          });
-          await toast.present();
+          await this.toastService.success('Base de datos importada exitosamente');
         } catch (error) {
           Logger.error('Error procesando backup:', error);
-
-          const toast = await this.toastController.create({
-            message: 'Error al procesar archivo de backup',
-            duration: 3000,
-            color: 'danger',
-            position: 'top',
-            cssClass: 'toast-danger'
-          });
-          await toast.present();
+          await this.toastService.error('Error al procesar archivo de backup');
         }
       };
 
       reader.onerror = async () => {
-        const toast = await this.toastController.create({
-          message: 'Error al leer archivo',
-          duration: 3000,
-          color: 'danger',
-          position: 'top',
-          cssClass: 'toast-danger'
-        });
-        await toast.present();
+        await this.toastService.error('Error al leer archivo');
       };
 
       reader.readAsText(file);
     } catch (error) {
       Logger.error('Error importando base de datos:', error);
-
-      const toast = await this.toastController.create({
-        message: 'Error al importar base de datos',
-        duration: 3000,
-        color: 'danger',
-        position: 'top',
-        cssClass: 'toast-danger'
-      });
-      await toast.present();
+      await this.toastService.error('Error al importar base de datos');
     }
   } async limpiarBaseDatosEstadoCero() {
     const alert = await this.alertController.create({
-      header: 'Confirmar Limpieza',
+      header: '🗑️ Confirmar Limpieza',
       message: '¿Estás seguro de eliminar todas las evaluaciones y estados? Los cursos y estudiantes no se verán afectados.',
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -223,26 +204,10 @@ export class SistemaPage implements OnInit {
           handler: async () => {
             try {
               await this.dataService.limpiarBaseDatosEstadoCero();
-
-              const toast = await this.toastController.create({
-                message: 'Base de datos limpiada exitosamente',
-                duration: 2000,
-                color: 'success',
-                position: 'top',
-                cssClass: 'toast-success'
-              });
-              await toast.present();
+              await this.toastService.success('Base de datos limpiada exitosamente');
             } catch (error) {
               Logger.error('Error limpiando base de datos:', error);
-
-              const toast = await this.toastController.create({
-                message: 'Error al limpiar base de datos',
-                duration: 3000,
-                color: 'danger',
-                position: 'top',
-                cssClass: 'toast-danger'
-              });
-              await toast.present();
+              await this.toastService.error('Error al limpiar base de datos');
             }
           }
         }
@@ -258,8 +223,9 @@ export class SistemaPage implements OnInit {
    */
   async limpiarCachePWA() {
     const alert = await this.alertController.create({
-      header: 'Limpiar Caché PWA',
+      header: '🧹 Limpiar Caché PWA',
       message: 'Esto eliminará los archivos cacheados de la aplicación. Los datos (cursos, evaluaciones, rúbricas) NO se verán afectados. La app necesitará conexión a internet para recargar los recursos.',
+      cssClass: 'alert-warning',
       buttons: [
         {
           text: 'Cancelar',
@@ -295,14 +261,7 @@ export class SistemaPage implements OnInit {
                 );
               }
 
-              const toast = await this.toastController.create({
-                message: `Caché limpiada: ${cachesCleaned} cachés, ${swUnregistered} Service Workers. Recargando...`,
-                duration: 2000,
-                color: 'success',
-                position: 'top',
-                cssClass: 'toast-success'
-              });
-              await toast.present();
+              await this.toastService.success(`Caché limpiada: ${cachesCleaned} cachés, ${swUnregistered} Service Workers. Recargando...`);
 
               // Recargar la página después de un breve delay
               setTimeout(() => {
@@ -311,15 +270,7 @@ export class SistemaPage implements OnInit {
 
             } catch (error) {
               Logger.error('Error limpiando caché PWA:', error);
-
-              const toast = await this.toastController.create({
-                message: 'Error al limpiar caché PWA',
-                duration: 3000,
-                color: 'danger',
-                position: 'top',
-                cssClass: 'toast-danger'
-              });
-              await toast.present();
+              await this.toastService.error('Error al limpiar caché PWA');
             }
           }
         }

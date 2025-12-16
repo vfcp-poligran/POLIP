@@ -44,6 +44,50 @@
         </ion-card-content>
       </ion-card>
 
+      <!-- Preferencias de la Aplicación -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="settings-outline"></ion-icon>
+            Preferencias
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Mensajes Emergentes</h3>
+                <p class="text-gray-medium">Mostrar notificaciones de confirmación y alertas</p>
+              </ion-label>
+              <ion-toggle
+                slot="end"
+                [checked]="mostrarMensajesEmergentes"
+                (ionChange)="toggleMensajesEmergentes($event)">
+              </ion-toggle>
+            </ion-item>
+
+            <!-- Control de duración de toasts -->
+            <ion-item *ngIf="mostrarMensajesEmergentes">
+              <ion-icon name="time-outline" slot="start" color="secondary"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Duración en Pantalla</h3>
+                <p class="text-gray-medium">Tiempo visible: {{ duracionToast }} segundo{{ duracionToast !== 1 ? 's' : '' }}</p>
+              </ion-label>
+              <div slot="end" class="duration-control">
+                <ion-button fill="clear" size="small" [disabled]="duracionToast <= 1" (click)="decrementarDuracion()">
+                  <ion-icon name="remove-circle-outline"></ion-icon>
+                </ion-button>
+                <span class="duration-value">{{ duracionToast }}s</span>
+                <ion-button fill="clear" size="small" [disabled]="duracionToast >= 4" (click)="incrementarDuracion()">
+                  <ion-icon name="add-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
       <!-- Gestión de Base de Datos -->
       <ion-card>
         <ion-card-header>

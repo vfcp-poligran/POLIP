@@ -92,7 +92,9 @@ addIcons({
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    provideIonicAngular({
+      innerHTMLTemplatesEnabled: true  // Permite HTML en mensajes de alertas
+    }),
     provideAnimations(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(IonicStorageModule.forRoot()),

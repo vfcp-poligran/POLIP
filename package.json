@@ -6,6 +6,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ionic serve",
+    "restart": "powershell -ExecutionPolicy Bypass -File ./scripts/ionic-restart.ps1",
+    "restart:force": "powershell -ExecutionPolicy Bypass -File ./scripts/ionic-restart.ps1 -Force",
     "build": "ionic build",
     "build:prod": "ionic build --prod",
     "watch": "ng build --watch --configuration development",

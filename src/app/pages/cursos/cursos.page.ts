@@ -17,7 +17,6 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  ToastController,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -55,6 +54,7 @@ import {
   documentText,
   school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-cursos',
@@ -82,7 +82,7 @@ import { DataService } from '../../services/data.service';
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
-  private toastController = inject(ToastController);
+  private toastService = inject(ToastService);
   private alertController = inject(AlertController);
 
   @ViewChild('estudiantesFileInput') estudiantesFileInput!: ElementRef<HTMLInputElement>;
@@ -122,6 +122,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
    */
   ionViewWillEnter() {
     this.cargarCursos();
+    // Restaurar estado de modoEdicion desde UIState
+    const uiState = this.dataService.getUIState();
+    if (uiState.cursosModoEdicion) {
+      this.modoEdicion = true;
+    }
   }
 
   /**
@@ -189,14 +194,15 @@ export class CursosPage implements OnInit, ViewWillEnter {
     }
   }
 
-  iniciarCreacionCurso() {
+  async iniciarCreacionCurso() {
     Logger.log('🔘 [CursosPage] Click en Crear Curso - Iniciando...');
-    // alert('Click detectado'); // Feedback inmediato
     try {
       this.modoEdicion = true;
       this.cursoSeleccionado = null;
       this.limpiarFormulario();
       this.cd.detectChanges(); // Forzar actualización de vista
+      // Persistir estado en UIState
+      this.dataService.updateUIState({ cursosModoEdicion: true });
       Logger.log('✅ [CursosPage] Modo edición activado');
     } catch (error) {
       Logger.error('❌ [CursosPage] Error al iniciar creación:', error);
@@ -206,15 +212,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
   async cancelarCreacionCurso() {
     this.modoEdicion = false;
     this.limpiarFormulario();
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ cursosModoEdicion: false });
     Logger.log('🔘 [CursosPage] Creación de curso cancelada');
-    
-    const toast = await this.toastController.create({
-      message: 'Operación cancelada',
-      duration: 2000,
-      color: 'warning',
-      position: 'middle'
-    });
-    await toast.present();
   }
 
   toggleInfo() {
@@ -225,6 +225,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.cursoSeleccionado = codigo;
     this.modoEdicion = false;
     this.cargarRubricasAsociadas(codigo);
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ cursosModoEdicion: false });
   }
 
   deseleccionarCurso() {
@@ -232,6 +234,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.modoEdicion = false;
     this.limpiarFormulario();
     this.rubricasAsociadas = [];
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ cursosModoEdicion: false });
   }
 
   cargarRubricasAsociadas(codigoCurso: string) {
@@ -572,7 +576,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
           .filter(p => !preposiciones.includes(p))
           .map(p => p[0])
           .join('');
-        const enfasisCodigo = 'E' + siglas; // Agregar E de "Énfasis"
+
+        // Solo agregar 'E' si el nombre empieza con "ÉNFASIS"
+        const esEnfasis = normalizarTexto(nombreCompleto).startsWith('ENFASIS');
+        const enfasisCodigo = esEnfasis ? 'E' + siglas : siglas;
 
         // Extraer grupo (ej: B01)
         const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z0-9]+)\]/i);
@@ -605,14 +612,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
         nombre: nombreCompleto,
         codigo: codigoAbreviado,
         bloque: bloqueTexto
-      }; const toast = await this.toastController.create({
-        message: `${estudiantes.length} estudiantes cargados`,
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        icon: 'checkmark-circle'
-      });
-      await toast.present();
+      };
+      await this.mostrarToastExito(`${estudiantes.length} estudiantes cargados`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       Logger.error('[CursosPage] Error cargando estudiantes:', {
@@ -640,10 +641,28 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.calificacionesFileName = file.name;
 
     try {
+      // Validar que primero se haya cargado el archivo de Personas
+      if (this.estudiantesCargados.length === 0) {
+        await this.mostrarToastError('Primero debe cargar el archivo de Personas');
+        this.calificacionesFileName = '';
+        input.value = '';
+        return;
+      }
+
       const contenido = await this.leerArchivo(file);
 
       // Parsear calificaciones usando el método del servicio
       const calificaciones = this.parsearCalificacionesCanvasLocal(contenido);
+
+      // VALIDACIÓN: Verificar que los estudiantes coincidan entre ambos archivos
+      const validacion = this.validarCoincidenciaEstudiantes(calificaciones);
+
+      if (!validacion.esValido) {
+        await this.mostrarToastError(validacion.mensaje, 5000);
+        this.calificacionesFileName = '';
+        input.value = '';
+        return;
+      }
 
       this.calificacionesCargadas = {
         nombre: file.name,
@@ -665,14 +684,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       // Esto invalidará el cache en cursos.page.ts cuando se guarde
       Logger.log('🔄 [cargarArchivoCalificaciones] Calificaciones cargadas - cache se invalidará al guardar');
 
-      const toast = await this.toastController.create({
-        message: 'Archivo de calificaciones cargado',
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.mostrarToastExito('Archivo de calificaciones cargado');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       Logger.error('[CursosPage] Error cargando calificaciones:', {
@@ -691,6 +703,96 @@ export class CursosPage implements OnInit, ViewWillEnter {
       this.calificacionesFileName = '';
       this.calificacionesParseadas = [];
     }
+  }
+
+  /**
+   * Valida que los estudiantes del archivo de Calificaciones coincidan con los de Personas
+   * @param calificaciones Array de calificaciones parseadas
+   * @returns Objeto con resultado de validación y mensaje de error si aplica
+   */
+  private validarCoincidenciaEstudiantes(calificaciones: Array<{ id: string; e1: string; e2: string; ef: string }>): { esValido: boolean; mensaje: string } {
+    // Obtener IDs de estudiantes cargados (archivo Personas)
+    const idsPersonas = new Set(
+      this.estudiantesCargados
+        .map(est => est.canvasUserId?.trim())
+        .filter(id => id && id !== '')
+    );
+
+    // Obtener IDs de calificaciones
+    const idsCalificaciones = new Set(
+      calificaciones
+        .map(cal => cal.id?.trim())
+        .filter(id => id && id !== '')
+    );
+
+    // Verificar si hay datos para comparar
+    if (idsPersonas.size === 0) {
+      return {
+        esValido: false,
+        mensaje: 'El archivo de Personas no tiene IDs válidos'
+      };
+    }
+
+    if (idsCalificaciones.size === 0) {
+      return {
+        esValido: false,
+        mensaje: 'El archivo de Calificaciones no tiene IDs válidos'
+      };
+    }
+
+    // Encontrar estudiantes que están en Personas pero NO en Calificaciones
+    const faltanEnCalificaciones: string[] = [];
+    idsPersonas.forEach(id => {
+      if (!idsCalificaciones.has(id)) {
+        faltanEnCalificaciones.push(id);
+      }
+    });
+
+    // Encontrar estudiantes que están en Calificaciones pero NO en Personas
+    const sobranEnCalificaciones: string[] = [];
+    idsCalificaciones.forEach(id => {
+      if (!idsPersonas.has(id)) {
+        sobranEnCalificaciones.push(id);
+      }
+    });
+
+    // Si hay diferencias significativas, rechazar
+    const totalDiferencias = faltanEnCalificaciones.length + sobranEnCalificaciones.length;
+
+    if (totalDiferencias > 0) {
+      let mensaje = 'Los archivos no coinciden: ';
+
+      if (faltanEnCalificaciones.length > 0) {
+        mensaje += `${faltanEnCalificaciones.length} estudiantes de Personas no están en Calificaciones`;
+      }
+
+      if (sobranEnCalificaciones.length > 0) {
+        if (faltanEnCalificaciones.length > 0) mensaje += ', ';
+        mensaje += `${sobranEnCalificaciones.length} estudiantes de Calificaciones no están en Personas`;
+      }
+
+      Logger.warn('⚠️ Validación fallida - Estudiantes no coinciden:', {
+        faltanEnCalificaciones,
+        sobranEnCalificaciones,
+        totalPersonas: idsPersonas.size,
+        totalCalificaciones: idsCalificaciones.size
+      });
+
+      return {
+        esValido: false,
+        mensaje
+      };
+    }
+
+    Logger.log('✅ Validación exitosa - Estudiantes coinciden:', {
+      totalPersonas: idsPersonas.size,
+      totalCalificaciones: idsCalificaciones.size
+    });
+
+    return {
+      esValido: true,
+      mensaje: ''
+    };
   }
 
   /**
@@ -826,27 +928,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   async guardarCurso() {
     if (!this.cursoParseado || this.estudiantesCargados.length === 0) {
-      const toast = await this.toastController.create({
-        message: 'Debe cargar al menos el archivo de estudiantes',
-        duration: 3000,
-        color: 'warning',
-        position: 'middle',
-        cssClass: 'toast-warning'
-      });
-      await toast.present();
+      await this.mostrarToastWarning('Debe cargar al menos el archivo de estudiantes', 3000);
       return;
     }
 
     // Validar que se haya detectado el código del curso
     if (!this.cursoParseado.codigo) {
-      const toast = await this.toastController.create({
-        message: 'No se pudo detectar el código del curso. Por favor, renombre el archivo con formato: CODIGOB##.csv (ej: EPMB01.csv)',
-        duration: 4000,
-        color: 'warning',
-        position: 'middle',
-        cssClass: 'toast-warning'
-      });
-      await toast.present();
+      await this.mostrarToastWarning('No se pudo detectar el código del curso. Por favor, renombre el archivo con formato: CODIGOB##.csv (ej: EPMB01.csv)', 4000);
       return;
     }
 
@@ -921,14 +1009,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       this.cursoSeleccionado = null;
 
       const mensajeExito = this.codigoCursoEnEdicion ? 'Curso actualizado exitosamente' : 'Curso creado';
-      const toast = await this.toastController.create({
-        message: mensajeExito,
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        icon: 'checkmark-circle'
-      });
-      await toast.present();
+      await this.mostrarToastExito(mensajeExito);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       Logger.error('[CursosPage] Error guardando curso:', {
@@ -956,14 +1037,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.cursoSeleccionado = null;
     this.limpiarFormulario();
 
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000,
-      color: 'warning',
-      position: 'middle',
-      cssClass: 'toast-warning'
-    });
-    await toast.present();
+    await this.mostrarToastWarning(mensaje);
   }
 
   limpiarFormulario() {
@@ -1021,8 +1095,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
     event.stopPropagation();
 
     const alert = await this.alertController.create({
-      header: '⚠️ Confirmar Eliminación de Curso',
+      header: '🗑️ Confirmar Eliminación',
       message: `¿Estás seguro de eliminar el curso "${curso.nombre}" (${curso.nombreAbreviado})?<br><br><strong>Se eliminarán:</strong><br>• Todos los estudiantes del curso<br>• Todas las evaluaciones asociadas<br>• Comentarios y seguimiento<br><br>Esta acción no se puede deshacer.`,
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -1041,25 +1116,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
                 this.deseleccionarCurso();
               }
 
-              const toast = await this.toastController.create({
-                message: `Curso "${curso.nombreAbreviado}" eliminado`,
-                duration: 2000,
-                color: 'tertiary',
-                position: 'middle',
-                cssClass: 'toast-success'
-              });
-              await toast.present();
+              await this.mostrarToastExito(`Curso "${curso.nombreAbreviado}" eliminado`);
             } catch (error) {
               Logger.error('Error eliminando curso:', error);
-
-              const toast = await this.toastController.create({
-                message: 'Error al eliminar curso',
-                duration: 3000,
-                color: 'danger',
-                position: 'middle',
-                cssClass: 'toast-danger'
-              });
-              await toast.present();
+              await this.mostrarToastError('Error al eliminar curso');
             }
           }
         }
@@ -1124,14 +1184,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
         archivoCalificaciones: undefined
       });
 
-      const toast = await this.toastController.create({
-        message: 'Archivo de calificaciones eliminado',
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.mostrarToastExito('Archivo de calificaciones eliminado');
     }
   }
 
@@ -1153,14 +1206,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
     // Validar extensión
     if (!file.name.endsWith('.txt')) {
-      const toast = await this.toastController.create({
-        message: 'Solo se permiten archivos .txt',
-        duration: 2000,
-        color: 'warning',
-        position: 'middle',
-        cssClass: 'toast-warning'
-      });
-      await toast.present();
+      await this.mostrarToastWarning('Solo se permiten archivos .txt');
       return;
     }
 
@@ -1169,27 +1215,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
       const rubrica = this.dataService.parsearArchivoRubrica(contenido);
 
       if (!rubrica) {
-        const toast = await this.toastController.create({
-          message: 'Error al parsear el archivo de rúbrica',
-          duration: 3000,
-          color: 'danger',
-          position: 'middle',
-          cssClass: 'toast-danger'
-        });
-        await toast.present();
+        await this.mostrarToastError('Error al parsear el archivo de rúbrica');
         return;
       }
 
       this.rubricaCargada = rubrica;
 
-      const toast = await this.toastController.create({
-        message: `Rúbrica "${rubrica.nombre}" cargada exitosamente`,
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.mostrarToastExito(`Rúbrica "${rubrica.nombre}" cargada exitosamente`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       Logger.error('[CursosPage] Error cargando rúbrica:', {
@@ -1211,28 +1243,14 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   async guardarRubrica() {
     if (!this.rubricaCargada) {
-      const toast = await this.toastController.create({
-        message: 'No hay rúbrica para guardar',
-        duration: 2000,
-        color: 'warning',
-        position: 'middle',
-        cssClass: 'toast-warning'
-      });
-      await toast.present();
+      await this.mostrarToastWarning('No hay rúbrica para guardar');
       return;
     }
 
     try {
       await this.dataService.guardarRubrica(this.rubricaCargada);
 
-      const toast = await this.toastController.create({
-        message: `Rúbrica "${this.rubricaCargada.nombre}" guardada exitosamente`,
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.mostrarToastExito(`Rúbrica "${this.rubricaCargada.nombre}" guardada exitosamente`);
 
       // Limpiar estado
       this.rubricaCargada = null;
@@ -1291,55 +1309,32 @@ export class CursosPage implements OnInit, ViewWillEnter {
       a.click();
       window.URL.revokeObjectURL(url);
 
-      const toast = await this.toastController.create({
-        message: 'Calificaciones exportadas',
-        duration: 2000,
-        color: 'tertiary',
-        position: 'middle',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      await this.mostrarToastExito('Calificaciones exportadas');
     }
   }
 
   /**
    * Método helper para mostrar mensajes de error de forma consistente
+   * Usa ToastService que respeta la preferencia del usuario
    */
   private async mostrarToastError(mensaje: string, duracion: number = 3000): Promise<void> {
-    try {
-      const toast = await this.toastController.create({
-        message: mensaje,
-        duration: duracion,
-        color: 'danger',
-        position: 'middle',
-        icon: 'close-circle',
-        cssClass: 'toast-danger'
-      });
-      await toast.present();
-    } catch (error) {
-      // Fallback si falla mostrar el toast
-      Logger.error('[CursosPage] Error mostrando toast de error:', error);
-      console.error(mensaje);
-    }
+    await this.toastService.error(mensaje, undefined, duracion);
   }
 
   /**
    * Método helper para mostrar mensajes de éxito de forma consistente
+   * Usa ToastService que respeta la preferencia del usuario
    */
   private async mostrarToastExito(mensaje: string, duracion: number = 2000): Promise<void> {
-    try {
-      const toast = await this.toastController.create({
-        message: mensaje,
-        duration: duracion,
-        color: 'tertiary',
-        position: 'middle',
-        icon: 'checkmark-circle',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
-    } catch (error) {
-      Logger.error('[CursosPage] Error mostrando toast de éxito:', error);
-    }
+    await this.toastService.success(mensaje, undefined, duracion);
   }
+
+  /**
+   * Método helper para mostrar mensajes de advertencia
+   */
+  private async mostrarToastWarning(mensaje: string, duracion: number = 2000): Promise<void> {
+    await this.toastService.warning(mensaje, undefined, duracion);
+  }
+
 }
 

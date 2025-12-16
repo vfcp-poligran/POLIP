@@ -9,6 +9,8 @@ ion-content {
   padding: 8px;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 
   @media (max-width: 768px) {
     padding: 4px;
@@ -108,6 +110,9 @@ ion-content {
   flex-direction: column;
   height: calc(100vh - 120px);
   gap: 4px;
+  min-width: 0; // Permite que flex se encoja correctamente
+  max-width: 100%;
+  overflow: hidden;
 
   // Tablet
   @media (max-width: 1024px) and (min-width: 769px) {
@@ -120,6 +125,7 @@ ion-content {
     height: auto;
     min-height: calc(100vh - 100px);
     gap: 2px;
+    overflow: visible;
   }
 }
 
@@ -390,6 +396,8 @@ ion-content {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  min-width: 0; // Importante para flex items que contengan tablas
+  max-width: 100%;
 }
 
 // Wrapper con scroll

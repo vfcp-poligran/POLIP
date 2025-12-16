@@ -118,6 +118,7 @@ ion-router-outlet .ion-page {
   contain: layout size style;
   z-index: 1;
   pointer-events: auto;
+  overflow: hidden;
 }
 
 ion-router-outlet .ion-page.ion-page-invisible {
@@ -341,9 +342,211 @@ ion-router-outlet[class*="_nghost-"] {
 }
 
 /* ============================================================================
- * ESTILOS GLOBALES PARA ALERT DE ELIMINACIÓN (PALETA SRS)
+ * ESTILOS GLOBALES PARA ALERTAS DE CONFIRMACIÓN (PALETA SRS)
+ * Última actualización: 2025-12-15
+ * Ionic Alert usa encapsulación "scoped", requiere mayor especificidad
  * ============================================================================ */
 
+/* Estilos base comunes para todas las alertas personalizadas */
+.alert-confirm,
+.alert-danger,
+.alert-info,
+.alert-success,
+.alert-warning {
+  --backdrop-opacity: 0.7;
+  --background: #ffffff;
+  --max-width: 420px;
+}
+
+/* Wrapper con bordes redondeados y sombra */
+.alert-confirm .alert-wrapper,
+.alert-danger .alert-wrapper,
+.alert-info .alert-wrapper,
+.alert-success .alert-wrapper,
+.alert-warning .alert-wrapper {
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* Header estilizado */
+.alert-confirm .alert-head,
+.alert-danger .alert-head,
+.alert-info .alert-head,
+.alert-success .alert-head,
+.alert-warning .alert-head {
+  padding: 20px 24px 16px;
+}
+
+/* Título blanco por defecto */
+.alert-confirm .alert-title,
+.alert-danger .alert-title,
+.alert-info .alert-title,
+.alert-success .alert-title,
+.alert-warning .alert-title {
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Mensaje con mejor legibilidad */
+.alert-confirm .alert-message,
+.alert-danger .alert-message,
+.alert-info .alert-message,
+.alert-success .alert-message,
+.alert-warning .alert-message {
+  padding: 20px 24px;
+  color: #333333;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  background: #ffffff;
+}
+
+/* Grupo de botones */
+.alert-confirm .alert-button-group,
+.alert-danger .alert-button-group,
+.alert-info .alert-button-group,
+.alert-success .alert-button-group,
+.alert-warning .alert-button-group {
+  padding: 16px 24px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Botones base */
+.alert-confirm .alert-button,
+.alert-danger .alert-button,
+.alert-info .alert-button,
+.alert-success .alert-button,
+.alert-warning .alert-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 100px;
+  text-transform: none;
+  margin: 0 6px;
+}
+
+/* Botón Cancelar - estilo gris */
+.alert-confirm .alert-button-role-cancel,
+.alert-danger .alert-button-role-cancel,
+.alert-info .alert-button-role-cancel,
+.alert-success .alert-button-role-cancel,
+.alert-warning .alert-button-role-cancel {
+  background: #f1f3f4;
+  color: #5f6368;
+  border: 1px solid #dadce0;
+}
+
+/* ===== COLORES ESPECÍFICOS POR TIPO DE ALERTA ===== */
+
+/* ALERT-CONFIRM: Header azul oscuro, botón azul */
+.alert-confirm .alert-head {
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+}
+
+.alert-confirm .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, var(--azul-claro, #4a90e2) 0%, var(--azul-oscuro, #0f385a) 100%);
+  color: #ffffff;
+}
+
+/* ALERT-DANGER: Header rosa/magenta, botón destructivo */
+.alert-danger .alert-head {
+  background: linear-gradient(135deg, #EC0677 0%, #d4055f 100%);
+}
+
+.alert-danger .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, #EC0677 0%, #c90569 100%);
+  color: #ffffff;
+}
+
+/* ALERT-INFO: Header azul claro */
+.alert-info .alert-head {
+  background: linear-gradient(135deg, #4a90e2 0%, #2171c7 100%);
+}
+
+.alert-info .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, #4a90e2 0%, #2171c7 100%);
+  color: #ffffff;
+}
+
+/* ALERT-SUCCESS: Header verde */
+.alert-success .alert-head {
+  background: linear-gradient(135deg, var(--verde, #a6ce38) 0%, #8eb82e 100%);
+}
+
+.alert-success .alert-title {
+  color: #1a3d00;
+}
+
+.alert-success .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, var(--verde, #a6ce38) 0%, #8eb82e 100%);
+  color: #1a3d00;
+}
+
+/* ALERT-WARNING: Header amarillo */
+.alert-warning .alert-head {
+  background: linear-gradient(135deg, #ffc107 0%, #e6ac00 100%);
+}
+
+.alert-warning .alert-title {
+  color: #333333;
+}
+
+.alert-warning .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, #ffc107 0%, #e6ac00 100%);
+  color: #333333;
+}
+
+/* ===== ESTILOS PARA INPUTS EN ALERTAS ===== */
+.alert-confirm .alert-input-group,
+.alert-danger .alert-input-group,
+.alert-info .alert-input-group {
+  padding: 0 24px 16px;
+}
+
+.alert-confirm .alert-input-wrapper,
+.alert-danger .alert-input-wrapper,
+.alert-info .alert-input-wrapper {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.alert-confirm .alert-input-wrapper:focus-within,
+.alert-danger .alert-input-wrapper:focus-within,
+.alert-info .alert-input-wrapper:focus-within {
+  border-color: var(--azul-claro, #4a90e2);
+}
+
+/* ===== ESTILOS PARA RADIO/CHECKBOX EN ALERTAS ===== */
+.alert-confirm .alert-radio-group,
+.alert-confirm .alert-checkbox-group,
+.alert-info .alert-radio-group,
+.alert-info .alert-checkbox-group {
+  padding: 0 16px 16px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.alert-confirm .alert-radio-button,
+.alert-confirm .alert-checkbox-button,
+.alert-info .alert-radio-button,
+.alert-info .alert-checkbox-button {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+}
+
+.alert-confirm [aria-checked="true"],
+.alert-info [aria-checked="true"] {
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.15) 0%, rgba(74, 144, 226, 0.1) 100%);
+  border-left: 3px solid var(--azul-claro, #4a90e2);
+}
+
+/* Mantener compatibilidad con clase anterior */
 ion-alert.alert-delete-curso-srs {
   --background: #ffffff !important;
 
@@ -676,5 +879,357 @@ ion-checkbox {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* ============================================================
+   ALERTAS DE RÚBRICAS - Duplicados y Versiones
+   ============================================================ */
+
+.alerta-duplicada,
+.alerta-nueva-version {
+  --max-width: 450px;
+
+  .alert-message {
+    text-align: left;
+    font-size: 0.9rem;
+
+    p {
+      margin: 8px 0;
+    }
+
+    code {
+      background: var(--ion-color-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85em;
+    }
+
+    strong {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+.alerta-duplicada {
+  .alert-head {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-bottom: 2px solid var(--ion-color-warning);
+  }
+
+  .alert-title {
+    color: #e65100 !important;
+  }
+}
+
+.alerta-nueva-version {
+  .alert-head {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-bottom: 2px solid var(--ion-color-primary);
+  }
+
+  .alert-title {
+    color: var(--ion-color-primary) !important;
+  }
+
+  .alert-message {
+    .version-modal-content {
+      hr {
+        border: none;
+        border-top: 1px solid var(--ion-color-light-shade);
+        margin: 12px 0;
+      }
+
+      .diferencias-lista {
+        margin: 8px 0;
+        padding-left: 20px;
+        font-size: 0.85rem;
+
+        li {
+          margin: 4px 0;
+          color: var(--ion-color-medium-shade);
+        }
+
+        em {
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+  }
+
+  .alert-button-group {
+    .alert-button:last-child {
+      font-weight: 700;
+    }
+  }
+}
+
+.alerta-cambios-detectados {
+  --max-width: 480px;
+
+  .alert-head {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-bottom: 2px solid var(--ion-color-warning);
+  }
+
+  .alert-title {
+    color: #e65100 !important;
+  }
+
+  .alert-message {
+    text-align: left;
+
+    .cambios-detectados {
+      hr {
+        border: none;
+        border-top: 1px solid var(--ion-color-light-shade);
+        margin: 12px 0;
+      }
+
+      .diferencias-lista {
+        margin: 8px 0;
+        padding-left: 20px;
+        font-size: 0.85rem;
+
+        li {
+          margin: 4px 0;
+          color: var(--ion-color-medium-shade);
+        }
+
+        em {
+          color: var(--ion-color-medium);
+        }
+      }
+
+      .nota {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #e3f2fd;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        color: var(--ion-color-primary-shade);
+
+        ion-icon {
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  .alert-button-group {
+    flex-wrap: wrap;
+
+    .alert-button-secondary {
+      color: var(--ion-color-medium) !important;
+    }
+
+    .alert-button-primary {
+      font-weight: 700;
+      color: var(--ion-color-primary) !important;
+    }
+  }
+}
+
+/* ============================================================
+   MODAL DE HISTORIAL DE VERSIONES
+   ============================================================ */
+
+.version-history-modal {
+  --width: 90%;
+  --max-width: 900px;
+  --height: 85%;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    --width: 100%;
+    --height: 100%;
+    --border-radius: 0;
+  }
+}
+
+/* ===== ALERT SELECTOR DE VERSIÓN ===== */
+.alert-selector-version {
+  --backdrop-opacity: 0.7;
+  --background: #ffffff;
+  --max-width: 450px;
+
+  .alert-wrapper {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+
+  .alert-head {
+    padding: 20px 24px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  }
+
+  .alert-title {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .alert-sub-title {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .alert-message {
+    padding: 12px 24px;
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .alert-radio-group {
+    padding: 8px 16px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .alert-radio-button {
+    padding: 12px 16px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f0f4f8;
+    }
+
+    &.alert-radio-button-checked {
+      background-color: #e3f2fd;
+    }
+
+    .alert-radio-label {
+      font-size: 0.9rem;
+      color: #333;
+    }
+  }
+
+  .alert-button-group {
+    padding: 16px 24px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .alert-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 100px;
+    text-transform: none;
+    margin: 0 6px;
+  }
+
+  .alert-button-role-cancel {
+    background: #f1f3f4;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+  }
+
+  .alert-button:not(.alert-button-role-cancel) {
+    background: linear-gradient(135deg, var(--azul-claro, #4a90e2) 0%, var(--azul-oscuro, #0f385a) 100%);
+    color: #ffffff;
+  }
+}
+
+/* ===== ALERT SELECTOR DE RÚBRICA BASE ===== */
+.alert-selector-rubrica-base {
+  --backdrop-opacity: 0.7;
+  --background: #ffffff;
+  --max-width: 500px;
+
+  .alert-wrapper {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+
+  .alert-head {
+    padding: 20px 24px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  }
+
+  .alert-title {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .alert-message {
+    padding: 12px 24px;
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .alert-radio-group {
+    padding: 8px 16px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .alert-radio-button {
+    padding: 12px 16px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f0f4f8;
+    }
+
+    &.alert-radio-button-checked {
+      background-color: #e3f2fd;
+    }
+
+    .alert-radio-label {
+      font-size: 0.85rem;
+      color: #333;
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
+
+  .alert-button-group {
+    padding: 16px 24px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .alert-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 100px;
+    text-transform: none;
+    margin: 0 6px;
+  }
+
+  .alert-button-role-cancel {
+    background: #f1f3f4;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+  }
+
+  .alert-button:not(.alert-button-role-cancel) {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: #ffffff;
   }
 }

@@ -16,7 +16,13 @@ import {
   EstadoEvaluacion,
   ComentarioGrupo,
   ComentariosGrupoData,
-  CourseState
+  CourseState,
+  RubricaJSON,
+  NivelRubricaJSON,
+  TipoRubrica,
+  TipoEntrega,
+  EscalaCalificacionJSON,
+  CriterioRubricaJSON
 } from '../models';
 
 @Injectable({
@@ -1461,6 +1467,14 @@ export class DataService {
     return this.uiStateSubject.value;
   }
 
+  /**
+   * Verifica si los mensajes emergentes están habilitados
+   * @returns true si están habilitados (por defecto), false si están deshabilitados
+   */
+  isMensajesEmergentesEnabled(): boolean {
+    return this.uiStateSubject.value.mostrarMensajesEmergentes !== false;
+  }
+
   async sincronizarArchivoCalificaciones(codigoCurso: string): Promise<void> {
     await this.ensureInitialized();
     await this.actualizarArchivoCalificaciones(codigoCurso);
@@ -1811,6 +1825,26 @@ export class DataService {
       rubricas = {} as { [key: string]: RubricaDefinicion };
       await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
 
+    } else {
+      // Migrar rúbricas existentes sin código estructurado
+      let huboCambios = false;
+      for (const id of Object.keys(rubricas)) {
+        const rubrica = rubricas[id];
+        if (!rubrica.codigo && rubrica.tipoRubrica && rubrica.tipoEntrega) {
+          const codigoInfo = this.generarCodigoRubrica(rubrica);
+          rubrica.codigo = codigoInfo.codigo;
+          rubrica.version = codigoInfo.version;
+          rubrica.timestamp = Date.now();
+          rubrica.activa = rubrica.activa ?? true; // Por defecto activa
+          huboCambios = true;
+          Logger.log(`📝 Migrada rúbrica ${id} -> código: ${rubrica.codigo}`);
+        }
+      }
+
+      if (huboCambios) {
+        await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
+        Logger.log('✅ Rúbricas migradas con códigos estructurados');
+      }
     }
 
     this.rubricasSubject.next(rubricas);
@@ -2653,6 +2687,165 @@ export class DataService {
   // ============================================================================
 
   /**
+   * Parsea un archivo JSON con formato estandarizado de rúbrica
+   * @param contenidoJSON - Contenido del archivo JSON como string
+   * @returns RubricaDefinicion parseada o null si hay error
+   * @throws Error si el JSON es inválido o le faltan campos requeridos
+   */
+  parsearArchivoRubricaJSON(contenidoJSON: string): RubricaDefinicion | null {
+    try {
+      const json: RubricaJSON = JSON.parse(contenidoJSON);
+
+      // Validar campos requeridos
+      if (!json.rubrica_id || !json.curso || !json.criterios) {
+        throw new Error('El archivo JSON no contiene los campos requeridos (rubrica_id, curso, criterios)');
+      }
+
+      // Detectar tipo de rúbrica desde el ID (RG = Grupal, RI = Individual)
+      const tipoRubrica = this.detectarTipoRubricaDesdeId(json.rubrica_id, json.tipo);
+
+      // Detectar tipo de entrega desde el ID (E1, E2, EF)
+      const tipoEntrega = this.detectarTipoEntregaDesdeId(json.rubrica_id, json.entrega);
+
+      // Generar nombre descriptivo
+      const nombre = this.generarNombreDesdeCodigoRubrica(json.rubrica_id);
+
+      // Convertir escala de calificación
+      const escalaCalificacion: EscalaCalificacion[] = (json.escala_calificacion || []).map(escala => ({
+        min: escala.min,
+        max: escala.max,
+        rango: `${escala.min}-${escala.max}`,
+        descripcion: escala.descripcion,
+        nivel: escala.nivel
+      }));
+
+      // Convertir criterios al formato interno
+      const criterios: CriterioRubrica[] = json.criterios.map(criterioJSON => ({
+        titulo: criterioJSON.nombre,
+        peso: criterioJSON.peso,
+        pesoMaximo: criterioJSON.peso,
+        nivelesDetalle: this.convertirNivelesJSON(criterioJSON.nivel)
+      }));
+
+      // Calcular puntuación total si no viene en el JSON
+      const puntuacionTotal = json.puntuacion_total ||
+        criterios.reduce((sum, c) => sum + (c.peso || 0), 0);
+
+      return {
+        id: this.generarIdRubrica(json.rubrica_id),
+        nombre,
+        descripcion: json.curso,
+        criterios,
+        puntuacionTotal,
+        escalaCalificacion,
+        cursosCodigos: [],  // Se asignarán después de buscar cursos
+        cursoAsociado: json.curso,
+        tipoRubrica,
+        tipoEntrega,
+        fechaCreacion: new Date(),
+        fechaModificacion: new Date()
+      };
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        Logger.error('Error de sintaxis JSON:', error.message);
+        throw new Error(`El archivo no contiene JSON válido: ${error.message}`);
+      }
+      Logger.error('Error parseando rúbrica JSON:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convierte niveles del formato JSON externo al formato interno
+   */
+  private convertirNivelesJSON(nivelesJSON: NivelRubricaJSON[]): NivelRubricaDetallado[] {
+    if (!nivelesJSON || !Array.isArray(nivelesJSON)) {
+      return [];
+    }
+
+    return nivelesJSON.map(nivel => {
+      const puntosMin = nivel.minimo;
+      const puntosMax = nivel.maximo;
+
+      return {
+        puntos: puntosMin === puntosMax ? `${puntosMin}` : `${puntosMin}-${puntosMax}`,
+        puntosMin,
+        puntosMax,
+        titulo: nivel.titulo,
+        descripcion: nivel.descripcion,
+        color: this.asignarColorNivel(nivel.titulo)
+      };
+    });
+  }
+
+  /**
+   * Asigna color según el título del nivel
+   */
+  private asignarColorNivel(titulo: string): string {
+    const tituloLower = titulo.toLowerCase();
+    if (tituloLower.includes('excelente') || tituloLower.includes('sobresaliente')) {
+      return '#4caf50';  // Verde
+    } else if (tituloLower.includes('bueno') || tituloLower.includes('bien')) {
+      return '#8bc34a';  // Verde claro
+    } else if (tituloLower.includes('aceptable') || tituloLower.includes('regular')) {
+      return '#ff9800';  // Naranja
+    } else if (tituloLower.includes('insuficiente') || tituloLower.includes('deficiente')) {
+      return '#f44336';  // Rojo
+    }
+    return '#9e9e9e';  // Gris por defecto
+  }
+
+  /**
+   * Detecta el tipo de rúbrica desde el ID o campo tipo
+   */
+  private detectarTipoRubricaDesdeId(rubricaId: string, tipo?: string): TipoRubrica | undefined {
+    // Primero verificar el campo tipo si existe
+    if (tipo) {
+      const tipoLower = tipo.toLowerCase();
+      if (tipoLower === 'grupal' || tipoLower === 'pg' || tipoLower === 'grupo') {
+        return 'PG';
+      } else if (tipoLower === 'individual' || tipoLower === 'pi' || tipoLower === 'personal') {
+        return 'PI';
+      }
+    }
+
+    // Detectar desde el ID (RG = Grupal, RI = Individual)
+    const idUpper = rubricaId.toUpperCase();
+    if (idUpper.startsWith('RG') || idUpper.includes('GRUPAL')) {
+      return 'PG';
+    } else if (idUpper.startsWith('RI') || idUpper.includes('INDIVIDUAL')) {
+      return 'PI';
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Detecta el tipo de entrega desde el ID o campo entrega
+   */
+  private detectarTipoEntregaDesdeId(rubricaId: string, entrega?: string): TipoEntrega | undefined {
+    // Primero verificar el campo entrega si existe
+    if (entrega) {
+      const entregaUpper = entrega.toUpperCase();
+      if (entregaUpper === 'E1' || entregaUpper.includes('1')) return 'E1';
+      if (entregaUpper === 'E2' || entregaUpper.includes('2')) return 'E2';
+      if (entregaUpper === 'EF' || entregaUpper.includes('FINAL')) return 'EF';
+    }
+
+    // Detectar desde el ID
+    const idUpper = rubricaId.toUpperCase();
+    if (idUpper.includes('E1') || idUpper.includes('ENTREGA1') || idUpper.includes('ENTREGA 1')) {
+      return 'E1';
+    } else if (idUpper.includes('E2') || idUpper.includes('ENTREGA2') || idUpper.includes('ENTREGA 2')) {
+      return 'E2';
+    } else if (idUpper.includes('EF') || idUpper.includes('FINAL')) {
+      return 'EF';
+    }
+
+    return undefined;
+  }
+
+  /**
    * Parsea un archivo de texto con formato de rúbrica y devuelve el objeto RubricaDefinicion
    */
   parsearArchivoRubrica(contenidoArchivo: string): RubricaDefinicion | null {
@@ -2660,9 +2853,9 @@ export class DataService {
       const lineas = contenidoArchivo.split('\n').map(linea => linea.trim());
       let lineaActual = 0;
 
-      // Extraer título
-      const tituloMatch = lineas[lineaActual].match(/=== (.+) ===/);
-      const codigo = tituloMatch ? tituloMatch[1] : 'Rúbrica sin título';
+      // Extraer título (formato: === CODIGO === o === CODIGO ===)
+      const tituloMatch = lineas[lineaActual].match(/===\s*(.+?)\s*===?/);
+      const codigo = tituloMatch ? tituloMatch[1].trim() : 'Rúbrica sin título';
 
       // Detectar entrega automáticamente desde el código
       let tipoEntregaDetectado: string | undefined = undefined;
@@ -2677,24 +2870,26 @@ export class DataService {
 
       lineaActual++;
 
-      // Extraer curso si existe - ESTE ES EL NOMBRE REAL DEL CURSO
+      // Extraer curso si existe - Soporta ambos formatos: "CURSO:" y "==CURSO:"
       let curso = '';
       let cursosCodigos: string[] = [];
-      if (lineas[lineaActual] && lineas[lineaActual].startsWith('CURSO:')) {
-        curso = lineas[lineaActual].split(':')[1].trim();
+      const lineaCurso = lineas[lineaActual];
+      const cursoMatch = lineaCurso?.match(/^==?CURSO:\s*(.+?)=*$/i) || lineaCurso?.match(/^CURSO:\s*(.+)$/i);
+      if (cursoMatch) {
+        curso = cursoMatch[1].trim();
         cursosCodigos = [curso];
         lineaActual++;
       }
 
       // Generar nombre de la rúbrica basado en el código (ej: RGE1 -> Rúbrica Grupal Entrega 1)
-      // El nombre del curso se guarda por separado en descripcion y cursosCodigos
       const nombre = this.generarNombreDesdeCodigoRubrica(codigo);
 
       // Extraer tipo de rúbrica (Grupal o Individual)
       let tipoRubrica: 'PG' | 'PI' | undefined = undefined;
-      if (lineas[lineaActual] && lineas[lineaActual].startsWith('TIPO:')) {
-        const tipoTexto = lineas[lineaActual].split(':')[1].trim().toUpperCase();
-        // Detectar por palabras clave: GRUPAL, PG, GRUPO -> PG; INDIVIDUAL, PI, PERSONAL -> PI
+      const lineaTipo = lineas[lineaActual];
+      const tipoMatch = lineaTipo?.match(/^==?TIPO:\s*(.+?)=*$/i) || lineaTipo?.match(/^TIPO:\s*(.+)$/i);
+      if (tipoMatch) {
+        const tipoTexto = tipoMatch[1].trim().toUpperCase();
         if (tipoTexto.includes('GRUPAL') || tipoTexto === 'PG' || tipoTexto.includes('GRUPO')) {
           tipoRubrica = 'PG';
         } else if (tipoTexto.includes('INDIVIDUAL') || tipoTexto === 'PI' || tipoTexto.includes('PERSONAL')) {
@@ -2703,47 +2898,79 @@ export class DataService {
         lineaActual++;
       }
 
-      // Si no se especifica, intentar detectar del nombre
+      // Si no se especifica, intentar detectar del nombre/código
       if (!tipoRubrica) {
         const nombreUpper = nombre.toUpperCase();
-        const codigoUpper = codigo.toUpperCase();
-        if (nombreUpper.includes('GRUPAL') || nombreUpper.includes('GRUPO') || codigoUpper.includes('RG')) {
+        const codUpper = codigo.toUpperCase();
+        if (nombreUpper.includes('GRUPAL') || nombreUpper.includes('GRUPO') || codUpper.includes('RG')) {
           tipoRubrica = 'PG';
-        } else if (nombreUpper.includes('INDIVIDUAL') || nombreUpper.includes('PERSONAL') || codigoUpper.includes('RI')) {
+        } else if (nombreUpper.includes('INDIVIDUAL') || nombreUpper.includes('PERSONAL') || codUpper.includes('RI')) {
           tipoRubrica = 'PI';
         }
       }
 
-      // Extraer puntuación total
-      const puntuacionMatch = lineas[lineaActual].match(/PUNTUACIÓN_TOTAL:\s*(\d+)/);
-      const puntuacionTotal = puntuacionMatch ? parseInt(puntuacionMatch[1]) : 100;
-      lineaActual += 2; // Saltar línea vacía
-
-      // Extraer escala de calificación
-      const escalaCalificacion: any[] = [];
-      lineaActual++; // Saltar "ESCALA_CALIFICACION:"
-
-      while (lineaActual < lineas.length && lineas[lineaActual] !== '---') {
-        const linea = lineas[lineaActual];
-        if (linea.includes('|')) {
-          const [rango, descripcion] = linea.split('|');
-          const rangoParts = rango.trim().split('-');
-          escalaCalificacion.push({
-            rango: rango.trim(),
-            descripcion: descripcion.trim(),
-            min: rangoParts.length === 2 ? parseInt(rangoParts[1]) : 0,
-            max: rangoParts.length === 2 ? parseInt(rangoParts[0]) : 0
-          });
-        }
+      // Extraer puntuación total - Soporta: "PUNTUACIÓN_TOTAL: 75" y "==PUNTUACIÓN_TOTAL: 75==="
+      let puntuacionTotal = 100;
+      const lineaPuntuacion = lineas[lineaActual];
+      const puntuacionMatch = lineaPuntuacion?.match(/PUNTUACI[OÓ]N_TOTAL:\s*(\d+)/i);
+      if (puntuacionMatch) {
+        puntuacionTotal = parseInt(puntuacionMatch[1]);
         lineaActual++;
       }
 
-      lineaActual++; // Saltar línea "---"
+      // Saltar líneas vacías
+      while (lineaActual < lineas.length && lineas[lineaActual] === '') {
+        lineaActual++;
+      }
+
+      // Extraer escala de calificación
+      const escalaCalificacion: any[] = [];
+
+      // Detectar inicio de escala - Soporta: "===ESCALA_CALIFICACION===" y "ESCALA_CALIFICACION:"
+      if (lineas[lineaActual]?.includes('ESCALA_CALIFICACION')) {
+        lineaActual++;
+
+        // Parsear líneas de escala hasta encontrar "---" o línea vacía seguida de criterio
+        while (lineaActual < lineas.length &&
+               !lineas[lineaActual].startsWith('---') &&
+               !lineas[lineaActual].startsWith('CRITERIO_')) {
+          const lineaEscala = lineas[lineaActual];
+
+          // Formato nuevo: =0,29|Insuficiente:Descripción=
+          const matchNuevo = lineaEscala.match(/^=?(\d+),(\d+)\|([^:]+):(.+?)=?$/);
+          if (matchNuevo) {
+            escalaCalificacion.push({
+              min: parseInt(matchNuevo[1]),
+              max: parseInt(matchNuevo[2]),
+              rango: `${matchNuevo[1]}-${matchNuevo[2]}`,
+              nivel: matchNuevo[3].trim(),
+              descripcion: matchNuevo[4].trim()
+            });
+          } else {
+            // Formato antiguo: 0-30|Descripción
+            const matchAntiguo = lineaEscala.match(/^(\d+)-(\d+)\|(.+)$/);
+            if (matchAntiguo) {
+              escalaCalificacion.push({
+                min: parseInt(matchAntiguo[1]),
+                max: parseInt(matchAntiguo[2]),
+                rango: `${matchAntiguo[1]}-${matchAntiguo[2]}`,
+                descripcion: matchAntiguo[3].trim()
+              });
+            }
+          }
+          lineaActual++;
+        }
+      }
+
+      // Saltar líneas "---" y vacías
+      while (lineaActual < lineas.length && (lineas[lineaActual] === '---' || lineas[lineaActual] === '')) {
+        lineaActual++;
+      }
 
       // Extraer criterios
       const criterios: any[] = [];
 
-      while (lineaActual < lineas.length && !lineas[lineaActual].includes('=== FIN')) {
+      while (lineaActual < lineas.length && !lineas[lineaActual].includes('===FIN') && !lineas[lineaActual].includes('=== FIN')) {
         if (lineas[lineaActual].startsWith('CRITERIO_')) {
           const criterio = this.parsearCriterio(lineas, lineaActual);
           criterios.push(criterio.criterio);
@@ -2761,9 +2988,9 @@ export class DataService {
         puntuacionTotal,
         escalaCalificacion,
         cursosCodigos,
-        cursoAsociado: curso, // Nombre legible del curso
+        cursoAsociado: curso,
         tipoRubrica,
-        tipoEntrega: tipoEntregaDetectado,
+        tipoEntrega: tipoEntregaDetectado as 'E1' | 'E2' | 'EF' | undefined,
         fechaCreacion: new Date(),
         fechaModificacion: new Date()
       };
@@ -2792,15 +3019,22 @@ export class DataService {
     const nivelesMatch = lineas[lineaActual].match(/NIVELES:\s*(\d+)/);
     const niveles = nivelesMatch ? parseInt(nivelesMatch[1]) : 3;
 
-    lineaActual += 2; // Saltar línea vacía
+    lineaActual++;
+
+    // Saltar líneas vacías y separadores "--"
+    while (lineaActual < lineas.length &&
+           (lineas[lineaActual] === '' || lineas[lineaActual] === '--')) {
+      lineaActual++;
+    }
 
     // Extraer niveles de detalle
     const nivelesDetalle: any[] = [];
 
     while (lineaActual < lineas.length &&
       !lineas[lineaActual].startsWith('CRITERIO_') &&
+      !lineas[lineaActual].includes('===FIN') &&
       !lineas[lineaActual].includes('=== FIN') &&
-      !lineas[lineaActual].startsWith('---')) {
+      lineas[lineaActual] !== '---') {
 
       if (lineas[lineaActual].startsWith('NIVEL_')) {
         const nivel = this.parsearNivel(lineas, lineaActual);
@@ -2811,9 +3045,10 @@ export class DataService {
       }
     }
 
-    // Saltar línea "---" si existe
-    if (lineaActual < lineas.length && lineas[lineaActual] === '---') {
-      lineaActual += 2; // Saltar línea vacía también
+    // Saltar línea "---" si existe y líneas vacías
+    while (lineaActual < lineas.length &&
+           (lineas[lineaActual] === '---' || lineas[lineaActual] === '')) {
+      lineaActual++;
     }
 
     return {
@@ -2830,48 +3065,96 @@ export class DataService {
   private parsearNivel(lineas: string[], inicioLinea: number): { nivel: any, siguienteLinea: number } {
     let lineaActual = inicioLinea + 1; // Saltar "NIVEL_X:"
 
-    // Extraer puntos
-    const puntosMatch = lineas[lineaActual].match(/PUNTOS:\s*(.+)/);
-    const puntos = puntosMatch ? puntosMatch[1] : '0';
-    lineaActual++;
+    // Variables para los valores
+    let puntos = '0';
+    let puntosMin = 0;
+    let puntosMax = 0;
+    let titulo = 'Sin título';
+    let descripcion = 'Sin descripción';
+    let usaMinMax = false;
 
-    // Extraer título
-    const tituloMatch = lineas[lineaActual].match(/TITULO:\s*(.+)/);
-    const titulo = tituloMatch ? tituloMatch[1] : 'Sin título';
-    lineaActual++;
-
-    // Extraer descripción
-    const descripcionMatch = lineas[lineaActual].match(/DESCRIPCION:\s*(.+)/);
-    let descripcion = descripcionMatch ? descripcionMatch[1] : 'Sin descripción';
-    lineaActual++;
-
-    // La descripción puede continuar en las siguientes líneas
+    // Parsear campos del nivel (soporta ambos formatos: PUNTOS o MINIMO/MAXIMO)
     while (lineaActual < lineas.length &&
-      lineas[lineaActual] !== '' &&
       !lineas[lineaActual].startsWith('NIVEL_') &&
       !lineas[lineaActual].startsWith('CRITERIO_') &&
       !lineas[lineaActual].startsWith('---') &&
+      !lineas[lineaActual].startsWith('--') &&
       !lineas[lineaActual].includes('=== FIN')) {
-      descripcion += ' ' + lineas[lineaActual];
+
+      const linea = lineas[lineaActual].trim();
+
+      // Formato antiguo: PUNTOS: valor
+      const puntosMatch = linea.match(/^PUNTOS:\s*(.+)/i);
+      if (puntosMatch) {
+        puntos = puntosMatch[1];
+        lineaActual++;
+        continue;
+      }
+
+      // Formato nuevo: MINIMO: valor
+      const minimoMatch = linea.match(/^MINIMO:\s*(\d+)/i);
+      if (minimoMatch) {
+        puntosMin = parseInt(minimoMatch[1]);
+        usaMinMax = true;
+        lineaActual++;
+        continue;
+      }
+
+      // Formato nuevo: MAXIMO: valor
+      const maximoMatch = linea.match(/^MAXIMO:\s*(\d+)/i);
+      if (maximoMatch) {
+        puntosMax = parseInt(maximoMatch[1]);
+        usaMinMax = true;
+        lineaActual++;
+        continue;
+      }
+
+      // TITULO: valor
+      const tituloMatch = linea.match(/^TITULO:\s*(.+)/i);
+      if (tituloMatch) {
+        titulo = tituloMatch[1];
+        lineaActual++;
+        continue;
+      }
+
+      // DESCRIPCION: valor (puede ser multilínea)
+      const descripcionMatch = linea.match(/^DESCRIPCION:\s*(.+)/i);
+      if (descripcionMatch) {
+        descripcion = descripcionMatch[1];
+        lineaActual++;
+        // La descripción puede continuar en las siguientes líneas
+        while (lineaActual < lineas.length &&
+          lineas[lineaActual] !== '' &&
+          !lineas[lineaActual].match(/^(NIVEL_|CRITERIO_|PUNTOS:|MINIMO:|MAXIMO:|TITULO:|---)/i) &&
+          !lineas[lineaActual].includes('=== FIN')) {
+          descripcion += ' ' + lineas[lineaActual].trim();
+          lineaActual++;
+        }
+        continue;
+      }
+
+      // Línea vacía o no reconocida
+      if (linea === '' || linea === '--') {
+        lineaActual++;
+        continue;
+      }
+
       lineaActual++;
     }
 
-    // Saltar línea vacía si existe
-    if (lineaActual < lineas.length && lineas[lineaActual] === '') {
-      lineaActual++;
-    }
-
-    // Extraer min y max de puntos (puede ser "10" o "10-20")
-    let puntosMin = 0;
-    let puntosMax = 0;
-
-    if (puntos.includes('-')) {
-      const parts = puntos.split('-');
-      puntosMin = parseInt(parts[0]);
-      puntosMax = parseInt(parts[1]);
+    // Si usó formato MINIMO/MAXIMO, calcular puntos string
+    if (usaMinMax) {
+      puntos = puntosMin === puntosMax ? `${puntosMin}` : `${puntosMin}-${puntosMax}`;
     } else {
-      puntosMin = parseInt(puntos);
-      puntosMax = parseInt(puntos);
+      // Extraer min y max de puntos del formato antiguo (puede ser "10" o "10-20")
+      if (puntos.includes('-')) {
+        const parts = puntos.split('-');
+        puntosMin = parseInt(parts[0]);
+        puntosMax = parseInt(parts[1]);
+      } else {
+        puntosMin = parseInt(puntos) || 0;
+        puntosMax = parseInt(puntos) || 0;
+      }
     }
 
     // Determinar color basado en el título
@@ -2947,16 +3230,6 @@ export class DataService {
   }
 
   /**
-   * Carga el archivo de rúbrica desde el input de archivo
-   */
-  /**
-   * Normaliza texto removiendo tildes y convirtiendo a mayúsculas
-   */
-  private normalizarTexto(texto: string): string {
-    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-  }
-
-  /**
    * Busca cursos por nombre con aproximación (sin tildes)
    * Busca tanto en metadata.nombre como en el código del curso
    */
@@ -3004,20 +3277,32 @@ export class DataService {
   async cargarArchivoRubrica(archivo: File): Promise<RubricaDefinicion | null> {
     return new Promise((resolve, reject) => {
       const lector = new FileReader();
+      const esArchivoJSON = archivo.name.toLowerCase().endsWith('.json');
 
       lector.onload = (evento) => {
         try {
           const contenido = evento.target?.result as string;
-          const rubrica = this.parsearArchivoRubrica(contenido);
+
+          // Parsear según el tipo de archivo
+          let rubrica: RubricaDefinicion | null;
+          if (esArchivoJSON) {
+            rubrica = this.parsearArchivoRubricaJSON(contenido);
+          } else {
+            rubrica = this.parsearArchivoRubrica(contenido);
+          }
+
+          if (!rubrica) {
+            reject(new Error('No se pudo parsear el archivo de rúbrica'));
+            return;
+          }
 
           // Verificar si existe al menos un curso coincidente
-          // La descripción contiene el nombre del curso del archivo TXT
-          if (rubrica && rubrica.descripcion) {
-            const cursosEncontrados = this.buscarCursosPorNombre(rubrica.descripcion);
+          const nombreCurso = rubrica.descripcion || rubrica.cursoAsociado;
+          if (nombreCurso) {
+            const cursosEncontrados = this.buscarCursosPorNombre(nombreCurso);
 
-            // Si no se encontraron cursos, rechazar la promesa
             if (cursosEncontrados.length === 0) {
-              reject(new Error(`No se encontró ningún curso que coincida con "${rubrica.descripcion}". Debes crear el curso primero.`));
+              reject(new Error(`No se encontró ningún curso que coincida con "${nombreCurso}". Debes crear el curso primero.`));
               return;
             }
 
@@ -3028,6 +3313,7 @@ export class DataService {
             return;
           }
 
+          Logger.log(`✅ Rúbrica cargada desde ${esArchivoJSON ? 'JSON' : 'TXT'}:`, rubrica.nombre);
           resolve(rubrica);
         } catch (error) {
           reject(error);
@@ -3041,6 +3327,8 @@ export class DataService {
 
   /**
    * Guarda o actualiza una rúbrica
+   * Si la rúbrica se guarda como activa, desactiva automáticamente otras versiones
+   * del mismo tipo, entrega y curso
    */
   async guardarRubrica(rubrica: RubricaDefinicion): Promise<void> {
     const rubricas = this.rubricasSubject.value;
@@ -3050,13 +3338,715 @@ export class DataService {
     }
     rubrica.fechaModificacion = new Date();
 
-    // LOG DETALLADO antes de guardar
+    // Generar código estructurado y versión si no existe
+    if (!rubrica.codigo) {
+      const codigoInfo = this.generarCodigoRubrica(rubrica);
+      rubrica.codigo = codigoInfo.codigo;
+      rubrica.version = codigoInfo.version;
+      rubrica.timestamp = Date.now();
+      rubrica.activa = rubrica.activa ?? true; // Por defecto nueva rúbrica está activa
+    }
+
+    // Si la rúbrica se está activando, desactivar otras del mismo tipo/entrega/curso
+    if (rubrica.activa) {
+      this.desactivarRubricasMismaCategoria(rubricas, rubrica);
+    }
 
     rubricas[rubrica.id] = rubrica;
 
     await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
     this.rubricasSubject.next(rubricas);
 
+  }
+
+  /**
+   * Desactiva todas las rúbricas de la misma categoría (mismo código base o mismo tipo + entrega + curso)
+   * excepto la rúbrica especificada
+   */
+  private desactivarRubricasMismaCategoria(
+    rubricas: Record<string, RubricaDefinicion>,
+    rubricaActiva: RubricaDefinicion
+  ): void {
+    const { tipoRubrica, tipoEntrega, cursosCodigos } = rubricaActiva;
+    const cursoPrincipal = cursosCodigos?.[0];
+
+    // Obtener código base si existe
+    const codigoBase = rubricaActiva.codigo ? this.extraerCodigoBase(rubricaActiva.codigo) : null;
+
+    if (!tipoRubrica || !tipoEntrega || !cursoPrincipal) return;
+
+    Object.values(rubricas).forEach(r => {
+      // No desactivar la misma rúbrica
+      if (r.id === rubricaActiva.id) return;
+
+      // Verificar si es de la misma categoría por código base O por tipo+entrega+curso
+      const mismoCodigoBase = codigoBase && r.codigo && this.extraerCodigoBase(r.codigo) === codigoBase;
+      const mismaCategoria =
+        r.tipoRubrica === tipoRubrica &&
+        r.tipoEntrega === tipoEntrega &&
+        r.cursosCodigos?.includes(cursoPrincipal);
+
+      if ((mismoCodigoBase || mismaCategoria) && r.activa) {
+        r.activa = false;
+        console.log(`📋 Rúbrica "${r.nombre}" (v${r.version}) desactivada - misma categoría que "${rubricaActiva.nombre}"`);
+      }
+    });
+  }
+
+  /**
+   * Activa una rúbrica específica y desactiva otras del mismo tipo/entrega/curso
+   * @param rubricaId ID de la rúbrica a activar
+   */
+  async activarRubrica(rubricaId: string): Promise<void> {
+    const rubricas = this.rubricasSubject.value;
+    const rubrica = rubricas[rubricaId];
+
+    if (!rubrica) {
+      throw new Error(`Rúbrica no encontrada: ${rubricaId}`);
+    }
+
+    // Desactivar otras de la misma categoría
+    this.desactivarRubricasMismaCategoria(rubricas, rubrica);
+
+    // Activar la rúbrica seleccionada
+    rubrica.activa = true;
+    rubrica.fechaModificacion = new Date();
+
+    await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
+    this.rubricasSubject.next(rubricas);
+
+    console.log(`✅ Rúbrica "${rubrica.nombre}" (v${rubrica.version}) activada`);
+  }
+
+  /**
+   * Obtiene las rúbricas de la misma categoría (tipo + entrega + curso)
+   */
+  obtenerRubricasMismaCategoria(rubrica: RubricaDefinicion): RubricaDefinicion[] {
+    const rubricas = this.obtenerRubricasArray();
+    const cursoPrincipal = rubrica.cursosCodigos?.[0];
+
+    if (!rubrica.tipoRubrica || !rubrica.tipoEntrega || !cursoPrincipal) {
+      return [];
+    }
+
+    return rubricas.filter(r =>
+      r.tipoRubrica === rubrica.tipoRubrica &&
+      r.tipoEntrega === rubrica.tipoEntrega &&
+      r.cursosCodigos?.includes(cursoPrincipal)
+    ).sort((a, b) => (b.version || 1) - (a.version || 1)); // Ordenar por versión descendente
+  }
+
+  // ============================================
+  // GENERACIÓN AUTOMÁTICA DE NOMBRES Y CÓDIGOS
+  // ============================================
+
+  /**
+   * Genera un nombre automático para una rúbrica basado en tipo, entrega y curso
+   * @example "Rúbrica Grupal E1 - Programación Móvil"
+   */
+  generarNombreAutomatico(rubrica: Partial<RubricaDefinicion>): string {
+    const tipoTexto = rubrica.tipoRubrica === 'PG' ? 'Grupal' :
+                      rubrica.tipoRubrica === 'PI' ? 'Individual' : '';
+    const entrega = rubrica.tipoEntrega || 'E1';
+
+    // Obtener nombre del curso si hay uno asociado
+    let nombreCurso = '';
+    if (rubrica.cursosCodigos?.length) {
+      const uiState = this.uiStateSubject.value;
+      const metadata = uiState.courseStates?.[rubrica.cursosCodigos[0]]?.metadata;
+      nombreCurso = metadata?.nombre || rubrica.cursosCodigos[0];
+    }
+
+    const partes = ['Rúbrica', tipoTexto, entrega].filter(Boolean);
+    if (nombreCurso) {
+      partes.push('-', nombreCurso);
+    }
+
+    return partes.join(' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /**
+   * Detecta si existe una rúbrica con nombre similar y retorna información de versión
+   * @returns Objeto con información de duplicados encontrados
+   */
+  detectarRubricaDuplicada(nombre: string, idExcluir?: string): {
+    existeDuplicado: boolean;
+    rubricasCoincidentes: RubricaDefinicion[];
+    siguienteVersion: number;
+    nombreSugerido: string;
+  } {
+    const rubricas = this.obtenerRubricasArray();
+    const nombreNormalizado = this.normalizarNombreParaComparacion(nombre);
+
+    // Buscar rúbricas con nombre similar
+    const coincidentes = rubricas.filter(r => {
+      if (idExcluir && r.id === idExcluir) return false;
+      const nombreRubricaNorm = this.normalizarNombreParaComparacion(r.nombre);
+      return nombreRubricaNorm === nombreNormalizado;
+    });
+
+    if (coincidentes.length === 0) {
+      return {
+        existeDuplicado: false,
+        rubricasCoincidentes: [],
+        siguienteVersion: 1,
+        nombreSugerido: nombre
+      };
+    }
+
+    // Calcular siguiente versión basada en los duplicados encontrados
+    const versionesExistentes = coincidentes.map(r => r.version || 1);
+    const maxVersion = Math.max(...versionesExistentes);
+    const siguienteVersion = maxVersion + 1;
+
+    // Generar nombre sugerido con indicador de versión
+    const nombreSugerido = this.generarNombreConVersion(nombre, siguienteVersion);
+
+    return {
+      existeDuplicado: true,
+      rubricasCoincidentes: coincidentes,
+      siguienteVersion,
+      nombreSugerido
+    };
+  }
+
+  /**
+   * Normaliza un nombre para comparación (sin tildes, minúsculas, sin espacios extra)
+   */
+  private normalizarNombreParaComparacion(nombre: string): string {
+    return nombre
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '')
+      .trim();
+  }
+
+  /**
+   * Genera un nombre con indicador de versión
+   */
+  private generarNombreConVersion(nombreBase: string, version: number): string {
+    // Remover versión existente si la hay (ej: "Rúbrica (v2)" → "Rúbrica")
+    const nombreSinVersion = nombreBase.replace(/\s*\(v\d+\)\s*$/i, '').trim();
+    return version > 1 ? `${nombreSinVersion} (v${version})` : nombreSinVersion;
+  }
+
+  /**
+   * Compara el contenido de dos rúbricas para determinar si son idénticas
+   * Ignora metadatos como id, fechas, código, versión
+   * @returns Objeto con resultado de comparación y diferencias encontradas
+   */
+  compararContenidoRubricas(rubrica1: RubricaDefinicion, rubrica2: RubricaDefinicion): {
+    sonIdenticas: boolean;
+    diferencias: string[];
+    resumen: string;
+  } {
+    const diferencias: string[] = [];
+
+    // Comparar propiedades básicas
+    if (rubrica1.puntuacionTotal !== rubrica2.puntuacionTotal) {
+      diferencias.push(`Puntuación total: ${rubrica2.puntuacionTotal} → ${rubrica1.puntuacionTotal}`);
+    }
+
+    if (rubrica1.tipoRubrica !== rubrica2.tipoRubrica) {
+      diferencias.push(`Tipo: ${rubrica2.tipoRubrica || 'N/A'} → ${rubrica1.tipoRubrica || 'N/A'}`);
+    }
+
+    if (rubrica1.tipoEntrega !== rubrica2.tipoEntrega) {
+      diferencias.push(`Entrega: ${rubrica2.tipoEntrega || 'N/A'} → ${rubrica1.tipoEntrega || 'N/A'}`);
+    }
+
+    // Comparar criterios
+    const criterios1 = rubrica1.criterios || [];
+    const criterios2 = rubrica2.criterios || [];
+
+    if (criterios1.length !== criterios2.length) {
+      diferencias.push(`Cantidad de criterios: ${criterios2.length} → ${criterios1.length}`);
+    } else {
+      // Comparar cada criterio
+      for (let i = 0; i < criterios1.length; i++) {
+        const c1 = criterios1[i];
+        const c2 = criterios2[i];
+
+        if (c1.titulo !== c2.titulo) {
+          diferencias.push(`Criterio ${i + 1} título: "${c2.titulo}" → "${c1.titulo}"`);
+        }
+
+        if (c1.peso !== c2.peso) {
+          diferencias.push(`Criterio "${c1.titulo}" peso: ${c2.peso} → ${c1.peso}`);
+        }
+
+        // Comparar niveles del criterio
+        const niveles1 = c1.nivelesDetalle || [];
+        const niveles2 = c2.nivelesDetalle || [];
+
+        if (niveles1.length !== niveles2.length) {
+          diferencias.push(`Criterio "${c1.titulo}" niveles: ${niveles2.length} → ${niveles1.length}`);
+        } else {
+          for (let j = 0; j < niveles1.length; j++) {
+            const n1 = niveles1[j];
+            const n2 = niveles2[j];
+
+            if (n1.descripcion !== n2.descripcion) {
+              diferencias.push(`Criterio "${c1.titulo}" nivel ${j + 1} descripción modificada`);
+            }
+
+            if (n1.puntosMin !== n2.puntosMin || n1.puntosMax !== n2.puntosMax) {
+              diferencias.push(`Criterio "${c1.titulo}" nivel ${j + 1} puntos: ${n2.puntosMin}-${n2.puntosMax} → ${n1.puntosMin}-${n1.puntosMax}`);
+            }
+          }
+        }
+      }
+    }
+
+    // Generar resumen
+    let resumen: string;
+    if (diferencias.length === 0) {
+      resumen = 'Las rúbricas son idénticas en contenido';
+    } else if (diferencias.length <= 3) {
+      resumen = diferencias.join('. ');
+    } else {
+      resumen = `${diferencias.length} diferencias encontradas: ${diferencias.slice(0, 2).join(', ')} y ${diferencias.length - 2} más`;
+    }
+
+    return {
+      sonIdenticas: diferencias.length === 0,
+      diferencias,
+      resumen
+    };
+  }
+
+  /**
+   * Busca rúbricas con contenido idéntico independientemente del nombre
+   * @param rubricaNueva - Rúbrica a comparar
+   * @param idExcluir - ID de rúbrica a excluir (ej: si estamos editando)
+   * @returns Rúbrica con contenido idéntico si existe, undefined si no hay duplicados
+   */
+  buscarRubricaDuplicadaPorContenido(rubricaNueva: RubricaDefinicion, idExcluir?: string): RubricaDefinicion | undefined {
+    const rubricas = this.obtenerRubricasArray();
+
+    for (const rubrica of rubricas) {
+      // Excluir la rúbrica que estamos editando
+      if (idExcluir && rubrica.id === idExcluir) continue;
+
+      // Comparar contenido
+      const comparacion = this.compararContenidoRubricas(rubricaNueva, rubrica);
+      if (comparacion.sonIdenticas) {
+        return rubrica;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Analiza si una rúbrica nueva es duplicada o versión de una existente
+   * Compara tanto por nombre como por contenido para detectar duplicados
+   * @returns Información completa para decisión de guardado
+   */
+  analizarRubricaParaGuardado(rubricaNueva: RubricaDefinicion, idExcluir?: string): {
+    tipo: 'nueva' | 'duplicada_identica' | 'nueva_version' | 'duplicada_contenido';
+    rubricaExistente?: RubricaDefinicion;
+    comparacion?: { sonIdenticas: boolean; diferencias: string[]; resumen: string };
+    siguienteVersion: number;
+    mensajeUsuario: string;
+  } {
+    const nombreNormalizado = this.normalizarNombreParaComparacion(rubricaNueva.nombre);
+    const rubricas = this.obtenerRubricasArray();
+
+    // PASO 1: Buscar duplicados por CONTENIDO (independiente del nombre)
+    const duplicadaPorContenido = this.buscarRubricaDuplicadaPorContenido(rubricaNueva, idExcluir);
+
+    if (duplicadaPorContenido) {
+      const mismoNombre = this.normalizarNombreParaComparacion(duplicadaPorContenido.nombre) === nombreNormalizado;
+
+      if (mismoNombre) {
+        // Mismo nombre y mismo contenido = duplicado idéntico
+        return {
+          tipo: 'duplicada_identica',
+          rubricaExistente: duplicadaPorContenido,
+          comparacion: { sonIdenticas: true, diferencias: [], resumen: 'Las rúbricas son idénticas en contenido' },
+          siguienteVersion: (duplicadaPorContenido.version || 1),
+          mensajeUsuario: `Ya existe una rúbrica idéntica: "${duplicadaPorContenido.nombre}" (${duplicadaPorContenido.codigo || 'sin código'})`
+        };
+      } else {
+        // Diferente nombre pero mismo contenido = duplicado de contenido
+        return {
+          tipo: 'duplicada_contenido',
+          rubricaExistente: duplicadaPorContenido,
+          comparacion: { sonIdenticas: true, diferencias: [], resumen: 'El contenido es idéntico a una rúbrica existente con diferente nombre' },
+          siguienteVersion: 1,
+          mensajeUsuario: `El contenido es idéntico a la rúbrica existente: "${duplicadaPorContenido.nombre}" (${duplicadaPorContenido.codigo || 'sin código'}). Solo difiere el nombre.`
+        };
+      }
+    }
+
+    // PASO 2: Buscar rúbricas con nombre similar para versionado
+    const coincidentesPorNombre = rubricas.filter(r => {
+      if (idExcluir && r.id === idExcluir) return false;
+      return this.normalizarNombreParaComparacion(r.nombre) === nombreNormalizado;
+    });
+
+    if (coincidentesPorNombre.length === 0) {
+      // No hay coincidencias por nombre ni por contenido = nueva rúbrica
+      return {
+        tipo: 'nueva',
+        siguienteVersion: 1,
+        mensajeUsuario: 'Se creará una nueva rúbrica'
+      };
+    }
+
+    // Encontrar la versión más reciente para comparar
+    const rubricaMasReciente = coincidentesPorNombre.sort((a, b) =>
+      (b.version || 1) - (a.version || 1)
+    )[0];
+
+    // Comparar contenido para mostrar diferencias
+    const comparacion = this.compararContenidoRubricas(rubricaNueva, rubricaMasReciente);
+
+    const versionesExistentes = coincidentesPorNombre.map(r => r.version || 1);
+    const siguienteVersion = Math.max(...versionesExistentes) + 1;
+
+    // Mismo nombre pero diferente contenido = nueva versión
+    return {
+      tipo: 'nueva_version',
+      rubricaExistente: rubricaMasReciente,
+      comparacion,
+      siguienteVersion,
+      mensajeUsuario: `Se guardará como versión ${siguienteVersion} de "${rubricaMasReciente.nombre}"`
+    };
+  }
+
+  /**
+   * Obtiene información del código que se generaría para una rúbrica
+   * Útil para mostrar preview antes de guardar
+   */
+  obtenerPreviewCodigo(rubrica: Partial<RubricaDefinicion>): {
+    codigo: string;
+    version: number;
+    codigoBase: string;
+    inicialesCurso: string;
+  } {
+    const prefijo = this.construirPrefijoRubrica(rubrica as RubricaDefinicion);
+    const inicialesCurso = this.obtenerCodigoCurso(rubrica as RubricaDefinicion);
+    const version = this.obtenerSiguienteVersion(prefijo, inicialesCurso);
+    const codigoBase = `${prefijo}-${inicialesCurso}`;
+
+    return {
+      codigo: `${codigoBase}V${version}`,
+      version,
+      codigoBase,
+      inicialesCurso
+    };
+  }
+
+  /** Código por defecto cuando no hay curso asociado */
+  private readonly CODIGO_CURSO_DEFAULT = 'GEN';
+
+  /**
+   * Genera código estructurado para una rúbrica
+   * Formato: R[G|I][E1|E2|EF]-[INICIALES]V[N]
+   * @param rubrica - Rúbrica para la cual generar código
+   * @returns Objeto con código formateado y número de versión
+   * @example
+   * // Retorna { codigo: 'RGE1-EPMV1', version: 1 }
+   * generarCodigoRubrica(rubricaGrupalEntrega1)
+   */
+  generarCodigoRubrica(rubrica: RubricaDefinicion): { codigo: string; version: number } {
+    const prefijo = this.construirPrefijoRubrica(rubrica);
+    const cursoCodigo = this.obtenerCodigoCurso(rubrica);
+    const version = this.obtenerSiguienteVersion(prefijo, cursoCodigo);
+
+    return {
+      codigo: `${prefijo}-${cursoCodigo}V${version}`,
+      version
+    };
+  }
+
+  /**
+   * Construye el prefijo del código: R + tipo (G/I) + entrega
+   */
+  private construirPrefijoRubrica(rubrica: RubricaDefinicion): string {
+    const tipoMap: Record<string, string> = { 'PG': 'G', 'PI': 'I' };
+    const tipo = tipoMap[rubrica.tipoRubrica || ''] || 'X';
+    const entrega = rubrica.tipoEntrega || 'E1';
+    return `R${tipo}${entrega}`;
+  }
+
+  /**
+   * Obtiene el código corto del curso asociado a la rúbrica
+   */
+  private obtenerCodigoCurso(rubrica: RubricaDefinicion): string {
+    if (!rubrica.cursosCodigos?.length) {
+      return this.CODIGO_CURSO_DEFAULT;
+    }
+
+    const primerCursoCodigo = rubrica.cursosCodigos[0];
+    const uiState = this.uiStateSubject.value;
+    const metadata = uiState.courseStates?.[primerCursoCodigo]?.metadata;
+
+    if (metadata?.nombre) {
+      return this.generarCodigoCortoCurso(metadata.nombre);
+    }
+
+    // Fallback: usar el código del curso como nombre si no hay metadata
+    return this.generarCodigoCortoCurso(primerCursoCodigo);
+  }
+
+  /** Palabras comunes a ignorar al generar código corto de curso */
+  private readonly PALABRAS_IGNORAR_CODIGO = new Set(['EN', 'DE', 'LA', 'EL', 'LOS', 'LAS', 'Y', 'A', 'CON', 'POR', 'PARA']);
+  /** Cantidad máxima de palabras para generar iniciales */
+  private readonly MAX_PALABRAS_INICIALES = 4;
+  /** Longitud mínima requerida para el código generado */
+  private readonly MIN_LONGITUD_CODIGO = 2;
+
+  /**
+   * Genera código corto de un curso basado en su nombre
+   * @param nombreCurso - Nombre completo del curso
+   * @returns Código de 2-4 caracteres en mayúsculas
+   * @example
+   * generarCodigoCortoCurso("ÉNFASIS EN PROGRAMACIÓN MÓVIL") // "EPM"
+   */
+  private generarCodigoCortoCurso(nombreCurso: string): string {
+    if (!nombreCurso) return this.CODIGO_CURSO_DEFAULT;
+
+    const textoNormalizado = this.normalizarTexto(nombreCurso);
+    const palabrasSignificativas = this.extraerPalabrasSignificativas(textoNormalizado);
+    const iniciales = this.generarIniciales(palabrasSignificativas);
+
+    return iniciales.length >= this.MIN_LONGITUD_CODIGO
+      ? iniciales
+      : nombreCurso.slice(0, 3).toUpperCase();
+  }
+
+  /** Normaliza texto removiendo tildes y caracteres especiales */
+  private normalizarTexto(texto: string): string {
+    return texto
+      .toUpperCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^A-Z\s]/g, '');
+  }
+
+  /** Extrae palabras significativas (no comunes) del texto */
+  private extraerPalabrasSignificativas(texto: string): string[] {
+    return texto
+      .split(/\s+/)
+      .filter(p => p.length > 0 && !this.PALABRAS_IGNORAR_CODIGO.has(p));
+  }
+
+  /** Genera iniciales de las primeras N palabras */
+  private generarIniciales(palabras: string[]): string {
+    return palabras
+      .slice(0, this.MAX_PALABRAS_INICIALES)
+      .map(p => p[0])
+      .join('');
+  }
+
+  /**
+   * Obtiene la siguiente versión disponible para un código de rúbrica.
+   * Busca rúbricas con el patrón RGE1-EPMV[N] y retorna el siguiente número.
+   */
+  private obtenerSiguienteVersion(prefijo: string, cursoCodigo: string): number {
+    const rubricas = this.obtenerRubricasArray();
+    // Nuevo patrón: RGE1-EPMV (sin separador antes de V)
+    const patronBase = `${prefijo}-${cursoCodigo}V`;
+
+    // Buscar versiones existentes con mismo patrón
+    const versionesExistentes = rubricas
+      .filter(r => r.codigo?.startsWith(patronBase))
+      .map(r => r.version || 0);
+
+    if (versionesExistentes.length === 0) {
+      return 1;
+    }
+
+    return Math.max(...versionesExistentes) + 1;
+  }
+
+  /**
+   * Obtiene todas las versiones de una rúbrica dado su código base (sin versión).
+   *
+   * IMPORTANTE: Las categorías son únicas por CURSO. Por ejemplo:
+   * - "RGE1-EPM" → Rúbrica Grupal E1 para Programación Móvil
+   * - "RGE1-SO"  → Rúbrica Grupal E1 para Sistemas Operativos
+   * Son categorías DIFERENTES porque pertenecen a cursos distintos.
+   *
+   * @param codigoBase - Código base sin versión (ej: "RGE1-EPM")
+   * @returns Array de rúbricas ordenadas por versión descendente
+   * @example
+   * // Obtiene RGE1-EPMV1, RGE1-EPMV2, etc. (solo de Programación Móvil)
+   * obtenerVersionesRubrica("RGE1-EPM")
+   */
+  obtenerVersionesRubrica(codigoBase: string): RubricaDefinicion[] {
+    const rubricas = this.obtenerRubricasArray();
+    // Normalizar el patrón: si ya tiene V, usarlo; si no, agregarlo
+    const patron = codigoBase.includes('V') ? codigoBase.split('V')[0] + 'V' : codigoBase + 'V';
+
+    return rubricas
+      .filter(r => r.codigo?.startsWith(patron))
+      .sort((a, b) => (b.version || 0) - (a.version || 0)); // Ordenar por versión descendente
+  }
+
+  /**
+   * Obtiene todas las categorías de rúbricas disponibles para un curso específico.
+   * Una categoría es el código base sin versión (ej: RGE1-EPM, RGE2-EPM, RIE1-EPM).
+   *
+   * @param cursoCodigo - Código del curso (ej: "EPM-B01")
+   * @returns Array de categorías únicas con información de versiones
+   */
+  obtenerCategoriasPorCurso(cursoCodigo: string): Array<{
+    codigoBase: string;
+    tipoRubrica: 'PG' | 'PI';
+    tipoEntrega: 'E1' | 'E2' | 'EF';
+    cantidadVersiones: number;
+    versionActiva?: number;
+    descripcion: string;
+  }> {
+    const rubricas = this.obtenerRubricasPorCurso(cursoCodigo);
+    const categoriasMap = new Map<string, {
+      codigoBase: string;
+      tipoRubrica: 'PG' | 'PI';
+      tipoEntrega: 'E1' | 'E2' | 'EF';
+      versiones: RubricaDefinicion[];
+    }>();
+
+    // Agrupar por código base
+    for (const rubrica of rubricas) {
+      if (!rubrica.codigo) continue;
+
+      const codigoBase = this.extraerCodigoBase(rubrica.codigo);
+      if (!codigoBase) continue;
+
+      if (!categoriasMap.has(codigoBase)) {
+        categoriasMap.set(codigoBase, {
+          codigoBase,
+          tipoRubrica: rubrica.tipoRubrica || 'PG',
+          tipoEntrega: rubrica.tipoEntrega || 'E1',
+          versiones: []
+        });
+      }
+      categoriasMap.get(codigoBase)!.versiones.push(rubrica);
+    }
+
+    // Convertir a array con información calculada
+    return Array.from(categoriasMap.values()).map(cat => {
+      const versionActiva = cat.versiones.find(v => v.activa);
+      const tipoTexto = cat.tipoRubrica === 'PG' ? 'Grupal' : 'Individual';
+      const entregaTexto = cat.tipoEntrega === 'EF' ? 'Final' : cat.tipoEntrega;
+
+      return {
+        codigoBase: cat.codigoBase,
+        tipoRubrica: cat.tipoRubrica,
+        tipoEntrega: cat.tipoEntrega,
+        cantidadVersiones: cat.versiones.length,
+        versionActiva: versionActiva?.version,
+        descripcion: `Rúbrica ${tipoTexto} - Entrega ${entregaTexto}`
+      };
+    });
+  }
+
+  /**
+   * Activa una versión de rúbrica y desactiva las demás del mismo tipo
+   * @param rubricaId - ID de la rúbrica a activar
+   * @throws Si la rúbrica no existe o tiene código inválido
+   */
+  async activarVersionRubrica(rubricaId: string): Promise<void> {
+    const rubricas = this.rubricasSubject.value;
+    const rubricaActivar = rubricas[rubricaId];
+
+    if (!this.esRubricaValida(rubricaActivar)) {
+      Logger.warn('⚠️ No se puede activar: rúbrica no encontrada o sin código válido');
+      return;
+    }
+
+    const codigoBase = this.extraerCodigoBase(rubricaActivar.codigo!);
+    if (!codigoBase) {
+      Logger.warn('⚠️ Código de rúbrica inválido');
+      return;
+    }
+
+    const versionesActualizadas = this.actualizarEstadoVersiones(rubricas, codigoBase, rubricaId);
+
+    await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
+    this.rubricasSubject.next(rubricas);
+
+    Logger.log(`✅ Versión ${rubricaActivar.codigo} activada. ${versionesActualizadas - 1} versiones desactivadas.`);
+  }
+
+  /** Valida que la rúbrica exista y tenga código */
+  private esRubricaValida(rubrica: RubricaDefinicion | undefined): rubrica is RubricaDefinicion {
+    return !!rubrica && !!rubrica.codigo;
+  }
+
+  /**
+   * Extrae el código base (sin versión) de un código completo.
+   * Formato esperado: RGE1-EPMV1 → RGE1-EPM
+   */
+  private extraerCodigoBase(codigo: string): string | null {
+    // Buscar patrón V seguido de números al final
+    const match = codigo.match(/^(.+)V\d+$/);
+    if (match) {
+      return match[1]; // Retorna todo antes de V[N]
+    }
+    // Compatibilidad con formato anterior: RGE1-EPM-001
+    const partes = codigo.split('-');
+    return partes.length >= 2 ? `${partes[0]}-${partes[1]}` : null;
+  }
+
+  /** Actualiza el estado activo de todas las versiones de una rúbrica */
+  private actualizarEstadoVersiones(
+    rubricas: Record<string, RubricaDefinicion>,
+    codigoBase: string,
+    rubricaIdActiva: string
+  ): number {
+    // Patrón para nuevo formato: RGE1-EPMV
+    const patronNuevo = `${codigoBase}V`;
+    // Patrón para formato anterior: RGE1-EPM-
+    const patronAnterior = `${codigoBase}-`;
+    let contador = 0;
+
+    Object.values(rubricas).forEach(rubrica => {
+      if (rubrica.codigo?.startsWith(patronNuevo) || rubrica.codigo?.startsWith(patronAnterior)) {
+        rubrica.activa = rubrica.id === rubricaIdActiva;
+        rubrica.fechaModificacion = new Date();
+        contador++;
+      }
+    });
+
+    return contador;
+  }
+
+  /**
+   * Obtiene la rúbrica activa para un curso, tipo y entrega específicos.
+   * Prioriza rúbricas con estado 'publicada' sobre 'borrador'.
+   * @param cursoCodigo - Código del curso
+   * @param tipoRubrica - 'PG' (grupal) o 'PI' (individual)
+   * @param tipoEntrega - 'E1', 'E2' o 'EF'
+   * @returns La rúbrica activa o undefined si no existe
+   */
+  obtenerRubricaActiva(
+    cursoCodigo: string,
+    tipoRubrica: 'PG' | 'PI',
+    tipoEntrega: 'E1' | 'E2' | 'EF'
+  ): RubricaDefinicion | undefined {
+    const rubricas = this.obtenerRubricasArray();
+
+    // Filtrar rúbricas que coincidan con los criterios
+    const rubricasCoincidentes = rubricas.filter(r =>
+      r.activa === true &&
+      r.tipoRubrica === tipoRubrica &&
+      r.tipoEntrega === tipoEntrega &&
+      r.cursosCodigos?.includes(cursoCodigo)
+    );
+
+    if (rubricasCoincidentes.length === 0) {
+      return undefined;
+    }
+
+    // Priorizar publicadas sobre borradores
+    const publicada = rubricasCoincidentes.find(r => r.estado === 'publicada');
+    return publicada || rubricasCoincidentes[0];
   }
 
   /**
@@ -3115,7 +4105,7 @@ export class DataService {
     // Actualizar rúbrica
     rubrica.cursosCodigos = cursosCodigos;
     if (tipoEntrega) {
-      rubrica.tipoEntrega = tipoEntrega;
+      rubrica.tipoEntrega = tipoEntrega as 'E1' | 'E2' | 'EF';
     }
     rubrica.fechaModificacion = new Date();
 
@@ -3194,6 +4184,83 @@ export class DataService {
   }
 
   /**
+   * Obtiene todas las rúbricas activas de un curso, organizadas por tipo y entrega.
+   * Útil para verificar qué rúbricas están asignadas actualmente.
+   * @param cursoCodigo - Código del curso
+   * @returns Objeto con las 6 posibles rúbricas (RGE1, RGE2, RGEF, RIE1, RIE2, RIEF)
+   */
+  obtenerRubricasActivasPorCurso(cursoCodigo: string): {
+    grupal: { E1?: RubricaDefinicion; E2?: RubricaDefinicion; EF?: RubricaDefinicion };
+    individual: { E1?: RubricaDefinicion; E2?: RubricaDefinicion; EF?: RubricaDefinicion };
+  } {
+    const entregas: Array<'E1' | 'E2' | 'EF'> = ['E1', 'E2', 'EF'];
+
+    const grupal: { E1?: RubricaDefinicion; E2?: RubricaDefinicion; EF?: RubricaDefinicion } = {};
+    const individual: { E1?: RubricaDefinicion; E2?: RubricaDefinicion; EF?: RubricaDefinicion } = {};
+
+    for (const entrega of entregas) {
+      grupal[entrega] = this.obtenerRubricaActiva(cursoCodigo, 'PG', entrega);
+      individual[entrega] = this.obtenerRubricaActiva(cursoCodigo, 'PI', entrega);
+    }
+
+    return { grupal, individual };
+  }
+
+  /**
+   * Valida y sincroniza las rúbricas asociadas en CourseState con las rúbricas activas.
+   * Si una rúbrica asociada ya no está activa, la actualiza o la elimina.
+   * @param cursoCodigo - Código del curso a validar
+   * @returns Número de correcciones realizadas
+   */
+  async sincronizarRubricasAsociadas(cursoCodigo: string): Promise<number> {
+    const uiState = this.getUIState();
+    const courseState = uiState.courseStates?.[cursoCodigo];
+
+    if (!courseState?.rubricasAsociadas) {
+      return 0;
+    }
+
+    let correcciones = 0;
+    const rubricasAsociadas = courseState.rubricasAsociadas;
+
+    // Mapeo de campos a tipo de rúbrica y entrega
+    const campos: Array<{
+      campo: keyof typeof rubricasAsociadas;
+      tipo: 'PG' | 'PI';
+      entrega: 'E1' | 'E2' | 'EF';
+    }> = [
+      { campo: 'entrega1', tipo: 'PG', entrega: 'E1' },
+      { campo: 'entrega2', tipo: 'PG', entrega: 'E2' },
+      { campo: 'entregaFinal', tipo: 'PG', entrega: 'EF' },
+      { campo: 'entrega1Individual', tipo: 'PI', entrega: 'E1' },
+      { campo: 'entrega2Individual', tipo: 'PI', entrega: 'E2' },
+      { campo: 'entregaFinalIndividual', tipo: 'PI', entrega: 'EF' }
+    ];
+
+    for (const { campo, tipo, entrega } of campos) {
+      const rubricaIdAsociada = rubricasAsociadas[campo];
+
+      if (rubricaIdAsociada) {
+        const rubrica = this.obtenerRubricaPorId(rubricaIdAsociada);
+
+        // Si la rúbrica no existe o no está activa, buscar la activa correcta
+        if (!rubrica || !rubrica.activa) {
+          const rubricaActiva = this.obtenerRubricaActiva(cursoCodigo, tipo, entrega);
+          rubricasAsociadas[campo] = rubricaActiva?.id || null;
+          correcciones++;
+        }
+      }
+    }
+
+    if (correcciones > 0) {
+      await this.updateUIState(uiState);
+      Logger.log(`✅ Sincronizadas ${correcciones} rúbricas para curso ${cursoCodigo}`);
+    }
+
+    return correcciones;
+  }
+
+  /**
    * Calcula la puntuación total basada en las calificaciones de criterios
    */
   calcularPuntuacionTotalRubrica(rubrica: RubricaDefinicion, calificaciones: { [criterio: string]: number }): number {
@@ -3213,35 +4280,36 @@ export class DataService {
   exportarRubricaATexto(rubrica: RubricaDefinicion): string {
     let texto = '';
 
-    // Encabezado
-    texto += `=== ${rubrica.nombre} ===\n\n`;
+    // Encabezado con código
+    const codigo = rubrica.codigo || rubrica.nombre;
+    texto += `=== ${codigo} ===\n`;
 
-    if (rubrica.descripcion) {
-      texto += `DESCRIPCIÓN: ${rubrica.descripcion}\n\n`;
+    // Curso
+    if (rubrica.cursoAsociado || rubrica.descripcion) {
+      texto += `==CURSO: ${rubrica.cursoAsociado || rubrica.descripcion}\n`;
     }
 
     // Puntuación total
     if (rubrica.puntuacionTotal) {
-      texto += `PUNTUACIÓN_TOTAL: ${rubrica.puntuacionTotal}\n\n`;
+      texto += `==PUNTUACIÓN_TOTAL: ${rubrica.puntuacionTotal}===\n`;
     }
+
+    texto += `\n`;
 
     // Escala de calificación
     if (rubrica.escalaCalificacion && rubrica.escalaCalificacion.length > 0) {
-      texto += `ESCALA_CALIFICACION:\n`;
+      texto += `===ESCALA_CALIFICACION===\n`;
       rubrica.escalaCalificacion.forEach((escala: EscalaCalificacion) => {
-        texto += `${escala.rango} | ${escala.descripcion}\n`;
+        const nivel = escala.nivel || escala.rango;
+        texto += `=${escala.min},${escala.max}|${nivel}:${escala.descripcion}=\n`;
       });
       texto += `\n`;
     }
 
     // Criterios
     rubrica.criterios.forEach((criterio: CriterioRubrica, index: number) => {
-      texto += `---\n`;
+      texto += `---\n\n`;
       texto += `CRITERIO_${index + 1}: ${criterio.titulo}\n`;
-
-      if (criterio.descripcion) {
-        texto += `DESCRIPCIÓN: ${criterio.descripcion}\n`;
-      }
 
       if (criterio.peso !== undefined) {
         texto += `PESO: ${criterio.peso}\n`;
@@ -3249,13 +4317,14 @@ export class DataService {
         texto += `PESO: ${criterio.pesoMaximo}\n`;
       }
 
-      // Niveles detallados (único formato soportado)
+      // Niveles detallados
       if (criterio.nivelesDetalle && criterio.nivelesDetalle.length > 0) {
         texto += `NIVELES: ${criterio.nivelesDetalle.length}\n`;
 
         criterio.nivelesDetalle.forEach((nivel: NivelRubricaDetallado, nivelIndex: number) => {
-          texto += `\nNIVEL_${nivelIndex + 1}:\n`;
-          texto += `PUNTOS: ${nivel.puntos}\n`;
+          texto += `\n--\nNIVEL_${nivelIndex + 1}:\n`;
+          texto += `MINIMO: ${nivel.puntosMin}\n`;
+          texto += `MAXIMO: ${nivel.puntosMax}\n`;
           texto += `TITULO: ${nivel.titulo}\n`;
           if (nivel.descripcion) {
             texto += `DESCRIPCION: ${nivel.descripcion}\n`;
@@ -3265,6 +4334,9 @@ export class DataService {
 
       texto += `\n`;
     });
+
+    // Marcador de fin con código de la rúbrica
+    texto += `===FIN_${codigo}===\n`;
 
     return texto;
   }
@@ -3285,6 +4357,96 @@ export class DataService {
     document.body.removeChild(link);
 
     window.URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Exporta una rúbrica al formato JSON estandarizado
+   * @param rubrica - Rúbrica a exportar
+   * @returns Objeto RubricaJSON listo para serializar
+   */
+  exportarRubricaAJSON(rubrica: RubricaDefinicion): RubricaJSON {
+    // Generar el rubrica_id desde el código o nombre
+    const rubricaId = this.generarRubricaIdExportacion(rubrica);
+
+    // Convertir escala de calificación
+    const escalaCalificacion: EscalaCalificacionJSON[] = (rubrica.escalaCalificacion || []).map(escala => ({
+      min: escala.min,
+      max: escala.max,
+      nivel: escala.nivel || escala.descripcion.split(' ')[0] || 'N/A',
+      descripcion: escala.descripcion
+    }));
+
+    // Convertir criterios al formato JSON
+    const criterios: CriterioRubricaJSON[] = rubrica.criterios.map((criterio, index) => ({
+      id: index + 1,
+      nombre: criterio.titulo,
+      peso: criterio.peso || criterio.pesoMaximo || 0,
+      niveles: criterio.nivelesDetalle?.length || 0,
+      nivel: (criterio.nivelesDetalle || []).map((nivel, nivelIndex) => ({
+        numero: nivelIndex + 1,
+        minimo: nivel.puntosMin,
+        maximo: nivel.puntosMax,
+        titulo: nivel.titulo,
+        descripcion: nivel.descripcion
+      }))
+    }));
+
+    return {
+      rubrica_id: rubricaId,
+      curso: rubrica.descripcion || rubrica.cursoAsociado || 'Sin curso',
+      puntuacion_total: rubrica.puntuacionTotal || criterios.reduce((sum, c) => sum + c.peso, 0),
+      escala_calificacion: escalaCalificacion,
+      criterios,
+      tipo: rubrica.tipoRubrica === 'PG' ? 'grupal' : rubrica.tipoRubrica === 'PI' ? 'individual' : undefined,
+      entrega: rubrica.tipoEntrega
+    };
+  }
+
+  /**
+   * Genera el rubrica_id para exportación JSON
+   */
+  private generarRubricaIdExportacion(rubrica: RubricaDefinicion): string {
+    // Si tiene código, extraer la parte inicial (ej: RGE1-EPM-001 -> RGE1)
+    if (rubrica.codigo) {
+      const partes = rubrica.codigo.split('-');
+      if (partes.length > 0) {
+        return partes[0];
+      }
+    }
+
+    // Generar desde tipoRubrica y tipoEntrega
+    const tipo = rubrica.tipoRubrica === 'PG' ? 'G' : rubrica.tipoRubrica === 'PI' ? 'I' : 'X';
+    const entrega = rubrica.tipoEntrega || 'E1';
+    return `R${tipo}${entrega}`;
+  }
+
+  /**
+   * Descarga una rúbrica como archivo JSON
+   * @param rubrica - Rúbrica a descargar
+   * @param prettyPrint - Si es true, formatea el JSON con indentación (default: true)
+   */
+  descargarRubricaComoJSON(rubrica: RubricaDefinicion, prettyPrint: boolean = true): void {
+    const jsonData = this.exportarRubricaAJSON(rubrica);
+    const contenido = prettyPrint
+      ? JSON.stringify(jsonData, null, 2)
+      : JSON.stringify(jsonData);
+
+    const blob = new Blob([contenido], { type: 'application/json;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+
+    // Generar nombre de archivo desde rubrica_id
+    const nombreArchivo = `${jsonData.rubrica_id}.json`;
+    link.download = nombreArchivo;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+    Logger.log(`✅ Rúbrica exportada como JSON: ${nombreArchivo}`);
   }
 }
 
