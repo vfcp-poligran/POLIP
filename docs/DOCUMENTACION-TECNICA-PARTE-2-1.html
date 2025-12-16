@@ -4,240 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POLIProject - Parte 2.1: Estructura General y Filosofía de Organización</title>
-  <style>
-    :root {
-      --primary-color: #0f385a;
-      --secondary-color: #667eea;
-      --folder-gold: #f39c12;
-      --structure-teal: #17a2b8;
-      --bg-gradient: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-    header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 40px rgba(23, 162, 184, 0.3);
-    }
-
-    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
-    header .part-indicator {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav-parts a {
-      padding: 10px 20px;
-      background: white;
-      color: var(--primary-color);
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .nav-parts a:hover, .nav-parts a.active { background: var(--structure-teal); color: white; }
-
-    .section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .section h2 {
-      color: var(--structure-teal);
-      border-bottom: 3px solid var(--structure-teal);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
-    .section h4 { color: var(--folder-gold); margin: 20px 0 10px 0; font-size: 1.1rem; }
-
-    .tree-structure {
-      background: var(--code-bg);
-      border-radius: 12px;
-      padding: 25px;
-      overflow-x: auto;
-      margin: 20px 0;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.9rem;
-      line-height: 2;
-    }
-
-    .tree-structure .folder { color: #569cd6; font-weight: bold; }
-    .tree-structure .file { color: #ce9178; }
-    .tree-structure .comment { color: #6a9955; }
-    .tree-structure .highlight { background: #3e3e3e; padding: 2px 6px; border-radius: 4px; }
-
-    .philosophy-box {
-      background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-      border-left: 5px solid var(--structure-teal);
-      padding: 25px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .philosophy-box h4 { color: #00838f; margin-bottom: 12px; }
-    .philosophy-box ul { margin-left: 20px; margin-top: 10px; }
-
-    .analogy-box {
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-      border-left: 5px solid #f39c12;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
-
-    .project-box {
-      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-      border-left: 5px solid #28a745;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .project-box h4 { color: #155724; margin-bottom: 10px; }
-
-    .info-box {
-      background: #e3f2fd;
-      border: 1px solid #2196f3;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .warning-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .layer-diagram {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin: 25px 0;
-    }
-
-    .layer-card {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border: 2px solid #dee2e6;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .layer-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--structure-teal);
-      box-shadow: 0 8px 25px rgba(23, 162, 184, 0.2);
-    }
-
-    .layer-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
-    .layer-card h4 { color: var(--structure-teal); margin-bottom: 8px; font-size: 1rem; }
-    .layer-card p { color: #666; font-size: 0.85rem; }
-    .layer-card code { background: #dee2e6; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
-
-    .convention-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin: 20px 0;
-    }
-
-    .convention-card {
-      background: #f8f9fa;
-      border-radius: 10px;
-      padding: 20px;
-      border-left: 4px solid var(--folder-gold);
-    }
-
-    .convention-card h4 { color: var(--primary-color); margin-bottom: 10px; font-size: 1rem; }
-    .convention-card code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; }
-
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-
-    .comparison-table th, .comparison-table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .comparison-table th {
-      background: var(--structure-teal);
-      color: white;
-    }
-
-    .comparison-table tr:nth-child(even) { background: #f8f9fa; }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .badge-src { background: #28a745; color: white; }
-    .badge-config { background: #17a2b8; color: white; }
-    .badge-docs { background: #ffc107; color: #333; }
-    .badge-native { background: #6f42c1; color: white; }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      border-top: 1px solid #ddd;
-      margin-top: 40px;
-    }
-
-    footer a { color: var(--structure-teal); }
-  </style>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="theme-teal">
       <h1>🏗️ POLIProject</h1>
       <p class="subtitle">Documentación Técnica del Código Fuente</p>
       <span class="part-indicator">📁 Parte 2.1: Estructura General y Filosofía</span>
     </header>
 
-    <nav class="nav-parts">
+    <nav class="nav-parts theme-teal">
       <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html" class="active">2.1: Estructura</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
@@ -250,7 +27,7 @@
     <!-- ============================================ -->
     <!-- INTRODUCCIÓN -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-teal">
       <h2>📚 Introducción a la Estructura del Proyecto</h2>
 
       <p><strong>POLIProject</strong> (Gestor de Seguimiento de Proyectos) sigue una estructura de carpetas estandarizada que combina las mejores prácticas de <strong>Ionic</strong>, <strong>Angular</strong> y <strong>Capacitor</strong>. Esta organización no es arbitraria: cada carpeta tiene un propósito específico y sigue principios de arquitectura de software bien establecidos.</p>
@@ -283,7 +60,7 @@
     <!-- ============================================ -->
     <!-- ÁRBOL DE CARPETAS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-teal">
       <h2>🌳 Árbol de Carpetas Principal</h2>
 
       <p>Esta es la estructura de primer nivel del proyecto POLIProject:</p>
@@ -321,16 +98,16 @@
 
       <div class="info-box">
         <strong>💡 Convención de Colores en la Documentación:</strong><br>
-        <span style="color: #569cd6;">■ Azul</span> = Carpetas (directorios) &nbsp;|&nbsp;
-        <span style="color: #ce9178;">■ Naranja</span> = Archivos &nbsp;|&nbsp;
-        <span style="color: #6a9955;">■ Verde</span> = Comentarios explicativos
+        <span class="color-folder">■ Azul</span> = Carpetas (directorios) &nbsp;|&nbsp;
+        <span class="color-file">■ Naranja</span> = Archivos &nbsp;|&nbsp;
+        <span class="color-comment">■ Verde</span> = Comentarios explicativos
       </div>
     </section>
 
     <!-- ============================================ -->
     <!-- CATEGORÍAS DE CARPETAS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-teal">
       <h2>📊 Categorías de Carpetas</h2>
 
       <p>Las carpetas del proyecto se organizan en 4 categorías funcionales:</p>
@@ -415,7 +192,7 @@
     <!-- ============================================ -->
     <!-- ARQUITECTURA POR CAPAS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-teal">
       <h2>🏛️ Arquitectura por Capas</h2>
 
       <p>Dentro de <code>src/app/</code>, POLIProject sigue una <strong>arquitectura por capas</strong> que separa responsabilidades:</p>
@@ -456,7 +233,7 @@
           <li><strong>Queso (core/):</strong> Lo que une y da sabor a todo</li>
           <li><strong>Pan inferior (models/):</strong> La base que sostiene la estructura</li>
         </ul>
-        <p style="margin-top: 10px;"><strong>Regla:</strong> No puedes quitar una capa sin que la hamburguesa se desarme.</p>
+        <p class="mt-10"><strong>Regla:</strong> No puedes quitar una capa sin que la hamburguesa se desarme.</p>
       </div>
 
       <div class="project-box">
@@ -472,7 +249,7 @@
     <!-- ============================================ -->
     <!-- CONVENCIONES DE NOMENCLATURA -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-teal">
       <h2>📝 Convenciones de Nomenclatura</h2>
 
       <p>POLIProject sigue convenciones estándar de Angular/Ionic para nombrar archivos:</p>
@@ -483,44 +260,44 @@
           <p><code>nombre.page.ts</code></p>
           <p><code>nombre.page.html</code></p>
           <p><code>nombre.page.scss</code></p>
-          <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">Ejemplo: <code>calificaciones.page.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>calificaciones.page.ts</code></p>
         </div>
         <div class="convention-card">
           <h4>🧩 Componentes</h4>
           <p><code>nombre.component.ts</code></p>
           <p><code>nombre.component.html</code></p>
           <p><code>nombre.component.scss</code></p>
-          <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">Ejemplo: <code>barra-de-grupos.component.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>barra-de-grupos.component.ts</code></p>
         </div>
         <div class="convention-card">
           <h4>⚙️ Servicios</h4>
           <p><code>nombre.service.ts</code></p>
-          <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">Ejemplo: <code>data.service.ts</code></p>
-          <p style="font-size: 0.85rem; color: #666;"><code>unified-storage.service.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>data.service.ts</code></p>
+          <p class="text-sm text-muted"><code>unified-storage.service.ts</code></p>
         </div>
         <div class="convention-card">
           <h4>📊 Modelos</h4>
           <p><code>nombre.model.ts</code></p>
-          <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">Ejemplo: <code>estudiante.model.ts</code></p>
-          <p style="font-size: 0.85rem; color: #666;"><code>evaluacion.model.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>estudiante.model.ts</code></p>
+          <p class="text-sm text-muted"><code>evaluacion.model.ts</code></p>
         </div>
         <div class="convention-card">
           <h4>🧪 Tests</h4>
           <p><code>nombre.spec.ts</code></p>
-          <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">Ejemplo: <code>app.component.spec.ts</code></p>
-          <p style="font-size: 0.85rem; color: #666;">Siempre junto al archivo que prueban</p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>app.component.spec.ts</code></p>
+          <p class="text-sm text-muted">Siempre junto al archivo que prueban</p>
         </div>
         <div class="convention-card">
           <h4>📦 Barrel Export</h4>
           <p><code>index.ts</code></p>
-          <p style="margin-top: 10px; font-size: 0.85rem; color: #666;">Re-exporta todo desde una carpeta</p>
-          <p style="font-size: 0.85rem; color: #666;"><code>export * from './estudiante.model';</code></p>
+          <p class="mt-10 text-sm text-muted">Re-exporta todo desde una carpeta</p>
+          <p class="text-sm text-muted"><code>export * from './estudiante.model';</code></p>
         </div>
       </div>
 
       <div class="info-box">
         <strong>💡 ¿Por qué estas convenciones?</strong><br>
-        <ul style="margin-top: 10px; margin-left: 20px;">
+        <ul class="mt-10 ml-20">
           <li>El sufijo (<code>.page</code>, <code>.service</code>) indica el <strong>tipo</strong> de archivo sin abrirlo</li>
           <li>Los archivos relacionados quedan <strong>juntos</strong> alfabéticamente</li>
           <li>Las herramientas de Angular/Ionic <strong>reconocen</strong> estos patrones automáticamente</li>
@@ -532,21 +309,21 @@
     <!-- ============================================ -->
     <!-- FLUJO DE DATOS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-teal">
       <h2>🔄 Flujo de Datos entre Carpetas</h2>
 
       <p>Así fluye la información a través de la estructura del proyecto:</p>
 
-      <div class="tree-structure" style="text-align: center; line-height: 2.5;">
-        <span style="color: #569cd6; font-size: 1.2rem;">Usuario</span>
+      <div class="tree-structure flow-diagram">
+        <span class="color-folder font-lg">Usuario</span>
         <br>⬇️
-        <br><span style="color: #ce9178;">pages/ components/</span> <span class="comment">(Ve la UI, hace clic)</span>
+        <br><span class="color-file">pages/ components/</span> <span class="comment">(Ve la UI, hace clic)</span>
         <br>⬇️ ⬆️
-        <br><span style="color: #ce9178;">services/</span> <span class="comment">(Procesa la acción, aplica lógica)</span>
+        <br><span class="color-file">services/</span> <span class="comment">(Procesa la acción, aplica lógica)</span>
         <br>⬇️ ⬆️
-        <br><span style="color: #ce9178;">models/</span> <span class="comment">(Define estructura de datos)</span>
+        <br><span class="color-file">models/</span> <span class="comment">(Define estructura de datos)</span>
         <br>⬇️ ⬆️
-        <br><span style="color: #569cd6; font-size: 1.2rem;">Storage</span> <span class="comment">(SQLite / IndexedDB)</span>
+        <br><span class="color-folder font-lg">Storage</span> <span class="comment">(SQLite / IndexedDB)</span>
       </div>
 
       <div class="project-box">
@@ -563,10 +340,10 @@
       </div>
     </section>
 
-    <footer>
+    <footer class="theme-teal">
       <p><strong>POLIProject</strong> - Documentación Técnica</p>
       <p>Parte 2.1 de 5 | Politécnico Grancolombiano</p>
-      <p style="margin-top: 10px;">
+      <p class="mt-10">
         <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html">← Anterior: 1.5 Ionic+Capacitor</a>
         &nbsp;|&nbsp;
         <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">Siguiente: 2.2 docs/ y src/ →</a>

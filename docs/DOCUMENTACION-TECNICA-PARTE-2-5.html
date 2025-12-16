@@ -4,243 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POLIProject - Parte 2.5: Configuración Raíz y PWA</title>
-  <style>
-    :root {
-      --primary-color: #0f385a;
-      --secondary-color: #667eea;
-      --pwa-purple: #5a67d8;
-      --test-green: #38a169;
-      --bg-gradient: linear-gradient(135deg, #5a67d8 0%, #805ad5 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-    header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 40px rgba(90, 103, 216, 0.3);
-    }
-
-    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
-    header .part-indicator {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav-parts a {
-      padding: 10px 20px;
-      background: white;
-      color: var(--primary-color);
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .nav-parts a:hover, .nav-parts a.active { background: var(--pwa-purple); color: white; }
-
-    .section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .section h2 {
-      color: var(--pwa-purple);
-      border-bottom: 3px solid var(--pwa-purple);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
-
-    .file-card {
-      background: white;
-      border: 2px solid #e9ecef;
-      border-radius: 12px;
-      padding: 25px;
-      margin: 20px 0;
-      transition: all 0.3s ease;
-    }
-
-    .file-card:hover { border-color: var(--pwa-purple); box-shadow: 0 5px 20px rgba(90, 103, 216, 0.15); }
-    .file-card h4 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; }
-
-    .file-icon {
-      display: inline-block;
-      background: var(--pwa-purple);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    .file-icon.js { background: #f7df1e; color: #333; }
-    .file-icon.json { background: #5a67d8; }
-    .file-icon.pwa { background: #805ad5; }
-
-    .code-block {
-      background: var(--code-bg);
-      border-radius: 10px;
-      padding: 20px;
-      overflow-x: auto;
-      margin: 15px 0;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.85rem;
-      line-height: 1.8;
-    }
-
-    .code-block code { color: var(--code-text); }
-    .code-block .keyword { color: #569cd6; }
-    .code-block .string { color: #ce9178; }
-    .code-block .comment { color: #6a9955; }
-    .code-block .property { color: #9cdcfe; }
-
-    .philosophy-box {
-      background: linear-gradient(135deg, #e9d8fd 0%, #d6bcfa 100%);
-      border-left: 5px solid var(--pwa-purple);
-      padding: 25px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .philosophy-box h4 { color: #553c9a; margin-bottom: 12px; }
-
-    .analogy-box {
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-      border-left: 5px solid #f39c12;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
-
-    .project-box {
-      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-      border-left: 5px solid #28a745;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .project-box h4 { color: #155724; margin-bottom: 10px; }
-
-    .info-box {
-      background: #e3f2fd;
-      border: 1px solid #2196f3;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .success-box {
-      background: #d4edda;
-      border: 1px solid #28a745;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .pwa-features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-    }
-
-    .pwa-feature {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .pwa-feature:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    .pwa-feature .icon { font-size: 2rem; margin-bottom: 10px; }
-    .pwa-feature h4 { color: var(--pwa-purple); font-size: 0.95rem; }
-    .pwa-feature p { font-size: 0.85rem; color: #666; margin-top: 5px; }
-
-    .completion-banner {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white;
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      margin: 30px 0;
-    }
-    .completion-banner h3 { font-size: 1.5rem; margin-bottom: 10px; }
-
-    .glossary-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-
-    .glossary-table th, .glossary-table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .glossary-table th {
-      background: var(--pwa-purple);
-      color: white;
-    }
-
-    .glossary-table tr:nth-child(even) { background: #f8f9fa; }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      border-top: 1px solid #ddd;
-      margin-top: 40px;
-    }
-
-    footer a { color: var(--pwa-purple); }
-  </style>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="theme-cyan">
       <h1>⚙️ POLIProject</h1>
       <p class="subtitle">Documentación Técnica del Código Fuente</p>
       <span class="part-indicator">📡 Parte 2.5: Configuración Raíz y PWA</span>
     </header>
 
-    <nav class="nav-parts">
+    <nav class="nav-parts theme-cyan">
       <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
@@ -253,7 +27,7 @@
     <!-- ============================================ -->
     <!-- KARMA.CONF.JS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-cyan">
       <h2>🧪 karma.conf.js - Test Runner</h2>
 
       <div class="file-card">
@@ -318,7 +92,7 @@ module.exports = <span class="keyword">function</span> (config) {
     <!-- ============================================ -->
     <!-- NGSW-CONFIG.JSON -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-cyan">
       <h2>📡 ngsw-config.json - Service Worker PWA</h2>
 
       <div class="file-card">
@@ -398,7 +172,7 @@ module.exports = <span class="keyword">function</span> (config) {
 
       <div class="success-box">
         <strong>📱 Capacidades PWA de POLIProject:</strong>
-        <ul style="margin-top: 10px; margin-left: 20px;">
+        <ul class="mt-10 ml-20">
           <li>✅ Instalable en pantalla de inicio</li>
           <li>✅ Funciona completamente offline</li>
           <li>✅ Actualización automática en segundo plano</li>
@@ -409,7 +183,7 @@ module.exports = <span class="keyword">function</span> (config) {
 
       <div class="info-box">
         <strong>💡 Importante:</strong> El Service Worker solo se activa en <strong>builds de producción</strong>:
-        <pre style="margin-top: 10px;"><code>ng build --configuration=production</code></pre>
+        <pre class="mt-10"><code>ng build --configuration=production</code></pre>
       </div>
     </section>
 
@@ -419,7 +193,7 @@ module.exports = <span class="keyword">function</span> (config) {
     <div class="completion-banner">
       <h3>🎉 ¡Parte 2 Completa!</h3>
       <p>Has completado la documentación de Estructura de Carpetas y Archivos de POLIProject.</p>
-      <p style="margin-top: 15px; font-size: 0.9rem;">
+      <p class="mt-15 text-sm">
         2.1 Estructura &nbsp;|&nbsp;
         2.2 docs/ y src/ &nbsp;|&nbsp;
         2.3 src/app/ &nbsp;|&nbsp;
@@ -431,7 +205,7 @@ module.exports = <span class="keyword">function</span> (config) {
     <!-- ============================================ -->
     <!-- GLOSARIO -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-cyan">
       <h2>📖 Glosario de Términos de Estructura</h2>
 
       <h3>📁 Estructura de Carpetas</h3>
@@ -569,7 +343,7 @@ module.exports = <span class="keyword">function</span> (config) {
     <!-- ============================================ -->
     <!-- RESUMEN PARTE 2 -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-cyan">
       <h2>📝 Resumen Final de Parte 2</h2>
 
       <table class="glossary-table">
@@ -636,10 +410,10 @@ module.exports = <span class="keyword">function</span> (config) {
       </div>
     </section>
 
-    <footer>
+    <footer class="theme-cyan">
       <p><strong>POLIProject</strong> - Documentación Técnica</p>
       <p>Parte 2.5 de 5 (Final de Parte 2) | Politécnico Grancolombiano</p>
-      <p style="margin-top: 10px;">
+      <p class="mt-10">
         <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">← Anterior: 2.4 Archivos Base</a>
         &nbsp;|&nbsp;
         <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Siguiente: Parte 3 - Código Fuente →</a>

@@ -4,266 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POLIProject - Parte 3.8: Pages</title>
-  <style>
-    :root {
-      --primary-color: #0f385a;
-      --secondary-color: #667eea;
-      --accent-color: #764ba2;
-      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-    header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-    }
-
-    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
-    header .part-indicator {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav-parts a {
-      padding: 10px 20px;
-      background: white;
-      color: var(--primary-color);
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .nav-parts a:hover, .nav-parts a.active { background: var(--bg-gradient); color: white; }
-
-    .section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .section h2 {
-      color: var(--primary-color);
-      border-bottom: 3px solid var(--secondary-color);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
-
-    .file-header {
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-      color: white;
-      padding: 15px 20px;
-      border-radius: 10px 10px 0 0;
-      font-family: 'Consolas', monospace;
-      font-size: 1rem;
-    }
-
-    .code-block {
-      background: var(--code-bg);
-      border-radius: 0 0 10px 10px;
-      overflow-x: auto;
-      margin-bottom: 20px;
-    }
-
-    .code-block code {
-      display: block;
-      padding: 20px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.85rem;
-      line-height: 1.8;
-      color: var(--code-text);
-    }
-
-    .code-line { display: block; padding: 2px 0; }
-    .code-line:hover { background: rgba(255,255,255,0.05); }
-
-    .keyword { color: #569cd6; }
-    .string { color: #ce9178; }
-    .comment { color: #6a9955; font-style: italic; }
-    .class-name { color: #4ec9b0; }
-    .type { color: #4ec9b0; }
-    .property { color: #9cdcfe; }
-    .number { color: #b5cea8; }
-    .decorator { color: #dcdcaa; }
-    .method { color: #dcdcaa; }
-
-    .explanation {
-      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
-      border-left: 4px solid var(--secondary-color);
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 10px 10px 0;
-    }
-
-    .explanation h4 { color: var(--primary-color); margin-bottom: 10px; }
-    .explanation ul { margin-left: 20px; }
-    .explanation li { margin: 8px 0; }
-
-    .tech-term {
-      background: linear-gradient(135deg, #667eea20, #764ba220);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-      color: var(--primary-color);
-      cursor: help;
-      border-bottom: 1px dashed var(--secondary-color);
-    }
-
-    .info-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-    .info-box.success { background: #d4edda; border-color: #28a745; }
-    .info-box.primary { background: #cce5ff; border-color: #007bff; }
-    .info-box.danger { background: #f8d7da; border-color: #dc3545; }
-
-    .page-card {
-      border: 2px solid #e9ecef;
-      border-radius: 12px;
-      margin: 20px 0;
-      overflow: hidden;
-    }
-
-    .page-card-header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .page-card-header .icon { font-size: 1.5rem; }
-    .page-card-header .name { font-family: 'Consolas', monospace; font-size: 1.1rem; }
-    .page-card-header .badge {
-      background: rgba(255,255,255,0.2);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      margin-left: auto;
-    }
-
-    .page-card-body { padding: 20px; }
-
-    .feature-list { list-style: none; padding: 0; }
-    .feature-list li {
-      padding: 10px 15px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .feature-list li:last-child { border-bottom: none; }
-    .feature-list .feature-icon { font-size: 1.2rem; }
-    .feature-list .feature-name { font-weight: 600; color: var(--primary-color); }
-    .feature-list .feature-desc { color: #666; font-size: 0.9rem; margin-left: auto; }
-
-    .property-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 15px 0;
-    }
-
-    .property-table th, .property-table td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .property-table th { background: var(--primary-color); color: white; font-size: 0.9rem; }
-    .property-table tr:nth-child(even) { background: #f8f9fa; }
-    .property-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
-
-    .route-badge {
-      display: inline-block;
-      background: var(--secondary-color);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-family: 'Consolas', monospace;
-      font-size: 0.85rem;
-    }
-
-    .tabs-diagram {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-    }
-
-    .tab-box {
-      background: #f8f9fa;
-      border: 2px solid var(--secondary-color);
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-    }
-
-    .tab-box.active { background: var(--bg-gradient); color: white; }
-    .tab-box .tab-icon { font-size: 1.5rem; margin-bottom: 5px; }
-    .tab-box .tab-name { font-size: 0.85rem; font-weight: 600; }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      border-top: 1px solid #ddd;
-      margin-top: 40px;
-    }
-    footer a { color: var(--secondary-color); }
-
-    .completion-banner {
-      background: linear-gradient(135deg, #28a745, #20c997);
-      color: white;
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      margin: 30px 0;
-    }
-    .completion-banner h3 { font-size: 1.5rem; margin-bottom: 10px; }
-    .completion-banner p { opacity: 0.9; }
-  </style>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="theme-blue">
       <h1>📄 POLIProject</h1>
       <p class="subtitle">Documentación Técnica del Código Fuente</p>
       <span class="part-indicator">📄 Parte 3.8: Pages (Páginas de la Aplicación)</span>
     </header>
 
-    <nav class="nav-parts">
+    <nav class="nav-parts theme-blue">
       <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
@@ -279,7 +30,7 @@
     <!-- ============================================ -->
     <!-- INTRODUCCIÓN -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📄 Páginas de la Aplicación</h2>
       <p>Las <span class="tech-term" title="Vistas principales de la aplicación">Pages</span> son componentes standalone que representan las vistas principales de la aplicación, accesibles mediante navegación por tabs.</p>
 
@@ -353,7 +104,7 @@
     <!-- ============================================ -->
     <!-- INICIO PAGE -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🏠 InicioPage</h2>
       <p>La página más compleja. Dashboard principal con tabla de estudiantes, evaluación con rúbricas y panel de seguimiento.</p>
 
@@ -417,7 +168,7 @@
     <!-- ============================================ -->
     <!-- CURSOS PAGE -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📚 CursosPage</h2>
       <p>Gestión completa de cursos: creación, importación de estudiantes desde CSV, y asociación de rúbricas.</p>
 
@@ -476,7 +227,7 @@
     <!-- ============================================ -->
     <!-- RUBRICAS PAGE -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📋 RubricasPage</h2>
       <p>Centro de administración de rúbricas: crear, editar, importar desde JSON/TXT, y gestionar versiones.</p>
 
@@ -538,7 +289,7 @@
     <!-- ============================================ -->
     <!-- CALIFICACIONES PAGE -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📊 CalificacionesPage</h2>
       <p>Gestión de archivos CSV de Canvas para importar/exportar calificaciones.</p>
 
@@ -599,7 +350,7 @@
     <!-- ============================================ -->
     <!-- SISTEMA PAGE -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>⚙️ SistemaPage</h2>
       <p>Configuración del sistema, gestión de backups y preferencias de usuario.</p>
 
@@ -667,7 +418,7 @@
     <!-- ============================================ -->
     <!-- LIFECYCLE HOOKS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🔄 Lifecycle Hooks de Ionic</h2>
       <p>Las pages usan hooks específicos de Ionic para manejar el ciclo de vida de navegación.</p>
 
@@ -702,7 +453,7 @@
     <!-- ============================================ -->
     <!-- RESUMEN -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📋 Resumen de Pages</h2>
 
       <table class="property-table">
@@ -755,10 +506,10 @@
       </p>
     </div>
 
-    <footer>
+    <footer class="theme-blue">
       <p><strong>POLIProject</strong> - Documentación Técnica</p>
       <p>Parte 3.8 de 8 (Final) | Politécnico Grancolombiano</p>
-      <p style="margin-top: 10px;">
+      <p class="mt-10">
         <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">← Anterior: 3.7 Components</a>
         &nbsp;|&nbsp;
         <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Volver al Inicio →</a>

@@ -4,233 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POLIProject - Parte 2.3: src/app/ - Aplicación Principal</title>
-  <style>
-    :root {
-      --primary-color: #0f385a;
-      --secondary-color: #667eea;
-      --angular-red: #dd0031;
-      --app-purple: #6f42c1;
-      --bg-gradient: linear-gradient(135deg, #6f42c1 0%, #667eea 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-    header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 40px rgba(111, 66, 193, 0.3);
-    }
-
-    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
-    header .part-indicator {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav-parts a {
-      padding: 10px 20px;
-      background: white;
-      color: var(--primary-color);
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .nav-parts a:hover, .nav-parts a.active { background: var(--app-purple); color: white; }
-
-    .section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .section h2 {
-      color: var(--app-purple);
-      border-bottom: 3px solid var(--app-purple);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
-    .section h4 { color: var(--angular-red); margin: 20px 0 10px 0; font-size: 1.1rem; }
-
-    .folder-card {
-      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-      border-left: 5px solid var(--app-purple);
-      border-radius: 0 12px 12px 0;
-      padding: 25px;
-      margin: 20px 0;
-      transition: transform 0.3s ease;
-    }
-
-    .folder-card:hover { transform: translateX(5px); }
-    .folder-card h4 { color: var(--primary-color); margin-top: 0; font-size: 1.2rem; }
-    .folder-card .icon { font-size: 1.5rem; margin-right: 10px; }
-
-    .file-card {
-      background: white;
-      border: 2px solid #e9ecef;
-      border-radius: 10px;
-      padding: 20px;
-      margin: 15px 0;
-      transition: border-color 0.3s ease;
-    }
-
-    .file-card:hover { border-color: var(--app-purple); }
-    .file-card h4 { color: var(--primary-color); margin-bottom: 10px; }
-    .file-card .file-icon {
-      display: inline-block;
-      background: var(--angular-red);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    .tree-structure {
-      background: var(--code-bg);
-      border-radius: 12px;
-      padding: 25px;
-      overflow-x: auto;
-      margin: 20px 0;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.9rem;
-      line-height: 2;
-    }
-
-    .tree-structure .folder { color: #569cd6; font-weight: bold; }
-    .tree-structure .file { color: #ce9178; }
-    .tree-structure .comment { color: #6a9955; }
-
-    .philosophy-box {
-      background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-      border-left: 5px solid var(--app-purple);
-      padding: 25px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .philosophy-box h4 { color: #6a1b9a; margin-bottom: 12px; }
-
-    .analogy-box {
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-      border-left: 5px solid #f39c12;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
-
-    .project-box {
-      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-      border-left: 5px solid #28a745;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .project-box h4 { color: #155724; margin-bottom: 10px; }
-
-    .info-box {
-      background: #e3f2fd;
-      border: 1px solid #2196f3;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .folder-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin: 25px 0;
-    }
-
-    .folder-grid-card {
-      background: #f8f9fa;
-      border-radius: 12px;
-      padding: 20px;
-      border-left: 4px solid var(--secondary-color);
-      transition: all 0.3s ease;
-    }
-
-    .folder-grid-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    .folder-grid-card .icon { font-size: 2rem; margin-bottom: 10px; }
-    .folder-grid-card h4 { color: var(--primary-color); margin-bottom: 8px; }
-    .folder-grid-card code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }
-
-    .service-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-    }
-
-    .service-table th, .service-table td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .service-table th {
-      background: var(--app-purple);
-      color: white;
-    }
-
-    .service-table tr:nth-child(even) { background: #f8f9fa; }
-    .service-table code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      border-top: 1px solid #ddd;
-      margin-top: 40px;
-    }
-
-    footer a { color: var(--app-purple); }
-  </style>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="theme-blue">
       <h1>⚙️ POLIProject</h1>
       <p class="subtitle">Documentación Técnica del Código Fuente</p>
       <span class="part-indicator">🎯 Parte 2.3: src/app/ - Aplicación Principal</span>
     </header>
 
-    <nav class="nav-parts">
+    <nav class="nav-parts theme-blue">
       <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
@@ -243,7 +27,7 @@
     <!-- ============================================ -->
     <!-- INTRODUCCIÓN APP -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🎯 La Carpeta app/ - El Corazón de POLIProject</h2>
 
       <p>Dentro de <code>src/app/</code> se encuentra <strong>toda la lógica de la aplicación</strong>. Es donde reside el código que hace que POLIProject funcione: componentes, servicios, modelos y páginas.</p>
@@ -301,31 +85,31 @@
     <!-- ============================================ -->
     <!-- ARCHIVOS RAÍZ DE APP -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📋 Archivos Raíz de app/</h2>
 
       <div class="file-card">
         <h4><span class="file-icon">TS</span>app.component.ts</h4>
         <p><strong>Propósito:</strong> Componente raíz de la aplicación. Es el <strong>primer componente</strong> que se carga y contiene la estructura general de la app.</p>
-        <p style="margin-top: 10px;"><strong>Función:</strong> Inicializa servicios globales, maneja eventos del ciclo de vida, establece la estructura base del DOM.</p>
+        <p class="mt-10"><strong>Función:</strong> Inicializa servicios globales, maneja eventos del ciclo de vida, establece la estructura base del DOM.</p>
       </div>
 
       <div class="file-card">
         <h4><span class="file-icon">HTML</span>app.component.html</h4>
         <p><strong>Propósito:</strong> Template HTML del componente raíz.</p>
-        <p style="margin-top: 10px;"><strong>Contenido típico:</strong> <code>&lt;ion-app&gt;</code>, <code>&lt;ion-router-outlet&gt;</code> para la navegación.</p>
+        <p class="mt-10"><strong>Contenido típico:</strong> <code>&lt;ion-app&gt;</code>, <code>&lt;ion-router-outlet&gt;</code> para la navegación.</p>
       </div>
 
       <div class="file-card">
         <h4><span class="file-icon">SCSS</span>app.component.scss</h4>
         <p><strong>Propósito:</strong> Estilos específicos del componente raíz.</p>
-        <p style="margin-top: 10px;"><strong>Alcance:</strong> Estilos que afectan al layout principal de toda la aplicación.</p>
+        <p class="mt-10"><strong>Alcance:</strong> Estilos que afectan al layout principal de toda la aplicación.</p>
       </div>
 
       <div class="file-card">
         <h4><span class="file-icon">🗺️</span>app.routes.ts</h4>
         <p><strong>Propósito:</strong> Define la <strong>configuración de rutas</strong> (routing) de la aplicación.</p>
-        <p style="margin-top: 10px;"><strong>Función:</strong> Mapea URLs a componentes/páginas:</p>
+        <p class="mt-10"><strong>Función:</strong> Mapea URLs a componentes/páginas:</p>
         <ul style="margin-left: 20px; margin-top: 10px;">
           <li><code>/tabs/inicio</code> → <code>InicioPage</code></li>
           <li><code>/tabs/cursos</code> → <code>CursosPage</code></li>
@@ -349,7 +133,7 @@
     <!-- ============================================ -->
     <!-- SUBCARPETAS DE APP -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📂 Subcarpetas de app/</h2>
 
       <div class="folder-grid">
@@ -357,7 +141,7 @@
           <div class="icon">🧩</div>
           <h4>components/</h4>
           <p>Componentes <strong>reutilizables</strong> que se usan en múltiples páginas.</p>
-          <p style="margin-top: 10px;"><code>barra-de-grupos/</code></p>
+          <p class="mt-10"><code>barra-de-grupos/</code></p>
           <p><code>texto-seguimiento-seccion/</code></p>
         </div>
 
@@ -365,42 +149,42 @@
           <div class="icon">🔧</div>
           <h4>core/</h4>
           <p>Servicios <strong>fundamentales</strong>, guards de navegación, interceptors HTTP.</p>
-          <p style="margin-top: 10px;">Se cargan una sola vez (singleton).</p>
+          <p class="mt-10">Se cargan una sola vez (singleton).</p>
         </div>
 
         <div class="folder-grid-card">
           <div class="icon">📊</div>
           <h4>models/</h4>
           <p>Interfaces y tipos <strong>TypeScript</strong> que definen la estructura de datos.</p>
-          <p style="margin-top: 10px;"><code>Estudiante</code>, <code>Evaluacion</code>, <code>Rubrica</code></p>
+          <p class="mt-10"><code>Estudiante</code>, <code>Evaluacion</code>, <code>Rubrica</code></p>
         </div>
 
         <div class="folder-grid-card">
           <div class="icon">📄</div>
           <h4>pages/</h4>
           <p><strong>Páginas/vistas</strong> de la aplicación. Cada una en su propia carpeta.</p>
-          <p style="margin-top: 10px;"><code>inicio/</code>, <code>cursos/</code>, <code>calificaciones/</code></p>
+          <p class="mt-10"><code>inicio/</code>, <code>cursos/</code>, <code>calificaciones/</code></p>
         </div>
 
         <div class="folder-grid-card">
           <div class="icon">⚙️</div>
           <h4>services/</h4>
           <p>Servicios <strong>inyectables</strong> con lógica de negocio y acceso a datos.</p>
-          <p style="margin-top: 10px;"><code>DataService</code>, <code>StorageService</code></p>
+          <p class="mt-10"><code>DataService</code>, <code>StorageService</code></p>
         </div>
 
         <div class="folder-grid-card">
           <div class="icon">🎨</div>
           <h4>styles/</h4>
           <p>Archivos <strong>SCSS compartidos</strong>: mixins, variables custom, utilities.</p>
-          <p style="margin-top: 10px;">Diferente de theme/ (variables Ionic)</p>
+          <p class="mt-10">Diferente de theme/ (variables Ionic)</p>
         </div>
 
         <div class="folder-grid-card">
           <div class="icon">🔖</div>
           <h4>tabs/</h4>
           <p>Sistema de <strong>navegación por pestañas</strong> de la aplicación.</p>
-          <p style="margin-top: 10px;"><code>tabs.page.ts/html/scss</code></p>
+          <p class="mt-10"><code>tabs.page.ts/html/scss</code></p>
         </div>
       </div>
     </section>
@@ -408,7 +192,7 @@
     <!-- ============================================ -->
     <!-- MODELS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📊 models/ - Estructura de Datos</h2>
 
       <div class="folder-card">
@@ -471,13 +255,13 @@
     <!-- ============================================ -->
     <!-- SERVICES -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>⚙️ services/ - Lógica de Negocio</h2>
 
       <div class="folder-card">
         <h4><span class="icon">⚙️</span>services/</h4>
         <p><strong>Propósito:</strong> Servicios inyectables que manejan <strong>lógica de negocio</strong>, <strong>acceso a datos</strong>, y <strong>estado de la aplicación</strong>.</p>
-        <p style="margin-top: 10px;"><strong>Patrón:</strong> Singleton con <code>providedIn: 'root'</code></p>
+        <p class="mt-10"><strong>Patrón:</strong> Singleton con <code>providedIn: 'root'</code></p>
       </div>
 
       <div class="philosophy-box">
@@ -550,19 +334,19 @@
     <!-- ============================================ -->
     <!-- PAGES Y COMPONENTS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📄 pages/ y 🧩 components/</h2>
 
       <div class="folder-card">
         <h4><span class="icon">📄</span>pages/</h4>
         <p><strong>Propósito:</strong> Páginas/vistas completas de la aplicación. Cada página representa una <strong>pantalla navegable</strong>.</p>
-        <p style="margin-top: 10px;"><strong>Estructura típica:</strong> <code>nombre.page.ts</code>, <code>nombre.page.html</code>, <code>nombre.page.scss</code></p>
+        <p class="mt-10"><strong>Estructura típica:</strong> <code>nombre.page.ts</code>, <code>nombre.page.html</code>, <code>nombre.page.scss</code></p>
       </div>
 
       <div class="folder-card">
         <h4><span class="icon">🧩</span>components/</h4>
         <p><strong>Propósito:</strong> Componentes <strong>reutilizables</strong> que se usan en múltiples páginas. Piezas de UI modulares.</p>
-        <p style="margin-top: 10px;"><strong>Característica:</strong> Componentes standalone que se importan directamente.</p>
+        <p class="mt-10"><strong>Característica:</strong> Componentes standalone que se importan directamente.</p>
       </div>
 
       <h3>📋 Páginas de POLIProject</h3>
@@ -606,7 +390,7 @@
 
       <div class="info-box">
         <strong>💡 Diferencia Page vs Component:</strong>
-        <ul style="margin-top: 10px; margin-left: 20px;">
+        <ul class="mt-10 ml-20">
           <li><strong>Page:</strong> Pantalla completa, tiene su propia ruta, se navega hacia ella</li>
           <li><strong>Component:</strong> Pieza reutilizable, se incluye dentro de pages u otros components</li>
         </ul>
@@ -616,13 +400,13 @@
     <!-- ============================================ -->
     <!-- TABS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🔖 tabs/ - Sistema de Navegación</h2>
 
       <div class="folder-card">
         <h4><span class="icon">🔖</span>tabs/</h4>
         <p><strong>Propósito:</strong> Implementa el sistema de <strong>navegación por pestañas</strong> (tabs) de la aplicación.</p>
-        <p style="margin-top: 10px;"><strong>Contenido:</strong> <code>tabs.page.ts/html/scss</code> que define la estructura de tabs.</p>
+        <p class="mt-10"><strong>Contenido:</strong> <code>tabs.page.ts/html/scss</code> que define la estructura de tabs.</p>
       </div>
 
       <div class="project-box">
@@ -647,10 +431,10 @@
       </div>
     </section>
 
-    <footer>
+    <footer class="theme-blue">
       <p><strong>POLIProject</strong> - Documentación Técnica</p>
       <p>Parte 2.3 de 5 | Politécnico Grancolombiano</p>
-      <p style="margin-top: 10px;">
+      <p class="mt-10">
         <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">← Anterior: 2.2 docs/ y src/</a>
         &nbsp;|&nbsp;
         <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">Siguiente: 2.4 Archivos Base →</a>

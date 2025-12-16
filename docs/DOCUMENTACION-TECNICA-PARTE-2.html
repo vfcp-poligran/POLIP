@@ -4,349 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentación Técnica POLIProject - Parte 2: Estructura de Carpetas y Archivos</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0f385a 0%, #1a5a7a 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 50px;
-            border-left: 4px solid #667eea;
-            padding-left: 20px;
-        }
-
-        .section h2 {
-            color: #0f385a;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .section h3 {
-            color: #1a5a7a;
-            font-size: 1.5rem;
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-
-        .section h4 {
-            color: #667eea;
-            font-size: 1.2rem;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-
-        .icon {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 8px;
-            text-align: center;
-            line-height: 40px;
-            font-size: 1.5rem;
-        }
-
-        .folder-card {
-            background: #f8f9fa;
-            border-left: 5px solid #667eea;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .folder-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .folder-card h4 {
-            color: #0f385a;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            font-size: 1.3rem;
-        }
-
-        .folder-card .folder-icon {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 6px;
-            text-align: center;
-            line-height: 30px;
-            font-size: 1.2rem;
-        }
-
-        .folder-card p {
-            color: #555;
-            margin-top: 10px;
-            line-height: 1.7;
-        }
-
-        .file-card {
-            background: white;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 15px 0;
-            transition: border-color 0.3s;
-        }
-
-        .file-card:hover {
-            border-color: #667eea;
-        }
-
-        .file-card h4 {
-            color: #0f385a;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .file-icon {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
-            background: #3880ff;
-            border-radius: 4px;
-            text-align: center;
-            line-height: 24px;
-            font-size: 0.9rem;
-            color: white;
-        }
-
-        .tree-structure {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 20px 0;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 2;
-        }
-
-        .code-line {
-            display: block;
-            padding: 2px 0;
-        }
-
-        .glossary {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            margin-top: 40px;
-        }
-
-        .glossary h3 {
-            color: #0f385a;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .glossary-term {
-            margin: 20px 0;
-            padding: 15px;
-            background: white;
-            border-left: 4px solid #667eea;
-            border-radius: 4px;
-        }
-
-        .glossary-term dt {
-            color: #0f385a;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        .glossary-term dd {
-            color: #555;
-            line-height: 1.7;
-            margin-left: 20px;
-        }
-
-        .tech-term {
-            color: #667eea;
-            font-weight: 600;
-            cursor: help;
-            border-bottom: 1px dotted #667eea;
-        }
-
-        .tree-structure .folder {
-            color: #569cd6;
-        }
-
-        .tree-structure .file {
-            color: #ce9178;
-        }
-
-        .tree-structure .comment {
-            color: #6a9955;
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-
-        .warning-box {
-            background: #fff3e0;
-            border-left: 4px solid #ff9800;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-
-        .success-box {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin: 2px;
-        }
-
-        .badge-docs {
-            background: #ff9800;
-            color: white;
-        }
-
-        .badge-src {
-            background: #4caf50;
-            color: white;
-        }
-
-        .badge-config {
-            background: #2196f3;
-            color: white;
-        }
-
-        .badge-test {
-            background: #9c27b0;
-            color: white;
-        }
-
-        .toc {
-            background: #f5f7fa;
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-
-        .toc h3 {
-            color: #0f385a;
-            margin-bottom: 15px;
-        }
-
-        .toc ul {
-            list-style: none;
-        }
-
-        .toc li {
-            padding: 8px 0;
-            border-bottom: 1px solid #e1e8ed;
-        }
-
-        .toc a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .toc a:hover {
-            color: #0f385a;
-        }
-
-        footer {
-            background: #f5f7fa;
-            padding: 30px 40px;
-            text-align: center;
-            color: #666;
-            border-top: 1px solid #e1e8ed;
-        }
-
-        .subsection {
-            margin-left: 30px;
-            padding-left: 20px;
-            border-left: 2px dashed #e1e8ed;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .subsection {
-                margin-left: 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
     <div class="container">
@@ -456,7 +114,7 @@
                     <h4><span class="folder-icon">⚙️</span>src/app/</h4>
                     <p><strong>Propósito:</strong> Contiene toda la lógica de la aplicación Angular: componentes, servicios, modelos, páginas, y sistema de routing.</p>
 
-                    <p style="margin-top: 10px;"><strong>Es el corazón de la aplicación</strong> donde reside toda la funcionalidad del Gestor de Proyectos.</p>
+                    <p class="mt-10"><strong>Es el corazón de la aplicación</strong> donde reside toda la funcionalidad del Gestor de Proyectos.</p>
 
                     <div class="subsection" style="margin-top: 15px;">
                         <p><strong>Subcarpetas principales:</strong></p>
@@ -477,13 +135,13 @@
                     <h4><span class="folder-icon">🖼️</span>src/assets/</h4>
                     <p><strong>Propósito:</strong> Almacena recursos estáticos que se sirven tal cual en la aplicación: imágenes, iconos, fuentes, archivos JSON estáticos, etc.</p>
 
-                    <p style="margin-top: 10px;"><strong>Subcarpetas:</strong></p>
+                    <p class="mt-10"><strong>Subcarpetas:</strong></p>
                     <ul style="padding-left: 20px;">
                         <li><strong>icon/</strong> - Iconos de la aplicación (app icon, splash screen)</li>
                         <li><strong>shapes.svg</strong> - Formas SVG decorativas</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Acceso:</strong> Se referencian con rutas relativas desde HTML/CSS usando <code>/assets/...</code></p>
+                    <p class="mt-10"><strong>Acceso:</strong> Se referencian con rutas relativas desde HTML/CSS usando <code>/assets/...</code></p>
                 </div>
 
                 <!-- ENVIRONMENTS -->
@@ -491,13 +149,13 @@
                     <h4><span class="folder-icon">🌍</span>src/environments/</h4>
                     <p><strong>Propósito:</strong> Contiene archivos de configuración específicos para cada entorno de ejecución (desarrollo vs producción).</p>
 
-                    <p style="margin-top: 10px;"><strong>Archivos:</strong></p>
+                    <p class="mt-10"><strong>Archivos:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li><strong>environment.ts</strong> - Configuración para desarrollo (logging habilitado, debug mode)</li>
                         <li><strong>environment.prod.ts</strong> - Configuración para producción (optimizaciones, analytics)</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Uso:</strong> Angular reemplaza automáticamente <code>environment.ts</code> con <code>environment.prod.ts</code> al compilar con <code>--configuration=production</code>.</p>
+                    <p class="mt-10"><strong>Uso:</strong> Angular reemplaza automáticamente <code>environment.ts</code> con <code>environment.prod.ts</code> al compilar con <code>--configuration=production</code>.</p>
                 </div>
 
                 <!-- THEME -->
@@ -505,12 +163,12 @@
                     <h4><span class="folder-icon">🎨</span>src/theme/</h4>
                     <p><strong>Propósito:</strong> Define las variables CSS de Ionic que controlan el tema visual de toda la aplicación (colores, tipografía, espaciado, etc.).</p>
 
-                    <p style="margin-top: 10px;"><strong>Archivo principal:</strong></p>
+                    <p class="mt-10"><strong>Archivo principal:</strong></p>
                     <ul style="padding-left: 20px;">
                         <li><strong>variables.scss</strong> - Variables CSS de Ionic (<code>--ion-color-primary</code>, <code>--ion-color-secondary</code>, etc.)</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Función:</strong> Permite cambiar el tema completo de la aplicación (modo claro/oscuro, paleta de colores) desde un solo archivo.</p>
+                    <p class="mt-10"><strong>Función:</strong> Permite cambiar el tema completo de la aplicación (modo claro/oscuro, paleta de colores) desde un solo archivo.</p>
                 </div>
 
                 <div class="success-box">
@@ -660,7 +318,7 @@
                     <h4><span class="file-icon">🎨</span>global.scss</h4>
                     <p><strong>Propósito:</strong> Contiene estilos globales que se aplican a toda la aplicación, independientemente del componente.</p>
 
-                    <p style="margin-top: 10px;"><strong>Contenido típico:</strong></p>
+                    <p class="mt-10"><strong>Contenido típico:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li>Imports de archivos SCSS de Ionic Core</li>
                         <li>Resets CSS globales</li>
@@ -669,7 +327,7 @@
                         <li>Variables CSS custom del proyecto</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Carga:</strong> Se importa automáticamente en <code>angular.json</code> en la sección <code>styles</code>, asegurando que se incluya en el bundle final.</p>
+                    <p class="mt-10"><strong>Carga:</strong> Se importa automáticamente en <code>angular.json</code> en la sección <code>styles</code>, asegurando que se incluya en el bundle final.</p>
                 </div>
 
                 <!-- INDEX.HTML -->
@@ -677,7 +335,7 @@
                     <h4><span class="file-icon">📄</span>index.html</h4>
                     <p><strong>Propósito:</strong> Archivo HTML raíz de la aplicación. Es el punto de entrada que carga en el navegador.</p>
 
-                    <p style="margin-top: 10px;"><strong>Contenido clave:</strong></p>
+                    <p class="mt-10"><strong>Contenido clave:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li><code>&lt;app-root&gt;&lt;/app-root&gt;</code> - Selector del componente raíz de Angular</li>
                         <li><code>&lt;meta&gt;</code> tags - Viewport, charset, description para SEO</li>
@@ -686,7 +344,7 @@
                         <li><code>&lt;meta name="theme-color"&gt;</code> - Color de tema para barra de direcciones móvil</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Nota:</strong> Angular inyecta automáticamente los scripts JavaScript compilados al final del <code>&lt;body&gt;</code> durante el build.</p>
+                    <p class="mt-10"><strong>Nota:</strong> Angular inyecta automáticamente los scripts JavaScript compilados al final del <code>&lt;body&gt;</code> durante el build.</p>
                 </div>
 
                 <!-- MAIN.TS -->
@@ -694,7 +352,7 @@
                     <h4><span class="file-icon">⚡</span>main.ts</h4>
                     <p><strong>Propósito:</strong> Punto de entrada TypeScript de la aplicación. Es el primer archivo que se ejecuta al iniciar la app.</p>
 
-                    <p style="margin-top: 10px;"><strong>Función principal:</strong></p>
+                    <p class="mt-10"><strong>Función principal:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li>Bootstrap (arranque) de la aplicación Angular</li>
                         <li>Importa y ejecuta <code>AppComponent</code></li>
@@ -703,7 +361,7 @@
                         <li>Registra Service Worker para PWA</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Código típico:</strong> Llama a <code>bootstrapApplication(AppComponent, config)</code> para inicializar Angular en modo standalone.</p>
+                    <p class="mt-10"><strong>Código típico:</strong> Llama a <code>bootstrapApplication(AppComponent, config)</code> para inicializar Angular en modo standalone.</p>
                 </div>
 
                 <!-- POLYFILLS.TS -->
@@ -711,7 +369,7 @@
                     <h4><span class="file-icon">🔧</span>polyfills.ts</h4>
                     <p><strong>Propósito:</strong> Importa polyfills necesarios para compatibilidad con navegadores antiguos que no soportan características modernas de JavaScript/ES2022.</p>
 
-                    <p style="margin-top: 10px;"><strong>Función:</strong></p>
+                    <p class="mt-10"><strong>Función:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li>Agrega implementaciones de APIs modernas para navegadores legacy</li>
                         <li>Importa <code>zone.js</code> (requerido por Angular para detección de cambios)</li>
@@ -719,7 +377,7 @@
                         <li>Habilita características de ES2022 en navegadores antiguos</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Nota:</strong> Con target ES2022 y navegadores modernos, este archivo tiende a ser mínimo, principalmente importando Zone.js.</p>
+                    <p class="mt-10"><strong>Nota:</strong> Con target ES2022 y navegadores modernos, este archivo tiende a ser mínimo, principalmente importando Zone.js.</p>
                 </div>
 
                 <!-- TEST.TS -->
@@ -727,7 +385,7 @@
                     <h4><span class="file-icon">🧪</span>test.ts</h4>
                     <p><strong>Propósito:</strong> Archivo de configuración para inicializar el entorno de testing de Angular.</p>
 
-                    <p style="margin-top: 10px;"><strong>Función:</strong></p>
+                    <p class="mt-10"><strong>Función:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li>Configura el TestBed de Angular para pruebas unitarias</li>
                         <li>Importa módulos y providers necesarios para tests</li>
@@ -735,7 +393,7 @@
                         <li>Busca y carga todos los archivos <code>*.spec.ts</code> del proyecto</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Uso:</strong> Se ejecuta automáticamente al correr <code>npm test</code> o <code>ng test</code>.</p>
+                    <p class="mt-10"><strong>Uso:</strong> Se ejecuta automáticamente al correr <code>npm test</code> o <code>ng test</code>.</p>
                 </div>
 
                 <!-- ZONE-FLAGS.TS -->
@@ -743,7 +401,7 @@
                     <h4><span class="file-icon">🚩</span>zone-flags.ts</h4>
                     <p><strong>Propósito:</strong> Configura flags de optimización para Zone.js (motor de detección de cambios de Angular).</p>
 
-                    <p style="margin-top: 10px;"><strong>Función:</strong></p>
+                    <p class="mt-10"><strong>Función:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li>Desactiva patching innecesario de APIs del navegador</li>
                         <li>Mejora el rendimiento al reducir el overhead de Zone.js</li>
@@ -751,9 +409,9 @@
                         <li>Optimiza el tiempo de arranque de la aplicación</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Ejemplo de flags:</strong> <code>__Zone_disable_requestAnimationFrame</code>, <code>__Zone_disable_on_property</code> para desactivar patching de eventos específicos.</p>
+                    <p class="mt-10"><strong>Ejemplo de flags:</strong> <code>__Zone_disable_requestAnimationFrame</code>, <code>__Zone_disable_on_property</code> para desactivar patching de eventos específicos.</p>
 
-                    <p style="margin-top: 10px;"><strong>Importante:</strong> Debe cargarse ANTES de <code>zone.js</code> en <code>polyfills.ts</code>.</p>
+                    <p class="mt-10"><strong>Importante:</strong> Debe cargarse ANTES de <code>zone.js</code> en <code>polyfills.ts</code>.</p>
                 </div>
 
                 <div class="info-box">
@@ -781,7 +439,7 @@
                     <h4><span class="file-icon">🧪</span>karma.conf.js</h4>
                     <p><strong>Propósito:</strong> Archivo de configuración para Karma, el test runner utilizado para ejecutar pruebas unitarias de Angular.</p>
 
-                    <p style="margin-top: 10px;"><strong>Configuraciones clave:</strong></p>
+                    <p class="mt-10"><strong>Configuraciones clave:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li><strong>Frameworks:</strong> Define que usa Jasmine para escribir tests</li>
                         <li><strong>Browsers:</strong> Especifica en qué navegadores ejecutar tests (Chrome, ChromeHeadless)</li>
@@ -790,9 +448,9 @@
                         <li><strong>Plugins:</strong> Lista de plugins de Karma a utilizar</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Uso:</strong> Se ejecuta automáticamente con <code>ng test</code> o <code>npm test</code>.</p>
+                    <p class="mt-10"><strong>Uso:</strong> Se ejecuta automáticamente con <code>ng test</code> o <code>npm test</code>.</p>
 
-                    <p style="margin-top: 10px;"><strong>Ventajas:</strong> Permite ejecutar tests en múltiples navegadores simultáneamente y generar reportes de cobertura.</p>
+                    <p class="mt-10"><strong>Ventajas:</strong> Permite ejecutar tests en múltiples navegadores simultáneamente y generar reportes de cobertura.</p>
                 </div>
 
                 <!-- NGSW-CONFIG.JSON -->
@@ -800,7 +458,7 @@
                     <h4><span class="file-icon">📡</span>ngsw-config.json</h4>
                     <p><strong>Propósito:</strong> Configuración del Service Worker de Angular (Angular Service Worker) para funcionalidades PWA (Progressive Web App).</p>
 
-                    <p style="margin-top: 10px;"><strong>Funcionalidades configuradas:</strong></p>
+                    <p class="mt-10"><strong>Funcionalidades configuradas:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li><strong>Estrategias de Caching:</strong> Define qué archivos cachear y cómo</li>
                         <li><strong>Asset Groups:</strong> Grupos de recursos que se cachean juntos (app, assets)</li>
@@ -809,7 +467,7 @@
                         <li><strong>Offline Support:</strong> Qué mostrar cuando no hay conexión</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Beneficios:</strong></p>
+                    <p class="mt-10"><strong>Beneficios:</strong></p>
                     <ul style="padding-left: 20px; line-height: 1.8;">
                         <li>✅ Aplicación funciona offline</li>
                         <li>✅ Carga instantánea en visitas repetidas</li>
@@ -817,7 +475,7 @@
                         <li>✅ Reducción de consumo de datos móviles</li>
                     </ul>
 
-                    <p style="margin-top: 10px;"><strong>Activación:</strong> Solo se activa en builds de producción (<code>ng build --prod</code>).</p>
+                    <p class="mt-10"><strong>Activación:</strong> Solo se activa en builds de producción (<code>ng build --prod</code>).</p>
                 </div>
 
                 <div class="success-box">
@@ -918,7 +576,7 @@
                 <div class="success-box" style="margin-top: 30px;">
                     <h4>✅ Conclusión Parte 2</h4>
                     <p>La estructura de carpetas de POLIProject sigue las mejores prácticas de Ionic/Angular, organizando el código en capas funcionales claramente separadas. Cada carpeta y archivo tiene una responsabilidad única y específica, facilitando el mantenimiento, escalabilidad y comprensión del proyecto.</p>
-                    <p style="margin-top: 10px;"><strong>Jerarquía de responsabilidades:</strong></p>
+                    <p class="mt-10"><strong>Jerarquía de responsabilidades:</strong></p>
                     <ul style="padding-left: 20px; margin-top: 10px;">
                         <li><strong>Configuración Base:</strong> Archivos en raíz (.json, .js, .ts)</li>
                         <li><strong>Código Fuente:</strong> src/ con subcarpetas especializadas</li>
@@ -1089,7 +747,7 @@
         </div>
 
         <!-- FOOTER -->
-        <footer>
+        <footer class="theme-teal">
             <p><strong>Gestor de Seguimiento de Proyectos POLIProject</strong></p>
             <p>Politécnico Grancolombiano | Ing. MG. Víctor Castro Pérez</p>
             <p style="margin-top: 10px; font-size: 0.9rem;">

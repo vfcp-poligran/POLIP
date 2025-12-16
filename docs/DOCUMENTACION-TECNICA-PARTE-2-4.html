@@ -4,239 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POLIProject - Parte 2.4: Archivos Base de src/</title>
-  <style>
-    :root {
-      --primary-color: #0f385a;
-      --secondary-color: #667eea;
-      --bootstrap-blue: #0d6efd;
-      --init-orange: #fd7e14;
-      --bg-gradient: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-    header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 40px rgba(13, 110, 253, 0.3);
-    }
-
-    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
-    header .part-indicator {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav-parts a {
-      padding: 10px 20px;
-      background: white;
-      color: var(--primary-color);
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .nav-parts a:hover, .nav-parts a.active { background: var(--bootstrap-blue); color: white; }
-
-    .section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .section h2 {
-      color: var(--bootstrap-blue);
-      border-bottom: 3px solid var(--bootstrap-blue);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    .section h3 { color: var(--secondary-color); margin: 25px 0 15px 0; font-size: 1.3rem; }
-
-    .file-card {
-      background: white;
-      border: 2px solid #e9ecef;
-      border-radius: 12px;
-      padding: 25px;
-      margin: 20px 0;
-      transition: all 0.3s ease;
-    }
-
-    .file-card:hover { border-color: var(--bootstrap-blue); box-shadow: 0 5px 20px rgba(13, 110, 253, 0.15); }
-    .file-card h4 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; }
-
-    .file-icon {
-      display: inline-block;
-      background: var(--bootstrap-blue);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    .file-icon.html { background: #e44d26; }
-    .file-icon.scss { background: #c6538c; }
-    .file-icon.ts { background: #3178c6; }
-    .file-icon.config { background: #6f42c1; }
-
-    .code-block {
-      background: var(--code-bg);
-      border-radius: 10px;
-      padding: 20px;
-      overflow-x: auto;
-      margin: 15px 0;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.85rem;
-      line-height: 1.8;
-    }
-
-    .code-block code { color: var(--code-text); }
-    .code-block .keyword { color: #569cd6; }
-    .code-block .string { color: #ce9178; }
-    .code-block .comment { color: #6a9955; }
-    .code-block .function { color: #dcdcaa; }
-
-    .philosophy-box {
-      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-      border-left: 5px solid var(--bootstrap-blue);
-      padding: 25px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .philosophy-box h4 { color: #1565c0; margin-bottom: 12px; }
-
-    .analogy-box {
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-      border-left: 5px solid #f39c12;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .analogy-box h4 { color: #d35400; margin-bottom: 10px; }
-
-    .project-box {
-      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-      border-left: 5px solid #28a745;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .project-box h4 { color: #155724; margin-bottom: 10px; }
-
-    .info-box {
-      background: #e3f2fd;
-      border: 1px solid #2196f3;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .warning-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-
-    .boot-sequence {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border-radius: 12px;
-      padding: 25px;
-      margin: 25px 0;
-    }
-
-    .boot-step {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      margin: 10px 0;
-      background: white;
-      border-radius: 8px;
-      border-left: 4px solid var(--bootstrap-blue);
-    }
-
-    .boot-step .number {
-      background: var(--bootstrap-blue);
-      color: white;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 15px;
-      flex-shrink: 0;
-    }
-
-    .boot-step .content { flex: 1; }
-    .boot-step .file { font-family: monospace; color: var(--bootstrap-blue); font-weight: 600; }
-
-    .content-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-      margin: 15px 0;
-    }
-
-    .content-item {
-      background: #f8f9fa;
-      padding: 12px 15px;
-      border-radius: 8px;
-      border-left: 3px solid var(--secondary-color);
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      border-top: 1px solid #ddd;
-      margin-top: 40px;
-    }
-
-    footer a { color: var(--bootstrap-blue); }
-  </style>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="theme-blue">
       <h1>⚡ POLIProject</h1>
       <p class="subtitle">Documentación Técnica del Código Fuente</p>
       <span class="part-indicator">📋 Parte 2.4: Archivos Base de src/</span>
     </header>
 
-    <nav class="nav-parts">
+    <nav class="nav-parts theme-blue">
       <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
@@ -249,7 +27,7 @@
     <!-- ============================================ -->
     <!-- SECUENCIA DE ARRANQUE -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🚀 Secuencia de Arranque de la Aplicación</h2>
 
       <p>Antes de analizar cada archivo, es importante entender <strong>en qué orden se ejecutan</strong> cuando la aplicación arranca:</p>
@@ -310,7 +88,7 @@
     <!-- ============================================ -->
     <!-- INDEX.HTML -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📄 index.html - Punto de Entrada HTML</h2>
 
       <div class="file-card">
@@ -379,7 +157,7 @@
     <!-- ============================================ -->
     <!-- MAIN.TS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>⚡ main.ts - Bootstrap de Angular</h2>
 
       <div class="file-card">
@@ -425,7 +203,7 @@
     <!-- ============================================ -->
     <!-- GLOBAL.SCSS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🎨 global.scss - Estilos Globales</h2>
 
       <div class="file-card">
@@ -493,7 +271,7 @@ body {
     <!-- ============================================ -->
     <!-- POLYFILLS.TS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🔧 polyfills.ts - Compatibilidad</h2>
 
       <div class="file-card">
@@ -533,7 +311,7 @@ body {
     <!-- ============================================ -->
     <!-- ZONE-FLAGS.TS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🚩 zone-flags.ts - Optimización de Zone.js</h2>
 
       <div class="file-card">
@@ -562,7 +340,7 @@ body {
     <!-- ============================================ -->
     <!-- TEST.TS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🧪 test.ts - Configuración de Testing</h2>
 
       <div class="file-card">
@@ -591,14 +369,14 @@ getTestBed().<span class="function">initTestEnvironment</span>(
         <h4>📋 En POLIProject:</h4>
         <p>Este archivo se ejecuta automáticamente al correr:</p>
         <pre style="background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 6px; margin-top: 10px;"><code>npm test</code> o <code>ng test</code></pre>
-        <p style="margin-top: 10px;">Karma busca todos los archivos <code>*.spec.ts</code> y los ejecuta.</p>
+        <p class="mt-10">Karma busca todos los archivos <code>*.spec.ts</code> y los ejecuta.</p>
       </div>
     </section>
 
     <!-- ============================================ -->
     <!-- RESUMEN -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📝 Resumen de Archivos Base</h2>
 
       <table style="width: 100%; border-collapse: collapse;">
@@ -651,10 +429,10 @@ getTestBed().<span class="function">initTestEnvironment</span>(
       </table>
     </section>
 
-    <footer>
+    <footer class="theme-blue">
       <p><strong>POLIProject</strong> - Documentación Técnica</p>
       <p>Parte 2.4 de 5 | Politécnico Grancolombiano</p>
-      <p style="margin-top: 10px;">
+      <p class="mt-10">
         <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">← Anterior: 2.3 src/app/</a>
         &nbsp;|&nbsp;
         <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html">Siguiente: 2.5 Config Raíz →</a>

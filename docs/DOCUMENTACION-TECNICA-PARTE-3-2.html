@@ -4,215 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POLIProject - Parte 3.2: Core</title>
-  <style>
-    :root {
-      --primary-color: #0f385a;
-      --secondary-color: #667eea;
-      --accent-color: #764ba2;
-      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --code-bg: #1e1e1e;
-      --code-text: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      line-height: 1.6;
-      color: #333;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-    header {
-      background: var(--bg-gradient);
-      color: white;
-      padding: 40px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-    }
-
-    header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    header .subtitle { font-size: 1.2rem; opacity: 0.9; }
-    header .part-indicator {
-      display: inline-block;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    .nav-parts { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
-    .nav-parts a {
-      padding: 10px 20px;
-      background: white;
-      color: var(--primary-color);
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .nav-parts a:hover, .nav-parts a.active {
-      background: var(--bg-gradient);
-      color: white;
-    }
-
-    .section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    .section h2 {
-      color: var(--primary-color);
-      border-bottom: 3px solid var(--secondary-color);
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-
-    .section h3 {
-      color: var(--secondary-color);
-      margin: 25px 0 15px 0;
-      font-size: 1.3rem;
-    }
-
-    .file-header {
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-      color: white;
-      padding: 15px 20px;
-      border-radius: 10px 10px 0 0;
-      font-family: 'Consolas', monospace;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .code-block {
-      background: var(--code-bg);
-      border-radius: 0 0 10px 10px;
-      overflow-x: auto;
-      margin-bottom: 20px;
-    }
-
-    .code-block code {
-      display: block;
-      padding: 20px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 0.9rem;
-      line-height: 1.8;
-      color: var(--code-text);
-    }
-
-    .code-line { display: block; padding: 2px 0; }
-    .code-line:hover { background: rgba(255,255,255,0.05); }
-
-    .keyword { color: #569cd6; }
-    .string { color: #ce9178; }
-    .comment { color: #6a9955; font-style: italic; }
-    .decorator { color: #dcdcaa; }
-    .class-name { color: #4ec9b0; }
-    .function { color: #dcdcaa; }
-    .property { color: #9cdcfe; }
-    .number { color: #b5cea8; }
-
-    .explanation {
-      background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
-      border-left: 4px solid var(--secondary-color);
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 10px 10px 0;
-    }
-
-    .explanation h4 { color: var(--primary-color); margin-bottom: 10px; }
-    .explanation ul { margin-left: 20px; }
-    .explanation li { margin: 8px 0; }
-
-    .tech-term {
-      background: linear-gradient(135deg, #667eea20, #764ba220);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-      color: var(--primary-color);
-      cursor: help;
-      border-bottom: 1px dashed var(--secondary-color);
-    }
-
-    .info-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 10px;
-      padding: 15px 20px;
-      margin: 15px 0;
-    }
-    .info-box.success { background: #d4edda; border-color: #28a745; }
-    .info-box.primary { background: #cce5ff; border-color: #007bff; }
-    .info-box.danger { background: #f8d7da; border-color: #dc3545; }
-
-    .folder-tree {
-      background: #2d2d2d;
-      color: #e0e0e0;
-      padding: 20px;
-      border-radius: 10px;
-      font-family: 'Consolas', monospace;
-      margin: 20px 0;
-    }
-
-    .folder-tree .folder { color: #ffc107; }
-    .folder-tree .file { color: #4fc3f7; }
-    .folder-tree .export { color: #81c784; }
-
-    .method-card {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-      border-radius: 10px;
-      padding: 20px;
-      margin: 15px 0;
-    }
-
-    .method-card h5 {
-      color: var(--secondary-color);
-      margin-bottom: 10px;
-      font-family: 'Consolas', monospace;
-    }
-
-    .method-card .signature {
-      background: var(--code-bg);
-      color: var(--code-text);
-      padding: 10px 15px;
-      border-radius: 6px;
-      font-family: 'Consolas', monospace;
-      margin: 10px 0;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #666;
-      border-top: 1px solid #ddd;
-      margin-top: 40px;
-    }
-
-    footer a { color: var(--secondary-color); }
-  </style>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="theme-blue">
       <h1>🔧 POLIProject</h1>
       <p class="subtitle">Documentación Técnica del Código Fuente</p>
       <span class="part-indicator">📄 Parte 3.2: Core - Utilidades Centrales</span>
     </header>
 
-    <nav class="nav-parts">
+    <nav class="nav-parts theme-blue">
       <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
       <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
@@ -228,7 +30,7 @@
     <!-- ============================================ -->
     <!-- INTRODUCCIÓN -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>🎯 ¿Qué es la carpeta Core?</h2>
       <p>La carpeta <strong>core/</strong> contiene utilidades y funcionalidades <span class="tech-term" title="Código compartido por toda la aplicación">transversales</span> que son usadas en múltiples partes de la aplicación. En POLIProject, se enfoca principalmente en el sistema de logging.</p>
 
@@ -248,7 +50,7 @@
     <!-- ============================================ -->
     <!-- LOGGER.TS -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📝 logger.ts - Sistema de Logging</h2>
       <p>Utilidad central para <span class="tech-term" title="Registro de mensajes para debugging">logging</span> que controla la salida de mensajes según el modo de la aplicación.</p>
 
@@ -411,7 +213,7 @@ Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
     <!-- ============================================ -->
     <!-- INDEX FILES -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📦 Archivos Index (Barrel Exports)</h2>
       <p>Los archivos <code>index.ts</code> implementan el patrón <span class="tech-term" title="Exporta múltiples módulos desde un punto único">Barrel Export</span> para simplificar importaciones.</p>
 
@@ -461,7 +263,7 @@ Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
     <!-- ============================================ -->
     <!-- RESUMEN -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📋 Resumen - Carpeta Core</h2>
 
       <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
@@ -495,7 +297,7 @@ Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
     <!-- ============================================ -->
     <!-- GLOSARIO -->
     <!-- ============================================ -->
-    <section class="section">
+    <section class="section theme-blue">
       <h2>📖 Glosario de la Parte 3.2</h2>
 
       <div class="method-card">
@@ -529,10 +331,10 @@ Logger.timeEnd('cargarDatos'); // → "cargarDatos: 145.23ms"
       </div>
     </section>
 
-    <footer>
+    <footer class="theme-blue">
       <p><strong>POLIProject</strong> - Documentación Técnica</p>
       <p>Parte 3.2 de 8 | Politécnico Grancolombiano</p>
-      <p style="margin-top: 10px;">
+      <p class="mt-10">
         <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">← Anterior: 3.1 Raíz</a>
         &nbsp;|&nbsp;
         <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">Siguiente: 3.3 Tabs →</a>
