@@ -136,20 +136,27 @@ export class RubricaEditorComponent implements OnInit {
 
   /** Carga los cursos disponibles desde el input o desde el servicio */
   private cargarCursos(): void {
-    // Si se pasaron cursos desde el input, usarlos
+    // Si se pasaron cursos desde el input, usarlos (ya vienen agrupados)
     if (this.cursosDisponiblesInput && this.cursosDisponiblesInput.length > 0) {
       this.cursosDisponibles = this.cursosDisponiblesInput;
       return;
     }
 
-    // Si no, cargar desde el servicio
+    // Si no, cargar desde el servicio agrupando por nombre de curso
     const uiState = this.dataService.getUIState();
-    this.cursosDisponibles = Object.entries(uiState.courseStates || {})
+    const cursosUnicos = new Map<string, { codigo: string; nombre: string }>();
+
+    Object.entries(uiState.courseStates || {})
       .filter(([_, state]) => state.metadata)
-      .map(([codigo, state]) => ({
-        codigo,
-        nombre: state.metadata?.nombre || codigo
-      }));
+      .forEach(([codigo, state]) => {
+        const nombre = state.metadata?.nombre || codigo;
+        // Solo agregar si el nombre no existe (evita duplicados por grupo)
+        if (!cursosUnicos.has(nombre)) {
+          cursosUnicos.set(nombre, { codigo, nombre });
+        }
+      });
+
+    this.cursosDisponibles = Array.from(cursosUnicos.values());
   }
 
   /** Inicializa la escala de calificación por defecto */

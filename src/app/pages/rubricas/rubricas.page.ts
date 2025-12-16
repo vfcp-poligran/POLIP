@@ -296,14 +296,32 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     const uiState = this.dataService.getUIState();
     const cursos = this.dataService.getCursos();
 
-    this.cursosDisponibles = Object.keys(cursos).map(codigo => {
+    // Agrupar por nombre de curso para evitar duplicados por grupo
+    const cursosUnicos = new Map<string, { codigo: string; nombre: string; titulo: string; codigos: string[] }>();
+
+    Object.keys(cursos).forEach(codigo => {
       const metadata = uiState.courseStates?.[codigo]?.metadata;
-      return {
-        codigo: codigo,
-        nombre: metadata?.nombre || codigo,
-        titulo: metadata ? `${metadata.nombre} -[${codigo}]` : codigo
-      };
+      const nombre = metadata?.nombre || codigo;
+
+      if (cursosUnicos.has(nombre)) {
+        // Agregar código a la lista de códigos del curso existente
+        cursosUnicos.get(nombre)!.codigos.push(codigo);
+      } else {
+        // Nuevo curso único
+        cursosUnicos.set(nombre, {
+          codigo: codigo, // Usar el primer código como referencia
+          nombre: nombre,
+          titulo: nombre,
+          codigos: [codigo]
+        });
+      }
     });
+
+    this.cursosDisponibles = Array.from(cursosUnicos.values()).map(c => ({
+      codigo: c.codigo,
+      nombre: c.nombre,
+      titulo: c.titulo
+    }));
   }
 
   /**
