@@ -12,11 +12,6 @@
   overflow-y: auto;
 }
 
-// Contenedor modal (mantiene padding de ion-content)
-.editor-modal {
-  // ion-content maneja el padding
-}
-
 // Header inline con título y botones
 .inline-header {
   display: flex;
@@ -873,6 +868,7 @@ ion-item {
         background: #fff;
         color: #333;
         -moz-appearance: textfield;
+        appearance: textfield;
 
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {

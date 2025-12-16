@@ -303,10 +303,6 @@ export class RubricaEditorComponent implements OnInit {
 
       nivel.puntosMin = i === 0 ? 0 : puntosMin;
       nivel.puntosMax = i === this.NUM_NIVELES - 1 ? peso : puntosMax;
-      // Actualizar también el campo puntos para mantener consistencia
-      nivel.puntos = nivel.puntosMin === nivel.puntosMax
-        ? `${nivel.puntosMin}`
-        : `${nivel.puntosMin}-${nivel.puntosMax}`;
     });
   }
 
@@ -332,11 +328,6 @@ export class RubricaEditorComponent implements OnInit {
     if (nivelIndex === this.NUM_NIVELES - 1) {
       nivel.puntosMax = peso;
     }
-
-    // Actualizar el campo puntos para mantener consistencia
-    nivel.puntos = nivel.puntosMin === nivel.puntosMax
-      ? `${nivel.puntosMin}`
-      : `${nivel.puntosMin}-${nivel.puntosMax}`;
   }
 
   /** Genera nombre automático de la rúbrica usando el servicio */
