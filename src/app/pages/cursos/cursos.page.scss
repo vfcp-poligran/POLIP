@@ -104,8 +104,8 @@ ion-content {
     ion-button {
       --padding-start: 5px;
       --padding-end: 5px;
+      --min-height: 44px; // iOS touch target minimum
       font-size: 0.62rem;
-      height: 24px;
     }
   }
 
@@ -140,11 +140,13 @@ ion-content {
   min-width: 0; // Permite que flex se encoja correctamente
   max-width: 100%;
   overflow: hidden;
+  padding-top: 4px; // Prevenir solapamiento con header
 
   // Tablet
   @media (max-width: 1024px) and (min-width: 769px) {
     height: calc(100vh - 110px);
     gap: 3px;
+    padding-top: 3px;
   }
 
   // Mobile
@@ -153,6 +155,7 @@ ion-content {
     min-height: calc(100vh - 100px);
     gap: 2px;
     overflow: visible;
+    padding-top: 2px; // Padding móvil
   }
 }
 
@@ -170,7 +173,6 @@ ion-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  will-change: flex-direction;
 
   &:not(.expanded) {
     flex-direction: row;
@@ -211,7 +213,7 @@ ion-content {
   cursor: pointer;
   will-change: transform;
   transition: background-color var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              transform var(--transition-duration, 0.3s) var(--transition-timing, ease);
+    transform var(--transition-duration, 0.3s) var(--transition-timing, ease);
 
   &:hover {
     background-color: rgba(233, 30, 99, 0.1);
@@ -242,15 +244,15 @@ ion-content {
   gap: 12px;
   padding: 0 8px;
   transition: max-width var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              gap var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              padding var(--transition-duration, 0.3s) var(--transition-timing, ease);
+    gap var(--transition-duration, 0.3s) var(--transition-timing, ease),
+    padding var(--transition-duration, 0.3s) var(--transition-timing, ease);
 }
 
 .upload-wrapper.expanded .upload-instructions ion-icon {
   padding: 4px;
   transition: background-color var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              transform var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              padding var(--transition-duration, 0.3s) var(--transition-timing, ease);
+    transform var(--transition-duration, 0.3s) var(--transition-timing, ease),
+    padding var(--transition-duration, 0.3s) var(--transition-timing, ease);
 }
 
 .upload-wrapper.expanded .upload-instructions .info-text {
@@ -258,8 +260,8 @@ ion-content {
   max-width: 800px;
   padding-left: 4px;
   transition: opacity var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              max-width var(--transition-duration, 0.3s) var(--transition-timing, ease),
-              padding-left var(--transition-duration, 0.3s) var(--transition-timing, ease);
+    max-width var(--transition-duration, 0.3s) var(--transition-timing, ease),
+    padding-left var(--transition-duration, 0.3s) var(--transition-timing, ease);
 }
 
 .upload-wrapper.expanded .tabla-info-bar {
@@ -425,6 +427,15 @@ ion-content {
   overflow: hidden;
   min-width: 0; // Importante para flex items que contengan tablas
   max-width: 100%;
+  margin-top: 8px; // Separación del header
+
+  @media (max-width: 768px) {
+    margin-top: 4px; // Top margin móvil
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    margin-top: 2px;
+  }
 }
 
 // Wrapper con scroll
@@ -484,15 +495,22 @@ ion-content {
   @media (max-width: 480px) {
     ion-fab-button {
       --size: 48px;
-      ion-icon { font-size: 1.4rem; }
+
+      ion-icon {
+        font-size: 1.4rem;
+      }
     }
   }
 
   @media (max-height: 500px) and (orientation: landscape) {
     margin-bottom: calc(48px + var(--ion-safe-area-bottom));
+
     ion-fab-button {
       --size: 44px;
-      ion-icon { font-size: 1.2rem; }
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
     }
   }
 }
@@ -618,7 +636,7 @@ ion-content {
       --curso-color: #4a90e2;
       width: 100%;
       margin: 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       border-radius: 10px;
       cursor: pointer;
       overflow: hidden;
@@ -627,12 +645,12 @@ ion-content {
       // Landscape móvil - card compacta
       @media (max-height: 500px) and (orientation: landscape) {
         border-radius: 6px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
       }
 
       &:active {
         transform: scale(0.98);
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
       }
 
       ion-card-header {
@@ -1045,6 +1063,7 @@ ion-content {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1082,6 +1101,7 @@ ion-content {
   }
 
   .tabla-cursos {
+
     .tabla-header,
     .tabla-cell {
       padding: 8px 10px;
@@ -2055,7 +2075,7 @@ ion-item-sliding {
     gap: 8px;
   }
 
-  > div {
+  >div {
     padding: 8px 12px;
     background: #ffffff;
     border-radius: 6px;

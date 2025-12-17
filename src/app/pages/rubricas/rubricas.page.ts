@@ -19,6 +19,8 @@ import {
   IonChip,
   IonSegment,
   IonSegmentButton,
+  IonFab,
+  IonFabButton,
   AlertController,
   LoadingController,
   ModalController,
@@ -103,11 +105,13 @@ import {
     IonLabel,
     IonSegment,
     IonSegmentButton,
+    IonFab,
+    IonFabButton,
     CommonModule,
     FormsModule,
     RubricaEditorComponent,
     RubricaVersionHistoryComponent
-]
+  ]
 })
 export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   private exportService = inject(ExportService);
@@ -234,9 +238,9 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   /** Indica si hay contenido activo que requiere contraer la lista de rúbricas */
   get tieneContenidoActivo(): boolean {
     return this.rubricaSeleccionada !== null ||
-           this.modoEdicion ||
-           this.modoCreacion ||
-           this.rubricaCargada !== null;
+      this.modoEdicion ||
+      this.modoCreacion ||
+      this.rubricaCargada !== null;
   }
 
   /** Obtiene las versiones de una rúbrica por su código base */
@@ -1329,6 +1333,49 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     // Limpiar estado en UIState
     this.dataService.updateUIState({ rubricasModoSeleccionCrear: false });
   }
+
+  /**
+   * Muestra opciones de creación para móvil mediante un alert con botones.
+   * Versión optimizada para pantallas pequeñas que evita mostrar el panel desktop.
+   */
+  async mostrarOpcionesCrearMobile(): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Crear Rúbrica',
+      message: 'Selecciona cómo deseas crear la rúbrica:',
+      cssClass: 'alert-options-crear',
+      buttons: [
+        {
+          text: 'Nueva Rúbrica',
+          cssClass: 'alert-button-primary',
+          handler: () => {
+            this.activarModoCreacion();
+          }
+        },
+        {
+          text: 'Importar desde Archivo',
+          cssClass: 'alert-button-secondary',
+          handler: () => {
+            this.activarModoImportar();
+          }
+        },
+        {
+          text: 'Basada en Existente',
+          cssClass: 'alert-button-secondary',
+          handler: () => {
+            this.mostrarSelectorRubricaBase();
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'alert-button-cancel'
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
 
   /**
    * Activa el modo de creación con formulario inline (desktop)

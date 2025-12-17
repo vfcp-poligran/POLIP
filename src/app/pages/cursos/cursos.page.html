@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true">
   <!-- FAB flotante para crear curso (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso mobile-only">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso ion-hide-md-up">
     <ion-fab-button color="success" (click)="iniciarCreacionCurso()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
@@ -16,223 +16,209 @@
         </div>
         <div class="header-actions ion-hide-md-down">
           @if (!modoEdicion) {
-            <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
-              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-              Crear
-            </ion-button>
+          <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Crear
+          </ion-button>
           } @else {
-            <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
-              <ion-icon name="save-outline" slot="start"></ion-icon>
-              Guardar
-            </ion-button>
-            <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()">
-              Cancelar
-            </ion-button>
+          <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            Guardar
+          </ion-button>
+          <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()">
+            Cancelar
+          </ion-button>
           }
         </div>
         <!-- Botones de acción en móvil cuando está en modo edición -->
         <div class="header-actions ion-hide-md-up">
           @if (modoEdicion) {
-            <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
-              <ion-icon name="save-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()">
-              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-            </ion-button>
+          <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()" aria-label="Guardar curso">
+            <ion-icon name="save-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()"
+            aria-label="Cancelar creación de curso">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
           }
         </div>
       </div>
 
       @if (modoEdicion) {
-        <!-- Selector de color del curso -->
-        <div class="color-selector-section">
-          <div class="color-selector-header">
-            <ion-icon name="color-palette-outline"></ion-icon>
-            <span>Color del curso</span>
+      <!-- Selector de color del curso -->
+      <div class="color-selector-section">
+        <div class="color-selector-header">
+          <ion-icon name="color-palette-outline"></ion-icon>
+          <span>Color del curso</span>
+        </div>
+        <div class="color-picker-grid">
+          @for (color of coloresDisponibles; track color) {
+          <div class="color-option" [style.background-color]="color" [class.selected]="colorCursoSeleccionado === color"
+            (click)="seleccionarColorCurso(color)">
+            @if (colorCursoSeleccionado === color) {
+            <ion-icon name="checkmark"></ion-icon>
+            }
           </div>
-          <div class="color-picker-grid">
-            @for (color of coloresDisponibles; track color) {
-              <div
-                class="color-option"
-                [style.background-color]="color"
-                [class.selected]="colorCursoSeleccionado === color"
-                (click)="seleccionarColorCurso(color)">
-                @if (colorCursoSeleccionado === color) {
-                  <ion-icon name="checkmark"></ion-icon>
-                }
+          }
+        </div>
+      </div>
+
+      <!-- Contenedor principal que agrupa info + uploads -->
+      <div class="upload-wrapper" [class.expanded]="infoExpanded">
+        <!-- Mensaje instructivo con icono -->
+        <div class="upload-instructions">
+          <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
+          <span class="info-text">Cargue los archivos en formato CSV de Personas y Calificaciones del LMS Canvas</span>
+        </div>
+
+        <!-- Barra de info (Personas y Calificaciones) -->
+        <div class="tabla-info-bar">
+          <!-- Input oculto para archivo de estudiantes -->
+          <input type="file" #estudiantesFileInput accept=".csv" (change)="onEstudiantesFileSelected($event)"
+            class="file-input-hidden" aria-label="Cargar archivo CSV de estudiantes" />
+
+          <!-- Input oculto para archivo de calificaciones -->
+          <input type="file" #calificacionesFileInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
+            class="file-input-hidden" aria-label="Cargar archivo CSV de calificaciones" />
+
+          <div class="upload-section">
+            <div class="upload-btn-container" (click)="estudiantesFileInput.click()">
+              <ion-icon name="cloud-upload"></ion-icon>
+              <span class="btn-label">Personas</span>
+            </div>
+            @if (estudiantesFileName) {
+            <div class="file-loaded-info">
+              <div class="file-details">
+                <span class="file-full-name">{{ estudiantesFileName }}</span>
+                <ion-icon name="close-circle" (click)="limpiarEstudiantes()" class="remove-file"></ion-icon>
               </div>
+            </div>
+            }
+          </div>
+
+          <div class="upload-section">
+            <div class="upload-btn-container" (click)="calificacionesFileInput.click()">
+              <ion-icon name="cloud-upload"></ion-icon>
+              <span class="btn-label">Calificaciones</span>
+            </div>
+            @if (calificacionesFileName) {
+            <div class="file-loaded-info">
+              <div class="file-details">
+                <span class="file-full-name">{{ calificacionesFileName }}</span>
+                <ion-icon name="close-circle" (click)="limpiarCalificaciones()" class="remove-file"></ion-icon>
+              </div>
+            </div>
             }
           </div>
         </div>
-
-        <!-- Contenedor principal que agrupa info + uploads -->
-        <div class="upload-wrapper" [class.expanded]="infoExpanded">
-          <!-- Mensaje instructivo con icono -->
-          <div class="upload-instructions">
-            <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
-            <span class="info-text">Cargue los archivos en formato CSV de Personas y Calificaciones del LMS Canvas</span>
-          </div>
-
-          <!-- Barra de info (Personas y Calificaciones) -->
-          <div class="tabla-info-bar">
-            <!-- Input oculto para archivo de estudiantes -->
-            <input
-              type="file"
-              #estudiantesFileInput
-              accept=".csv"
-              (change)="onEstudiantesFileSelected($event)"
-              class="file-input-hidden"
-              aria-label="Cargar archivo CSV de estudiantes"
-            />
-
-            <!-- Input oculto para archivo de calificaciones -->
-            <input
-              type="file"
-              #calificacionesFileInput
-              accept=".csv"
-              (change)="onCalificacionesFileSelected($event)"
-              class="file-input-hidden"
-              aria-label="Cargar archivo CSV de calificaciones"
-            />
-
-            <div class="upload-section">
-              <div class="upload-btn-container" (click)="estudiantesFileInput.click()">
-                <ion-icon name="cloud-upload"></ion-icon>
-                <span class="btn-label">Personas</span>
-              </div>
-              @if (estudiantesFileName) {
-                <div class="file-loaded-info">
-                  <div class="file-details">
-                    <span class="file-full-name">{{ estudiantesFileName }}</span>
-                    <ion-icon name="close-circle" (click)="limpiarEstudiantes()" class="remove-file"></ion-icon>
-                  </div>
-                </div>
-              }
-            </div>
-
-            <div class="upload-section">
-              <div class="upload-btn-container" (click)="calificacionesFileInput.click()">
-                <ion-icon name="cloud-upload"></ion-icon>
-                <span class="btn-label">Calificaciones</span>
-              </div>
-              @if (calificacionesFileName) {
-                <div class="file-loaded-info">
-                  <div class="file-details">
-                    <span class="file-full-name">{{ calificacionesFileName }}</span>
-                    <ion-icon name="close-circle" (click)="limpiarCalificaciones()" class="remove-file"></ion-icon>
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
+      </div>
       }
 
       <!-- Área principal: Tabla de cursos -->
       <div class="tabla-area">
         @if (cursosDisponibles.length > 0) {
 
-          <!-- Vista Desktop: Tabla tradicional (oculta en < 768px) -->
-          <div class="tabla-wrapper tabla-completa ion-hide-md-down">
-            <table class="tabla-cursos">
-              <thead>
-                <tr>
-                  <th class="tabla-header col-codigo">Código</th>
-                  <th class="tabla-header col-nombre">Nombre del Curso</th>
-                  <th class="tabla-header col-bloque">Bloque</th>
-                  <th class="tabla-header col-fecha">Fecha Creación</th>
-                  <th class="tabla-header col-estado">Estado</th>
-                  <th class="tabla-header col-acciones">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (curso of cursosDisponibles; track curso.codigo; let i = $index; let isOdd = $odd) {
-                  <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
-                    <td class="tabla-cell col-codigo">
-                      <span class="codigo-badge">{{ curso.nombreAbreviado || curso.codigoBase || '—' }}</span>
-                    </td>
-                    <td class="tabla-cell col-nombre">{{ curso.nombre }}</td>
-                    <td class="tabla-cell col-bloque">{{ curso.bloque || '—' }}</td>
-                    <td class="tabla-cell col-fecha">{{ curso.fechaCreacion || '—' }}</td>
-                    <td class="tabla-cell col-estado">
-                      @if (curso.tieneCalificaciones) {
-                        <span class="estado-badge estado-activo">
-                          <ion-icon name="checkmark-circle"></ion-icon>
-                          Activo
-                        </span>
-                      } @else {
-                        <span class="estado-badge estado-pendiente">
-                          <ion-icon name="ellipse-outline"></ion-icon>
-                          Sin datos
-                        </span>
-                      }
-                    </td>
-                    <td class="tabla-cell col-acciones">
-                      <ion-button size="small" fill="clear" color="primary" (click)="editarCurso(curso)">
-                        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-                      </ion-button>
-                      <ion-button size="small" fill="clear" color="danger" (click)="confirmarEliminarCurso(curso)">
-                        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                      </ion-button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+        <!-- Vista Desktop: Tabla tradicional (oculta en < 768px) -->
+        <div class="tabla-wrapper tabla-completa ion-hide-md-down">
+          <table class="tabla-cursos">
+            <thead>
+              <tr>
+                <th class="tabla-header col-codigo">Código</th>
+                <th class="tabla-header col-nombre">Nombre del Curso</th>
+                <th class="tabla-header col-bloque">Bloque</th>
+                <th class="tabla-header col-fecha">Fecha Creación</th>
+                <th class="tabla-header col-estado">Estado</th>
+                <th class="tabla-header col-acciones">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (curso of cursosDisponibles; track curso.codigo; let i = $index; let isOdd = $odd) {
+              <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
+                <td class="tabla-cell col-codigo">
+                  <span class="codigo-badge">{{ curso.nombreAbreviado || curso.codigoBase || '—' }}</span>
+                </td>
+                <td class="tabla-cell col-nombre">{{ curso.nombre }}</td>
+                <td class="tabla-cell col-bloque">{{ curso.bloque || '—' }}</td>
+                <td class="tabla-cell col-fecha">{{ curso.fechaCreacion || '—' }}</td>
+                <td class="tabla-cell col-estado">
+                  @if (curso.tieneCalificaciones) {
+                  <span class="estado-badge estado-activo">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                    Activo
+                  </span>
+                  } @else {
+                  <span class="estado-badge estado-pendiente">
+                    <ion-icon name="ellipse-outline"></ion-icon>
+                    Sin datos
+                  </span>
+                  }
+                </td>
+                <td class="tabla-cell col-acciones">
+                  <ion-button size="small" fill="clear" color="primary" (click)="editarCurso(curso)">
+                    <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button size="small" fill="clear" color="danger" (click)="confirmarEliminarCurso(curso)">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
 
-          <!-- Vista Móvil: Cards estilo Rúbricas (oculta en >= 768px) -->
-          <ion-list class="ion-hide-md-up curso-cards">
-            @for (curso of cursosDisponibles; track curso.codigo) {
-              <ion-item lines="none" class="curso-card">
-                <ion-card [style.--curso-color]="getCursoColor(curso.codigo)">
-                  <ion-card-header>
-                    <div class="card-header-wrapper">
-                      <ion-card-title>
-                        <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
-                      </ion-card-title>
-                      <div class="codigo-estado-wrapper">
-                        <span class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</span>
-                        @if (curso.bloque) {
-                          <span class="bloque-badge-mobile">{{ curso.bloque }}</span>
-                        }
-                        <span
-                          class="estado-indicador-mobile"
-                          [class.estado-activo]="curso.tieneCalificaciones"
-                          [class.estado-pendiente]="!curso.tieneCalificaciones">
-                          {{ curso.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
-                        </span>
+        <!-- Vista Móvil: Cards estilo Rúbricas (oculta en >= 768px) -->
+        <ion-list class="ion-hide-md-up curso-cards">
+          @for (curso of cursosDisponibles; track curso.codigo) {
+          <ion-item lines="none" class="curso-card">
+            <ion-card [style.--curso-color]="getCursoColor(curso.codigo)">
+              <ion-card-header>
+                <div class="card-header-wrapper">
+                  <ion-card-title>
+                    <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
+                  </ion-card-title>
+                  <div class="codigo-estado-wrapper">
+                    <span class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</span>
+                    @if (curso.bloque) {
+                    <span class="bloque-badge-mobile">{{ curso.bloque }}</span>
+                    }
+                    <span class="estado-indicador-mobile" [class.estado-activo]="curso.tieneCalificaciones"
+                      [class.estado-pendiente]="!curso.tieneCalificaciones">
+                      {{ curso.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
+                    </span>
+                  </div>
+                </div>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-grid class="ion-no-padding">
+                  <ion-row>
+                    <ion-col size="12">
+                      <div class="acciones-mobile">
+                        <ion-button fill="outline" color="primary" (click)="editarCurso(curso)"
+                          aria-label="Editar curso">
+                          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                        </ion-button>
+                        <ion-button fill="outline" color="danger" (click)="confirmarEliminarCurso(curso)"
+                          aria-label="Eliminar curso">
+                          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                        </ion-button>
                       </div>
-                    </div>
-                  </ion-card-header>
-
-                  <ion-card-content>
-                    <ion-grid class="ion-no-padding">
-                      <ion-row>
-                        <ion-col size="12">
-                          <div class="acciones-mobile">
-                            <ion-button fill="outline" color="primary" (click)="editarCurso(curso)">
-                              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                            </ion-button>
-                            <ion-button fill="outline" color="danger" (click)="confirmarEliminarCurso(curso)">
-                              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                            </ion-button>
-                          </div>
-                        </ion-col>
-                      </ion-row>
-                    </ion-grid>
-                  </ion-card-content>
-                </ion-card>
-              </ion-item>
-            }
-          </ion-list>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-card-content>
+            </ion-card>
+          </ion-item>
+          }
+        </ion-list>
 
         } @else {
-          <!-- Empty state -->
-          <div class="empty-state">
-            <h3>No hay Cursos Registrados</h3>
-            <p>Seleccione "Crear" para agregar un nuevo curso</p>
-          </div>
+        <!-- Empty state -->
+        <div class="empty-state">
+          <h3>No hay Cursos Registrados</h3>
+          <p>Seleccione "Crear" para agregar un nuevo curso</p>
+        </div>
         }
       </div>
 
