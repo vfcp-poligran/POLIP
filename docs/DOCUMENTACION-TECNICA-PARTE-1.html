@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentación Técnica POLIProject - Parte 1: Archivos de Configuración Base</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📚 Documentación Técnica POLIProject</h1>
+            <p>Gestor de Seguimiento de Proyectos - Politécnico Grancolombiano</p>
+            <p class="header-subtitle">
+                <span class="badge badge-ionic">Ionic 8</span>
+                <span class="badge badge-angular">Angular 20</span>
+                <span class="badge badge-capacitor">Capacitor 7</span>
+                <span class="badge badge-typescript">TypeScript 5.8</span>
+            </p>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- ÍNDICE -->
+            <div class="toc">
+                <h3>📑 Tabla de Contenido - Parte 1</h3>
+                <ul>
+                    <li><a href="#introduccion">1. Introducción al Stack Tecnológico</a></li>
+                    <li><a href="#filosofia">2. Filosofía y Arquitectura</a></li>
+                    <li><a href="#package-json">3. package.json - Gestión de Dependencias</a></li>
+                    <li><a href="#tsconfig">4. tsconfig.json - Configuración TypeScript</a></li>
+                    <li><a href="#angular-json">5. angular.json - Configuración Angular</a></li>
+                    <li><a href="#ionic-config">6. ionic.config.json - Configuración Ionic</a></li>
+                    <li><a href="#capacitor-config">7. capacitor.config.ts - Configuración Capacitor</a></li>
+                </ul>
+            </div>
+
+            <!-- SECCIÓN 1: INTRODUCCIÓN -->
+            <div class="section" id="introduccion">
+                <h2><span class="icon">🚀</span>1. Introducción al Stack Tecnológico</h2>
+
+                <p>El proyecto <strong>POLIP (Gestor de Seguimiento de Proyectos)</strong> es una aplicación multiplataforma desarrollada para el Politécnico Grancolombiano, diseñada para gestionar evaluaciones educativas mediante rúbricas digitales.</p>
+
+                <h3>Stack Tecnológico Principal</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🎨 Ionic Framework 8</h4>
+                        <p><strong>Capa de UI/UX:</strong> Proporciona componentes web nativos optimizados que siguen las guías de diseño de cada plataforma (iOS, Android, Web).</p>
+                        <p><strong>Web Components:</strong> Basado en estándares web (Custom Elements, Shadow DOM).</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>⚡ Angular 20</h4>
+                        <p><strong>Framework JavaScript:</strong> Proporciona la arquitectura de aplicación con componentes standalone, signals, y sistema de inyección de dependencias.</p>
+                        <p><strong>Compilación Ahead-of-Time (AOT):</strong> Optimización de rendimiento.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>📱 Capacitor 7</h4>
+                        <p><strong>Runtime Nativo:</strong> Puente entre código web y APIs nativas de dispositivos móviles.</p>
+                        <p><strong>Plugins Nativos:</strong> Acceso a funcionalidades como cámara, almacenamiento, SQLite, etc.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>🔷 TypeScript 5.8</h4>
+                        <p><strong>Superset de JavaScript:</strong> Tipado estático, interfaces, decoradores y características ES2022+.</p>
+                        <p><strong>Seguridad en Tiempo de Desarrollo:</strong> Detección de errores antes de ejecución.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: FILOSOFÍA -->
+            <div class="section" id="filosofia">
+                <h2><span class="icon">🎯</span>2. Filosofía y Arquitectura del Framework</h2>
+
+                <div class="philosophy-box">
+                    <h4>📐 Principio: "Write Once, Run Anywhere"</h4>
+                    <p>Ionic permite escribir código una sola vez y ejecutarlo en:</p>
+                    <ul class="philosophy-list">
+                        <li>✅ <strong>Web:</strong> PWA (Progressive Web App) con Service Workers</li>
+                        <li>✅ <strong>iOS:</strong> Aplicación nativa mediante Capacitor</li>
+                        <li>✅ <strong>Android:</strong> Aplicación nativa mediante Capacitor</li>
+                    </ul>
+                </div>
+
+                <h3>🏗️ Arquitectura de Capas</h3>
+
+                <div class="architecture-diagram">
+                    <table class="layer-table">
+                        <tr>
+                            <td class="layer-1">
+                                <strong>Capa de Presentación (UI)</strong><br>
+                                <span class="text-description">Ionic Components + Angular Templates</span>
+                            </td>
+                        </tr>
+                        <tr><td class="layer-arrow">⬇️</td></tr>
+                        <tr>
+                            <td class="layer-2">
+                                <strong>Capa de Lógica de Negocio</strong><br>
+                                <span class="text-description">Angular Services + <span class="tech-term" title="Reactive Extensions for JavaScript">RxJS</span> Observables</span>
+                            </td>
+                        </tr>
+                        <tr><td class="layer-arrow">⬇️</td></tr>
+                        <tr>
+                            <td class="layer-3">
+                                <strong>Capa de Acceso a Datos</strong><br>
+                                <span class="text-description">Storage Service + <span class="tech-term" title="Base de datos SQL embebida">SQLite</span> + <span class="tech-term" title="API de almacenamiento web del navegador">IndexedDB</span></span>
+                            </td>
+                        </tr>
+                        <tr><td class="layer-arrow">⬇️</td></tr>
+                        <tr>
+                            <td class="layer-4">
+                                <strong>Capa de Runtime Nativo</strong><br>
+                                <span class="text-description">Capacitor Plugins (Camera, FileSystem, etc.)</span>
+                            </td>
+                        </tr>
+                        <tr><td class="layer-arrow">⬇️</td></tr>
+                        <tr>
+                            <td class="layer-5">
+                                <strong>Plataforma Nativa</strong><br>
+                                <span class="text-description">iOS (Swift/Objective-C) | Android (Kotlin/Java)</span>
+                            </td>
+                        </tr>
+                    </table>
+                <h3>🔄 Integración Angular + Ionic</h3>
+
+                <div class="info-box">
+                    <strong>@ionic/angular</strong> es un paquete que envuelve los Web Components de Ionic para que funcionen nativamente con Angular:
+                    <ul class="mt-10 ml-20">
+                        <li><strong>Routing:</strong> Integración con Angular Router para navegación</li>
+                        <li><strong>Lifecycle Hooks:</strong> <code>ionViewWillEnter()</code>, <code>ionViewDidLeave()</code>, etc.</li>
+                        <li><strong>Dependency Injection:</strong> Servicios inyectables de Ionic (NavController, Platform, etc.)</li>
+                        <li><strong>Directivas:</strong> <code>*ngFor</code>, <code>*ngIf</code> funcionan con componentes Ionic</li>
+                    </ul>
+                </div>
+
+                <h3>🎨 Adaptive Styling</h3>
+
+                <p>Ionic detecta automáticamente la plataforma y aplica estilos específicos:</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>iOS Mode</h4>
+                        <p>• Botones con esquinas redondeadas<br>
+                        • Animaciones suaves<br>
+                        • Guías de diseño de Apple HIG</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Android Mode (Material Design)</h4>
+                        <p>• Elevation y shadows<br>
+                        • Ripple effects<br>
+                        • Guías Material Design 3</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Web Mode</h4>
+                        <p>• Estilos optimizados para navegador<br>
+                        • Responsive design<br>
+                        • PWA capabilities</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: PACKAGE.JSON -->
+            <div class="section" id="package-json">
+                <h2><span class="icon">📦</span>3. package.json - Gestión de Dependencias</h2>
+
+                <p><strong>Propósito:</strong> Define metadatos del proyecto, dependencias NPM y scripts de automatización.</p>
+
+                <h3>📋 Metadatos del Proyecto</h3>
+
+                <div class="code-block">
+<span class="code-line">{</span>
+<span class="code-line code-indent-1"><span class="property">"name"</span>: <span class="string">"gestor-proyectos"</span>,</span>
+<span class="code-line code-indent-1"><span class="property">"version"</span>: <span class="string">"2.0.0"</span>,</span>
+<span class="code-line code-indent-1"><span class="property">"author"</span>: <span class="string">"Ing. MG. Víctor Castro Pérez - Politécnico Grancolombiano"</span>,</span>
+<span class="code-line code-indent-1"><span class="property">"description"</span>: <span class="string">"Gestor de Seguimiento de Proyectos..."</span>,</span>
+<span class="code-line code-indent-1"><span class="property">"private"</span>: <span class="keyword">true</span>  <span class="comment">// No publicar en npm registry</span></span>
+<span class="code-line">}</span>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Script</th>
+                                <th>Comando</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>start</code></td>
+                                <td><code>ionic serve</code></td>
+                                <td>Inicia servidor de desarrollo en <strong>http://localhost:8100</strong></td>
+                            </tr>
+                            <tr>
+                                <td><code>build</code></td>
+                                <td><code>ionic build</code></td>
+                                <td>Compila la aplicación (modo desarrollo)</td>
+                            </tr>
+                            <tr>
+                                <td><code>build:prod</code></td>
+                                <td><code>ionic build --prod</code></td>
+                                <td>Compila optimizada para producción (minificada, AOT)</td>
+                            </tr>
+                            <tr>
+                                <td><code>android:sync</code></td>
+                                <td><code>npx cap sync android</code></td>
+                                <td>Sincroniza código web con proyecto Android nativo</td>
+                            </tr>
+                            <tr>
+                                <td><code>ios:sync</code></td>
+                                <td><code>npx cap sync ios</code></td>
+                                <td>Sincroniza código web con proyecto iOS nativo</td>
+                            </tr>
+                            <tr>
+                                <td><code>build:all</code></td>
+                                <td><code>build:prod + sync all</code></td>
+                                <td>Compila y sincroniza todas las plataformas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>📚 Dependencias de Producción (dependencies)</h3>
+
+                <h4>🎨 Angular Core (v20.0.0)</h4>
+                <div class="code-block">
+<span class="string">"@angular/core"</span>: <span class="string">"^20.0.0"</span>           <span class="comment">// Motor principal de Angular</span>
+<span class="string">"@angular/common"</span>: <span class="string">"^20.0.0"</span>         <span class="comment">// Pipes, directivas comunes</span>
+<span class="string">"@angular/forms"</span>: <span class="string">"^20.0.0"</span>          <span class="comment">// Reactive Forms, Template Forms</span>
+<span class="string">"@angular/router"</span>: <span class="string">"^20.0.0"</span>         <span class="comment">// Sistema de navegación</span>
+<span class="string">"@angular/animations"</span>: <span class="string">"^20.0.0"</span>     <span class="comment">// Animaciones programáticas</span>
+<span class="string">"@angular/service-worker"</span>: <span class="string">"^20.0.0"</span> <span class="comment">// PWA - Service Worker para offline</span>
+                </div>
+
+                <div class="success-box">
+                    <strong>✨ Características Angular 20:</strong>
+                    <ul class="info-list">
+                        <li><strong>Signals:</strong> Sistema de reactividad fine-grained</li>
+                        <li><strong>Standalone Components:</strong> No requieren NgModules</li>
+                        <li><strong>Control Flow Syntax:</strong> <code>@if</code>, <code>@for</code>, <code>@switch</code></li>
+                        <li><strong>Deferrable Views:</strong> <code>@defer</code> para lazy loading</li>
+                    </ul>
+                </div>
+
+                <h4>📱 Ionic Framework (v8.0.0)</h4>
+                <div class="code-block">
+<span class="code-line"><span class="string">"@ionic/angular"</span>: <span class="string">"^8.0.0"</span></span>
+<span class="code-line"><span class="comment">// Integración Angular + Ionic Components</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@ionic/storage-angular"</span>: <span class="string">"^4.0.0"</span></span>
+<span class="code-line"><span class="comment">// Storage API (SQLite + IndexedDB)</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"ionicons"</span>: <span class="string">"^7.0.0"</span></span>
+<span class="code-line"><span class="comment">// Librería de iconos oficial</span></span>
+                </div>
+
+                <h4>🔌 Capacitor Plugins (v7.x)</h4>
+                <div class="code-block">
+<span class="code-line"><span class="string">"@capacitor/core"</span>: <span class="string">"^7.4.4"</span></span>
+<span class="code-line"><span class="comment">// Core de Capacitor</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/android"</span>: <span class="string">"^7.4.4"</span></span>
+<span class="code-line"><span class="comment">// Plataforma Android</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/ios"</span>: <span class="string">"^7.4.4"</span></span>
+<span class="code-line"><span class="comment">// Plataforma iOS</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/app"</span>: <span class="string">"7.1.0"</span></span>
+<span class="code-line"><span class="comment">// Eventos del ciclo de vida app</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/filesystem"</span>: <span class="string">"^7.1.4"</span></span>
+<span class="code-line"><span class="comment">// Lectura/escritura archivos</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/haptics"</span>: <span class="string">"7.0.2"</span></span>
+<span class="code-line"><span class="comment">// Vibración táctil</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/keyboard"</span>: <span class="string">"7.0.3"</span></span>
+<span class="code-line"><span class="comment">// Control del teclado</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor/status-bar"</span>: <span class="string">"7.0.3"</span></span>
+<span class="code-line"><span class="comment">// Personalización barra de estado</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"@capacitor-community/sqlite"</span>: <span class="string">"^7.0.2"</span></span>
+<span class="code-line"><span class="comment">// Base de datos SQLite nativa</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="string">"jeep-sqlite"</span>: <span class="string">"^2.8.0"</span></span>
+<span class="code-line"><span class="comment">// Wrapper web para SQLite</span></span>
+                </div>
+
+                <div class="info-box">
+                    <strong>🔍 ¿Por qué SQLite?</strong><br>
+                    SQLite proporciona almacenamiento estructurado nativo en dispositivos móviles, mucho más eficiente que LocalStorage para grandes volúmenes de datos (evaluaciones, estudiantes, rúbricas).
+                </div>
+
+                <h4>🛠️ Utilidades y Librerías</h4>
+                <div class="code-block">
+<span class="string">"rxjs"</span>: <span class="string">"~7.8.0"</span>                    <span class="comment">// Programación reactiva (Observables)</span>
+<span class="string">"papaparse"</span>: <span class="string">"^5.5.3"</span>              <span class="comment">// Parser CSV para importar estudiantes</span>
+<span class="string">"zone.js"</span>: <span class="string">"~0.15.0"</span>               <span class="comment">// Detección de cambios Angular</span>
+<span class="string">"tslib"</span>: <span class="string">"^2.3.0"</span>                  <span class="comment">// Helpers runtime de TypeScript</span>
+                </div>
+
+                <h3>🔧 Dependencias de Desarrollo (devDependencies)</h3>
+
+                <div class="code-block">
+<span class="string">"@angular/cli"</span>: <span class="string">"^20.0.0"</span>                        <span class="comment">// CLI de Angular</span>
+<span class="string">"@angular-devkit/build-angular"</span>: <span class="string">"^20.0.0"</span>      <span class="comment">// Herramientas de build</span>
+<span class="string">"@capacitor/cli"</span>: <span class="string">"^7.4.4"</span>                      <span class="comment">// CLI de Capacitor</span>
+<span class="string">"@ionic/angular-toolkit"</span>: <span class="string">"^12.0.0"</span>             <span class="comment">// Schematics Ionic</span>
+<span class="string">"typescript"</span>: <span class="string">"~5.8.0"</span>                          <span class="comment">// Compilador TypeScript</span>
+<span class="string">"eslint"</span>: <span class="string">"^9.16.0"</span>                             <span class="comment">// Linter de código</span>
+<span class="string">"karma"</span>: <span class="string">"~6.4.0"</span>                               <span class="comment">// Test runner</span>
+<span class="string">"jasmine-core"</span>: <span class="string">"~5.1.0"</span>                        <span class="comment">// Framework de testing</span>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 4: TSCONFIG.JSON -->
+            <div class="section" id="tsconfig">
+                <h2><span class="icon">🔷</span>4. tsconfig.json - Configuración TypeScript</h2>
+
+                <p><strong>Propósito:</strong> Configura el compilador de TypeScript (tsc) para el proyecto Angular.</p>
+
+                <h3>🎯 Opciones de Compilación Principales</h3>
+
+                <div class="code-block">
+{
+  <span class="property">"compilerOptions"</span>: {
+    <span class="property">"target"</span>: <span class="string">"ES2022"</span>,              <span class="comment">// Versión JavaScript de salida</span>
+    <span class="property">"module"</span>: <span class="string">"ES2022"</span>,              <span class="comment">// Sistema de módulos</span>
+    <span class="property">"lib"</span>: [<span class="string">"ES2022"</span>, <span class="string">"dom"</span>],        <span class="comment">// Librerías de tipos disponibles</span>
+    <span class="property">"moduleResolution"</span>: <span class="string">"bundler"</span>,   <span class="comment">// Resolución de módulos (Vite/esbuild)</span>
+    <span class="property">"strict"</span>: <span class="keyword">true</span>,                  <span class="comment">// Habilita todas las comprobaciones estrictas</span>
+    <span class="property">"experimentalDecorators"</span>: <span class="keyword">true</span>   <span class="comment">// Para @Component, @Injectable, etc.</span>
+  }
+}
+                </div>
+
+                <h4>🔍 Explicación de Opciones Clave</h4>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Opción</th>
+                                <th>Valor</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>target</code></td>
+                                <td><strong>ES2022</strong></td>
+                                <td>Código compilado usa características modernas de JavaScript (async/await, clases, etc.)</td>
+                            </tr>
+                            <tr>
+                                <td><code>strict</code></td>
+                                <td><strong>true</strong></td>
+                                <td>Activa: strictNullChecks, noImplicitAny, strictFunctionTypes, etc.</td>
+                            </tr>
+                            <tr>
+                                <td><code>experimentalDecorators</code></td>
+                                <td><strong>true</strong></td>
+                                <td>Permite usar decoradores de Angular (@Component, @Injectable)</td>
+                            </tr>
+                            <tr>
+                                <td><code>sourceMap</code></td>
+                                <td><strong>true</strong></td>
+                                <td>Genera archivos .map para debugging en navegador</td>
+                            </tr>
+                            <tr>
+                                <td><code>esModuleInterop</code></td>
+                                <td><strong>true</strong></td>
+                                <td>Compatibilidad entre módulos ES6 y CommonJS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>🛤️ Path Mapping (Alias de Rutas)</h3>
+
+                <div class="code-block">
+<span class="property">"paths"</span>: {
+  <span class="string">"@app/*"</span>: [<span class="string">"./src/app/*"</span>],
+  <span class="string">"@core/*"</span>: [<span class="string">"./src/app/core/*"</span>],
+  <span class="string">"@models/*"</span>: [<span class="string">"./src/app/models/*"</span>],
+  <span class="string">"@services/*"</span>: [<span class="string">"./src/app/services/*"</span>]
+}
+                </div>
+
+                <div class="success-box">
+                    <strong>🎯 Beneficio:</strong> Permite importaciones limpias y consistentes:<br>
+                    <code>import { Estudiante } from '@models/estudiante.model';</code><br>
+                    en lugar de:<br>
+                    <code>import { Estudiante } from '../../../models/estudiante.model';</code>
+                </div>
+
+                <h3>⚙️ Opciones del Compilador Angular</h3>
+
+                <div class="code-block">
+<span class="property">"angularCompilerOptions"</span>: {
+  <span class="property">"strictTemplates"</span>: <span class="keyword">true</span>,              <span class="comment">// Type-checking en templates HTML</span>
+  <span class="property">"strictInjectionParameters"</span>: <span class="keyword">true</span>,    <span class="comment">// Verifica DI correcto</span>
+  <span class="property">"strictInputAccessModifiers"</span>: <span class="keyword">true</span>    <span class="comment">// Valida acceso a @Input()</span>
+}
+                </div>
+            </div>
+
+            <!-- SECCIÓN 5: ANGULAR.JSON -->
+            <div class="section" id="angular-json">
+                <h2><span class="icon">⚡</span>5. angular.json - Configuración Angular CLI</h2>
+
+                <p><strong>Propósito:</strong> Archivo de configuración maestro para Angular CLI. Define cómo compilar, servir y testear el proyecto.</p>
+
+                <h3>🏗️ Estructura del Proyecto</h3>
+
+                <div class="code-block">
+{
+  <span class="property">"$schema"</span>: <span class="string">"./node_modules/@angular/cli/lib/config/schema.json"</span>,
+  <span class="property">"version"</span>: <span class="keyword">1</span>,
+  <span class="property">"newProjectRoot"</span>: <span class="string">"projects"</span>,
+  <span class="property">"projects"</span>: {
+    <span class="property">"app"</span>: {
+      <span class="property">"projectType"</span>: <span class="string">"application"</span>,
+      <span class="property">"root"</span>: <span class="string">""</span>,
+      <span class="property">"sourceRoot"</span>: <span class="string">"src"</span>,
+      <span class="property">"prefix"</span>: <span class="string">"app"</span>        <span class="comment">// Prefijo para componentes (app-header)</span>
+    }
+  }
+}
+                </div>
+
+                <h3>🎨 Schematics (Generadores de Código)</h3>
+
+                <div class="code-block">
+<span class="property">"schematics"</span>: {
+  <span class="string">"@ionic/angular-toolkit:page"</span>: {
+    <span class="property">"styleext"</span>: <span class="string">"scss"</span>,           <span class="comment">// Usar SCSS para estilos</span>
+    <span class="property">"standalone"</span>: <span class="keyword">true</span>            <span class="comment">// Generar componentes standalone</span>
+  }
+}
+                </div>
+
+                <div class="info-box">
+                    <strong>🔧 ¿Qué hace esto?</strong><br>
+                    Al ejecutar <code>ionic generate page MiPagina</code>, automáticamente crea:
+                    <ul class="info-list">
+                        <li>✅ Componente standalone (sin NgModule)</li>
+                        <li>✅ Archivo de estilos <code>.scss</code></li>
+                        <li>✅ Routing configurado</li>
+                    </ul>
+                </div>
+
+                <h3>🔨 Configuración de Build</h3>
+
+                <div class="code-block">
+<span class="property">"architect"</span>: {
+  <span class="property">"build"</span>: {
+    <span class="property">"builder"</span>: <span class="string">"@angular-devkit/build-angular:application"</span>,
+    <span class="property">"options"</span>: {
+      <span class="property">"outputPath"</span>: { <span class="property">"base"</span>: <span class="string">"www"</span> },      <span class="comment">// Carpeta de salida</span>
+      <span class="property">"index"</span>: <span class="string">"src/index.html"</span>,
+      <span class="property">"browser"</span>: <span class="string">"src/main.ts"</span>,           <span class="comment">// Punto de entrada</span>
+      <span class="property">"polyfills"</span>: [<span class="string">"src/polyfills.ts"</span>],
+      <span class="property">"styles"</span>: [
+        <span class="string">"src/global.scss"</span>,
+        <span class="string">"src/theme/variables.scss"</span>
+      ]
+    }
+  }
+}
+                </div>
+
+                <h4>📊 Presupuestos de Build (Budgets)</h4>
+
+                <div class="code-block">
+<span class="property">"budgets"</span>: [
+  {
+    <span class="property">"type"</span>: <span class="string">"initial"</span>,
+    <span class="property">"maximumWarning"</span>: <span class="string">"2mb"</span>,      <span class="comment">// Advertencia si bundle > 2MB</span>
+    <span class="property">"maximumError"</span>: <span class="string">"5mb"</span>         <span class="comment">// Error si bundle > 5MB</span>
+  }
+]
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Importante:</strong> Los budgets ayudan a mantener el tamaño de la aplicación bajo control. Si se superan los límites, Angular CLI mostrará warnings/errors durante el build.
+                </div>
+
+                <h3>🚀 Configuraciones de Build</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Configuración</th>
+                                <th>Optimización</th>
+                                <th>Source Maps</th>
+                                <th>Uso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>production</strong></td>
+                                <td>✅ Sí (AOT, minificación)</td>
+                                <td>❌ No</td>
+                                <td>Deploy a producción</td>
+                            </tr>
+                            <tr>
+                                <td><strong>development</strong></td>
+                                <td>❌ No</td>
+                                <td>✅ Sí</td>
+                                <td>Desarrollo local</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>🧪 Configuración de Testing</h3>
+
+                <div class="code-block">
+<span class="property">"test"</span>: {
+  <span class="property">"builder"</span>: <span class="string">"@angular-devkit/build-angular:karma"</span>,
+  <span class="property">"options"</span>: {
+    <span class="property">"karmaConfig"</span>: <span class="string">"karma.conf.js"</span>,
+    <span class="property">"polyfills"</span>: [<span class="string">"src/polyfills.ts"</span>],
+    <span class="property">"tsConfig"</span>: <span class="string">"tsconfig.spec.json"</span>
+  }
+}
+                </div>
+            </div>
+
+            <!-- SECCIÓN 6: IONIC.CONFIG.JSON -->
+            <div class="section" id="ionic-config">
+                <h2><span class="icon">🎨</span>6. ionic.config.json - Configuración Ionic CLI</h2>
+
+                <p><strong>Propósito:</strong> Archivo de configuración para el CLI de Ionic. Define integraciones y tipo de proyecto.</p>
+
+                <div class="code-block">
+{
+  <span class="property">"name"</span>: <span class="string">"gestor-proyectos"</span>,
+  <span class="property">"integrations"</span>: {
+    <span class="property">"capacitor"</span>: {}              <span class="comment">// Indica que usa Capacitor (no Cordova)</span>
+  },
+  <span class="property">"type"</span>: <span class="string">"angular-standalone"</span>    <span class="comment">// Proyecto Angular con componentes standalone</span>
+}
+                </div>
+
+                <div class="info-box">
+                    <strong>🔍 ¿Por qué "angular-standalone"?</strong><br>
+                    Este tipo indica que el proyecto usa el nuevo sistema de componentes standalone de Angular (sin NgModules), introducido en Angular 14+ y ahora el estándar en Angular 20.
+                </div>
+
+                <h3>⚡ Comandos Ionic CLI</h3>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Comando</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>ionic serve</code></td>
+                                <td>Inicia servidor de desarrollo con live reload</td>
+                            </tr>
+                            <tr>
+                                <td><code>ionic build</code></td>
+                                <td>Compila la aplicación (llama a <code>ng build</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><code>ionic generate page</code></td>
+                                <td>Genera una nueva página con routing</td>
+                            </tr>
+                            <tr>
+                                <td><code>ionic cap sync</code></td>
+                                <td>Sincroniza web assets con proyectos nativos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 7: CAPACITOR.CONFIG.TS -->
+            <div class="section" id="capacitor-config">
+                <h2><span class="icon">📱</span>7. capacitor.config.ts - Configuración Capacitor</h2>
+
+                <p><strong>Propósito:</strong> Configura el runtime nativo de Capacitor y los plugins nativos.</p>
+
+                <h3>🎯 Configuración Base</h3>
+
+                <div class="code-block">
+<span class="keyword">const</span> config: CapacitorConfig = {
+  <span class="property">appId</span>: <span class="string">'com.poligran.gestorproyectos'</span>,  <span class="comment">// Bundle ID único</span>
+  <span class="property">appName</span>: <span class="string">'POLIProject'</span>,                 <span class="comment">// Nombre en launcher</span>
+  <span class="property">webDir</span>: <span class="string">'www/browser'</span>,                 <span class="comment">// Carpeta de assets web</span>
+}
+                </div>
+
+                <div class="info-box">
+                    <strong>📌 appId:</strong> Este identificador único es crítico. En iOS es el Bundle ID y en Android es el Application ID. No debe cambiar después del primer deploy.
+                </div>
+
+                <h3>🌐 Configuración del Servidor de Desarrollo</h3>
+
+                <div class="code-block">
+<span class="property">server</span>: {
+  <span class="property">androidScheme</span>: <span class="string">'https'</span>,
+  <span class="property">iosScheme</span>: <span class="string">'https'</span>,
+  <span class="property">hostname</span>: <span class="string">'localhost'</span>
+}
+                </div>
+
+                <div class="success-box">
+                    <strong>🔒 Seguridad:</strong> Usar esquema HTTPS previene warnings de contenido mixto y permite usar APIs modernas del navegador que requieren contexto seguro.
+                </div>
+
+                <h3>🤖 Configuración Android</h3>
+
+                <div class="code-block">
+<span class="property">android</span>: {
+  <span class="property">allowMixedContent</span>: <span class="keyword">false</span>,             <span class="comment">// Bloquear HTTP en contexto HTTPS</span>
+  <span class="property">captureInput</span>: <span class="keyword">true</span>,                   <span class="comment">// Captura eventos de teclado</span>
+  <span class="property">webContentsDebuggingEnabled</span>: <span class="keyword">false</span>,   <span class="comment">// Desactivado en producción</span>
+  <span class="property">minWebViewVersion</span>: <span class="keyword">60</span>,                <span class="comment">// Chrome 60+ (Android 5.0+)</span>
+  <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>,            <span class="comment">// Color de fondo nativo</span>
+  <span class="property">overrideUserAgent</span>: <span class="string">'GestorProyectosEPM-Android'</span>
+}
+                </div>
+
+                <h3>🍎 Configuración iOS</h3>
+
+                <div class="code-block">
+<span class="property">ios</span>: {
+  <span class="property">contentInset</span>: <span class="string">'automatic'</span>,            <span class="comment">// Ajuste automático para notch</span>
+  <span class="property">allowsLinkPreview</span>: <span class="keyword">false</span>,            <span class="comment">// Desactivar preview de links</span>
+  <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>,
+  <span class="property">preferredContentMode</span>: <span class="string">'mobile'</span>,       <span class="comment">// Modo móvil (no desktop)</span>
+  <span class="property">scrollEnabled</span>: <span class="keyword">true</span>
+}
+                </div>
+
+                <h3>🔌 Configuración de Plugins</h3>
+
+                <div class="code-block">
+<span class="property">plugins</span>: {
+  <span class="property">SplashScreen</span>: {
+    <span class="property">launchShowDuration</span>: <span class="keyword">2000</span>,          <span class="comment">// Mostrar 2 segundos</span>
+    <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>,
+    <span class="property">splashFullScreen</span>: <span class="keyword">true</span>,
+    <span class="property">splashImmersive</span>: <span class="keyword">true</span>
+  },
+  <span class="property">StatusBar</span>: {
+    <span class="property">style</span>: <span class="string">'DARK'</span>,                       <span class="comment">// Iconos claros (fondo oscuro)</span>
+    <span class="property">backgroundColor</span>: <span class="string">'#0f385a'</span>
+  },
+  <span class="property">Keyboard</span>: {
+    <span class="property">resize</span>: <span class="string">'body'</span>,                      <span class="comment">// Redimensionar body con teclado</span>
+    <span class="property">resizeOnFullScreen</span>: <span class="keyword">true</span>
+  }
+}
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>SplashScreen</h4>
+                        <p>Pantalla de inicio que se muestra mientras carga la aplicación. Configurada para mostrarse 2 segundos en pantalla completa.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>StatusBar</h4>
+                        <p>Barra de estado del sistema (hora, batería, señal). Configurada con estilo oscuro para coincidir con el tema de la app.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Keyboard</h4>
+                        <p>Control del teclado virtual. Configurado para redimensionar el contenido cuando aparece el teclado.</p>
+                    </div>
+                </div>
+
+                <h3>🔄 Ciclo de Sincronización</h3>
+
+                <div class="code-block">
+<span class="comment">// 1. Compilar código web</span>
+ionic build --prod
+
+<span class="comment">// 2. Copiar www/ a proyectos nativos</span>
+npx cap sync
+
+<span class="comment">// 3. Abrir en IDE nativo</span>
+npx cap open android  <span class="comment">// Android Studio</span>
+npx cap open ios      <span class="comment">// Xcode</span>
+                </div>
+            </div>
+
+            <!-- RESUMEN FINAL -->
+            <div class="section">
+                <h2><span class="icon">📝</span>Resumen de Archivos de Configuración</h2>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Archivo</th>
+                                <th>Responsabilidad</th>
+                                <th>Framework</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>package.json</strong></td>
+                                <td>Gestión de dependencias NPM y scripts</td>
+                                <td>Node.js / npm</td>
+                            </tr>
+                            <tr>
+                                <td><strong>tsconfig.json</strong></td>
+                                <td>Configuración del compilador TypeScript</td>
+                                <td>TypeScript</td>
+                            </tr>
+                            <tr>
+                                <td><strong>angular.json</strong></td>
+                                <td>Configuración de build, serve y test</td>
+                                <td>Angular CLI</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ionic.config.json</strong></td>
+                                <td>Tipo de proyecto e integraciones</td>
+                                <td>Ionic CLI</td>
+                            </tr>
+                            <tr>
+                                <td><strong>capacitor.config.ts</strong></td>
+                                <td>Configuración de runtime nativo y plugins</td>
+                                <td>Capacitor</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="success-box glossary-list">
+                    <h4>✅ Conclusión Parte 1</h4>
+                    <p>Los archivos de configuración base establecen la infraestructura del proyecto POLIProject, definiendo cómo se compila, se ejecuta y se despliega en múltiples plataformas. La integración de Ionic + Angular + Capacitor permite crear una aplicación verdaderamente multiplataforma con código compartido y acceso nativo a dispositivos móviles.</p>
+                </div>
+            </div>
+
+            <!-- DICCIONARIO TÉCNICO -->
+            <div class="section">
+                <h2><span class="icon">📖</span>Glosario de Términos Técnicos</h2>
+
+                <div class="glossary">
+                    <h3>Términos Fundamentales</h3>
+
+                    <dl>
+                        <div class="glossary-term">
+                            <dt>🔷 AOT (Ahead-of-Time Compilation)</dt>
+                            <dd>Compilación anticipada que convierte código TypeScript y templates Angular a JavaScript optimizado ANTES del despliegue. Mejora el rendimiento de arranque y detecta errores en tiempo de compilación en lugar de ejecución.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Barrel Export</dt>
+                            <dd>Patrón TypeScript que usa un archivo <code>index.ts</code> para re-exportar múltiples módulos desde una sola ubicación, simplificando las importaciones. Ejemplo: <code>import { Estudiante, Evaluacion } from '@models';</code></dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 BehaviorSubject</dt>
+                            <dd>Tipo de Observable de RxJS que mantiene un valor actual y emite ese valor a nuevos suscriptores inmediatamente. Fundamental para gestión de estado reactivo en Angular.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Capacitor</dt>
+                            <dd>Runtime nativo que permite ejecutar aplicaciones web en iOS y Android. Proporciona APIs JavaScript para acceder a funcionalidades nativas del dispositivo (cámara, almacenamiento, sensores, etc.). Sucesor moderno de Cordova.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Custom Elements</dt>
+                            <dd>Estándar web (parte de Web Components) que permite crear elementos HTML personalizados reutilizables. Ionic usa Custom Elements para sus componentes UI.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Dependency Injection (DI)</dt>
+                            <dd>Patrón de diseño donde las dependencias de una clase se "inyectan" desde el exterior en lugar de crearlas internamente. Angular usa DI extensivamente para servicios y configuraciones.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 esbuild</dt>
+                            <dd>Bundler y minificador de JavaScript ultrarrápido escrito en Go. Angular 20 usa esbuild para compilaciones 10x más rápidas que Webpack.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 IndexedDB</dt>
+                            <dd>Base de datos NoSQL embebida en navegadores web. Permite almacenar grandes cantidades de datos estructurados offline. POLIProject la usa en modo web como alternativa a SQLite.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Ionic Framework</dt>
+                            <dd>Toolkit de UI multiplataforma basado en Web Components. Proporciona componentes visuales que se adaptan automáticamente al estilo de cada plataforma (iOS, Android, Web).</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Lazy Loading</dt>
+                            <dd>Técnica de optimización que carga módulos o componentes solo cuando son necesarios, reduciendo el tiempo de carga inicial de la aplicación.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 NgModule</dt>
+                            <dd>Sistema de módulos de Angular (versiones anteriores a 14). Angular 20 usa componentes standalone que no requieren NgModules.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Polyfill</dt>
+                            <dd>Código que implementa funcionalidades modernas en navegadores antiguos que no las soportan nativamente. Ejemplo: implementar Promises en Internet Explorer 11.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 PWA (Progressive Web App)</dt>
+                            <dd>Aplicación web que usa tecnologías modernas (Service Workers, Web App Manifest) para funcionar offline, instalarse como app nativa, y enviar notificaciones push.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 RxJS (Reactive Extensions for JavaScript)</dt>
+                            <dd>Librería de programación reactiva que usa Observables para componer código asíncrono. Permite manejar flujos de datos (streams) de forma declarativa y funcional.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Shadow DOM</dt>
+                            <dd>Tecnología web que encapsula el DOM y CSS de un componente, evitando colisiones de estilos. Ionic usa Shadow DOM para aislar sus componentes.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Signals (Angular)</dt>
+                            <dd>Sistema de reactividad fine-grained introducido en Angular 16+. Alternativa más eficiente a Zone.js para detección de cambios, con mejor rendimiento y APIs más simples.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 SQLite</dt>
+                            <dd>Motor de base de datos SQL embebido, sin servidor. Ampliamente usado en aplicaciones móviles para almacenamiento estructurado offline. POLIProject lo usa en Android/iOS.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Standalone Components</dt>
+                            <dd>Componentes Angular que no requieren ser declarados en NgModules. Pueden importar sus propias dependencias directamente. Estándar en Angular 20.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 TypeScript</dt>
+                            <dd>Superset tipado de JavaScript desarrollado por Microsoft. Agrega tipos estáticos, interfaces, decoradores y features ES2022+ que se compilan a JavaScript estándar.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Web Components</dt>
+                            <dd>Conjunto de estándares web (Custom Elements, Shadow DOM, HTML Templates) que permiten crear componentes reutilizables sin frameworks. Base de Ionic Framework.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔷 Zone.js</dt>
+                            <dd>Librería que "parchea" APIs asíncronas del navegador para interceptar eventos. Angular usa Zone.js para detectar cuándo actualizar la vista. Signals está reemplazando esta dependencia.</dd>
+                        </div>
+                    </dl>
+
+                    <h3 class="glossary-list">Términos de Configuración</h3>
+
+                    <dl>
+                        <div class="glossary-term">
+                            <dt>🔧 Bundle</dt>
+                            <dd>Archivo JavaScript combinado que contiene múltiples módulos compilados y optimizados. El proceso de build crea bundles para reducir requests HTTP.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Budget</dt>
+                            <dd>Límite de tamaño configurado en <code>angular.json</code> para controlar el peso de los bundles. Alerta si el bundle excede el tamaño recomendado (ej: 2MB warning, 5MB error).</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 CLI (Command Line Interface)</dt>
+                            <dd>Herramienta de línea de comandos. Angular CLI (<code>ng</code>) e Ionic CLI (<code>ionic</code>) automatizan tareas de desarrollo como generar componentes, compilar y servir la aplicación.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Hot Module Replacement (HMR)</dt>
+                            <dd>Técnica que actualiza módulos JavaScript en tiempo real sin recargar la página completa, preservando el estado de la aplicación durante desarrollo.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Minification</dt>
+                            <dd>Proceso de eliminar espacios, comentarios y renombrar variables en código JavaScript/CSS para reducir el tamaño del archivo sin cambiar funcionalidad.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 npm (Node Package Manager)</dt>
+                            <dd>Gestor de paquetes de JavaScript. Instala dependencias definidas en <code>package.json</code> y gestiona versiones de librerías.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Schematic</dt>
+                            <dd>Plantilla de código que genera archivos automáticamente. Ionic/Angular usan schematics para crear componentes, páginas y servicios con estructura correcta.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Service Worker</dt>
+                            <dd>Script JavaScript que se ejecuta en segundo plano, separado de la página web. Permite funcionalidades offline, caching inteligente y notificaciones push en PWAs.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Source Map</dt>
+                            <dd>Archivo que mapea código compilado/minificado a código fuente original. Permite debuggear en navegadores usando el código TypeScript original en lugar del JavaScript compilado.</dd>
+                        </div>
+
+                        <div class="glossary-term">
+                            <dt>🔧 Tree Shaking</dt>
+                            <dd>Optimización que elimina código no utilizado del bundle final. Reduce significativamente el tamaño de la aplicación eliminando imports y funciones que nunca se ejecutan.</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <p><strong>Gestor de Seguimiento de Proyectos POLIProject</strong></p>
+            <p>Politécnico Grancolombiano | Ing. MG. Víctor Castro Pérez</p>
+            <p class="footer-version">
+                Documentación generada: 16 de diciembre de 2025 | Versión 2.0.0
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

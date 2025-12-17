@@ -21,8 +21,17 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
   @Input() estudianteId: string = '';
   @Input() nombreEstudiante: string = '';
   @Input() evaluacionExistente: Evaluacion | null = null;
+  /** Identificador único del grupo/estudiante actual - fuerza re-inicialización al cambiar */
+  @Input() grupoId: string = '';
+  /** Entrega actual (E1, E2, EF) */
+  @Input() entregaActual: string = '';
   @Output() puntuacionChange = new EventEmitter<number>();
+  @Output() calificacionesChange = new EventEmitter<{ [criterio: string]: number }>();
   @Output() evaluacionGuardada = new EventEmitter<any>(); // Nuevo evento para guardar
+
+  // Tracking interno para evitar re-inicializaciones innecesarias
+  private _lastGrupoId: string = '';
+  private _lastEntrega: string = '';
 
 
   calificaciones: { [criterio: string]: number } = {};
@@ -34,48 +43,113 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // Si cambia la rúbrica o la evaluación existente, reinicializar
-    if (changes['rubrica'] || changes['evaluacionExistente']) {
-      console.log('🔄 [EvaluacionRubrica] Cambios detectados - Reinicializando...');
+    // Detectar cambios relevantes
+    const grupoChanged = changes['grupoId'] &&
+      changes['grupoId'].currentValue !== changes['grupoId'].previousValue;
+    const entregaChanged = changes['entregaActual'] &&
+      changes['entregaActual'].currentValue !== changes['entregaActual'].previousValue;
+    const rubricaChanged = changes['rubrica'] &&
+      changes['rubrica'].currentValue?.id !== changes['rubrica'].previousValue?.id;
+    const evaluacionChanged = changes['evaluacionExistente'];
+
+    // 🔍 Logging detallado para debugging
+    console.log('🔄 [EvaluacionRubrica] ngOnChanges:', {
+      grupoChanged,
+      entregaChanged,
+      rubricaChanged,
+      evaluacionChanged: !!evaluacionChanged,
+      grupoId: this.grupoId,
+      entrega: this.entregaActual,
+      evaluacionExistente: this.evaluacionExistente ? 'SÍ tiene' : 'null',
+      evaluacionPuntos: this.evaluacionExistente?.puntosTotales,
+      previousGrupo: changes['grupoId']?.previousValue,
+      currentGrupo: changes['grupoId']?.currentValue
+    });
+
+    // 🔑 OPTIMIZACIÓN: Re-inicializar si:
+    // 1. Cambió el grupo/estudiante (indica navegación entre grupos)
+    // 2. Cambió la entrega (E1, E2, EF)
+    // 3. Cambió la rúbrica
+    // 4. Cambió la evaluación existente (cargó datos guardados o limpió)
+    const debeReinicializar = grupoChanged || entregaChanged || rubricaChanged ||
+                              (evaluacionChanged && evaluacionChanged.currentValue !== evaluacionChanged.previousValue);
+
+    if (debeReinicializar) {
+      console.log('✅ [EvaluacionRubrica] Reinicializando calificaciones...');
+
+      // Actualizar tracking interno
+      this._lastGrupoId = this.grupoId;
+      this._lastEntrega = this.entregaActual;
+
       this.inicializarCalificaciones();
+    } else {
+      console.log('⏭️ [EvaluacionRubrica] Sin cambios relevantes, manteniendo estado actual');
     }
   }
 
+  /**
+   * Inicializa las calificaciones desde cero o desde evaluación existente.
+   * OPTIMIZADO: Maneja correctamente la persistencia de niveles seleccionados.
+   */
   private inicializarCalificaciones() {
-    if (!this.rubrica || !this.rubrica.criterios) return;
+    if (!this.rubrica || !this.rubrica.criterios) {
+      console.warn('⚠️ [EvaluacionRubrica] No hay rúbrica o criterios disponibles');
+      return;
+    }
 
-    // 1. Resetear todo a 0 primero
+    console.log('🔧 [EvaluacionRubrica] Inicializando calificaciones...', {
+      rubricaId: this.rubrica.id,
+      criterios: this.rubrica.criterios.length,
+      hayEvaluacionExistente: !!this.evaluacionExistente
+    });
+
+    // 1️⃣ Resetear todo a 0 primero (limpieza completa)
     this.calificaciones = {};
     this.rubrica.criterios.forEach(criterio => {
       this.calificaciones[criterio.titulo] = 0;
     });
     this.observaciones = '';
 
-    // 2. Si hay evaluación existente, cargar sus valores
-    if (this.evaluacionExistente) {
-      console.log('📂 [EvaluacionRubrica] Cargando evaluación existente:', this.evaluacionExistente);
+    // 2️⃣ Si hay evaluación existente, cargar sus valores
+    if (this.evaluacionExistente && this.evaluacionExistente.criterios) {
+      console.log('📂 [EvaluacionRubrica] Restaurando evaluación guardada:', {
+        puntosTotales: this.evaluacionExistente.puntosTotales,
+        criteriosGuardados: this.evaluacionExistente.criterios.length
+      });
 
-      // Cargar calificaciones desde criterios (estructura real de Evaluacion)
-      if (this.evaluacionExistente.criterios) {
-        this.evaluacionExistente.criterios.forEach(c => {
-          this.calificaciones[c.criterioTitulo] = c.puntosObtenidos || 0;
-        });
-      }
+      // Cargar calificaciones desde criterios guardados
+      this.evaluacionExistente.criterios.forEach((criterioGuardado, index) => {
+        const titulo = criterioGuardado.criterioTitulo;
+        const puntos = criterioGuardado.puntosObtenidos || 0;
 
+        this.calificaciones[titulo] = puntos;
+
+        console.log(`  ✓ Criterio ${index + 1}: ${titulo} → ${puntos} pts (Nivel: ${criterioGuardado.nivelSeleccionado || 'N/A'})`);
+      });
+
+      // Cargar observaciones generales si existen
       this.observaciones = this.evaluacionExistente.comentarioGeneral || '';
+
+      console.log('✅ [EvaluacionRubrica] Evaluación restaurada correctamente');
     } else {
-      console.log('🆕 [EvaluacionRubrica] No hay evaluación previa, iniciando en limpio');
+      console.log('🆕 [EvaluacionRubrica] Iniciando evaluación nueva (sin datos previos)');
     }
 
-
-    // 3. Calcular total inicial
+    // 3️⃣ Calcular total inicial
     this.calcularPuntuacionTotal();
+
+    console.log('📊 [EvaluacionRubrica] Inicialización completada:', {
+      puntuacionTotal: this.puntuacionTotal,
+      calificaciones: Object.keys(this.calificaciones).length
+    });
   }
 
 
   onCalificacionChange(criterio: string, puntos: number) {
     this.calificaciones[criterio] = puntos;
     this.calcularPuntuacionTotal();
+    // Emitir calificaciones actualizadas al padre
+    this.calificacionesChange.emit({ ...this.calificaciones });
   }
 
   calcularPuntuacionTotal() {
@@ -90,6 +164,24 @@ export class EvaluacionRubricaComponent implements OnInit, OnChanges {
       return parseInt(partes[1].trim());
     }
     return parseInt(puntos);
+  }
+
+  /**
+   * Verifica si los puntos actuales del criterio están dentro del rango del nivel
+   * Esta función es usada por el template para marcar el nivel correcto como seleccionado
+   */
+  estaEnRangoNivel(criterioTitulo: string, puntosNivel: string): boolean {
+    const puntosActuales = this.calificaciones[criterioTitulo] || 0;
+
+    if (puntosNivel.includes('-')) {
+      const partes = puntosNivel.split('-').map(p => parseInt(p.trim()));
+      const min = partes[0];
+      const max = partes[1];
+      return puntosActuales >= min && puntosActuales <= max;
+    } else {
+      const puntoExacto = parseInt(puntosNivel);
+      return puntosActuales === puntoExacto;
+    }
   }
 
   obtenerNivelSeleccionado(criterio: CriterioRubrica): any {

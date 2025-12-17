@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
@@ -12,25 +12,24 @@ import {
   IonList,
   IonItem,
   IonLabel,
-  IonChip,
   IonBadge,
   IonSegment,
   IonSegmentButton,
   IonRouterOutlet,
-  IonTabs,
   IonTabBar,
   IonTabButton,
   IonMenu,
   IonMenuToggle,
-  IonMenuButton,
   IonHeader,
   IonToolbar,
-  IonTitle,
-  IonButtons,
   IonFooter,
   IonAvatar,
   IonContent,
-  IonSplitPane,
+  IonCheckbox,
+  IonFab,
+  IonFabButton,
+  IonTitle,
+  IonTextarea,
   MenuController
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -38,11 +37,66 @@ import { Router, NavigationEnd } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Logger } from '@app/core/utils/logger';
 import { addIcons } from 'ionicons';
-import { homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, menuOutline, chevronForwardOutline, expandOutline } from 'ionicons/icons';
+import {
+  // Iconos filled
+  home,
+  library,
+  clipboard,
+  ribbon,
+  settings,
+  search,
+  school,
+  people,
+  grid,
+  trophy,
+  chatbubble,
+  person,
+  book,
+  documentText,
+  star,
+  cog,
+  speedometer,
+  // Iconos de estado de estudiantes
+  checkmarkCircle,
+  gitMerge,
+  closeCircle,
+  // Iconos outline
+  homeOutline,
+  settingsOutline,
+  schoolOutline,
+  listOutline,
+  analyticsOutline,
+  informationCircleOutline,
+  copyOutline,
+  chevronDownOutline,
+  chevronUpOutline,
+  pinOutline,
+  personOutline,
+  peopleOutline,
+  searchOutline,
+  closeOutline,
+  menuOutline,
+  chevronForwardOutline,
+  chevronBackOutline,
+  arrowForwardOutline,
+  arrowBackOutline,
+  expandOutline,
+  trophyOutline,
+  bookOutline,
+  eyeOutline,
+  speedometerOutline,
+  libraryOutline,
+  ribbonOutline,
+  pencilOutline,
+  trashOutline,
+  addCircleOutline,
+  checkmarkOutline
+} from 'ionicons/icons';
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
-import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo } from '../services/seguimiento.service';
+import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo, EstadoEstudiante } from '../services/seguimiento.service';
 
 @Component({
   selector: 'app-tabs',
@@ -62,25 +116,24 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonList,
     IonItem,
     IonLabel,
-    IonChip,
     IonBadge,
     IonSegment,
     IonSegmentButton,
     IonRouterOutlet,
-    IonTabs,
     IonTabBar,
     IonTabButton,
     IonMenu,
     IonMenuToggle,
-    IonMenuButton,
     IonHeader,
     IonToolbar,
-    IonTitle,
-    IonButtons,
     IonFooter,
     IonAvatar,
     IonContent,
-    IonSplitPane
+    IonCheckbox,
+    IonFab,
+    IonFabButton,
+    IonTitle,
+    IonTextarea
   ],
   animations: [
     trigger('slideInOut', [
@@ -94,24 +147,30 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     ])
   ]
 })
-export class TabsPage implements OnDestroy {
+export class TabsPage implements OnDestroy, AfterViewInit {
   public environmentInjector = inject(EnvironmentInjector);
-  private router = inject(Router);
+  public router = inject(Router);
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);
   public fullscreenService = inject(FullscreenService);
   private menuCtrl = inject(MenuController);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   @ViewChild('searchBar', { read: ElementRef }) searchbarRef!: ElementRef;
 
-
+  private resizeHandler: (() => void) | null = null;
   private subscriptions: Subscription[] = [];
   globalSearch: string = '';
-  selectedGrupo: number = 0;
+  selectedGrupo: number = 0; // Grupo seleccionado en UI (para botones)
+  grupoVisualizado: number = 0; // Grupo para mostrar integrantes (puede ser diferente)
   searchExpanded: boolean = false;
-  isDesktop: boolean = window.innerWidth >= 992; // 992px es el breakpoint de ion-split-pane
-  grupos: string[] = []; // Grupos dinámicos desde estudiantes
-  tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG'; // Toggle para tipo de rúbrica
+  isDesktop: boolean = typeof window !== 'undefined' ? window.innerWidth >= 992 : false;
+  grupos: string[] = [];
+  tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG';
+
+  // URL actual para cambio de íconos
+  currentUrl: string = '';
 
   // Seguimiento actual
   seguimientoActual: SeguimientoGrupo | null = null;
@@ -119,9 +178,19 @@ export class TabsPage implements OnDestroy {
   // Control del panel de comentarios
   comentariosColapsado: boolean = true;
   comentariosFijados: boolean = false;
+  nuevoComentarioTexto: string = '';
+  editandoComentarioId: string | null = null;
+  editandoComentarioTexto: string = '';
 
   // Control de curso activo
   cursoActivo: string | null = null;
+
+  // Integrantes del grupo seleccionado
+  integrantesGrupoActual: any[] = [];
+
+  // Para edición inline de calificaciones en el panel de seguimiento
+  editandoCalificacion: { estudiante: any; entrega: string } | null = null;
+  valorCalificacionEditando: string = '';
 
   // Resultados de búsqueda global
   searchResults: Array<{
@@ -132,11 +201,44 @@ export class TabsPage implements OnDestroy {
   }> = [];
   searchTerm: string = '';
 
-  constructor() {
-    addIcons({ homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline, informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline, pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline });
+  // Modo de selección de estado para estudiantes
+  modoSeleccionEstado: 'ok' | 'solo' | 'ausente' | null = null;
 
-    // Abrir menú automáticamente en desktop
-    this.setupMenuBehavior();
+  // Set de integrantes seleccionados (por correo)
+  selectedIntegrantes: Set<string> = new Set();
+
+  // Control del panel de seguimiento móvil
+  mobileSeguimientoVisible: boolean = false;
+
+  // Control de expansión del sidebar
+  sidebarExpanded: boolean = false;
+
+  constructor() {
+    addIcons({
+      // Filled icons
+      home, library, clipboard, ribbon, settings, search, school, people, grid, trophy, chatbubble, person, book,
+      documentText, star, cog, speedometer,
+      // Estado icons
+      checkmarkCircle, gitMerge, closeCircle,
+      // Outline icons
+      homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline,
+      informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline,
+      pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline,
+      bookOutline, eyeOutline, menuOutline, chevronForwardOutline, chevronBackOutline,
+      arrowForwardOutline, arrowBackOutline,
+      speedometerOutline, libraryOutline, ribbonOutline,
+      pencilOutline, trashOutline, addCircleOutline, checkmarkOutline
+    });
+
+    // Suscribirse a cambios de ruta para actualizar iconos
+    this.currentUrl = this.router.url;
+    this.subscriptions.push(
+      this.router.events.pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      ).subscribe((event: NavigationEnd) => {
+        this.currentUrl = event.urlAfterRedirects;
+      })
+    );
 
     // Suscribirse al seguimiento actual con cleanup
     this.subscriptions.push(
@@ -147,12 +249,23 @@ export class TabsPage implements OnDestroy {
       })
     );
 
-    // Suscribirse al grupo seleccionado con cleanup
+    // Suscribirse al grupo seleccionado (para UI de botones)
     this.subscriptions.push(
-      this.seguimientoService.grupoSeleccionado$.pipe(
-        distinctUntilChanged()
-      ).subscribe((grupo: number) => {
+      this.seguimientoService.grupoSeleccionado$.subscribe((grupo: number) => {
         this.selectedGrupo = grupo;
+        // Forzar detección de cambios para actualizar la UI de botones
+        this.cdr.detectChanges();
+      })
+    );
+
+    // Suscribirse al grupo visualizado (para mostrar integrantes)
+    this.subscriptions.push(
+      this.seguimientoService.grupoVisualizado$.subscribe((grupo: number) => {
+        this.grupoVisualizado = grupo;
+        // Actualizar integrantes cuando cambia el grupo visualizado
+        this.actualizarIntegrantesGrupo();
+        // Forzar detección de cambios para actualizar la UI
+        this.cdr.detectChanges();
       })
     );
 
@@ -173,18 +286,26 @@ export class TabsPage implements OnDestroy {
           if (courseState?.filtroGrupo && courseState.filtroGrupo !== 'todos') {
             // Extraer número del grupo (G1 -> 1, G2 -> 2, etc.)
             const grupoNum = parseInt(courseState.filtroGrupo.replace(/\D/g, ''));
-            if (grupoNum > 0) {
+
+            // 🛡️ GUARDIA: Solo restaurar si es diferente al actual
+            if (grupoNum > 0 && this.selectedGrupo !== grupoNum) {
               this.selectedGrupo = grupoNum;
               this.seguimientoService.setGrupoSeleccionado(grupoNum);
             }
           } else {
             // Resetear a "Todos" si no hay grupo guardado
-            this.selectedGrupo = 0;
-            this.seguimientoService.setGrupoSeleccionado(0);
+            if (this.selectedGrupo !== 0) {
+              this.selectedGrupo = 0;
+              this.seguimientoService.setGrupoSeleccionado(0);
+            }
           }
+
+          // Actualizar integrantes del grupo
+          this.actualizarIntegrantesGrupo();
         } else {
           this.grupos = [];
           this.selectedGrupo = 0;
+          this.integrantesGrupoActual = [];
         }
       })
     );
@@ -206,7 +327,7 @@ export class TabsPage implements OnDestroy {
       this.dataService.searchResults$.subscribe(results => {
         this.searchResults = results.results;
         this.searchTerm = results.term;
-        console.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
+        Logger.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
       })
     );
 
@@ -218,10 +339,68 @@ export class TabsPage implements OnDestroy {
         // Navegación completada silenciosamente
       })
     );
-  } ngOnDestroy(): void {
+  }
+
+  ngAfterViewInit(): void {
+    // Configurar layout inicial y listener de resize optimizado
+    this.updateDesktopState();
+    this.setupResizeListener();
+  }
+
+  ngOnDestroy(): void {
     // Limpiar todas las subscripciones para prevenir memory leaks
     this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
     this.subscriptions = [];
+
+    // Limpiar resize listener
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
+  }
+
+  /** Actualiza isDesktop solo si cambió - evita detecciones innecesarias */
+  private updateDesktopState(): void {
+    if (typeof window === 'undefined') return;
+    const newIsDesktop = window.innerWidth >= 992;
+    if (this.isDesktop !== newIsDesktop) {
+      this.isDesktop = newIsDesktop;
+      this.handleMenuState();
+      this.cdr.detectChanges();
+    }
+  }
+
+  /** Configura el resize listener fuera de Angular zone para mejor performance */
+  private setupResizeListener(): void {
+    this.ngZone.runOutsideAngular(() => {
+      let resizeTimeout: ReturnType<typeof setTimeout>;
+
+      this.resizeHandler = () => {
+        // Debounce de 150ms para evitar múltiples actualizaciones
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          this.ngZone.run(() => this.updateDesktopState());
+        }, 150);
+      };
+
+      window.addEventListener('resize', this.resizeHandler);
+    });
+  }
+
+  /** Maneja el estado del menú según desktop/mobile */
+  private async handleMenuState(): Promise<void> {
+    if (!this.isDesktop) {
+      // En móvil: habilitar menú con swipe
+      await this.menuCtrl.enable(true, 'mainMenu');
+      await this.menuCtrl.swipeGesture(true, 'mainMenu');
+    } else {
+      // En desktop: deshabilitar menú (no existe en el DOM)
+      try {
+        await this.menuCtrl.enable(false, 'mainMenu');
+      } catch (e) {
+        // El menú puede no existir, ignorar
+      }
+    }
   }
 
   onGlobalSearch(event: any): void {
@@ -262,25 +441,274 @@ export class TabsPage implements OnDestroy {
     }, 150);
   }
 
+  /** Abre el menú lateral en móvil */
+  async openMenu(): Promise<void> {
+    await this.menuCtrl.open('mainMenu');
+  }
+
+  /** Toggle del panel de seguimiento móvil */
+  toggleMobileSeguimiento(): void {
+    this.mobileSeguimientoVisible = !this.mobileSeguimientoVisible;
+  }
+
+  /** Toggle de expansión del sidebar */
+  toggleSidebar(): void {
+    this.sidebarExpanded = !this.sidebarExpanded;
+  }
+
+  /** Helper para parseInt en template */
+  parseInt(value: string): number {
+    return parseInt(value, 10) || 0;
+  }
+
   selectGrupo(grupo: string | 'todos'): void {
     const grupoNum = grupo === 'todos' ? 0 : parseInt(grupo) || 0;
+
+    // 🛡️ GUARDIA: Evitar actualizaciones si ya es el grupo seleccionado
+    if (this.selectedGrupo === grupoNum) {
+      return;
+    }
+
     this.selectedGrupo = grupoNum;
     this.seguimientoService.setGrupoSeleccionado(grupoNum);
+
+    // Actualizar integrantes del grupo
+    this.actualizarIntegrantesGrupo();
 
     // Guardar en CourseState para persistencia por curso
     if (this.cursoActivo) {
       const grupoStr = grupoNum === 0 ? 'todos' : `G${grupoNum} `;
-      this.dataService.updateCourseState(this.cursoActivo, {
-        filtroGrupo: grupoStr
-      });
+
+      // 🛡️ GUARDIA: Solo actualizar si el valor cambió
+      const courseState = this.dataService.getCourseState(this.cursoActivo);
+      if (courseState?.filtroGrupo !== grupoStr) {
+        this.dataService.updateCourseState(this.cursoActivo, {
+          filtroGrupo: grupoStr
+        });
+      }
     }
+  }
+
+  /**
+   * Obtiene los integrantes del grupo actualmente visualizado.
+   * Usa grupoVisualizado (no selectedGrupo) para permitir previsualización
+   * de integrantes sin cambiar la selección de filtro en la UI.
+   */
+  private actualizarIntegrantesGrupo(): void {
+    if (!this.cursoActivo || this.grupoVisualizado === 0) {
+      this.integrantesGrupoActual = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const estudiantes = this.dataService.getCurso(this.cursoActivo);
+    if (!estudiantes || estudiantes.length === 0) {
+      this.integrantesGrupoActual = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // Filtrar por grupo visualizado (no selectedGrupo)
+    // El grupo del estudiante puede ser "1", "G1", "Grupo 1", etc.
+    const grupoNum = this.grupoVisualizado;
+    const grupoNumStr = String(grupoNum);
+
+    this.integrantesGrupoActual = estudiantes.filter(e => {
+      if (!e.grupo) return false;
+      // Extraer solo el número del campo grupo del estudiante
+      const estudianteGrupoNum = e.grupo.toString().replace(/\D/g, '');
+      return estudianteGrupoNum === grupoNumStr;
+    });
+
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Obtiene la calificación de Canvas para un estudiante y entrega específica
+   * Busca en el archivo de calificaciones cargado usando canvasUserId
+   */
+  obtenerCalificacionCanvas(estudiante: any, entrega: string): number {
+    if (!this.cursoActivo) return 0;
+
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (!courseState?.archivoCalificaciones?.calificaciones) return 0;
+
+    // Buscar por canvasUserId del estudiante
+    const calificacion = courseState.archivoCalificaciones.calificaciones.find(
+      (cal: any) => cal.id === estudiante.canvasUserId
+    );
+
+    if (!calificacion) return 0;
+
+    // Obtener el valor según la entrega
+    let valor: string = '';
+    switch (entrega) {
+      case 'E1': valor = calificacion.e1; break;
+      case 'E2': valor = calificacion.e2; break;
+      case 'EF': valor = calificacion.ef; break;
+    }
+
+    // Parsear el valor (puede ser vacío, número o texto)
+    const num = parseFloat(valor);
+    return isNaN(num) ? 0 : num;
+  }
+
+  /**
+   * Obtiene la calificación (PG + PI) para un estudiante y entrega específica
+   * Ahora prioriza las calificaciones del archivo Canvas si están disponibles
+   */
+  obtenerCalificacionEstudiante(estudiante: any, entrega: string): number {
+    if (!this.cursoActivo) return 0;
+
+    // Primero intentar obtener de archivo Canvas (prioridad)
+    const canvasCalif = this.obtenerCalificacionCanvas(estudiante, entrega);
+    if (canvasCalif > 0) {
+      return canvasCalif;
+    }
+
+    // Fallback: calcular desde evaluaciones de rúbricas (PG + PI)
+    const pg = this.dataService.getEvaluacion(this.cursoActivo, entrega, 'PG', estudiante.grupo)?.puntosTotales || 0;
+    const pi = this.dataService.getEvaluacion(this.cursoActivo, entrega, 'PI', estudiante.correo)?.puntosTotales || 0;
+
+    return pg + pi;
+  }
+
+  /**
+   * Verifica si hay calificaciones de Canvas disponibles para el estudiante
+   */
+  tieneCalificacionCanvas(estudiante: any, entrega: string): boolean {
+    return this.obtenerCalificacionCanvas(estudiante, entrega) > 0;
+  }
+
+  // ============================================
+  // EDICIÓN INLINE DE CALIFICACIONES
+  // ============================================
+
+  /**
+   * Inicia la edición de una calificación en el panel de seguimiento
+   */
+  iniciarEdicionCalificacion(estudiante: any, entrega: string, event: Event): void {
+    event.stopPropagation();
+    // Solo permitir edición si hay archivo de calificaciones cargado
+    if (!this.cursoActivo) return;
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (!courseState?.archivoCalificaciones?.calificaciones) return;
+
+    this.editandoCalificacion = { estudiante, entrega };
+    const valorActual = this.obtenerCalificacionCanvas(estudiante, entrega);
+    this.valorCalificacionEditando = valorActual > 0 ? valorActual.toString() : '';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si se está editando una calificación específica
+   */
+  estaEditandoCalificacion(estudiante: any, entrega: string): boolean {
+    return this.editandoCalificacion?.estudiante?.correo === estudiante.correo &&
+           this.editandoCalificacion?.entrega === entrega;
+  }
+
+  /**
+   * Guarda la calificación editada
+   */
+  guardarCalificacionInicio(): void {
+    if (!this.editandoCalificacion || !this.cursoActivo) return;
+
+    const { estudiante, entrega } = this.editandoCalificacion;
+    const nuevoValor = this.valorCalificacionEditando.trim();
+
+    // Actualizar en el archivo de calificaciones
+    this.actualizarCalificacionEnArchivo(estudiante, entrega, nuevoValor);
+
+    this.editandoCalificacion = null;
+    this.valorCalificacionEditando = '';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Cancela la edición
+   */
+  cancelarEdicionCalificacion(): void {
+    this.editandoCalificacion = null;
+    this.valorCalificacionEditando = '';
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Maneja teclas durante la edición
+   */
+  onKeyDownCalificacion(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.guardarCalificacionInicio();
+    } else if (event.key === 'Escape') {
+      this.cancelarEdicionCalificacion();
+    }
+  }
+
+  /**
+   * Actualiza la calificación en el archivo cargado en DataService
+   */
+  private actualizarCalificacionEnArchivo(estudiante: any, entrega: string, nuevoValor: string): void {
+    if (!this.cursoActivo) return;
+
+    const courseState = this.dataService.getCourseState(this.cursoActivo);
+    if (!courseState?.archivoCalificaciones?.calificaciones) return;
+
+    // Buscar la calificación del estudiante
+    const calificaciones = [...courseState.archivoCalificaciones.calificaciones];
+    const index = calificaciones.findIndex((cal: any) => cal.id === estudiante.canvasUserId);
+
+    if (index === -1) return;
+
+    // Actualizar el valor según la entrega
+    const calificacion = { ...calificaciones[index] };
+    switch (entrega) {
+      case 'E1': calificacion.e1 = nuevoValor; break;
+      case 'E2': calificacion.e2 = nuevoValor; break;
+      case 'EF': calificacion.ef = nuevoValor; break;
+    }
+
+    calificaciones[index] = calificacion;
+
+    // Actualizar el courseState
+    const nuevoArchivoCalificaciones = {
+      ...courseState.archivoCalificaciones,
+      calificaciones
+    };
+
+    // Guardar en DataService
+    this.dataService.updateCourseState(this.cursoActivo, {
+      archivoCalificaciones: nuevoArchivoCalificaciones
+    });
+
+    Logger.log(`✅ Calificación actualizada: ${estudiante.nombres} ${estudiante.apellidos} - ${entrega}: ${nuevoValor}`);
+  }
+
+  /**
+   * Obtiene el total de todas las entregas para un estudiante
+   */
+  obtenerTotalEstudiante(estudiante: any): number {
+    const e1 = this.obtenerCalificacionEstudiante(estudiante, 'E1');
+    const e2 = this.obtenerCalificacionEstudiante(estudiante, 'E2');
+    const ef = this.obtenerCalificacionEstudiante(estudiante, 'EF');
+    return e1 + e2 + ef;
+  }
+
+  /**
+   * Obtiene el color del badge según el valor de la calificación
+   */
+  obtenerColorCalificacion(valor: number): string {
+    if (valor >= 4.0) return 'success';
+    if (valor >= 3.0) return 'warning';
+    return 'danger';
   }
 
   /**
    * Abre la rúbrica para evaluación desde el panel de seguimiento
    */
   abrirRubricaEntrega(entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI') {
-    console.log(`📋[TabsPage] Abriendo rúbrica desde sidebar: ${entrega} - ${tipo} `);
+    Logger.log(`📋[TabsPage] Abriendo rúbrica desde sidebar: ${entrega} - ${tipo} `);
 
     // Trigger evento personalizado para abrir rúbrica
     const event = new CustomEvent('abrirRubrica', {
@@ -406,11 +834,11 @@ export class TabsPage implements OnDestroy {
       });
 
       navigator.clipboard.write([clipboardItem]).then(() => {
-        console.log('✅ Texto de seguimiento copiado al portapapeles con formato y colores');
+        Logger.log('✅ Texto de seguimiento copiado al portapapeles con formato y colores');
       }).catch(() => {
         // Fallback a texto plano si falla el formato HTML
         navigator.clipboard.writeText(textoPlano).then(() => {
-          console.log('✅ Texto de seguimiento copiado al portapapeles (texto plano)');
+          Logger.log('✅ Texto de seguimiento copiado al portapapeles (texto plano)');
         });
       });
     }
@@ -453,6 +881,41 @@ export class TabsPage implements OnDestroy {
     if (this.comentariosFijados) {
       this.comentariosColapsado = false; // Si se fija, se expande automáticamente
     }
+  }
+
+  agregarComentario(): void {
+    if (!this.nuevoComentarioTexto.trim() || this.selectedGrupo === 0) return;
+
+    const nuevoComentario: ComentarioGrupo = {
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      comentario: this.nuevoComentarioTexto.trim(),
+      fecha: new Date(),
+      autor: 'Docente'
+    };
+
+    this.seguimientoService.agregarComentario(nuevoComentario);
+    this.nuevoComentarioTexto = '';
+  }
+
+  iniciarEdicionComentario(comentario: ComentarioGrupo): void {
+    this.editandoComentarioId = comentario.id;
+    this.editandoComentarioTexto = comentario.comentario;
+  }
+
+  guardarEdicionComentario(): void {
+    if (!this.editandoComentarioId || !this.editandoComentarioTexto.trim()) return;
+
+    this.seguimientoService.actualizarComentario(this.editandoComentarioId, this.editandoComentarioTexto.trim());
+    this.cancelarEdicionComentario();
+  }
+
+  cancelarEdicionComentario(): void {
+    this.editandoComentarioId = null;
+    this.editandoComentarioTexto = '';
+  }
+
+  eliminarComentario(id: string): void {
+    this.seguimientoService.eliminarComentario(id);
   }
 
   toggleFullscreen(): void {
@@ -502,31 +965,15 @@ export class TabsPage implements OnDestroy {
     return nombreAbreviado;
   }
 
-  // Método helper para template
-  parseInt(value: string): number {
-    return parseInt(value) || 0;
-  }
-
   // Actualizar grupos disponibles desde los estudiantes del curso activo
   actualizarGruposDisponibles(): void {
-    console.log('🔍 [tabs] actualizarGruposDisponibles()');
-    console.log('   cursoActivo:', this.cursoActivo);
-
     if (!this.cursoActivo) {
       this.grupos = [];
-      console.log('   ⚠️ No hay curso activo, grupos = []');
       return;
     }
 
     const cursosData = this.dataService.getCursos();
-    console.log('   Cursos disponibles:', Object.keys(cursosData));
-
     const estudiantes = cursosData[this.cursoActivo] || [];
-    console.log('   Total estudiantes en curso:', estudiantes.length);
-
-    if (estudiantes.length > 0) {
-      console.log('   Primer estudiante:', estudiantes[0]);
-    }
 
     // Extraer grupos únicos de los estudiantes usando groupName o grupo
     const gruposSet = new Set<string>();
@@ -544,22 +991,16 @@ export class TabsPage implements OnDestroy {
       }
     });
 
-    console.log('   Grupos extraídos del Set:', Array.from(gruposSet));
-
     // Convertir a array y ordenar numéricamente
     this.grupos = Array.from(gruposSet).sort((a, b) => {
       const numA = parseInt(a) || 0;
       const numB = parseInt(b) || 0;
       return numA - numB;
     });
-
-    console.log('📊 [tabs] Grupos disponibles actualizados:', this.grupos);
-    console.log('📋 [tabs] Mapa de grupos:', Array.from(gruposMap.entries()));
   }
 
   // Método para navegación programática si es necesario
   navigateToTab(tab: string) {
-    console.log('Navegando a tab:', tab);
     this.router.navigate(['/tabs', tab]);
   }
 
@@ -591,30 +1032,149 @@ export class TabsPage implements OnDestroy {
     return nivel?.descripcion || criterio.comentario || '';
   }
 
+  // === MÉTODOS PARA ESTADOS DE ESTUDIANTES ===
+
   /**
-   * Configurar comportamiento del menú: fijo en desktop (via ion-split-pane), overlay en móvil
+   * Obtiene el estado de un estudiante para mostrar en la tabla
    */
-  private async setupMenuBehavior(): Promise<void> {
-    const checkScreenSize = async () => {
-      this.isDesktop = window.innerWidth >= 992; // 992px es el breakpoint estándar de ion-split-pane
+  getEstadoEstudiante(correo: string): EstadoEstudiante {
+    const grupo = this.grupoVisualizado.toString();
+    const entrega = this.seguimientoActual?.entregaActual;
+    if (!grupo || grupo === '0' || !entrega) return null;
+    return this.seguimientoService.getEstadoEstudiante(grupo, entrega, correo);
+  }
 
-      if (this.isDesktop) {
-        // En desktop: ion-split-pane maneja el menú automáticamente
-        // El menú debe estar habilitado para que split-pane lo muestre
-        await this.menuCtrl.enable(true, 'mainMenu');
-        await this.menuCtrl.swipeGesture(false, 'mainMenu'); // Sin swipe en desktop
-      } else {
-        // En móvil: habilitar menú con swipe
-        await this.menuCtrl.enable(true, 'mainMenu');
-        await this.menuCtrl.swipeGesture(true, 'mainMenu');
-        await this.menuCtrl.close('mainMenu');
-      }
-    };
+  /**
+   * Obtiene el ícono para un estado
+   */
+  getIconoEstado(estado: EstadoEstudiante): string {
+    switch (estado) {
+      case 'ok': return 'checkmark-circle';
+      case 'solo': return 'git-merge';
+      case 'ausente': return 'close-circle';
+      default: return '';
+    }
+  }
 
-    // Ejecutar al cargar
-    await checkScreenSize();
+  /**
+   * Obtiene el color para un estado
+   */
+  getColorEstado(estado: EstadoEstudiante): string {
+    switch (estado) {
+      case 'ok': return 'success';
+      case 'solo': return 'warning';
+      case 'ausente': return 'danger';
+      default: return 'medium';
+    }
+  }
 
-    // Escuchar cambios de tamaño de ventana
-    window.addEventListener('resize', () => checkScreenSize());
+  /**
+   * Activa/desactiva el modo de selección de estado
+   */
+  toggleModoSeleccionEstado(modo: 'ok' | 'solo' | 'ausente') {
+    if (this.modoSeleccionEstado === modo) {
+      this.modoSeleccionEstado = null;
+    } else {
+      this.modoSeleccionEstado = modo;
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Maneja el cambio del checkbox de un estudiante
+   */
+  onCheckboxEstadoChange(correo: string, event: any) {
+    const checked = event.detail.checked;
+    const grupo = this.grupoVisualizado.toString();
+    const entrega = this.seguimientoActual?.entregaActual;
+
+    if (!grupo || grupo === '0' || !entrega || !this.modoSeleccionEstado) return;
+
+    if (checked) {
+      // Aplicar el estado seleccionado
+      this.seguimientoService.setEstadoEstudiante(grupo, entrega, correo, this.modoSeleccionEstado);
+    } else {
+      // Quitar el estado
+      this.seguimientoService.setEstadoEstudiante(grupo, entrega, correo, null);
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si el checkbox de un estudiante debe estar marcado
+   */
+  isCheckboxChecked(correo: string): boolean {
+    if (!this.modoSeleccionEstado) return false;
+    const estado = this.getEstadoEstudiante(correo);
+    return estado === this.modoSeleccionEstado;
+  }
+
+  /**
+   * Verifica si hay una entrega activa para mostrar los controles de estado
+   */
+  hayEntregaActiva(): boolean {
+    return !!this.seguimientoActual?.entregaActual;
+  }
+
+  /**
+   * Sale del modo de selección de estados
+   */
+  salirModoSeleccion() {
+    this.modoSeleccionEstado = null;
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si un integrante está seleccionado
+   */
+  isIntegranteSelected(correo: string): boolean {
+    return this.selectedIntegrantes.has(correo);
+  }
+
+  /**
+   * Alterna la selección de un integrante
+   */
+  toggleIntegranteSelection(correo: string, event?: any) {
+    if (this.selectedIntegrantes.has(correo)) {
+      this.selectedIntegrantes.delete(correo);
+    } else {
+      this.selectedIntegrantes.add(correo);
+    }
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Selecciona todos los integrantes del grupo actual
+   */
+  selectAllIntegrantes() {
+    this.integrantesGrupoActual.forEach(i => this.selectedIntegrantes.add(i.correo));
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Deselecciona todos los integrantes
+   */
+  deselectAllIntegrantes() {
+    this.selectedIntegrantes.clear();
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Verifica si todos los integrantes están seleccionados
+   */
+  areAllIntegrantesSelected(): boolean {
+    if (this.integrantesGrupoActual.length === 0) return false;
+    return this.integrantesGrupoActual.every(i => this.selectedIntegrantes.has(i.correo));
+  }
+
+  /**
+   * Alterna selección de todos los integrantes
+   */
+  toggleSelectAllIntegrantes() {
+    if (this.areAllIntegrantesSelected()) {
+      this.deselectAllIntegrantes();
+    } else {
+      this.selectAllIntegrantes();
+    }
   }
 }

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 2.1: Estructura General y Filosofía de Organización</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+  <div class="container">
+    <header class="theme-teal">
+      <h1>🏗️ POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📁 Parte 2.1: Estructura General y Filosofía</span>
+    </header>
+
+    <nav class="nav-parts theme-teal">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html" class="active">2.1: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">2.3: src/app/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">2.4: Archivos Base</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html">2.5: Config Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section theme-teal">
+      <h2>📚 Introducción a la Estructura del Proyecto</h2>
+
+      <p><strong>POLIProject</strong> (Gestor de Seguimiento de Proyectos) sigue una estructura de carpetas estandarizada que combina las mejores prácticas de <strong>Ionic</strong>, <strong>Angular</strong> y <strong>Capacitor</strong>. Esta organización no es arbitraria: cada carpeta tiene un propósito específico y sigue principios de arquitectura de software bien establecidos.</p>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Un lugar para cada cosa, cada cosa en su lugar"</h4>
+        <p>La estructura de carpetas en un proyecto moderno sigue el principio de <strong>Separación de Responsabilidades</strong> (Separation of Concerns):</p>
+        <ul>
+          <li><strong>Cohesión:</strong> Archivos relacionados están juntos</li>
+          <li><strong>Acoplamiento bajo:</strong> Las carpetas son independientes entre sí</li>
+          <li><strong>Escalabilidad:</strong> Fácil agregar nuevas funcionalidades</li>
+          <li><strong>Mantenibilidad:</strong> Cualquier desarrollador encuentra rápidamente lo que busca</li>
+        </ul>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🏢 Analogía: El Edificio Corporativo</h4>
+        <p>Imagina que POLIProject es un <strong>edificio corporativo</strong>:</p>
+        <ul>
+          <li><strong>Recepción (index.html):</strong> Punto de entrada donde llegas primero</li>
+          <li><strong>Lobby (main.ts):</strong> Te dirige al departamento correcto</li>
+          <li><strong>Pisos/Departamentos (src/app/):</strong> Cada área tiene su función específica</li>
+          <li><strong>Archivo Central (docs/):</strong> Documentación y referencias guardadas</li>
+          <li><strong>Infraestructura (android/, ios/):</strong> Los "cimientos" para diferentes terrenos</li>
+          <li><strong>Almacén (assets/):</strong> Recursos que todos los departamentos usan</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ÁRBOL DE CARPETAS -->
+    <!-- ============================================ -->
+    <section class="section theme-teal">
+      <h2>🌳 Árbol de Carpetas Principal</h2>
+
+      <p>Esta es la estructura de primer nivel del proyecto POLIProject:</p>
+
+      <div class="tree-structure">
+<span class="folder">POLI/</span>                          <span class="comment"># 📁 Raíz del proyecto</span>
+├── <span class="folder">docs/</span>                      <span class="comment"># 📄 Documentación y referencias</span>
+│
+├── <span class="folder">src/</span>                       <span class="comment"># 💻 CÓDIGO FUENTE (el corazón)</span>
+│   ├── <span class="folder">app/</span>                   <span class="comment"># ⚙️ Aplicación Angular</span>
+│   ├── <span class="folder">assets/</span>                <span class="comment"># 🖼️ Recursos estáticos</span>
+│   ├── <span class="folder">environments/</span>          <span class="comment"># 🌍 Config por entorno</span>
+│   ├── <span class="folder">theme/</span>                 <span class="comment"># 🎨 Variables de tema</span>
+│   ├── <span class="file">global.scss</span>            <span class="comment"># Estilos globales</span>
+│   ├── <span class="file">index.html</span>             <span class="comment"># Punto de entrada HTML</span>
+│   ├── <span class="file">main.ts</span>                <span class="comment"># Bootstrap de Angular</span>
+│   ├── <span class="file">polyfills.ts</span>           <span class="comment"># Compatibilidad browsers</span>
+│   ├── <span class="file">test.ts</span>                <span class="comment"># Config de testing</span>
+│   └── <span class="file">zone-flags.ts</span>          <span class="comment"># Optimización Zone.js</span>
+│
+├── <span class="folder">android/</span>                   <span class="comment"># 🤖 Proyecto nativo Android</span>
+├── <span class="folder">ios/</span>                       <span class="comment"># 🍎 Proyecto nativo iOS</span>
+├── <span class="folder">www/</span>                       <span class="comment"># 📦 Build output (compilado)</span>
+├── <span class="folder">public/</span>                    <span class="comment"># 🌐 Archivos PWA públicos</span>
+├── <span class="folder">scripts/</span>                   <span class="comment"># 🔧 Scripts de automatización</span>
+│
+├── <span class="file">angular.json</span>               <span class="comment"># Config Angular CLI</span>
+├── <span class="file">capacitor.config.ts</span>        <span class="comment"># Config Capacitor</span>
+├── <span class="file">ionic.config.json</span>          <span class="comment"># Config Ionic CLI</span>
+├── <span class="file">package.json</span>               <span class="comment"># Dependencias NPM</span>
+├── <span class="file">tsconfig.json</span>              <span class="comment"># Config TypeScript</span>
+├── <span class="file">karma.conf.js</span>              <span class="comment"># Config test runner</span>
+└── <span class="file">ngsw-config.json</span>           <span class="comment"># Config PWA Service Worker</span>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 Convención de Colores en la Documentación:</strong><br>
+        <span class="color-folder">■ Azul</span> = Carpetas (directorios) &nbsp;|&nbsp;
+        <span class="color-file">■ Naranja</span> = Archivos &nbsp;|&nbsp;
+        <span class="color-comment">■ Verde</span> = Comentarios explicativos
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CATEGORÍAS DE CARPETAS -->
+    <!-- ============================================ -->
+    <section class="section theme-teal">
+      <h2>📊 Categorías de Carpetas</h2>
+
+      <p>Las carpetas del proyecto se organizan en 4 categorías funcionales:</p>
+
+      <div class="layer-diagram">
+        <div class="layer-card">
+          <div class="icon">💻</div>
+          <h4>Código Fuente</h4>
+          <p>Donde vive la lógica de la aplicación</p>
+          <code>src/</code>
+        </div>
+        <div class="layer-card">
+          <div class="icon">⚙️</div>
+          <h4>Configuración</h4>
+          <p>Archivos que definen comportamiento</p>
+          <code>*.json, *.ts</code>
+        </div>
+        <div class="layer-card">
+          <div class="icon">📱</div>
+          <h4>Plataformas Nativas</h4>
+          <p>Proyectos Android e iOS</p>
+          <code>android/, ios/</code>
+        </div>
+        <div class="layer-card">
+          <div class="icon">📄</div>
+          <h4>Documentación</h4>
+          <p>Referencias y datos de prueba</p>
+          <code>docs/</code>
+        </div>
+      </div>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Carpeta</th>
+            <th>Categoría</th>
+            <th>¿Se compila?</th>
+            <th>¿Va al dispositivo?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src/</code></td>
+            <td><span class="badge badge-src">Código</span></td>
+            <td>✅ Sí</td>
+            <td>✅ Sí (como www/)</td>
+          </tr>
+          <tr>
+            <td><code>android/</code></td>
+            <td><span class="badge badge-native">Nativo</span></td>
+            <td>✅ Sí (Gradle)</td>
+            <td>✅ Sí (APK/AAB)</td>
+          </tr>
+          <tr>
+            <td><code>ios/</code></td>
+            <td><span class="badge badge-native">Nativo</span></td>
+            <td>✅ Sí (Xcode)</td>
+            <td>✅ Sí (IPA)</td>
+          </tr>
+          <tr>
+            <td><code>docs/</code></td>
+            <td><span class="badge badge-docs">Docs</span></td>
+            <td>❌ No</td>
+            <td>❌ No</td>
+          </tr>
+          <tr>
+            <td><code>www/</code></td>
+            <td><span class="badge badge-src">Output</span></td>
+            <td>N/A (ya compilado)</td>
+            <td>✅ Sí (contenido)</td>
+          </tr>
+          <tr>
+            <td><code>*.json</code></td>
+            <td><span class="badge badge-config">Config</span></td>
+            <td>⚡ Leído en build</td>
+            <td>❌ No (solo config)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ARQUITECTURA POR CAPAS -->
+    <!-- ============================================ -->
+    <section class="section theme-teal">
+      <h2>🏛️ Arquitectura por Capas</h2>
+
+      <p>Dentro de <code>src/app/</code>, POLIProject sigue una <strong>arquitectura por capas</strong> que separa responsabilidades:</p>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: Arquitectura en Capas (Layered Architecture)</h4>
+        <p>Cada capa tiene una responsabilidad única y solo puede comunicarse con capas adyacentes:</p>
+        <ul>
+          <li><strong>Presentación:</strong> Lo que el usuario ve e interactúa</li>
+          <li><strong>Lógica de Negocio:</strong> Las reglas y procesos de la aplicación</li>
+          <li><strong>Acceso a Datos:</strong> Cómo se guardan y recuperan los datos</li>
+          <li><strong>Modelo de Datos:</strong> La estructura de la información</li>
+        </ul>
+      </div>
+
+      <div class="tree-structure">
+<span class="folder">src/app/</span>
+│
+├── <span class="folder highlight">pages/</span>              <span class="comment"># 🖥️ CAPA DE PRESENTACIÓN</span>
+├── <span class="folder highlight">components/</span>         <span class="comment"># 🧩 CAPA DE PRESENTACIÓN</span>
+├── <span class="folder highlight">tabs/</span>               <span class="comment"># 🔖 CAPA DE PRESENTACIÓN</span>
+│
+├── <span class="folder highlight">services/</span>           <span class="comment"># ⚙️ CAPA DE LÓGICA DE NEGOCIO</span>
+├── <span class="folder highlight">core/</span>               <span class="comment"># 🔧 CAPA DE LÓGICA DE NEGOCIO</span>
+│
+├── <span class="folder highlight">models/</span>             <span class="comment"># 📊 CAPA DE MODELO DE DATOS</span>
+│
+└── <span class="folder highlight">styles/</span>             <span class="comment"># 🎨 TRANSVERSAL (afecta presentación)</span>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🍔 Analogía: La Hamburguesa</h4>
+        <p>Piensa en la arquitectura como una hamburguesa:</p>
+        <ul>
+          <li><strong>Pan superior (pages/):</strong> Lo que el cliente ve y toca</li>
+          <li><strong>Lechuga y tomate (components/):</strong> Elementos visuales reutilizables</li>
+          <li><strong>La carne (services/):</strong> La sustancia, la lógica real</li>
+          <li><strong>Queso (core/):</strong> Lo que une y da sabor a todo</li>
+          <li><strong>Pan inferior (models/):</strong> La base que sostiene la estructura</li>
+        </ul>
+        <p class="mt-10"><strong>Regla:</strong> No puedes quitar una capa sin que la hamburguesa se desarme.</p>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <ul>
+          <li><strong>Presentación:</strong> <code>InicioPage</code>, <code>CalificacionesPage</code>, <code>BarraDeGrupos</code></li>
+          <li><strong>Lógica:</strong> <code>DataService</code>, <code>SeguimientoService</code>, <code>StateManagerService</code></li>
+          <li><strong>Modelo:</strong> <code>Estudiante</code>, <code>Evaluacion</code>, <code>RubricaDefinicion</code>, <code>UIState</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CONVENCIONES DE NOMENCLATURA -->
+    <!-- ============================================ -->
+    <section class="section theme-teal">
+      <h2>📝 Convenciones de Nomenclatura</h2>
+
+      <p>POLIProject sigue convenciones estándar de Angular/Ionic para nombrar archivos:</p>
+
+      <div class="convention-grid">
+        <div class="convention-card">
+          <h4>📄 Páginas</h4>
+          <p><code>nombre.page.ts</code></p>
+          <p><code>nombre.page.html</code></p>
+          <p><code>nombre.page.scss</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>calificaciones.page.ts</code></p>
+        </div>
+        <div class="convention-card">
+          <h4>🧩 Componentes</h4>
+          <p><code>nombre.component.ts</code></p>
+          <p><code>nombre.component.html</code></p>
+          <p><code>nombre.component.scss</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>barra-de-grupos.component.ts</code></p>
+        </div>
+        <div class="convention-card">
+          <h4>⚙️ Servicios</h4>
+          <p><code>nombre.service.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>data.service.ts</code></p>
+          <p class="text-sm text-muted"><code>unified-storage.service.ts</code></p>
+        </div>
+        <div class="convention-card">
+          <h4>📊 Modelos</h4>
+          <p><code>nombre.model.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>estudiante.model.ts</code></p>
+          <p class="text-sm text-muted"><code>evaluacion.model.ts</code></p>
+        </div>
+        <div class="convention-card">
+          <h4>🧪 Tests</h4>
+          <p><code>nombre.spec.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Ejemplo: <code>app.component.spec.ts</code></p>
+          <p class="text-sm text-muted">Siempre junto al archivo que prueban</p>
+        </div>
+        <div class="convention-card">
+          <h4>📦 Barrel Export</h4>
+          <p><code>index.ts</code></p>
+          <p class="mt-10 text-sm text-muted">Re-exporta todo desde una carpeta</p>
+          <p class="text-sm text-muted"><code>export * from './estudiante.model';</code></p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 ¿Por qué estas convenciones?</strong><br>
+        <ul class="mt-10 ml-20">
+          <li>El sufijo (<code>.page</code>, <code>.service</code>) indica el <strong>tipo</strong> de archivo sin abrirlo</li>
+          <li>Los archivos relacionados quedan <strong>juntos</strong> alfabéticamente</li>
+          <li>Las herramientas de Angular/Ionic <strong>reconocen</strong> estos patrones automáticamente</li>
+          <li>Cualquier desarrollador Angular <strong>entiende</strong> la estructura inmediatamente</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FLUJO DE DATOS -->
+    <!-- ============================================ -->
+    <section class="section theme-teal">
+      <h2>🔄 Flujo de Datos entre Carpetas</h2>
+
+      <p>Así fluye la información a través de la estructura del proyecto:</p>
+
+      <div class="tree-structure flow-diagram">
+        <span class="color-folder font-lg">Usuario</span>
+        <br>⬇️
+        <br><span class="color-file">pages/ components/</span> <span class="comment">(Ve la UI, hace clic)</span>
+        <br>⬇️ ⬆️
+        <br><span class="color-file">services/</span> <span class="comment">(Procesa la acción, aplica lógica)</span>
+        <br>⬇️ ⬆️
+        <br><span class="color-file">models/</span> <span class="comment">(Define estructura de datos)</span>
+        <br>⬇️ ⬆️
+        <br><span class="color-folder font-lg">Storage</span> <span class="comment">(SQLite / IndexedDB)</span>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 Ejemplo en POLIProject:</h4>
+        <ol class="list-spaced">
+          <li>Usuario hace clic en "Guardar Evaluación" en <code>CalificacionesPage</code></li>
+          <li>El componente llama a <code>DataService.guardarEvaluacion(eval)</code></li>
+          <li><code>DataService</code> valida usando el modelo <code>Evaluacion</code></li>
+          <li><code>DataService</code> usa <code>UnifiedStorageService</code> para persistir</li>
+          <li>El storage guarda en SQLite (móvil) o IndexedDB (web)</li>
+          <li>Los cambios se propagan vía <code>BehaviorSubject</code> a todos los subscriptores</li>
+          <li>La UI se actualiza automáticamente gracias a la reactividad</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer class="theme-teal">
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 2.1 de 5 | Politécnico Grancolombiano</p>
+      <p class="mt-10">
+        <a href="DOCUMENTACION-TECNICA-PARTE-1-5.html">← Anterior: 1.5 Ionic+Capacitor</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">Siguiente: 2.2 docs/ y src/ →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

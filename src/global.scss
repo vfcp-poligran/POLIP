@@ -9,6 +9,9 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+/* Custom UI Design System - Importar estilos globales */
+@use "app/styles/ui-design-system";
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -26,137 +29,69 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /* ============================================================
-   LAYOUT LIMPIO SIN !important
+   SAFE AREAS - Soporte para notch/cutout en dispositivos móviles
+   ============================================================ */
+
+/* HTML debe usar viewport-fit=cover para que env() funcione */
+html {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+/* Aplicar safe areas a elementos clave */
+ion-header ion-toolbar:first-of-type {
+  padding-top: var(--sat);
+}
+
+ion-footer ion-toolbar:last-of-type {
+  padding-bottom: var(--sab);
+}
+
+ion-tab-bar {
+  padding-bottom: var(--sab);
+}
+
+/* Content padding para safe areas laterales en landscape */
+ion-content {
+  --padding-start: var(--sal);
+  --padding-end: var(--sar);
+}
+
+/* ============================================================
+   LAYOUT SIMPLE SIN ion-split-pane
    ============================================================ */
 
 /* Componentes de página - display block estándar */
-app-inicio, app-cursos, app-gestion-cursos,
+app-inicio, app-cursos,
 app-rubricas, app-calificaciones, app-sistema {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-/* ion-split-pane layout nativo de Ionic */
-ion-split-pane {
-  --side-width: 280px;
-  --side-max-width: 300px;
-  --side-min-width: 250px;
-}
-
 /* ============================================================
-   🔧 FIX CRÍTICO: ion-split-pane + ion-menu interactividad
-   Cuando split-pane está activo, el backdrop del menú debe
-   ser invisible y no bloquear clics al contenido principal.
+   FIX CRÍTICO: Asegurar que ion-tabs sea interactivo
    ============================================================ */
 
-/* Cuando split-pane está activo (modo desktop), desactivar backdrop del menú */
-ion-split-pane.split-pane-visible {
-  /* El menú está visible permanentemente - no necesita backdrop */
-  ion-menu {
-    /* Desactivar backdrop completamente en modo split-pane */
-    --backdrop-opacity: 0 !important;
-
-    /* Asegurar que el menú no bloquee interacción fuera de él */
-    &::part(backdrop) {
-      display: none !important;
-      pointer-events: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-
-    /* El contenedor del menú no debe capturar eventos fuera de su área */
-    &::part(container) {
-      pointer-events: auto;
-    }
-  }
-
-  /* FIX CRÍTICO: El contenido principal debe tener z-index correcto */
-  > #main-content,
-  > [main] {
-    z-index: 1 !important;
-    position: relative;
-  }
-}
-
-/* FIX AGRESIVO: ion-menu backdrop global - NUNCA debe bloquear cuando split-pane visible */
-ion-split-pane.split-pane-visible ~ ion-backdrop,
-ion-split-pane.split-pane-visible ion-backdrop,
-ion-menu.menu-pane-visible ~ ion-backdrop {
-  display: none !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-}
-
-/* 🔧 FIX ULTRA-CRÍTICO: ion-menu overlay invisible que bloquea clics */
-/* Ionic crea un elemento .menu-content-push que puede tener transform y bloquear eventos */
-ion-split-pane.split-pane-visible .menu-content-push,
-ion-split-pane.split-pane-visible .menu-content-reveal,
-ion-split-pane.split-pane-visible .menu-content-overlay {
-  pointer-events: auto !important;
-  transform: none !important;
-}
-
-/* FIX: ion-backdrop global - asegurar que no bloquee cuando no es necesario */
-ion-backdrop {
-  /* Por defecto visible solo cuando está activo */
-  &:not(.show-backdrop) {
-    pointer-events: none !important;
-  }
-}
-
-/* FIX: Asegurar que el contenido del split-pane sea interactivo */
-ion-split-pane.split-pane-visible > [main],
-ion-split-pane.split-pane-visible > #main-content {
-  pointer-events: auto !important;
-
-  /* Todos los elementos interactivos deben funcionar */
-  ion-button,
-  ion-fab-button,
-  ion-item[button],
-  button,
-  a,
-  ion-segment-button,
-  ion-input,
-  ion-select,
-  ion-checkbox,
-  ion-toggle,
-  ion-searchbar {
-    pointer-events: auto !important;
-    cursor: pointer;
-  }
-}
-
-/* ============================================================
-   🔧 FIX CRÍTICO: .menu-content-open bloquea clics
-   Cuando ion-menu marca el contenido como "abierto", puede
-   bloquear pointer-events. En split-pane, esto NO debe ocurrir.
-   ============================================================ */
-.menu-content-open {
-  /* En modo split-pane, el contenido siempre debe ser interactivo */
-  pointer-events: auto !important;
-
-  /* Asegurar que los hijos también reciban eventos */
-  > * {
-    pointer-events: auto !important;
-  }
-}
-
-/* FIX: El ion-menu en modo split-pane debe permitir clics en el contenido */
-ion-menu.menu-pane-visible {
-  /* El menú visible como panel debe tener pointer-events para su contenido interno */
+/* ion-tabs debe permitir interacción */
+ion-tabs {
   pointer-events: auto;
 
-  /* El contenedor del menú solo ocupa su espacio definido por --width */
-  &::part(container) {
+  /* Todos los elementos internos de ion-tabs deben ser interactivos */
+  .tabs-inner,
+  ion-router-outlet,
+  .ion-page,
+  ion-content,
+  ion-header,
+  ion-toolbar,
+  ion-card,
+  ion-button,
+  ion-item,
+  ion-fab,
+  ion-fab-button {
     pointer-events: auto;
-  }
-
-  /* El backdrop debe estar completamente desactivado */
-  &::part(backdrop) {
-    display: none !important;
-    pointer-events: none !important;
   }
 }
 
@@ -168,6 +103,7 @@ ion-router-outlet {
   right: 0;
   bottom: 0;
   contain: layout size style;
+  pointer-events: auto;
 }
 
 ion-router-outlet .ion-page {
@@ -180,7 +116,9 @@ ion-router-outlet .ion-page {
   flex-direction: column;
   justify-content: space-between;
   contain: layout size style;
-  z-index: 0;
+  z-index: 1;
+  pointer-events: auto;
+  overflow: hidden;
 }
 
 ion-router-outlet .ion-page.ion-page-invisible {
@@ -191,10 +129,9 @@ ion-router-outlet .ion-page.ion-page-hidden {
   display: none;
 }
 
-/* FIX: Asegurar interactividad de botones y controles */
-ion-button, ion-item[button], ion-fab-button, button {
-  position: relative;
-  z-index: 1;
+/* Estilos de interactividad - cursor pointer para elementos clickeables */
+ion-button, ion-item[button], ion-fab-button {
+  cursor: pointer;
 }
 
 ion-content {
@@ -286,7 +223,7 @@ ion-app {
   font-family: var(--font-web, 'Open Sans', sans-serif);
 }
 
-h1,
+h1:not(.page-title),
 h2,
 h3,
 h4,
@@ -405,9 +342,211 @@ ion-router-outlet[class*="_nghost-"] {
 }
 
 /* ============================================================================
- * ESTILOS GLOBALES PARA ALERT DE ELIMINACIÓN (PALETA SRS)
+ * ESTILOS GLOBALES PARA ALERTAS DE CONFIRMACIÓN (PALETA SRS)
+ * Última actualización: 2025-12-15
+ * Ionic Alert usa encapsulación "scoped", requiere mayor especificidad
  * ============================================================================ */
 
+/* Estilos base comunes para todas las alertas personalizadas */
+.alert-confirm,
+.alert-danger,
+.alert-info,
+.alert-success,
+.alert-warning {
+  --backdrop-opacity: 0.7;
+  --background: #ffffff;
+  --max-width: 420px;
+}
+
+/* Wrapper con bordes redondeados y sombra */
+.alert-confirm .alert-wrapper,
+.alert-danger .alert-wrapper,
+.alert-info .alert-wrapper,
+.alert-success .alert-wrapper,
+.alert-warning .alert-wrapper {
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* Header estilizado */
+.alert-confirm .alert-head,
+.alert-danger .alert-head,
+.alert-info .alert-head,
+.alert-success .alert-head,
+.alert-warning .alert-head {
+  padding: 20px 24px 16px;
+}
+
+/* Título blanco por defecto */
+.alert-confirm .alert-title,
+.alert-danger .alert-title,
+.alert-info .alert-title,
+.alert-success .alert-title,
+.alert-warning .alert-title {
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Mensaje con mejor legibilidad */
+.alert-confirm .alert-message,
+.alert-danger .alert-message,
+.alert-info .alert-message,
+.alert-success .alert-message,
+.alert-warning .alert-message {
+  padding: 20px 24px;
+  color: #333333;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  background: #ffffff;
+}
+
+/* Grupo de botones */
+.alert-confirm .alert-button-group,
+.alert-danger .alert-button-group,
+.alert-info .alert-button-group,
+.alert-success .alert-button-group,
+.alert-warning .alert-button-group {
+  padding: 16px 24px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Botones base */
+.alert-confirm .alert-button,
+.alert-danger .alert-button,
+.alert-info .alert-button,
+.alert-success .alert-button,
+.alert-warning .alert-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 100px;
+  text-transform: none;
+  margin: 0 6px;
+}
+
+/* Botón Cancelar - estilo gris */
+.alert-confirm .alert-button-role-cancel,
+.alert-danger .alert-button-role-cancel,
+.alert-info .alert-button-role-cancel,
+.alert-success .alert-button-role-cancel,
+.alert-warning .alert-button-role-cancel {
+  background: #f1f3f4;
+  color: #5f6368;
+  border: 1px solid #dadce0;
+}
+
+/* ===== COLORES ESPECÍFICOS POR TIPO DE ALERTA ===== */
+
+/* ALERT-CONFIRM: Header azul oscuro, botón azul */
+.alert-confirm .alert-head {
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+}
+
+.alert-confirm .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, var(--azul-claro, #4a90e2) 0%, var(--azul-oscuro, #0f385a) 100%);
+  color: #ffffff;
+}
+
+/* ALERT-DANGER: Header rosa/magenta, botón destructivo */
+.alert-danger .alert-head {
+  background: linear-gradient(135deg, #EC0677 0%, #d4055f 100%);
+}
+
+.alert-danger .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, #EC0677 0%, #c90569 100%);
+  color: #ffffff;
+}
+
+/* ALERT-INFO: Header azul claro */
+.alert-info .alert-head {
+  background: linear-gradient(135deg, #4a90e2 0%, #2171c7 100%);
+}
+
+.alert-info .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, #4a90e2 0%, #2171c7 100%);
+  color: #ffffff;
+}
+
+/* ALERT-SUCCESS: Header verde */
+.alert-success .alert-head {
+  background: linear-gradient(135deg, var(--verde, #a6ce38) 0%, #8eb82e 100%);
+}
+
+.alert-success .alert-title {
+  color: #1a3d00;
+}
+
+.alert-success .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, var(--verde, #a6ce38) 0%, #8eb82e 100%);
+  color: #1a3d00;
+}
+
+/* ALERT-WARNING: Header amarillo */
+.alert-warning .alert-head {
+  background: linear-gradient(135deg, #ffc107 0%, #e6ac00 100%);
+}
+
+.alert-warning .alert-title {
+  color: #333333;
+}
+
+.alert-warning .alert-button:not(.alert-button-role-cancel) {
+  background: linear-gradient(135deg, #ffc107 0%, #e6ac00 100%);
+  color: #333333;
+}
+
+/* ===== ESTILOS PARA INPUTS EN ALERTAS ===== */
+.alert-confirm .alert-input-group,
+.alert-danger .alert-input-group,
+.alert-info .alert-input-group {
+  padding: 0 24px 16px;
+}
+
+.alert-confirm .alert-input-wrapper,
+.alert-danger .alert-input-wrapper,
+.alert-info .alert-input-wrapper {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+}
+
+.alert-confirm .alert-input-wrapper:focus-within,
+.alert-danger .alert-input-wrapper:focus-within,
+.alert-info .alert-input-wrapper:focus-within {
+  border-color: var(--azul-claro, #4a90e2);
+}
+
+/* ===== ESTILOS PARA RADIO/CHECKBOX EN ALERTAS ===== */
+.alert-confirm .alert-radio-group,
+.alert-confirm .alert-checkbox-group,
+.alert-info .alert-radio-group,
+.alert-info .alert-checkbox-group {
+  padding: 0 16px 16px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.alert-confirm .alert-radio-button,
+.alert-confirm .alert-checkbox-button,
+.alert-info .alert-radio-button,
+.alert-info .alert-checkbox-button {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+}
+
+.alert-confirm [aria-checked="true"],
+.alert-info [aria-checked="true"] {
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.15) 0%, rgba(74, 144, 226, 0.1) 100%);
+  border-left: 3px solid var(--azul-claro, #4a90e2);
+}
+
+/* Mantener compatibilidad con clase anterior */
 ion-alert.alert-delete-curso-srs {
   --background: #ffffff !important;
 
@@ -740,5 +879,357 @@ ion-checkbox {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* ============================================================
+   ALERTAS DE RÚBRICAS - Duplicados y Versiones
+   ============================================================ */
+
+.alerta-duplicada,
+.alerta-nueva-version {
+  --max-width: 450px;
+
+  .alert-message {
+    text-align: left;
+    font-size: 0.9rem;
+
+    p {
+      margin: 8px 0;
+    }
+
+    code {
+      background: var(--ion-color-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85em;
+    }
+
+    strong {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+.alerta-duplicada {
+  .alert-head {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-bottom: 2px solid var(--ion-color-warning);
+  }
+
+  .alert-title {
+    color: #e65100 !important;
+  }
+}
+
+.alerta-nueva-version {
+  .alert-head {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-bottom: 2px solid var(--ion-color-primary);
+  }
+
+  .alert-title {
+    color: var(--ion-color-primary) !important;
+  }
+
+  .alert-message {
+    .version-modal-content {
+      hr {
+        border: none;
+        border-top: 1px solid var(--ion-color-light-shade);
+        margin: 12px 0;
+      }
+
+      .diferencias-lista {
+        margin: 8px 0;
+        padding-left: 20px;
+        font-size: 0.85rem;
+
+        li {
+          margin: 4px 0;
+          color: var(--ion-color-medium-shade);
+        }
+
+        em {
+          color: var(--ion-color-medium);
+        }
+      }
+    }
+  }
+
+  .alert-button-group {
+    .alert-button:last-child {
+      font-weight: 700;
+    }
+  }
+}
+
+.alerta-cambios-detectados {
+  --max-width: 480px;
+
+  .alert-head {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-bottom: 2px solid var(--ion-color-warning);
+  }
+
+  .alert-title {
+    color: #e65100 !important;
+  }
+
+  .alert-message {
+    text-align: left;
+
+    .cambios-detectados {
+      hr {
+        border: none;
+        border-top: 1px solid var(--ion-color-light-shade);
+        margin: 12px 0;
+      }
+
+      .diferencias-lista {
+        margin: 8px 0;
+        padding-left: 20px;
+        font-size: 0.85rem;
+
+        li {
+          margin: 4px 0;
+          color: var(--ion-color-medium-shade);
+        }
+
+        em {
+          color: var(--ion-color-medium);
+        }
+      }
+
+      .nota {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #e3f2fd;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        color: var(--ion-color-primary-shade);
+
+        ion-icon {
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  .alert-button-group {
+    flex-wrap: wrap;
+
+    .alert-button-secondary {
+      color: var(--ion-color-medium) !important;
+    }
+
+    .alert-button-primary {
+      font-weight: 700;
+      color: var(--ion-color-primary) !important;
+    }
+  }
+}
+
+/* ============================================================
+   MODAL DE HISTORIAL DE VERSIONES
+   ============================================================ */
+
+.version-history-modal {
+  --width: 90%;
+  --max-width: 900px;
+  --height: 85%;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    --width: 100%;
+    --height: 100%;
+    --border-radius: 0;
+  }
+}
+
+/* ===== ALERT SELECTOR DE VERSIÓN ===== */
+.alert-selector-version {
+  --backdrop-opacity: 0.7;
+  --background: #ffffff;
+  --max-width: 450px;
+
+  .alert-wrapper {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+
+  .alert-head {
+    padding: 20px 24px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  }
+
+  .alert-title {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .alert-sub-title {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .alert-message {
+    padding: 12px 24px;
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .alert-radio-group {
+    padding: 8px 16px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
+  .alert-radio-button {
+    padding: 12px 16px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f0f4f8;
+    }
+
+    &.alert-radio-button-checked {
+      background-color: #e3f2fd;
+    }
+
+    .alert-radio-label {
+      font-size: 0.9rem;
+      color: #333;
+    }
+  }
+
+  .alert-button-group {
+    padding: 16px 24px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .alert-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 100px;
+    text-transform: none;
+    margin: 0 6px;
+  }
+
+  .alert-button-role-cancel {
+    background: #f1f3f4;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+  }
+
+  .alert-button:not(.alert-button-role-cancel) {
+    background: linear-gradient(135deg, var(--azul-claro, #4a90e2) 0%, var(--azul-oscuro, #0f385a) 100%);
+    color: #ffffff;
+  }
+}
+
+/* ===== ALERT SELECTOR DE RÚBRICA BASE ===== */
+.alert-selector-rubrica-base {
+  --backdrop-opacity: 0.7;
+  --background: #ffffff;
+  --max-width: 500px;
+
+  .alert-wrapper {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+  }
+
+  .alert-head {
+    padding: 20px 24px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  }
+
+  .alert-title {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .alert-message {
+    padding: 12px 24px;
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .alert-radio-group {
+    padding: 8px 16px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .alert-radio-button {
+    padding: 12px 16px;
+    margin: 4px 0;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f0f4f8;
+    }
+
+    &.alert-radio-button-checked {
+      background-color: #e3f2fd;
+    }
+
+    .alert-radio-label {
+      font-size: 0.85rem;
+      color: #333;
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
+
+  .alert-button-group {
+    padding: 16px 24px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .alert-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 100px;
+    text-transform: none;
+    margin: 0 6px;
+  }
+
+  .alert-button-role-cancel {
+    background: #f1f3f4;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+  }
+
+  .alert-button:not(.alert-button-role-cancel) {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: #ffffff;
   }
 }

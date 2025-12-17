@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.5: Models</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+  <div class="container">
+    <header class="theme-blue">
+      <h1>📦 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.5: Models (Modelos de Datos)</span>
+    </header>
+
+    <nav class="nav-parts theme-blue">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html" class="active">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🎯 ¿Qué son los Models?</h2>
+      <p>Los <span class="tech-term" title="Definiciones de tipos en TypeScript">Models</span> definen la estructura de datos de la aplicación mediante <strong>interfaces TypeScript</strong>. Garantizan tipado estático y autocompletado en el IDE.</p>
+
+      <div class="entity-diagram">
+        <div class="entity-box">
+          <div class="title">👤 Estudiante</div>
+          <div class="fields">
+            <div class="field">correo (PK)</div>
+            <div class="field">nombres</div>
+            <div class="field">apellidos</div>
+            <div class="field">grupo</div>
+          </div>
+        </div>
+        <div class="entity-box">
+          <div class="title">📚 Curso</div>
+          <div class="fields">
+            <div class="field">nombre (PK)</div>
+            <div class="field">estudiantes[]</div>
+            <div class="field">fechaCreacion</div>
+          </div>
+        </div>
+        <div class="entity-box">
+          <div class="title">📋 Rúbrica</div>
+          <div class="fields">
+            <div class="field">id (PK)</div>
+            <div class="field">tipoRubrica (PG|PI)</div>
+            <div class="field">tipoEntrega (E1|E2|EF)</div>
+            <div class="field">criterios[]</div>
+          </div>
+        </div>
+        <div class="entity-box">
+          <div class="title">⚙️ UIState</div>
+          <div class="fields">
+            <div class="field">cursoActivo</div>
+            <div class="field">courseStates{}</div>
+            <div class="field">configuración</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box primary">
+        <strong>💡 Barrel Export:</strong> Todos los modelos se exportan desde <code>src/app/models/index.ts</code>, permitiendo importar con: <code>import { Estudiante, Curso } from '@app/models';</code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ESTUDIANTE.MODEL.TS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>👤 estudiante.model.ts</h2>
+      <p>Define la estructura de un estudiante y sus calificaciones por entrega.</p>
+
+      <div class="file-header">📄 src/app/models/estudiante.model.ts</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">Estudiante</span> {</span>
+<span class="code-line">  <span class="property">canvasUserId</span>?: <span class="type">string</span>;      <span class="comment">// ID único de Canvas LMS</span></span>
+<span class="code-line">  <span class="property">canvasGroupId</span>?: <span class="type">string</span>;     <span class="comment">// ID del grupo en Canvas</span></span>
+<span class="code-line">  <span class="property">apellidos</span>: <span class="type">string</span>;           <span class="comment">// Apellidos del estudiante</span></span>
+<span class="code-line">  <span class="property">nombres</span>: <span class="type">string</span>;             <span class="comment">// Nombres del estudiante</span></span>
+<span class="code-line">  <span class="property">correo</span>: <span class="type">string</span>;              <span class="comment">// Email (PRIMARY KEY)</span></span>
+<span class="code-line">  <span class="property">grupo</span>: <span class="type">string</span>;               <span class="comment">// Número de subgrupo: "1", "2"...</span></span>
+<span class="code-line">  <span class="property">groupName</span>?: <span class="type">string</span>;          <span class="comment">// Nombre completo: "Grupo 1"</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">NotaEstudiante</span> {</span>
+<span class="code-line">  <span class="property">estudiante</span>: <span class="type">Estudiante</span>;      <span class="comment">// Referencia al estudiante</span></span>
+<span class="code-line">  <span class="property">e1</span>?: <span class="type">NotaEntrega</span>;            <span class="comment">// Calificación Entrega 1</span></span>
+<span class="code-line">  <span class="property">e2</span>?: <span class="type">NotaEntrega</span>;            <span class="comment">// Calificación Entrega 2</span></span>
+<span class="code-line">  <span class="property">ef</span>?: <span class="type">NotaEntrega</span>;            <span class="comment">// Calificación Entrega Final</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">NotaEntrega</span> {</span>
+<span class="code-line">  <span class="property">pg</span>?: <span class="type">number</span>;                 <span class="comment">// Puntaje Grupal (0-75)</span></span>
+<span class="code-line">  <span class="property">pi</span>?: <span class="type">number</span>;                 <span class="comment">// Puntaje Individual (0-25)</span></span>
+<span class="code-line">  <span class="property">suma</span>?: <span class="type">number</span>;               <span class="comment">// Total: PG + PI (0-100)</span></span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Propiedad</th>
+            <th>Tipo</th>
+            <th>Requerido</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>correo</code></td>
+            <td><span class="type-badge string">string</span></td>
+            <td>✅ Sí</td>
+            <td>Identificador único del estudiante (Primary Key)</td>
+          </tr>
+          <tr>
+            <td><code>nombres</code></td>
+            <td><span class="type-badge string">string</span></td>
+            <td>✅ Sí</td>
+            <td>Nombres del estudiante</td>
+          </tr>
+          <tr>
+            <td><code>apellidos</code></td>
+            <td><span class="type-badge string">string</span></td>
+            <td>✅ Sí</td>
+            <td>Apellidos del estudiante</td>
+          </tr>
+          <tr>
+            <td><code>grupo</code></td>
+            <td><span class="type-badge string">string</span></td>
+            <td>✅ Sí</td>
+            <td>Número de subgrupo de proyecto</td>
+          </tr>
+          <tr>
+            <td><code>canvasUserId</code></td>
+            <td><span class="type-badge string">string</span></td>
+            <td>❌ No</td>
+            <td>ID para integración con Canvas LMS</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CURSO.MODEL.TS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📚 curso.model.ts</h2>
+      <p>Define la estructura de un curso académico con su lista de estudiantes.</p>
+
+      <div class="file-header">📄 src/app/models/curso.model.ts</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">import</span> { Estudiante } <span class="keyword">from</span> <span class="string">'./estudiante.model'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">Curso</span> {</span>
+<span class="code-line">  <span class="property">nombre</span>: <span class="type">string</span>;              <span class="comment">// Nombre del curso (PRIMARY KEY)</span></span>
+<span class="code-line">  <span class="property">estudiantes</span>: <span class="type">Estudiante[]</span>;  <span class="comment">// Array de estudiantes matriculados</span></span>
+<span class="code-line">  <span class="property">fechaCreacion</span>: <span class="type">Date</span>;        <span class="comment">// Fecha de importación del curso</span></span>
+<span class="code-line">  <span class="property">fechaModificacion</span>: <span class="type">Date</span>;    <span class="comment">// Última modificación</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/** Mapa indexado por nombre de curso */</span></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">CursoData</span> {</span>
+<span class="code-line">  [nombreCurso: <span class="type">string</span>]: <span class="type">Estudiante[]</span>;</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Relación Curso-Estudiante</h4>
+        <p>Un <strong>Curso</strong> contiene múltiples <strong>Estudiantes</strong> (relación 1:N). El nombre del curso es único y se usa como identificador.</p>
+        <p><strong>CursoData</strong> es un <span class="tech-term" title="Objeto con claves dinámicas">Index Signature</span> que permite acceder a estudiantes por nombre de curso: <code>cursoData['EPM-B01']</code></p>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- EVALUACION.MODEL.TS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📋 evaluacion.model.ts</h2>
+      <p>El modelo más complejo. Define rúbricas, criterios y escalas de evaluación.</p>
+
+      <h3>Tipos Básicos</h3>
+      <div class="file-header">📄 Tipos y constantes</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">/** Tipos de entrega disponibles */</span></span>
+<span class="code-line"><span class="keyword">export type</span> <span class="class-name">TipoEntrega</span> = <span class="string">'E1'</span> | <span class="string">'E2'</span> | <span class="string">'EF'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/** Tipos de rúbrica: Proyecto Grupal o Individual */</span></span>
+<span class="code-line"><span class="keyword">export type</span> <span class="class-name">TipoRubrica</span> = <span class="string">'PG'</span> | <span class="string">'PI'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/** Estados de una rúbrica */</span></span>
+<span class="code-line"><span class="keyword">export type</span> <span class="class-name">EstadoRubrica</span> = <span class="string">'borrador'</span> | <span class="string">'publicada'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/** Títulos estándar para los 4 niveles de evaluación */</span></span>
+<span class="code-line"><span class="keyword">export const</span> NIVELES_ESTANDAR = [<span class="string">'Insuficiente'</span>, <span class="string">'Aceptable'</span>, <span class="string">'Bueno'</span>, <span class="string">'Excelente'</span>] <span class="keyword">as const</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/** Número fijo de niveles por criterio */</span></span>
+<span class="code-line"><span class="keyword">export const</span> CANTIDAD_NIVELES = <span class="number">4</span>;</span>
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>📝 Nomenclatura:</strong>
+        <ul class="mt-10 ml-20">
+          <li><strong>E1, E2, EF</strong> = Entrega 1, Entrega 2, Entrega Final</li>
+          <li><strong>PG</strong> = Proyecto Grupal (75 puntos máx.)</li>
+          <li><strong>PI</strong> = Proyecto Individual (25 puntos máx.)</li>
+        </ul>
+      </div>
+
+      <h3>Interfaz RubricaDefinicion</h3>
+      <div class="file-header">📄 Definición principal de rúbrica</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">RubricaDefinicion</span> {</span>
+<span class="code-line">  <span class="property">id</span>: <span class="type">string</span>;                    <span class="comment">// ID único interno</span></span>
+<span class="code-line">  <span class="property">nombre</span>: <span class="type">string</span>;                <span class="comment">// Nombre descriptivo</span></span>
+<span class="code-line">  <span class="property">descripcion</span>: <span class="type">string</span>;           <span class="comment">// Descripción o curso asociado</span></span>
+<span class="code-line">  <span class="property">criterios</span>: <span class="type">CriterioRubrica[]</span>;  <span class="comment">// Lista de criterios</span></span>
+<span class="code-line">  <span class="property">puntuacionTotal</span>?: <span class="type">number</span>;      <span class="comment">// Puntuación máxima (75 ó 25)</span></span>
+<span class="code-line">  <span class="property">escalaCalificacion</span>?: <span class="type">EscalaCalificacion[]</span>;</span>
+<span class="code-line">  <span class="property">tipoEntrega</span>?: <span class="type">TipoEntrega</span>;    <span class="comment">// E1, E2, o EF</span></span>
+<span class="code-line">  <span class="property">tipoRubrica</span>?: <span class="type">TipoRubrica</span>;    <span class="comment">// PG o PI</span></span>
+<span class="code-line">  <span class="property">codigo</span>?: <span class="type">string</span>;              <span class="comment">// Ej: "RGE1-EPM-001"</span></span>
+<span class="code-line">  <span class="property">version</span>?: <span class="type">number</span>;             <span class="comment">// Versión de la rúbrica</span></span>
+<span class="code-line">  <span class="property">activa</span>?: <span class="type">boolean</span>;             <span class="comment">// Si es versión activa</span></span>
+<span class="code-line">  <span class="property">estado</span>?: <span class="type">EstadoRubrica</span>;       <span class="comment">// borrador | publicada</span></span>
+<span class="code-line">  <span class="property">fechaCreacion</span>?: <span class="type">Date</span>;</span>
+<span class="code-line">  <span class="property">fechaModificacion</span>?: <span class="type">Date</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">CriterioRubrica</span> {</span>
+<span class="code-line">  <span class="property">titulo</span>: <span class="type">string</span>;               <span class="comment">// Nombre del criterio</span></span>
+<span class="code-line">  <span class="property">descripcion</span>?: <span class="type">string</span>;         <span class="comment">// Descripción opcional</span></span>
+<span class="code-line">  <span class="property">peso</span>?: <span class="type">number</span>;                <span class="comment">// Peso mínimo (0)</span></span>
+<span class="code-line">  <span class="property">pesoMaximo</span>?: <span class="type">number</span>;          <span class="comment">// Peso máximo del criterio</span></span>
+<span class="code-line">  <span class="property">nivelesDetalle</span>: <span class="type">NivelRubricaDetallado[]</span>; <span class="comment">// 4 niveles</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">NivelRubricaDetallado</span> {</span>
+<span class="code-line">  <span class="property">puntos</span>: <span class="type">string</span>;              <span class="comment">// "0", "1-5", "6-10"...</span></span>
+<span class="code-line">  <span class="property">titulo</span>: <span class="type">string</span>;              <span class="comment">// Insuficiente, Aceptable...</span></span>
+<span class="code-line">  <span class="property">descripcion</span>: <span class="type">string</span>;         <span class="comment">// Criterio de evaluación</span></span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <h3>Formato JSON para Importación</h3>
+      <div class="file-header">📄 Interface RubricaJSON (archivos .json)</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">RubricaJSON</span> {</span>
+<span class="code-line">  <span class="property">rubrica_id</span>: <span class="type">string</span>;           <span class="comment">// "RGE1", "RIE2"...</span></span>
+<span class="code-line">  <span class="property">curso</span>: <span class="type">string</span>;                <span class="comment">// Nombre del curso</span></span>
+<span class="code-line">  <span class="property">puntuacion_total</span>: <span class="type">number</span>;     <span class="comment">// 75 (PG) o 25 (PI)</span></span>
+<span class="code-line">  <span class="property">escala_calificacion</span>: <span class="type">EscalaCalificacionJSON[]</span>;</span>
+<span class="code-line">  <span class="property">criterios</span>: <span class="type">CriterioRubricaJSON[]</span>;</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- APP-STATE.MODEL.TS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>⚙️ app-state.model.ts</h2>
+      <p>Define el estado persistente de la UI y configuración de usuario.</p>
+
+      <div class="file-header">📄 src/app/models/app-state.model.ts</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">UIState</span> {</span>
+<span class="code-line">  <span class="property">cursoActivo</span>: <span class="type">string</span> | <span class="keyword">null</span>;          <span class="comment">// Curso seleccionado</span></span>
+<span class="code-line">  <span class="property">grupoSeguimientoActivo</span>: <span class="type">string</span> | <span class="keyword">null</span>;</span>
+<span class="code-line">  <span class="property">mostrarNombreCorto</span>?: <span class="type">boolean</span>;        <span class="comment">// Botones de curso abreviados</span></span>
+<span class="code-line">  <span class="property">mostrarMensajesEmergentes</span>?: <span class="type">boolean</span>; <span class="comment">// Habilitar toasts</span></span>
+<span class="code-line">  <span class="property">duracionToast</span>?: <span class="type">number</span>;             <span class="comment">// Segundos (1-4)</span></span>
+<span class="code-line">  <span class="property">cursosModoEdicion</span>?: <span class="type">boolean</span>;        <span class="comment">// Panel importación abierto</span></span>
+<span class="code-line">  <span class="property">courseStates</span>: { [cursoNombre: <span class="type">string</span>]: <span class="type">CourseState</span> };</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">CourseState</span> {</span>
+<span class="code-line">  <span class="property">activeStudent</span>: <span class="type">string</span> | <span class="keyword">null</span>;       <span class="comment">// Email del estudiante activo</span></span>
+<span class="code-line">  <span class="property">activeGroup</span>: <span class="type">string</span> | <span class="keyword">null</span>;         <span class="comment">// Grupo seleccionado</span></span>
+<span class="code-line">  <span class="property">activeDelivery</span>: <span class="string">'E1'</span> | <span class="string">'E2'</span> | <span class="string">'EF'</span> | <span class="keyword">null</span>;</span>
+<span class="code-line">  <span class="property">activeType</span>: <span class="string">'PG'</span> | <span class="string">'PI'</span> | <span class="keyword">null</span>;</span>
+<span class="code-line">  <span class="property">filtroGrupo</span>: <span class="type">string</span>;               <span class="comment">// Filtro de búsqueda</span></span>
+<span class="code-line">  <span class="property">emailsVisible</span>: <span class="type">boolean</span>;           <span class="comment">// Mostrar emails en tabla</span></span>
+<span class="code-line">  <span class="property">color</span>?: <span class="type">string</span>;                    <span class="comment">// Color del botón curso</span></span>
+<span class="code-line">  <span class="property">metadata</span>?: { ... };                <span class="comment">// Información adicional</span></span>
+<span class="code-line">  <span class="property">rubricasAsociadas</span>?: { ... };       <span class="comment">// Rúbricas por entrega</span></span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Persistencia de Estado</h4>
+        <p><strong>UIState</strong> se guarda en <span class="tech-term">localStorage/SQLite</span> con la key <code>appUIState</code>. Permite que al refrescar (F5), la app recuerde:</p>
+        <ul>
+          <li>Qué curso estaba seleccionado</li>
+          <li>Qué entrega/tipo de evaluación estaba activo</li>
+          <li>Colores personalizados de cursos</li>
+          <li>Rúbricas asociadas a cada curso/entrega</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- COMENTARIO-GRUPO.MODEL.TS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>💬 comentario-grupo.model.ts</h2>
+      <p>Define comentarios de retroalimentación por grupo.</p>
+
+      <div class="file-header">📄 src/app/models/comentario-grupo.model.ts</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">ComentarioGrupo</span> {</span>
+<span class="code-line">  <span class="property">id</span>: <span class="type">string</span>;           <span class="comment">// UUID único</span></span>
+<span class="code-line">  <span class="property">cursoId</span>: <span class="type">string</span>;      <span class="comment">// Ej: "EPMB01"</span></span>
+<span class="code-line">  <span class="property">grupo</span>: <span class="type">string</span>;        <span class="comment">// Ej: "G1", "G2"</span></span>
+<span class="code-line">  <span class="property">comentario</span>: <span class="type">string</span>;   <span class="comment">// Texto del feedback</span></span>
+<span class="code-line">  <span class="property">fecha</span>: <span class="type">Date</span>;          <span class="comment">// Fecha de creación</span></span>
+<span class="code-line">  <span class="property">autor</span>?: <span class="type">string</span>;       <span class="comment">// Quién lo creó</span></span>
+<span class="code-line">  <span class="property">etiquetas</span>?: <span class="type">string[]</span>; <span class="comment">// Tags clasificatorios</span></span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">ComentariosGrupoData</span> {</span>
+<span class="code-line">  [cursoId: <span class="type">string</span>]: {</span>
+<span class="code-line">    [grupo: <span class="type">string</span>]: <span class="type">ComentarioGrupo[]</span>;</span>
+<span class="code-line">  };</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- INDEX.TS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📦 index.ts - Barrel Export</h2>
+
+      <div class="file-header">📄 src/app/models/index.ts</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// Re-exportar todos los modelos</span></span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./curso.model'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./estudiante.model'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./evaluacion.model'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./app-state.model'</span>;</span>
+<span class="code-line"><span class="keyword">export</span> * <span class="keyword">from</span> <span class="string">'./comentario-grupo.model'</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Re-exportar tipos específicos</span></span>
+<span class="code-line"><span class="keyword">export type</span> {</span>
+<span class="code-line">  EscalaCalificacion,</span>
+<span class="code-line">  NivelRubricaDetallado</span>
+<span class="code-line">} <span class="keyword">from</span> <span class="string">'./evaluacion.model'</span>;</span>
+        </code>
+      </div>
+
+      <div class="info-box success">
+        <strong>✅ Uso simplificado:</strong>
+        <div class="code-inline-block">
+          import { Estudiante, Curso, RubricaDefinicion, UIState } from '@app/models';
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📋 Resumen - Modelos de Datos</h2>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Archivo</th>
+            <th>Interfaces</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>estudiante.model.ts</code></td>
+            <td>Estudiante, NotaEstudiante, NotaEntrega</td>
+            <td>Datos de estudiantes y calificaciones</td>
+          </tr>
+          <tr>
+            <td><code>curso.model.ts</code></td>
+            <td>Curso, CursoData</td>
+            <td>Cursos académicos</td>
+          </tr>
+          <tr>
+            <td><code>evaluacion.model.ts</code></td>
+            <td>RubricaDefinicion, CriterioRubrica, RubricaJSON</td>
+            <td>Rúbricas y criterios de evaluación</td>
+          </tr>
+          <tr>
+            <td><code>app-state.model.ts</code></td>
+            <td>UIState, CourseState, AppBackup</td>
+            <td>Estado persistente de la UI</td>
+          </tr>
+          <tr>
+            <td><code>comentario-grupo.model.ts</code></td>
+            <td>ComentarioGrupo, ComentariosGrupoData</td>
+            <td>Feedback por grupo</td>
+          </tr>
+          <tr>
+            <td><code>index.ts</code></td>
+            <td>—</td>
+            <td>Barrel export de todos los modelos</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="theme-blue">
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.5 de 8 | Politécnico Grancolombiano</p>
+      <p class="mt-10">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">← Anterior: 3.4 Styles</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">Siguiente: 3.6 Services →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

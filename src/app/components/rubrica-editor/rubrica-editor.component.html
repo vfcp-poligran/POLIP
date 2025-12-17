@@ -1,0 +1,261 @@
+@if (!modoInline) {
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-button (click)="cerrar()">
+          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>{{ rubricaExistente ? 'Editar Rúbrica' : 'Nueva Rúbrica' }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="guardarBorrador()" [disabled]="guardando">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          Borrador
+        </ion-button>
+        <ion-button (click)="publicarRubrica()" [disabled]="guardando" fill="solid" color="success">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Publicar
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+}
+
+<div [class.ion-padding]="!modoInline" [class.editor-inline]="modoInline" [class.editor-modal]="!modoInline">
+  <!-- Título inline con botones de acción -->
+  @if (modoInline) {
+    <div class="inline-header">
+      <h3 class="inline-title">{{ rubricaExistente ? 'Editar Rúbrica' : 'Nueva Rúbrica' }}</h3>
+      <div class="inline-actions">
+        <ion-button size="small" fill="outline" (click)="guardarBorrador()" [disabled]="guardando">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          BORRADOR
+        </ion-button>
+        <ion-button size="small" fill="solid" color="success" (click)="publicarRubrica()" [disabled]="guardando">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          PUBLICAR
+        </ion-button>
+      </div>
+    </div>
+  }
+
+  <div class="editor-container">
+    <!-- Configuración General - Layout compacto en columnas -->
+    <div class="config-compact">
+      <!-- Fila 1: Tipo | Entrega | Curso | Puntos | Activa -->
+      <div class="config-row-compact">
+        <div class="field-inline">
+          <span class="field-label-inline">Tipo</span>
+          <ion-select [(ngModel)]="tipoRubrica" interface="popover" (ionChange)="onTipoChange()" class="select-compact">
+            <ion-select-option value="PG">Grupal (PG)</ion-select-option>
+            <ion-select-option value="PI">Individual (PI)</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="field-inline">
+          <span class="field-label-inline">Entrega</span>
+          <ion-select [(ngModel)]="tipoEntrega" interface="popover" (ionChange)="onTipoChange()" class="select-compact">
+            <ion-select-option value="E1">E1</ion-select-option>
+            <ion-select-option value="E2">E2</ion-select-option>
+            <ion-select-option value="EF">EF</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="field-inline field-curso">
+          <span class="field-label-inline">Curso</span>
+          @if (esModoEdicion || cursosDisponibles.length === 1) {
+            <span class="curso-display">{{ nombreCursoActual }}</span>
+            @if (cursosDisponibles.length > 1) {
+              <ion-button fill="clear" size="small" class="btn-copiar-curso" (click)="abrirCopiarACurso()">
+                <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            }
+          } @else {
+            <ion-select [(ngModel)]="cursoSeleccionado" interface="popover" placeholder="Seleccione" (ionChange)="onCursoChange()" class="select-compact">
+              @for (curso of cursosDisponibles; track curso.codigo) {
+                <ion-select-option [value]="curso.codigo">{{ curso.nombre }}</ion-select-option>
+              }
+            </ion-select>
+          }
+        </div>
+
+        <div class="field-inline field-puntos-compact">
+          <span class="field-label-inline">Puntos</span>
+          <ion-input type="number" [(ngModel)]="puntuacionTotal" min="1" max="1000" class="input-compact"></ion-input>
+        </div>
+
+        <div class="field-inline field-activa-compact">
+          <span class="field-label-inline">Activa</span>
+          <ion-toggle [(ngModel)]="rubricaActiva" [enableOnOffLabels]="false" class="toggle-compact"></ion-toggle>
+        </div>
+      </div>
+
+      <!-- Fila 2: Nombre | Código -->
+      <div class="config-row-compact">
+        <div class="field-inline field-nombre">
+          <span class="field-label-inline">Nombre</span>
+          <ion-input [(ngModel)]="nombreRubrica" placeholder="Nombre de la rúbrica" (ionInput)="onNombreChange()" class="input-compact"></ion-input>
+        </div>
+
+        <div class="field-inline field-codigo">
+          <span class="field-label-inline">Código</span>
+          <span class="codigo-display">{{ codigoPreview || 'RXX-XXXV1' }}</span>
+        </div>
+      </div>
+
+      <!-- Warning de duplicado (si aplica) -->
+      @if (duplicadoInfo?.existeDuplicado && duplicadoInfo?.nombreSugerido) {
+        <div class="duplicado-inline">
+          <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+          <span>Rúbrica similar existe. <a (click)="usarNombreSugerido()">Usar "{{ duplicadoInfo!.nombreSugerido }}"</a></span>
+        </div>
+      }
+
+      <!-- Warning de versiones (si activa) -->
+      @if (rubricaActiva) {
+        <div class="activa-inline">
+          <ion-icon name="alert-circle" color="warning"></ion-icon>
+          <span>Al activar, otras versiones del mismo tipo/entrega/curso se desactivarán automáticamente</span>
+        </div>
+      }
+    </div>
+
+    <!-- Resumen de Pesos -->
+    <div class="pesos-bar" [class.peso-valido]="pesoCoincide" [class.peso-invalido]="!pesoCoincide">
+      <div class="pesos-info">
+        <span class="pesos-text">Peso Total Criterios:</span>
+        <span class="pesos-actual">{{ pesoTotalCriterios }}</span>
+        <span class="pesos-separator">/</span>
+        <span class="pesos-total">{{ puntuacionTotal }}</span>
+      </div>
+      <div class="pesos-status">
+        @if (!pesoCoincide) {
+          <span class="status-warning">
+            <ion-icon name="alert-circle"></ion-icon>
+            Diferencia: {{ puntuacionTotal - pesoTotalCriterios }}
+          </span>
+        } @else {
+          <span class="status-success">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            Pesos correctos
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Sección: Criterios -->
+    <div class="criterios-header">
+      <h2>
+        <ion-icon name="list-outline"></ion-icon>
+        Criterios ({{ criterios.length }})
+      </h2>
+      <ion-button fill="outline" size="small" (click)="agregarCriterio()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Agregar Criterio
+      </ion-button>
+    </div>
+
+    <!-- Lista de Criterios -->
+    <div class="criterios-lista">
+      @for (criterio of criterios; track $index; let i = $index) {
+        <ion-card class="criterio-card" [class.criterio-expandido]="criterio.expandido">
+          <!-- Header del Criterio -->
+          <div class="criterio-header" (click)="toggleCriterio(i)">
+            <div class="criterio-numero">{{ i + 1 }}</div>
+            <div class="criterio-info">
+              <ion-input
+                [(ngModel)]="criterio.titulo"
+                placeholder="Nombre del criterio"
+                class="criterio-titulo-input"
+                (click)="$event.stopPropagation()"
+              ></ion-input>
+              <div class="criterio-meta">
+                <ion-chip [color]="criterio.peso > 0 ? 'primary' : 'medium'">
+                  <ion-label>{{ criterio.peso }} pts</ion-label>
+                </ion-chip>
+                <span class="niveles-count">{{ NUM_NIVELES }} niveles</span>
+              </div>
+            </div>
+            <div class="criterio-acciones">
+              <ion-button fill="clear" size="small" (click)="duplicarCriterio(i); $event.stopPropagation()">
+                <ion-icon name="copy-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" color="danger" (click)="eliminarCriterio(i); $event.stopPropagation()">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-icon [name]="criterio.expandido ? 'chevron-up-outline' : 'chevron-down-outline'" class="expand-icon"></ion-icon>
+            </div>
+          </div>
+
+          <!-- Contenido Expandible -->
+          @if (criterio.expandido) {
+            <ion-card-content class="criterio-contenido">
+              <!-- Peso del Criterio -->
+              <div class="peso-criterio">
+                <ion-item>
+                  <ion-label position="stacked">Peso del Criterio</ion-label>
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="criterio.peso"
+                    min="1"
+                    max="100"
+                    (ionChange)="actualizarRangosNiveles(i)"
+                  ></ion-input>
+                </ion-item>
+              </div>
+
+              <!-- Niveles del Criterio -->
+              <div class="niveles-grid">
+                @for (nivel of criterio.niveles; track $index; let j = $index) {
+                  <div class="nivel-card" [class]="'nivel-' + (j + 1)">
+                    <div class="nivel-header">
+                      <span class="nivel-titulo">{{ nivel.titulo }}</span>
+                      <div class="nivel-puntos-edit">
+                        <input
+                          type="number"
+                          [(ngModel)]="nivel.puntosMin"
+                          min="0"
+                          [max]="nivel.puntosMax"
+                          class="puntos-input"
+                          (change)="validarIntervaloNivel(i, j)"
+                          title="Puntos mínimos"
+                        />
+                        <span class="puntos-separador">-</span>
+                        <input
+                          type="number"
+                          [(ngModel)]="nivel.puntosMax"
+                          [min]="nivel.puntosMin"
+                          [max]="criterio.peso"
+                          class="puntos-input"
+                          (change)="validarIntervaloNivel(i, j)"
+                          title="Puntos máximos"
+                        />
+                        <span class="puntos-label">pts</span>
+                      </div>
+                    </div>
+                    <ion-textarea
+                      [(ngModel)]="nivel.descripcion"
+                      placeholder="Descripción del nivel {{ nivel.titulo }}..."
+                      rows="3"
+                      class="nivel-descripcion"
+                    ></ion-textarea>
+                  </div>
+                }
+              </div>
+            </ion-card-content>
+          }
+        </ion-card>
+      }
+    </div>
+
+    <!-- Botón Agregar al final -->
+    @if (criterios.length > 0) {
+      <div class="agregar-criterio-bottom">
+        <ion-button expand="block" fill="outline" (click)="agregarCriterio()">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Agregar Otro Criterio
+        </ion-button>
+      </div>
+    }
+  </div>
+</div>

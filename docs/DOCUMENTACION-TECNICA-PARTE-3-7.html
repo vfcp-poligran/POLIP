@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.7: Components</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+  <div class="container">
+    <header class="theme-blue">
+      <h1>🧩 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.7: Components (Componentes Reutilizables)</span>
+    </header>
+
+    <nav class="nav-parts theme-blue">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html" class="active">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🧩 Componentes Reutilizables</h2>
+      <p>Los <span class="tech-term" title="Bloques de UI independientes y reutilizables">Components</span> son piezas de interfaz standalone que encapsulan lógica, template y estilos. Se usan en múltiples páginas.</p>
+
+      <div class="info-box primary">
+        <strong>📁 Ubicación:</strong> <code>src/app/components/</code>
+        <br>
+        <strong>Patrón:</strong> Todos son <span class="tech-term">Standalone Components</span> (Angular 17+)
+      </div>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Líneas</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>EvaluacionRubricaComponent</code></td>
+            <td>~288</td>
+            <td>Tabla interactiva de evaluación con rúbrica</td>
+          </tr>
+          <tr>
+            <td><code>RubricaEditorComponent</code></td>
+            <td>~946</td>
+            <td>Editor completo para crear/modificar rúbricas</td>
+          </tr>
+          <tr>
+            <td><code>RubricaVersionHistoryComponent</code></td>
+            <td>~414</td>
+            <td>Historial de versiones y comparación de rúbricas</td>
+          </tr>
+          <tr>
+            <td><code>OnboardingComponent</code></td>
+            <td>~323</td>
+            <td>Tour guiado con spotlight para nuevos usuarios</td>
+          </tr>
+          <tr>
+            <td><code>SplashScreenComponent</code></td>
+            <td>~198</td>
+            <td>Pantalla de carga animada al iniciar</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- EVALUACION RUBRICA -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📋 EvaluacionRubricaComponent</h2>
+      <p>Componente central para evaluar estudiantes usando una rúbrica. Muestra criterios con niveles clickeables.</p>
+
+      <div class="component-card">
+        <div class="component-card-header">
+          <span class="icon">📋</span>
+          <span class="name">app-evaluacion-rubrica</span>
+          <span class="badge">288 líneas</span>
+        </div>
+        <div class="component-card-body">
+          <p><strong>Selector:</strong> <code>&lt;app-evaluacion-rubrica&gt;</code></p>
+          <p><strong>Archivo:</strong> <code>components/evaluacion-rubrica/</code></p>
+        </div>
+      </div>
+
+      <h3>Inputs y Outputs</h3>
+      <table class="io-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nombre</th>
+            <th>Tipo de Dato</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>rubrica</code></td>
+            <td><code>RubricaDefinicion</code></td>
+            <td>Rúbrica con criterios y niveles</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>estudianteId</code></td>
+            <td><code>string</code></td>
+            <td>Email del estudiante a evaluar</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>grupoId</code></td>
+            <td><code>string</code></td>
+            <td>Identificador del grupo (fuerza re-init)</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>entregaActual</code></td>
+            <td><code>'E1' | 'E2' | 'EF'</code></td>
+            <td>Entrega actual</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>evaluacionExistente</code></td>
+            <td><code>Evaluacion | null</code></td>
+            <td>Evaluación guardada previamente</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge output">@Output</span></td>
+            <td><code>puntuacionChange</code></td>
+            <td><code>EventEmitter&lt;number&gt;</code></td>
+            <td>Emite puntuación total actualizada</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge output">@Output</span></td>
+            <td><code>calificacionesChange</code></td>
+            <td><code>EventEmitter&lt;{}&gt;</code></td>
+            <td>Emite mapa de calificaciones por criterio</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge output">@Output</span></td>
+            <td><code>evaluacionGuardada</code></td>
+            <td><code>EventEmitter&lt;any&gt;</code></td>
+            <td>Emite al guardar evaluación</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Template (HTML)</h3>
+      <div class="file-header">📄 evaluacion-rubrica.component.html</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"evaluacion-container"</span><span class="tag">&gt;</span></span>
+<span class="code-line">  <span class="keyword">@if</span> (rubrica) {</span>
+<span class="code-line">  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"rubrica-table"</span><span class="tag">&gt;</span></span>
+<span class="code-line">    <span class="comment">&lt;!-- Encabezado de niveles --&gt;</span></span>
+<span class="code-line">    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"rubrica-row rubrica-header-row"</span><span class="tag">&gt;</span></span>
+<span class="code-line">      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"rubrica-cell criterio-label"</span><span class="tag">&gt;</span>Criterio<span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">      <span class="keyword">@for</span> (nivel <span class="keyword">of</span> rubrica.criterios[0].nivelesDetalle; track nivel.titulo) {</span>
+<span class="code-line">        <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"rubrica-cell nivel-label"</span><span class="tag">&gt;</span>{{ nivel.titulo }}<span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">      }</span>
+<span class="code-line">    <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">    </span>
+<span class="code-line">    <span class="comment">&lt;!-- Filas de criterios --&gt;</span></span>
+<span class="code-line">    <span class="keyword">@for</span> (criterio <span class="keyword">of</span> rubrica.criterios; track criterio.titulo) {</span>
+<span class="code-line">      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"rubrica-row criterio-row"</span><span class="tag">&gt;</span></span>
+<span class="code-line">        <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"rubrica-cell criterio-cell"</span><span class="tag">&gt;</span></span>
+<span class="code-line">          {{ criterio.titulo }}</span>
+<span class="code-line">          <span class="tag">&lt;ion-badge&gt;</span>{{ criterio.peso }}<span class="tag">&lt;/ion-badge&gt;</span></span>
+<span class="code-line">        <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">        <span class="keyword">@for</span> (nivel <span class="keyword">of</span> criterio.nivelesDetalle; track nivel.titulo) {</span>
+<span class="code-line">          <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"nivel-card"</span></span>
+<span class="code-line">               [<span class="attr">class.selected</span>]=<span class="string">"estaEnRangoNivel(...)"</span></span>
+<span class="code-line">               (<span class="attr">click</span>)=<span class="string">"onCalificacionChange(...)"</span><span class="tag">&gt;</span></span>
+<span class="code-line">            <span class="tag">&lt;ion-badge&gt;</span>{{ nivel.puntos }} pts<span class="tag">&lt;/ion-badge&gt;</span></span>
+<span class="code-line">            <span class="tag">&lt;p&gt;</span>{{ nivel.descripcion }}<span class="tag">&lt;/p&gt;</span></span>
+<span class="code-line">          <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">        }</span>
+<span class="code-line">      <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">    }</span>
+<span class="code-line">  <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">  }</span>
+<span class="code-line"><span class="tag">&lt;/div&gt;</span></span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>🔄 Flujo de Evaluación</h4>
+        <ol>
+          <li>Recibe <code>rubrica</code> con criterios y niveles desde CalificacionesPage</li>
+          <li>Usuario hace clic en un nivel → <code>onCalificacionChange()</code></li>
+          <li>Actualiza <code>calificaciones[criterio]</code> y recalcula total</li>
+          <li>Emite <code>puntuacionChange</code> y <code>calificacionesChange</code></li>
+          <li>Panel de seguimiento recibe actualización en tiempo real</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RUBRICA EDITOR -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>✏️ RubricaEditorComponent</h2>
+      <p>Editor completo para crear y modificar rúbricas con criterios dinámicos y 4 niveles por criterio.</p>
+
+      <div class="component-card">
+        <div class="component-card-header">
+          <span class="icon">✏️</span>
+          <span class="name">app-rubrica-editor</span>
+          <span class="badge">946 líneas</span>
+        </div>
+        <div class="component-card-body">
+          <p><strong>Selector:</strong> <code>&lt;app-rubrica-editor&gt;</code></p>
+          <p><strong>Modos:</strong> Modal (popup) o Inline (embebido)</p>
+        </div>
+      </div>
+
+      <h3>Inputs y Outputs</h3>
+      <table class="io-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>rubricaExistente</code></td>
+            <td>Rúbrica a editar (null = nueva)</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>cursosDisponiblesInput</code></td>
+            <td>Lista de cursos para seleccionar</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge input">@Input</span></td>
+            <td><code>modoInline</code></td>
+            <td>true = embebido, false = modal</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge output">@Output</span></td>
+            <td><code>guardado</code></td>
+            <td>Emite al guardar (modo inline)</td>
+          </tr>
+          <tr>
+            <td><span class="io-badge output">@Output</span></td>
+            <td><code>cancelado</code></td>
+            <td>Emite al cancelar (modo inline)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Propiedades del Formulario</h3>
+      <div class="file-header">📄 Campos del editor</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">// Datos del formulario principal</span></span>
+<span class="code-line"><span class="property">tipoRubrica</span>: <span class="type">TipoRubrica</span> = <span class="string">'PG'</span>;     <span class="comment">// PG o PI</span></span>
+<span class="code-line"><span class="property">tipoEntrega</span>: <span class="type">TipoEntrega</span> = <span class="string">'E1'</span>;     <span class="comment">// E1, E2, EF</span></span>
+<span class="code-line"><span class="property">cursoSeleccionado</span>: <span class="type">string</span> = <span class="string">''</span>;</span>
+<span class="code-line"><span class="property">nombreRubrica</span>: <span class="type">string</span> = <span class="string">''</span>;</span>
+<span class="code-line"><span class="property">puntuacionTotal</span>: <span class="type">number</span> = <span class="number">100</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Preview de código generado</span></span>
+<span class="code-line"><span class="property">codigoPreview</span>: <span class="type">string</span> = <span class="string">''</span>;         <span class="comment">// Ej: "RGE1-EPM-001"</span></span>
+<span class="code-line"><span class="property">versionPreview</span>: <span class="type">number</span> = <span class="number">1</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Criterios dinámicos</span></span>
+<span class="code-line"><span class="property">criterios</span>: <span class="type">CriterioFormulario[]</span> = [];</span>
+<span class="code-line"><span class="property">cantidadCriterios</span>: <span class="type">number</span> = <span class="number">3</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Constantes</span></span>
+<span class="code-line"><span class="keyword">readonly</span> NIVELES_TITULOS = [<span class="string">'Insuficiente'</span>, <span class="string">'Aceptable'</span>, <span class="string">'Bueno'</span>, <span class="string">'Excelente'</span>];</span>
+<span class="code-line"><span class="keyword">readonly</span> NUM_NIVELES = <span class="number">4</span>;</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- VERSION HISTORY -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📜 RubricaVersionHistoryComponent</h2>
+      <p>Muestra el historial de versiones de una rúbrica y permite comparar cambios entre versiones.</p>
+
+      <div class="component-card">
+        <div class="component-card-header">
+          <span class="icon">📜</span>
+          <span class="name">app-rubrica-version-history</span>
+          <span class="badge">414 líneas</span>
+        </div>
+        <div class="component-card-body">
+          <p><strong>Selector:</strong> <code>&lt;app-rubrica-version-history&gt;</code></p>
+        </div>
+      </div>
+
+      <h3>Interfaces de Comparación</h3>
+      <div class="file-header">📄 Estructuras para diff de versiones</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">interface</span> <span class="class-name">CambioVersion</span> {</span>
+<span class="code-line">  <span class="property">tipo</span>: <span class="string">'agregado'</span> | <span class="string">'eliminado'</span> | <span class="string">'modificado'</span>;</span>
+<span class="code-line">  <span class="property">categoria</span>: <span class="string">'criterio'</span> | <span class="string">'nivel'</span> | <span class="string">'peso'</span> | <span class="string">'puntuacion'</span>;</span>
+<span class="code-line">  <span class="property">descripcion</span>: <span class="type">string</span>;</span>
+<span class="code-line">  <span class="property">valorAnterior</span>?: <span class="type">string</span> | <span class="type">number</span>;</span>
+<span class="code-line">  <span class="property">valorNuevo</span>?: <span class="type">string</span> | <span class="type">number</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">interface</span> <span class="class-name">ComparacionVersiones</span> {</span>
+<span class="code-line">  <span class="property">versionBase</span>: <span class="type">RubricaDefinicion</span>;</span>
+<span class="code-line">  <span class="property">versionComparada</span>: <span class="type">RubricaDefinicion</span>;</span>
+<span class="code-line">  <span class="property">cambios</span>: <span class="type">CambioVersion[]</span>;</span>
+<span class="code-line">  <span class="property">resumen</span>: {</span>
+<span class="code-line">    criteriosAgregados: <span class="type">number</span>;</span>
+<span class="code-line">    criteriosEliminados: <span class="type">number</span>;</span>
+<span class="code-line">    criteriosModificados: <span class="type">number</span>;</span>
+<span class="code-line">  };</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>📝 Categorías por Curso:</strong> Las versiones se agrupan por código de categoría que incluye el curso: <code>RGE1-EPM</code>, <code>RIE2-SO</code>, etc.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ONBOARDING -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🎯 OnboardingComponent</h2>
+      <p>Tour guiado interactivo con <span class="tech-term" title="Efecto visual que destaca un elemento">spotlight</span> para orientar a nuevos usuarios.</p>
+
+      <div class="component-card">
+        <div class="component-card-header">
+          <span class="icon">🎯</span>
+          <span class="name">app-onboarding</span>
+          <span class="badge">323 líneas</span>
+        </div>
+        <div class="component-card-body">
+          <p><strong>Selector:</strong> <code>&lt;app-onboarding&gt;</code></p>
+        </div>
+      </div>
+
+      <h3>Interface OnboardingStep</h3>
+      <div class="file-header">📄 Definición de pasos del tour</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="keyword">export interface</span> <span class="class-name">OnboardingStep</span> {</span>
+<span class="code-line">  <span class="comment">/** Selector CSS del elemento a destacar */</span></span>
+<span class="code-line">  <span class="property">targetSelector</span>: <span class="type">string</span>;           <span class="comment">// Ej: "#btn-crear-curso"</span></span>
+<span class="code-line">  <span class="comment">/** Título del paso */</span></span>
+<span class="code-line">  <span class="property">title</span>: <span class="type">string</span>;</span>
+<span class="code-line">  <span class="comment">/** Descripción del paso */</span></span>
+<span class="code-line">  <span class="property">description</span>: <span class="type">string</span>;</span>
+<span class="code-line">  <span class="comment">/** Posición del tooltip */</span></span>
+<span class="code-line">  <span class="property">position</span>?: <span class="string">'top'</span> | <span class="string">'bottom'</span> | <span class="string">'left'</span> | <span class="string">'right'</span>;</span>
+<span class="code-line">  <span class="comment">/** Offset adicional para el spotlight */</span></span>
+<span class="code-line">  <span class="property">spotlightPadding</span>?: <span class="type">number</span>;</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <h3>Uso del Componente</h3>
+      <div class="file-header">📄 Ejemplo de implementación</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="tag">&lt;app-onboarding</span></span>
+<span class="code-line">  [<span class="attr">steps</span>]=<span class="string">"pasosTour"</span></span>
+<span class="code-line">  [<span class="attr">isVisible</span>]=<span class="string">"mostrarTour"</span></span>
+<span class="code-line">  (<span class="attr">completed</span>)=<span class="string">"onTourCompleted()"</span></span>
+<span class="code-line">  (<span class="attr">skipped</span>)=<span class="string">"onTourSkipped()"</span><span class="tag">&gt;</span></span>
+<span class="code-line"><span class="tag">&lt;/app-onboarding&gt;</span></span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>🎨 Características Visuales</h4>
+        <ul>
+          <li><strong>Backdrop:</strong> Fondo oscuro semitransparente</li>
+          <li><strong>Spotlight:</strong> Recorte que destaca el elemento objetivo</li>
+          <li><strong>Tooltip:</strong> Caja con título, descripción y navegación</li>
+          <li><strong>Dots:</strong> Indicadores de progreso del tour</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SPLASH SCREEN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🚀 SplashScreenComponent</h2>
+      <p>Pantalla de carga animada que se muestra al iniciar la aplicación.</p>
+
+      <div class="component-card">
+        <div class="component-card-header">
+          <span class="icon">🚀</span>
+          <span class="name">app-splash-screen</span>
+          <span class="badge">198 líneas</span>
+        </div>
+        <div class="component-card-body">
+          <p><strong>Selector:</strong> <code>&lt;app-splash-screen&gt;</code></p>
+          <p><strong>Animación:</strong> Usa <code>@angular/animations</code> para fadeOut</p>
+        </div>
+      </div>
+
+      <h3>Template Inline</h3>
+      <div class="file-header">📄 splash-screen.component.ts (template)</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"splash-container"</span> [<span class="attr">@fadeOut</span>]=<span class="string">"animationState"</span><span class="tag">&gt;</span></span>
+<span class="code-line">  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"splash-content"</span><span class="tag">&gt;</span></span>
+<span class="code-line">    <span class="comment">&lt;!-- Logo del Politécnico --&gt;</span></span>
+<span class="code-line">    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"logo-container"</span><span class="tag">&gt;</span></span>
+<span class="code-line">      <span class="tag">&lt;img</span></span>
+<span class="code-line">        <span class="attr">src</span>=<span class="string">"https://www.poli.edu.co/.../logo.svg"</span></span>
+<span class="code-line">        <span class="attr">class</span>=<span class="string">"logo"</span></span>
+<span class="code-line">        (<span class="attr">error</span>)=<span class="string">"onLogoError($event)"</span> /&gt;</span>
+<span class="code-line">    <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="string">"app-name"</span><span class="tag">&gt;</span>POLIProject<span class="tag">&lt;/h1&gt;</span></span>
+<span class="code-line">    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="string">"app-subtitle"</span><span class="tag">&gt;</span>Politécnico Grancolombiano<span class="tag">&lt;/p&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="comment">&lt;!-- Barra de carga --&gt;</span></span>
+<span class="code-line">    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"loader"</span><span class="tag">&gt;</span></span>
+<span class="code-line">      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"loader-bar"</span><span class="tag">&gt;&lt;/div&gt;</span></span>
+<span class="code-line">    <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line">    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="string">"loading-text"</span><span class="tag">&gt;</span>{{ loadingMessage }}<span class="tag">&lt;/p&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="string">"version"</span><span class="tag">&gt;</span>v1.2.0<span class="tag">&lt;/p&gt;</span></span>
+<span class="code-line">  <span class="tag">&lt;/div&gt;</span></span>
+<span class="code-line"><span class="tag">&lt;/div&gt;</span></span>
+        </code>
+      </div>
+
+      <div class="info-box success">
+        <strong>✨ Animación:</strong> El logo tiene animación <code>logoFloat</code> (flotar) y la barra de carga usa <code>@keyframes</code> para simular progreso.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📋 Resumen de Componentes</h2>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Selector</th>
+            <th>Uso Principal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>EvaluacionRubricaComponent</code></td>
+            <td><code>&lt;app-evaluacion-rubrica&gt;</code></td>
+            <td>Tabla de evaluación interactiva en CalificacionesPage</td>
+          </tr>
+          <tr>
+            <td><code>RubricaEditorComponent</code></td>
+            <td><code>&lt;app-rubrica-editor&gt;</code></td>
+            <td>Modal/inline para crear/editar rúbricas en RubricasPage</td>
+          </tr>
+          <tr>
+            <td><code>RubricaVersionHistoryComponent</code></td>
+            <td><code>&lt;app-rubrica-version-history&gt;</code></td>
+            <td>Historial y comparación de versiones</td>
+          </tr>
+          <tr>
+            <td><code>OnboardingComponent</code></td>
+            <td><code>&lt;app-onboarding&gt;</code></td>
+            <td>Tour guiado para nuevos usuarios</td>
+          </tr>
+          <tr>
+            <td><code>SplashScreenComponent</code></td>
+            <td><code>&lt;app-splash-screen&gt;</code></td>
+            <td>Pantalla de carga inicial en AppComponent</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="theme-blue">
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.7 de 8 | Politécnico Grancolombiano</p>
+      <p class="mt-10">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">← Anterior: 3.6 Services</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">Siguiente: 3.8 Pages →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

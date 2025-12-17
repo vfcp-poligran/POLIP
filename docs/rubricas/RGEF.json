@@ -1,0 +1,73 @@
+{
+  "rubrica_id": "RGEF",
+  "curso": "ÉNFASIS EN PROGRAMACIÓN MÓVIL",
+  "puntuacion_total": 100,
+  "escala_calificacion": [
+    {
+      "min": 0,
+      "max": 39,
+      "nivel": "Insuficiente",
+      "descripcion": "Requiere reelaboración significativa"
+    },
+    {
+      "min": 40,
+      "max": 59,
+      "nivel": "Aceptable",
+      "descripcion": "Cumple con requisitos mínimos pero requiere mejoras"
+    },
+    {
+      "min": 60,
+      "max": 79,
+      "nivel": "Bueno",
+      "descripcion": "Cumple con lo esperado con buen nivel de calidad"
+    },
+    {
+      "min": 80,
+      "max": 100,
+      "nivel": "Excelente",
+      "descripcion": "Supera expectativas, alta calidad profesional"
+    }
+  ],
+  "criterios": [
+    {
+      "id": 1,
+      "nombre": "Funcionalidad Completa",
+      "peso": 30,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 8,
+          "titulo": "Insuficiente",
+          "descripcion": "La aplicación no funciona correctamente o no cumple con los requisitos funcionales establecidos. Muchas características no están implementadas o presentan errores graves. El proyecto está incompleto."
+        },
+        {
+          "numero": 2,
+          "minimo": 9,
+          "maximo": 15,
+          "titulo": "Aceptable",
+          "descripcion": "La aplicación funciona correctamente en su mayoría. Implementa los requisitos funcionales principales del proyecto. Puede tener algunos errores menores que no afectan la funcionalidad principal."
+        },
+        {
+          "numero": 3,
+          "minimo": 16,
+          "maximo": 23,
+          "titulo": "Bueno",
+          "descripcion": "La aplicación funciona muy bien. Implementa todos los requisitos funcionales correctamente. Presenta errores mínimos o ninguno. La funcionalidad es sólida y confiable."
+        },
+        {
+          "numero": 4,
+          "minimo": 24,
+          "maximo": 30,
+          "titulo": "Excelente",
+          "descripcion": "La aplicación funciona perfectamente. Implementa todos los requisitos funcionales de forma completa y correcta. No presenta errores. La funcionalidad es robusta, completa y bien probada."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Diseño UI/UX y Navegación",
+      "peso": 20,
+      "niveles": 4,
+      "nivel

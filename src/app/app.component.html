@@ -1,3 +1,8 @@
 <ion-app>
+  <!-- Splash Screen durante la carga inicial -->
+  @if (showSplash) {
+    <app-splash-screen (splashComplete)="onSplashComplete()"></app-splash-screen>
+  }
+
   <ion-router-outlet></ion-router-outlet>
 </ion-app>

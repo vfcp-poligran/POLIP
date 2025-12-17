@@ -1,2714 +1,1103 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, HostListener, ChangeDetectorRef, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import { Logger } from '@app/core/utils/logger';
 import {
   IonContent,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonButton,
-  IonButtons,
   IonIcon,
-  IonSegment,
-  IonSegmentButton,
-  IonLabel,
-  IonBadge,
+  IonButton,
   IonChip,
-  IonInput,
-  IonPopover,
-  IonFab,
-  IonFabButton,
-  IonFabList,
+  IonLabel,
   IonList,
   IonItem,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
   IonGrid,
   IonRow,
   IonCol,
-  IonText,
-  IonToolbar,
-  IonTitle,
-  MenuController,
   AlertController,
-  ToastController,
-  LoadingController,
-  PopoverController,
-  ModalController,
-  GestureController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  menuOutline,
-  personOutline,
-  downloadOutline,
+  listOutline,
+  add,
+  addCircleOutline,
   createOutline,
-  chatboxOutline,
-  refreshOutline,
-  closeOutline,
   save,
   saveOutline,
-  documentTextOutline,
-  analyticsOutline,
-  addCircleOutline,
-  chatbubblesOutline,
+  closeOutline,
   trashOutline,
-  pencilOutline,
-  checkmarkOutline,
-  closeCircleOutline,
-  chevronBackOutline,
-  chevronForwardOutline,
-  copyOutline,
+  peopleOutline,
+  statsChartOutline,
+  checkmarkCircleOutline,
   checkmarkCircle,
+  ellipseOutline,
+  closeCircle,
+  documentTextOutline,
+  schoolOutline,
+  pricetagOutline,
+  refreshOutline,
+  eyeOutline,
+  downloadOutline,
+  documentOutline,
+  cloudUploadOutline,
+  cloudUpload,
+  ribbonOutline,
+  star,
+  calendar,
+  codeSlash,
   people,
   person,
-  layersOutline,
-  add,
-  ellipsisVerticalOutline,
-  ellipsisVertical,
-  arrowForwardOutline,
-  arrowBackOutline, checkmarkCircleOutline, arrowUndoOutline, arrowRedoOutline, peopleOutline, linkOutline, cloudUploadOutline, eyeOutline, informationCircleOutline, notificationsOutline, checkmarkDoneOutline, timeOutline, cubeOutline, alertCircleOutline, clipboardOutline, documentOutline, trophyOutline, personCircleOutline
-} from 'ionicons/icons';
+  documentText,
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
-import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado } from '../../services/seguimiento.service';
-import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriterio } from '../../models';
-import { EvaluacionRubricaComponent } from '../../components/evaluacion-rubrica/evaluacion-rubrica.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
-  selector: 'app-inicio',
+  selector: 'app-cursos',
   templateUrl: './cursos.page.html',
   styleUrls: ['./cursos.page.scss'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     IonContent,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonButton,
-    IonButtons,
     IonIcon,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonBadge,
-    IonChip,
-    IonInput,
-    IonPopover,
-    IonFab,
-    IonFabButton,
-    IonFabList,
+    IonButton,
     IonList,
     IonItem,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
     IonGrid,
     IonRow,
     IonCol,
-    IonText,
-    IonToolbar,
-    IonTitle,
-    EvaluacionRubricaComponent
+    IonChip,
+    IonLabel
   ]
 })
-export class InicioPage implements OnInit, OnDestroy {
-  cursosData: CursoData = {};
-  cursoActivo: string | null = null;
-  // Variables de estado
-  estudiantesActuales: Estudiante[] = [];
-  estudiantesFiltrados: Estudiante[] = [];
-  filtroGrupo: string = 'todos';
-  busquedaGeneral: string = '';
-  gruposDisponibles: string[] = [];
-  estudianteSeleccionado: string | null = null;
-
-  // Cache: trackear si los estudiantes del curso ya fueron cargados
-  private _estudiantesCargadosPorCurso: Map<string, boolean> = new Map();
-  private _calificacionesCargadasPorCurso: Map<string, boolean> = new Map();
-
-  // Flag para evitar loops infinitos en sincronización de grupo
-  private actualizandoGrupoDesdeSuscripcion = false;
-  estudiantesSeleccionados: Set<string> = new Set();
-  mostrarNombreCorto: boolean = false; // Controla si se muestra nombre corto o nombre completo en los botones de curso
-  mostrarComentarios: boolean = false; // Controla visibilidad de la sección de comentarios (colapsada por defecto)
-  menuAccionesAbierto: boolean = false; // Controla si el menú lateral de acciones está abierto (móvil)
-  menuFabAbierto: boolean = false; // Controla el menú FAB flotante en móvil portrait
-
-  // Propiedades para drag and drop de cursos
-  cursosOrdenados: string[] = []; // Array ordenado de cursos para mantener el orden personalizado
-  elementoArrastrado: string | null = null; // Curso que se está arrastrando
-  indiceDragDestino: number = -1; // Índice donde se va a soltar el elemento
-
-  // Propiedades para la rúbrica en el panel
-  mostrarRubrica: boolean = false;
-  rubricaActual: RubricaDefinicion | null = null;
-  evaluacionActual: Evaluacion | null = null;
-  entregaEvaluando: 'E1' | 'E2' | 'EF' | null = null;
-  tipoEvaluando: 'PG' | 'PI' | null = null;
-  criteriosEvaluados: EvaluacionCriterio[] = [];
-  puntosRubricaTotales: number = 0;
-  rubricaGrupoSeleccionada: string | null = null; // Persiste la rúbrica por grupo
-  modoEdicionRubrica: boolean = false; // Controla si está en modo edición
-
-  // Nuevas propiedades para navegación de criterios
-  criterioActualIndex: number = 0;
-  textoSeguimientoRubricaGrupal: string[] = []; // Array de párrafos para PG (evaluación grupal)
-  textoSeguimientoRubricaIndividual: string[] = []; // Array de párrafos para PI (evaluación individual)
-  timestampsSeguimiento: string[] = []; // Array de timestamps por criterio (solo referencia visual)
-  puntosPersonalizados: { [key: number]: number } = {}; // Puntos personalizados por criterio
-  comentariosCriterios: { [key: number]: string } = {}; // Comentarios por criterio
-  nivelesSeleccionados: { [key: number]: string } = {}; // Título del nivel seleccionado por criterio
-
-  // Propiedades para cambio de color de curso
-  menuColorVisible: boolean = false;
-  cursoParaCambiarColor: string | null = null;
-  colorSeleccionado: string | null = null;
-  colorPopoverEvent: Event | null = null;
-
-  coloresDisponibles: string[] = [
-    '#d32f2f', // Rojo
-    '#c2185b', // Rosa oscuro
-    '#7b1fa2', // Púrpura
-    '#512da8', // Púrpura oscuro
-    '#303f9f', // Índigo
-    '#1976d2', // Azul
-    '#0288d1', // Azul claro
-    '#0097a7', // Cian
-    '#00796b', // Verde azulado
-    '#388e3c', // Verde
-    '#689f38', // Verde lima
-    '#f57c00', // Naranja
-    '#e64a19', // Naranja oscuro
-    '#ff2719'  // Rojo brillante (como en la imagen)
-  ];
-
-  comentariosFrecuentes: string[] = [
-    'Excelente trabajo, supera las expectativas',
-    'Buen trabajo, cumple con los requisitos',
-    'Necesita mejorar en algunos aspectos',
-    'Requiere trabajo adicional',
-    'Consultar con el profesor',
-    'Presenta creatividad e innovación',
-    'Demuestra comprensión profunda del tema',
-    'Cumple parcialmente con los requisitos',
-    'No cumple con los criterios establecidos',
-    'Evidencia falta de preparación',
-    'Muestra progreso significativo',
-    'Requiere revisión y corrección',
-    'Aplicación correcta de conceptos',
-    'Faltan elementos importantes',
-    'Trabajo sobresaliente en esta área'
-  ];
-
-  // Getter para obtener el array de seguimiento correcto según el tipo de evaluación
-  get textoSeguimientoRubrica(): string[] {
-    return this.tipoEvaluando === 'PG' ? this.textoSeguimientoRubricaGrupal : this.textoSeguimientoRubricaIndividual;
-  }
-
-  set textoSeguimientoRubrica(value: string[]) {
-    if (this.tipoEvaluando === 'PG') {
-      this.textoSeguimientoRubricaGrupal = value;
-    } else {
-      this.textoSeguimientoRubricaIndividual = value;
-    }
-  }
-
-  // Getters para verificar si hay comentarios de cada tipo
-  get tieneComentariosGrupales(): boolean {
-    return this.textoSeguimientoRubricaGrupal.length > 0 && this.textoSeguimientoRubricaGrupal.some(t => t);
-  }
-
-  get tieneComentariosIndividuales(): boolean {
-    return this.textoSeguimientoRubricaIndividual.length > 0 && this.textoSeguimientoRubricaIndividual.some(t => t);
-  }
-
-  // Propiedades para panel de seguimiento
-  grupoSeguimientoActivo: string | null = null;
-
-  // Cache de evaluaciones por subgrupo con TTL
-  private evaluacionesCache = new Map<string, {
-    grupal?: any;
-    individual?: any;
-    timestamp: number;
-  }>();
-  private readonly CACHE_TTL = 30000; // 30 segundos
-
-  // Caché de calificaciones Canvas optimizado
-  private cacheCalificacionesCanvas = new Map<string, Map<string, number>>();
-
-  // Propiedades para comentarios de grupo
-  nuevoComentario: string = '';
-  comentariosGrupoActual: any[] = [];
-  comentarioEditando: string | null = null;
-  textoEditando: string = '';
-
-  // Propiedades para edición directa de puntajes eliminadas (tabla removida)
-
-  // Propiedades para "Aplicar a Todos" en rúbricas
-  aplicarATodos: boolean = false; // Checkbox para aplicar nivel a todos los criterios
-  aplicarAMas: boolean = false; // Checkbox para aplicar PI a otros estudiantes seleccionados
-
-  // Guardia para evitar llamadas redundantes a aplicarFiltros
-  private lastAppliedFilter = {
-    cursoActivo: '',
-    filtroGrupo: '',
-    busquedaGeneral: '',
-    estudiantesCount: 0
-  };
-
-  // Categoría de rúbricas por defecto (configurable según el contexto)
-  private readonly CATEGORIA_RUBRICAS_DEFAULT = 'epm';
-
-  /**
-   * Genera un código basado en las iniciales del nombre del curso
-   * Regla: Excluye preposiciones y palabras cortas (≤2 chars), normaliza tildes
-   * Ejemplo: "Énfasis en Programación Móvil" -> "EPM" (omite "en", normaliza É→E)
-   */
-  private generarCodigoCurso(nombreCurso: string): string {
-    // Lista de preposiciones a excluir
-    const preposiciones = ['DE', 'EN', 'DEL', 'LA', 'EL', 'LOS', 'LAS', 'A', 'CON', 'PARA', 'POR', 'Y'];
-
-    // Función para normalizar texto (quitar tildes y convertir a mayúsculas)
-    const normalizarTexto = (texto: string): string => {
-      return texto
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase();
-    };
-
-    return nombreCurso
-      .split(/\s+/) // Separar por espacios
-      .filter(palabra => palabra.length > 2) // Solo palabras con más de 2 caracteres
-      .map(palabra => normalizarTexto(palabra)) // Normalizar cada palabra
-      .filter(palabra => !preposiciones.includes(palabra)) // Excluir preposiciones
-      .map(palabra => palabra[0]) // Tomar primera letra
-      .join(''); // Unir todas las iniciales
-  }
-
-  // Propiedades para el panel redimensionable
-  anchoPanel: number = 455; // Aumentado 30%: de 350px a 455px
-  redimensionandoPanel: boolean = false;
-  anchoMinimo: number = 250;
-  anchoMaximo: number = 650; // Aumentado 30%: de 500px a 650px
-
-  // Caché para integrantes del grupo actual
-  private _integrantesGrupoCache: Estudiante[] | null = null;
-  private _filtroGrupoCache: string | null = null;
-
-  // Caché para calificaciones del panel
-  private _calificacionesPanelCache = new Map<string, number | null>();
-
-  private subscriptions: Subscription[] = [];
-
+export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
-  private menuController = inject(MenuController);
+  private toastService = inject(ToastService);
   private alertController = inject(AlertController);
-  private seguimientoService = inject(SeguimientoService);
-  private toastController = inject(ToastController);
-  private loadingController = inject(LoadingController);
-  private popoverController = inject(PopoverController);
-  private gestureCtrl = inject(GestureController);
-  private cdr = inject(ChangeDetectorRef);
+
+  @ViewChild('estudiantesFileInput') estudiantesFileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('calificacionesFileInput') calificacionesFileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('rubricaFileInput') rubricaFileInput!: ElementRef<HTMLInputElement>;
+
+  cursosDisponibles: any[] = [];
+  cursoSeleccionado: string | null = null;
+  modoEdicion = false;
+  rubricasAsociadas: any[] = [];
+
+  estudiantesFileName = '';
+  calificacionesFileName = '';
+  rubricaFileName = '';
+  estudiantesCargados: any[] = [];
+  calificacionesCargadas: any = null;
+  calificacionesParseadas: any[] = [];
+  rubricaCargada: any = null;
+
+  cursoParseado: any = null;
+  codigoCursoEnEdicion = '';
+  infoExpanded = false;
 
   constructor() {
-    addIcons({ ellipsisVerticalOutline, arrowBackOutline, arrowForwardOutline, createOutline, saveOutline, closeOutline, trashOutline, copyOutline, ellipsisVertical, checkmarkCircle, personOutline, analyticsOutline, checkmarkCircleOutline, cubeOutline, timeOutline, alertCircleOutline, documentTextOutline, peopleOutline, documentOutline, trophyOutline, personCircleOutline, informationCircleOutline, arrowUndoOutline, arrowRedoOutline, chevronBackOutline, chevronForwardOutline, clipboardOutline, checkmarkOutline, notificationsOutline, checkmarkDoneOutline, linkOutline, downloadOutline, cloudUploadOutline, refreshOutline, eyeOutline, addCircleOutline, chatbubblesOutline, closeCircleOutline, pencilOutline, people, person, layersOutline, menuOutline, save, chatboxOutline, add });
-
-    // Cargar el orden personalizado de cursos
-    this.cargarOrdenCursos();
+    addIcons({school,addCircleOutline,saveOutline,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,add,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,closeOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person});
   }
 
-  async ngOnInit() {
-    // Asegurar que DataService esté inicializado
-    await this.dataService.ensureInitialized();
+  private cd = inject(ChangeDetectorRef);
 
-    // Cargar comentarios frecuentes guardados
-    this.cargarComentariosFrecuentes();
-
-    // Los atajos de teclado ahora se manejan automáticamente con @HostListener
-
-    this.subscriptions.push(
-      this.dataService.cursos$.pipe(
-        distinctUntilChanged((prev, curr) => {
-          const prevKeys = Object.keys(prev).sort();
-          const currKeys = Object.keys(curr).sort();
-
-          // Comparar claves
-          if (prevKeys.length !== currKeys.length) return false;
-          if (prevKeys.join() !== currKeys.join()) return false;
-
-          // Comparar longitud de arrays de estudiantes
-          for (const key of prevKeys) {
-            const prevLength = Array.isArray(prev[key]) ? prev[key].length : 0;
-            const currLength = Array.isArray(curr[key]) ? curr[key].length : 0;
-            if (prevLength !== currLength) return false;
-          }
-
-          return true; // Son iguales, NO emitir
-        })
-      ).subscribe(cursos => {
-        const totalCursos = Object.keys(cursos).length;
-        const totalEstudiantes = Object.values(cursos).reduce((sum: number, estudiantes: any) =>
-          sum + (Array.isArray(estudiantes) ? estudiantes.length : 0), 0);
-
-        console.log(`📚[cursos$.subscribe] ${new Date().toISOString().substr(11, 12)} `, {
-          totalCursos,
-          totalEstudiantes,
-          cursos: Object.keys(cursos)
-        });
-
-        this.cursosData = cursos;
-
-        // 🚨 FIX CRÍTICO: Solo cargar si NO tiene cache y estudiantes vacíos
-        const uiState = this.dataService.getUIState();
-        if (uiState.cursoActivo && cursos[uiState.cursoActivo]) {
-          const estudiantesEnData = cursos[uiState.cursoActivo].length;
-          const yaEnCache = this._estudiantesCargadosPorCurso.has(uiState.cursoActivo);
-
-          // Solo cargar si NO está en cache Y estudiantesActuales está vacío
-          if (estudiantesEnData > 0 && this.estudiantesActuales.length === 0 && !yaEnCache) {
-            console.log(`🔥[cursos$.subscribe] Cargando ${estudiantesEnData} estudiantes`);
-            this.cursoActivo = uiState.cursoActivo;
-            this.estudiantesActuales = cursos[uiState.cursoActivo];
-            this._estudiantesCargadosPorCurso.set(uiState.cursoActivo, true);
-            this.actualizarGrupos();
-            this.aplicarFiltros();
-          }
-        }
-
-        // Si el curso activo fue eliminado, limpiar estado
-        if (this.cursoActivo && !cursos[this.cursoActivo]) {
-          console.log('⚠️ [InicioPage] Curso activo eliminado:', this.cursoActivo);
-          this.cursoActivo = null;
-          this.estudiantesActuales = [];
-        }
-        this.cdr.detectChanges();
-      })
-    );
-
-    // Suscribirse a búsqueda global
-    this.subscriptions.push(
-      this.dataService.globalSearch$.pipe(
-        distinctUntilChanged(), // Evita duplicados
-        debounceTime(50)        // Pequeño debounce adicional
-      ).subscribe(searchTerm => {
-        this.busquedaGeneral = searchTerm;
-        this.aplicarFiltros();
-        this.cdr.detectChanges();
-      })
-    );
-
-    // Suscribirse a cambios de grupo desde el panel de seguimiento
-    this.subscriptions.push(
-      this.seguimientoService.grupoSeleccionado$.pipe(
-        distinctUntilChanged(), // Solo emite si grupo cambió
-        debounceTime(100)       // Agrupa cambios rápidos
-      ).subscribe(grupoNum => {
-        // Evitar loop infinito
-        if (this.actualizandoGrupoDesdeSuscripcion) return;
-
-        this.actualizandoGrupoDesdeSuscripcion = true;
-
-        if (grupoNum === 0) {
-          this.filtroGrupo = 'todos';
-          this.grupoSeguimientoActivo = null;
-        } else {
-          // gruposDisponibles tiene formato "1", "2", "3" (sin prefijo "G")
-          const grupoNumStr = grupoNum.toString();
-          // Validar si el grupo existe antes de aplicar el filtro
-          if (this.gruposDisponibles.length === 0 || this.gruposDisponibles.includes(grupoNumStr)) {
-            // Usar solo el número para coincidir con est.grupo y gruposDisponibles
-            this.filtroGrupo = grupoNumStr;
-            this.grupoSeguimientoActivo = grupoNumStr;
-          } else {
-            console.warn('⚠️ Grupo no encontrado en gruposDisponibles:', grupoNum, 'disponibles:', this.gruposDisponibles);
-          }
-        }
-
-        this.aplicarFiltros();
-        this.cdr.detectChanges();
-        this.actualizandoGrupoDesdeSuscripcion = false;
-      })
-    );
-
-    // Suscribirse a actualizaciones de calificaciones Canvas
-    // Cuando se cargan nuevas calificaciones, invalidar el cache
-    this.subscriptions.push(
-      this.dataService.calificacionesCanvasActualizadas$.subscribe(evento => {
-        if (evento && evento.curso) {
-          console.log('📢 [cursos.page] Recibida notificación: calificaciones actualizadas para', evento.curso);
-
-          // Invalidar cache de calificaciones para este curso
-          this._calificacionesCargadasPorCurso.delete(evento.curso);
-
-          // Si es el curso activo, recargar calificaciones
-          if (this.cursoActivo === evento.curso) {
-            console.log('🔄 [cursos.page] Recargando calificaciones del curso activo');
-            this.limpiarCacheCalificaciones();
-            this.precargarCalificacionesCurso();
-            this._calificacionesCargadasPorCurso.set(evento.curso, true);
-            this.cdr.detectChanges();
-          }
-        }
-      })
-    );
-
-    // Escuchar evento de apertura de rúbrica desde el sidebar
-    window.addEventListener('abrirRubrica', ((event: CustomEvent) => {
-      const { entrega, tipo } = event.detail;
-      this.abrirRubricaEntrega(entrega, tipo);
-    }) as EventListener);
-
-    // Restaurar estado de UI (preferencias y curso activo)
-    const uiState = this.dataService.getUIState();
-
-    // Restaurar preferencia de mostrar nombre corto
-    if (uiState.mostrarNombreCorto !== undefined) {
-      this.mostrarNombreCorto = uiState.mostrarNombreCorto;
-    }
-
-    // NOTA: NO cargar curso aquí - ionViewWillEnter() lo manejará
-    // Esto evita cargas duplicadas en la primera inicialización
+  ngOnInit() {
+    // Setup inicial que NO depende de recarga de datos
   }
 
-  async cargarDatosIniciales() {
-    await this.dataService.loadCursos();
-    this.cursosData = this.dataService.getCursos();
-
-    // Sincronizar UI si hay curso activo
+  /**
+   * Lifecycle hook de Ionic - se ejecuta cada vez que la vista va a aparecer
+   * Esto EVITA recrear el componente completo
+   */
+  ionViewWillEnter() {
+    this.cargarCursos();
+    // Restaurar estado de modoEdicion desde UIState
     const uiState = this.dataService.getUIState();
-    if (uiState.cursoActivo && this.cursosData[uiState.cursoActivo]) {
-      this.seleccionarCurso(uiState.cursoActivo);
+    if (uiState.cursosModoEdicion) {
+      this.modoEdicion = true;
     }
   }
 
-  async ionViewWillEnter() {
-    // Sincronizar con el estado global
-    const uiState = this.dataService.getUIState();
-    const cursoActivo = uiState.cursoActivo;
-    const tieneCursoActivo = !!cursoActivo;
-    const existeEnData = cursoActivo ? !!this.cursosData[cursoActivo] : false;
+  /**
+   * Editar un curso desde la tabla
+   */
+  editarCurso(curso: any) {
+    this.cursoSeleccionado = curso.codigo;
+    this.editarCursoSeleccionado();
+  }
 
-    // CASO 1: Servicio vacío (F5 o primer inicio) -> Recargar todo
-    if (Object.keys(this.cursosData).length === 0) {
-      this.cargarDatosIniciales();
-      return;
-    }
+  /**
+   * Confirmar eliminación de un curso desde la tabla
+   */
+  async confirmarEliminarCurso(curso: any) {
+    // Crear un evento dummy para el método existente
+    const dummyEvent = new Event('click');
+    await this.eliminarCurso(curso, dummyEvent);
+  }
 
-    // CASO 2: Data existe, tenemos curso activo pero no está en memoria local -> Sincronizar
-    if (tieneCursoActivo && !existeEnData) {
-      this.cargarDatosIniciales();
-      return;
-    }
+  cargarCursos(): void {
+    try {
+      const uiState = this.dataService.getUIState();
 
-    // CASO 3: Mismo curso pero sin estudiantes en vista -> Restaurar estado
-    if (tieneCursoActivo && existeEnData) {
-      if (this.estudiantesActuales.length === 0) {
-        this.seleccionarCurso(uiState.cursoActivo!);
+      if (!uiState || !uiState.courseStates) {
+        Logger.warn('[CursosPage] No hay estados de curso disponibles');
+        this.cursosDisponibles = [];
         return;
       }
 
-      // CASO 4: Mismo curso con datos - solo aplicar filtros (sin recargar)
-      this.aplicarFiltros();
-    }
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
-
-  /**
-   * Estilos reactivos para el layout grid
-   * Se actualizan automáticamente al cambiar anchoPanel
-   */
-  get layoutStyles() {
-    return {
-      'grid-template-columns': `1fr 4px ${this.anchoPanel}px`
-    };
-  }
-
-  openMenu() {
-    this.menuController.open('main-menu');
-  }
-
-  get cursosDisponibles(): string[] {
-    const cursos = Object.keys(this.cursosData);
-
-    // Si no hay orden personalizado, inicializar
-    if (this.cursosOrdenados.length === 0 || this.cursosOrdenados.length !== cursos.length) {
-      this.cursosOrdenados = [...cursos].sort();
-    }
-
-    // Asegurar que todos los cursos estén en el array ordenado
-    cursos.forEach(curso => {
-      if (!this.cursosOrdenados.includes(curso)) {
-        this.cursosOrdenados.push(curso);
-      }
-    });
-
-    // Remover cursos que ya no existen
-    this.cursosOrdenados = this.cursosOrdenados.filter(curso => cursos.includes(curso));
-
-    return this.cursosOrdenados;
-  }
-
-  onCursoChange(event: any) {
-    const valor = event.detail.value;
-    // Solo seleccionar si realmente cambió el valor
-    if (valor && valor !== this.cursoActivo) {
-      this.seleccionarCurso(valor);
-    }
-  }
-
-  async seleccionarCurso(nombreCurso: string) {
-    const timestamp = new Date().toISOString().substr(11, 12);
-    // OPTIMIZACIÓN CRÍTICA: Si el curso ya está activo, no hacer nada
-    if (this.cursoActivo === nombreCurso &&
-      this._estudiantesCargadosPorCurso.has(nombreCurso) &&
-      this.estudiantesActuales.length > 0) {
-      return;
-    }
-
-    this.cursoActivo = nombreCurso;
-
-    // OPTIMIZACIÓN: Solo cargar estudiantes si no están en cache o si hay cambios
-    const estudiantesNuevos = this.cursosData[nombreCurso] || [];
-    const estudiantesPrevios = this.estudiantesActuales.length;
-    const cambiaronEstudiantes = estudiantesPrevios !== estudiantesNuevos.length;
-
-    if (!this._estudiantesCargadosPorCurso.has(nombreCurso) || cambiaronEstudiantes) {
-      this.estudiantesActuales = estudiantesNuevos;
-      this._estudiantesCargadosPorCurso.set(nombreCurso, true);
-    }
-
-    this.estudiantesSeleccionados.clear();
-    this.estudianteSeleccionado = null;
-
-    // Actualizar grupos disponibles
-    this.actualizarGrupos();
-
-    // Pre-cargar calificaciones solo si no están en cache
-    if (!this._calificacionesCargadasPorCurso.has(nombreCurso)) {
-      this.precargarCalificacionesCurso();
-      this._calificacionesCargadasPorCurso.set(nombreCurso, true);
-    }
-
-    // Obtener CourseState una sola vez para restaurar grupo y entrega
-    const courseState = this.dataService.getCourseState(nombreCurso);
-
-    // Restaurar grupo desde CourseState específico de este curso
-    if (courseState?.filtroGrupo && courseState.filtroGrupo !== 'todos' &&
-      this.gruposDisponibles.includes(courseState.filtroGrupo)) {
-
-      // 🛡️ GUARDIA: Solo restaurar si es diferente al actual
-      if (this.filtroGrupo !== courseState.filtroGrupo) {
-        // Restaurar el último grupo seleccionado para este curso
-        this.grupoSeguimientoActivo = courseState.filtroGrupo;
-        this.filtroGrupo = courseState.filtroGrupo;
-
-        // Sincronizar con el servicio de seguimiento
-        const grupoNum = parseInt(courseState.filtroGrupo.replace(/\D/g, ''));
-        this.seguimientoService.setGrupoSeleccionado(grupoNum);
-      }
-    } else {
-      // Resetear filtro si no hay grupo guardado o no existe en este curso
-      this.grupoSeguimientoActivo = null;
-      this.filtroGrupo = 'todos';
-      this.seguimientoService.setGrupoSeleccionado(0);
-    }
-
-    this.aplicarFiltros();
-
-    // Guardar en UI state
-    this.dataService.updateUIState({ cursoActivo: nombreCurso });
-
-    // Limpiar estado de entrega
-    this.entregaEvaluando = null;
-    this.tipoEvaluando = null;
-    this.limpiarPanelSeguimiento();
-
-    // OPTIMIZACIÓN: Solo forzar detección de cambios si realmente hubo un cambio de curso
-    this.cdr.detectChanges();
-  }
-
-  private actualizarGrupos() {
-    const grupos = [...new Set(this.estudiantesActuales.map(est => est.grupo))];
-    // Ordenar grupos numéricamente (formato: "1", "2", "3", etc.)
-    this.gruposDisponibles = grupos.sort((a, b) => {
-      const numeroA = parseInt(a) || 0;
-      const numeroB = parseInt(b) || 0;
-      return numeroA - numeroB;
-    });
-  }
-
-  aplicarFiltros() {
-    // 🛡️ GUARDIA: Evitar ejecución si parámetros no cambiaron
-    const currentState = {
-      cursoActivo: this.cursoActivo || '',
-      filtroGrupo: this.filtroGrupo,
-      busquedaGeneral: this.busquedaGeneral,
-      estudiantesCount: this.estudiantesActuales.length
-    };
-
-    const stateKey = JSON.stringify(currentState);
-    const lastStateKey = JSON.stringify(this.lastAppliedFilter);
-
-    if (stateKey === lastStateKey) {
-      return;
-    }
-
-    this.lastAppliedFilter = currentState;
-
-    // 🚨 CRITICAL FIX: Si estudiantesActuales está vacío pero hay curso activo, cargar datos
-    if (this.estudiantesActuales.length === 0 && this.cursoActivo && this.cursosData[this.cursoActivo]) {
-      console.warn('⚠️ [aplicarFiltros] EMERGENCIA: cargando desde cursosData');
-      this.estudiantesActuales = this.cursosData[this.cursoActivo];
-      this._estudiantesCargadosPorCurso.set(this.cursoActivo, true);
-      this.actualizarGrupos();
-    }
-
-    const inicioLength = this.estudiantesActuales.length;
-    let resultado = [...this.estudiantesActuales];
-
-    // Filtro por grupo - incluye filtro desde seguimientoService
-    const grupoSeguimiento = this.seguimientoService.getGrupoSeleccionado();
-    const filtroEfectivo = this.filtroGrupo !== 'todos' ? this.filtroGrupo :
-      (grupoSeguimiento > 0 ? `${grupoSeguimiento} ` : null);
-
-    if (filtroEfectivo && filtroEfectivo !== 'todos') {
-      // Extraer solo el número del grupo para comparación consistente
-      const numeroGrupo = filtroEfectivo.toString().replace(/\D/g, '');
-      resultado = resultado.filter(est => est.grupo === numeroGrupo);
-    }
-
-    // Filtro por búsqueda general
-    if (this.busquedaGeneral.trim()) {
-      const busqueda = this.busquedaGeneral.toLowerCase();
-      resultado = resultado.filter(est =>
-        est.nombres.toLowerCase().includes(busqueda) ||
-        est.apellidos.toLowerCase().includes(busqueda) ||
-        est.correo.toLowerCase().includes(busqueda)
-      );
-    }
-
-    // Ordenamiento por grupos
-    resultado = this.ordenarPorGrupos(resultado);
-
-    // OPTIMIZACIÓN: Solo actualizar si realmente cambió el resultado
-    // Esto evita re-renders innecesarios cuando se navega entre páginas
-    const cambio = resultado.length !== this.estudiantesFiltrados.length ||
-      !resultado.every((est, i) => est.correo === this.estudiantesFiltrados[i]?.correo);
-
-    console.log('🔍 [aplicarFiltros]', {
-      estudiantesBase: inicioLength,
-      filtroGrupo: filtroEfectivo,
-      busqueda: this.busquedaGeneral ? 'SÍ' : 'NO',
-      resultadoFinal: resultado.length,
-      cambioDetectado: cambio
-    });
-
-    if (cambio) {
-      this.estudiantesFiltrados = resultado;
-      console.log('✅ [aplicarFiltros] Estudiantes filtrados actualizados:', resultado.length);
-    } else {
-      console.log('⚡ [aplicarFiltros] Sin cambios, manteniendo array actual');
-    }
-  }
-
-  /**
-   * Ordena los estudiantes por grupo (subgrupo) de forma ascendente
-   */
-  ordenarPorGrupos(estudiantes: Estudiante[]): Estudiante[] {
-    return estudiantes.sort((a, b) => {
-      const numA = parseInt(a.grupo.replace(/\D/g, ''), 10) || 0;
-      const numB = parseInt(b.grupo.replace(/\D/g, ''), 10) || 0;
-      return numA - numB;
-    });
-  }
-
-
-
-  onFiltroGrupoChange(event: any) {
-    const nuevoGrupo = event.detail.value;
-
-    // 🛡️ GUARDIA: No hacer nada si es el mismo grupo
-    if (this.filtroGrupo === nuevoGrupo) {
-      console.log('⚡ [onFiltroGrupoChange] Skipped - mismo grupo:', nuevoGrupo);
-      return;
-    }
-
-    this.filtroGrupo = nuevoGrupo;
-
-    // Guardar en CourseState para persistencia por curso
-    if (this.cursoActivo) {
-      this.dataService.updateCourseState(this.cursoActivo, {
-        filtroGrupo: nuevoGrupo
-      });
-    }
-
-    // Actualizar el servicio de seguimiento solo si no es "todos"
-    if (nuevoGrupo !== 'todos') {
-      const grupoNum = parseInt(nuevoGrupo.replace(/\D/g, ''));
-      this.seguimientoService.setGrupoSeleccionado(grupoNum);
-    }
-
-    // OPTIMIZACIÓN: aplicarFiltros solo filtra en memoria, no recarga datos
-    this.aplicarFiltros();
-
-    // Si hay una rúbrica activa, cargar el estado del nuevo grupo y actualizar el panel
-    if (this.mostrarRubrica && this.tipoEvaluando && nuevoGrupo !== 'todos') {
-      console.log('📊 [onFiltroGrupoChange] Actualizando panel para grupo:', nuevoGrupo);
-      this.cargarEvaluacionGuardada().then(() => {
-        this.emitToSeguimientoPanel();
-        this.cdr.detectChanges();
-      });
-    } else {
-      // Si no hay rúbrica activa o es "todos", limpiar el panel
-      this.limpiarPanelSeguimiento();
-      this.cdr.detectChanges();
-    }
-  }
-
-  /**
-   * Obtiene estadísticas resumidas del curso actual (optimizado)
-   */
-  getEstadisticasResumidas() {
-    if (!this.cursoActivo) {
-      return { calificados: 0, pendientes: 0, individuales: 0 };
-    }
-
-    const evaluaciones = this.dataService.getAllEvaluaciones();
-    const grupos = this.gruposDisponibles;
-    const entregas: ('E1' | 'E2' | 'EF')[] = ['E1', 'E2', 'EF'];
-
-    const gruposCalificadosSet = new Set<string>();
-    let estudiantesEvaluados = 0;
-
-    // Contar grupos calificados (al menos una entrega PG completa)
-    entregas.forEach(entrega => {
-      grupos.forEach(grupo => {
-        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo} `;
-        if (evaluaciones[keyPG]) {
-          gruposCalificadosSet.add(grupo);
-        }
-      });
-    });
-
-    // Contar estudiantes con al menos una PI evaluada
-    const estudiantesEvaluadosSet = new Set<string>();
-    entregas.forEach(entrega => {
-      this.estudiantesActuales.forEach(estudiante => {
-        const keyPI = `${this.cursoActivo}_${entrega}_PI_${estudiante.correo} `;
-        if (evaluaciones[keyPI]) {
-          estudiantesEvaluadosSet.add(estudiante.correo);
-        }
-      });
-    });
-
-    return {
-      calificados: gruposCalificadosSet.size,
-      pendientes: grupos.length - gruposCalificadosSet.size,
-      individuales: estudiantesEvaluadosSet.size
-    };
-  }
-
-  /**
-   * Obtiene lista detallada de grupos calificados (parcial o totalmente)
-   * Un grupo se considera calificado si tiene al menos una evaluación PG en cualquier entrega
-   */
-  getGruposCalificados(): Array<{
-    grupo: string;
-    entregas: { E1: boolean; E2: boolean; EF: boolean };
-    totalEntregas: number;
-    porcentaje: number;
-    integrantes: number;
-  }> {
-    if (!this.cursoActivo) {
-      return [];
-    }
-
-    const evaluaciones = this.dataService.getAllEvaluaciones();
-    const grupos = this.gruposDisponibles;
-    const entregas: ('E1' | 'E2' | 'EF')[] = ['E1', 'E2', 'EF'];
-    const gruposCalificados: Array<{
-      grupo: string;
-      entregas: { E1: boolean; E2: boolean; EF: boolean };
-      totalEntregas: number;
-      porcentaje: number;
-      integrantes: number;
-    }> = [];
-
-    grupos.forEach(grupo => {
-      const estadoEntregas = {
-        E1: false,
-        E2: false,
-        EF: false
-      };
-
-      // Verificar cada entrega
-      entregas.forEach(entrega => {
-        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo} `;
-        if (evaluaciones[keyPG]) {
-          estadoEntregas[entrega] = true;
-        }
-      });
-
-      // Contar entregas completadas
-      const totalEntregas = Object.values(estadoEntregas).filter(v => v).length;
-
-      // Solo incluir si tiene al menos una entrega calificada
-      if (totalEntregas > 0) {
-        // Contar integrantes del grupo
-        const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo).length;
-
-        gruposCalificados.push({
-          grupo,
-          entregas: estadoEntregas,
-          totalEntregas,
-          porcentaje: Math.round((totalEntregas / 3) * 100),
-          integrantes
-        });
-      }
-    });
-
-    // Ordenar por número de grupo
-    return gruposCalificados.sort((a, b) => {
-      const numA = parseInt(a.grupo) || 0;
-      const numB = parseInt(b.grupo) || 0;
-      return numA - numB;
-    });
-  }
-
-  /**
-   * Obtiene lista detallada de grupos pendientes por calificar
-   * Un grupo está pendiente si no tiene ninguna evaluación PG o tiene evaluaciones incompletas
-   */
-  getGruposPendientes(): Array<{
-    grupo: string;
-    entregas: { E1: boolean; E2: boolean; EF: boolean };
-    totalPendientes: number;
-    integrantes: number;
-  }> {
-    if (!this.cursoActivo) {
-      return [];
-    }
-
-    const evaluaciones = this.dataService.getAllEvaluaciones();
-    const grupos = this.gruposDisponibles;
-    const entregas: ('E1' | 'E2' | 'EF')[] = ['E1', 'E2', 'EF'];
-    const gruposPendientes: Array<{
-      grupo: string;
-      entregas: { E1: boolean; E2: boolean; EF: boolean };
-      totalPendientes: number;
-      integrantes: number;
-    }> = [];
-
-    grupos.forEach(grupo => {
-      const estadoEntregas = {
-        E1: false,
-        E2: false,
-        EF: false
-      };
-
-      // Verificar cada entrega
-      entregas.forEach(entrega => {
-        const keyPG = `${this.cursoActivo}_${entrega}_PG_${grupo} `;
-        if (evaluaciones[keyPG]) {
-          estadoEntregas[entrega] = true;
-        }
-      });
-
-      // Contar entregas pendientes
-      const totalPendientes = Object.values(estadoEntregas).filter(v => !v).length;
-
-      // Incluir si tiene al menos una entrega pendiente
-      if (totalPendientes > 0) {
-        // Contar integrantes del grupo
-        const integrantes = this.estudiantesActuales.filter(e => e.grupo === grupo).length;
-
-        gruposPendientes.push({
-          grupo,
-          entregas: estadoEntregas,
-          totalPendientes,
-          integrantes
-        });
-      }
-    });
-
-    // Ordenar por número de grupo
-    return gruposPendientes.sort((a, b) => {
-      const numA = parseInt(a.grupo) || 0;
-      const numB = parseInt(b.grupo) || 0;
-      return numA - numB;
-    });
-  }
-
-  /**
-   * Navega a un grupo específico desde las listas del panel general
-   */
-  navegarAGrupo(numeroGrupo: string) {
-    this.filtroGrupo = numeroGrupo;
-    this.grupoSeguimientoActivo = numeroGrupo;
-
-    // Guardar en CourseState para persistencia
-    if (this.cursoActivo) {
-      this.dataService.updateCourseState(this.cursoActivo, {
-        filtroGrupo: numeroGrupo
-      });
-    }
-
-    // Sincronizar con el servicio de seguimiento
-    const grupoNum = parseInt(numeroGrupo.replace(/\D/g, ''));
-    this.seguimientoService.setGrupoSeleccionado(grupoNum);
-
-    // Aplicar filtros para mostrar solo ese grupo
-    this.aplicarFiltros();
-    this.cdr.detectChanges();
-  }
-
-
-
-
-
-
-
-  // Método para compatibilidad con código existente
-  esEstudianteSeleccionado(correo: string): boolean {
-    return this.estudiantesSeleccionados.has(correo);
-  }
-
-  async renombrarCurso() {
-    if (!this.cursoActivo) return;
-
-    // Obtener metadata del curso actual
-    const courseState = this.dataService.getCourseState(this.cursoActivo);
-    const nombreActual = courseState?.metadata?.nombre || this.cursoActivo;
-
-    const alert = await this.alertController.create({
-      header: 'Actualizar Nombre del Curso',
-      message: 'El código del curso no cambiará, solo su nombre descriptivo:',
-      inputs: [
-        {
-          name: 'nuevoNombre',
-          type: 'text',
-          value: nombreActual,
-          placeholder: 'Nombre completo del curso'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Actualizar',
-          handler: async (data) => {
-            if (data.nuevoNombre && data.nuevoNombre.trim() !== nombreActual) {
-              try {
-                await this.dataService.actualizarNombreCurso(this.cursoActivo!, data.nuevoNombre.trim());
-                // NO cambiamos cursoActivo porque el código único no cambia
-                const toast = await this.toastController.create({
-                  message: 'Nombre actualizado correctamente',
-                  duration: 2000,
-                  color: 'success',
-                  position: 'top',
-                  cssClass: 'toast-success'
-                });
-                await toast.present();
-              } catch (error: any) {
-                this.mostrarError('Error al actualizar nombre', error.message);
-              }
-            }
+      const courseStates = uiState.courseStates;
+
+      this.cursosDisponibles = Object.entries(courseStates)
+        .map(([nombreCurso, state]) => {
+          if (!state || typeof state !== 'object') {
+            Logger.warn(`[CursosPage] Estado inválido para curso: ${nombreCurso}`);
+            return null;
           }
-        }
-      ]
-    });
 
-    await alert.present();
-  }
+          try {
+            const codigoUnico = state.metadata?.codigoUnico || nombreCurso;
+            const tieneArchivo = this.dataService.obtenerArchivoCalificaciones(nombreCurso) !== null;
 
-  exportarNotas(entrega: 'E1' | 'E2' | 'EF') {
-    if (!this.cursoActivo) return;
-    this.dataService.exportarNotasCSV(this.cursoActivo, entrega);
-  }
+            return {
+              nombre: state.metadata?.nombre || nombreCurso,
+              nombreAbreviado: state.metadata?.nombreAbreviado || '',
+              codigo: codigoUnico,
+              codigoBase: state.metadata?.codigo || '',
+              bloque: state.metadata?.bloque || '',
+              fechaCreacion: state.metadata?.fechaCreacion || '',
+              tieneCalificaciones: tieneArchivo
+            };
+          } catch (error) {
+            Logger.error(`[CursosPage] Error procesando curso ${nombreCurso}:`, error);
+            return null;
+          }
+        })
+        .filter((curso): curso is NonNullable<typeof curso> => curso !== null)
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-  async sincronizarArchivoCalificaciones() {
-    if (!this.cursoActivo) {
-      await this.mostrarError('Error', 'No hay curso activo seleccionado');
-      return;
-    }
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) {
-      await this.mostrarError('Sin archivo', 'No hay archivo de calificaciones asociado a este curso. Vaya a Configuración para cargar uno.');
-      return;
-    }
-
-    try {
-      await this.dataService.sincronizarArchivoCalificaciones(this.cursoActivo);
-
-
-
-      const toast = await this.toastController.create({
-        message: '✅ Archivo de calificaciones sincronizado correctamente\n📊 Los cambios ya están disponibles en Canvas',
-        duration: 4000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
+      Logger.log(`[CursosPage] ${this.cursosDisponibles.length} cursos cargados exitosamente`);
     } catch (error) {
-      console.error('Error sincronizando archivo:', error);
-      await this.mostrarError('Error', 'No se pudo sincronizar el archivo de calificaciones');
+      Logger.error('[CursosPage] Error crítico al cargar cursos:', error);
+      this.cursosDisponibles = [];
+      this.mostrarToastError('Error al cargar la lista de cursos');
     }
   }
 
-  private async mostrarError(titulo: string, mensaje: string) {
-    const alert = await this.alertController.create({
-      header: titulo,
-      message: mensaje,
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
-  private async mostrarConfirmacion(titulo: string, mensaje: string): Promise<boolean> {
-    return new Promise(async (resolve) => {
-      const alert = await this.alertController.create({
-        header: titulo,
-        message: mensaje,
-        buttons: [
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-            handler: () => resolve(false)
-          },
-          {
-            text: 'Continuar',
-            handler: () => resolve(true)
-          }
-        ]
-      });
-      await alert.present();
-    });
-  }
-
-  // === MÉTODOS PARA LA RÚBRICA DE EVALUACIÓN ===
-
-  /**
-   * Limpia completamente el panel de seguimiento
-   */
-  private limpiarPanelSeguimiento() {
-    const seguimiento = this.seguimientoService.getSeguimiento();
-    if (seguimiento) {
-      seguimiento.evaluacionGrupal = undefined;
-      seguimiento.evaluacionIndividual = undefined;
-      seguimiento.integranteSeleccionado = undefined;
-      seguimiento.entregaActual = undefined;
-      seguimiento.tipoEvaluacionActiva = null;
-      // Limpiar también los comentarios
-      seguimiento.comentarios = [];
-      this.seguimientoService.setSeguimiento(seguimiento);
-      console.log('🧹 Panel de seguimiento limpiado (evaluaciones, integrante, entrega, tipo y comentarios)');
+  async iniciarCreacionCurso() {
+    Logger.log('🔘 [CursosPage] Click en Crear Curso - Iniciando...');
+    try {
+      this.modoEdicion = true;
+      this.cursoSeleccionado = null;
+      this.limpiarFormulario();
+      this.cd.detectChanges(); // Forzar actualización de vista
+      // Persistir estado en UIState
+      this.dataService.updateUIState({ cursosModoEdicion: true });
+      Logger.log('✅ [CursosPage] Modo edición activado');
+    } catch (error) {
+      Logger.error('❌ [CursosPage] Error al iniciar creación:', error);
     }
   }
 
-  /**
-   * Obtiene el ID de la rúbrica por defecto según la entrega y tipo
-   *
-   * PRIORIDAD DE BÚSQUEDA:
-   * 1. Intenta obtener desde rubricasAsociadas del CourseState (persistido)
-   * 2. Si no existe, genera ID desde categoría (nombreAbreviado del curso)
-   * 3. Si la rúbrica generada no existe, fallback a EPM
-   *
-   * Sistema de IDs: {categoria}-{tipo}-{entrega}
-   * Ejemplos: epm-grupal-e1, epm-individual, so-grupal-e1, bd-grupal-final
-   *
-   * @param entrega - Código de la entrega (E1, E2, EF)
-   * @param tipo - Tipo de evaluación (PG: Proyecto Grupal, PI: Proyecto Individual)
-   * @returns ID de la rúbrica en formato {categoria}-{tipo}-{entrega}
-   */
-  private obtenerRubricaIdPorDefecto(entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI'): string {
-    // 1️⃣ Intentar obtener desde rubricasAsociadas (solo para grupales)
-    if (tipo === 'PG' && this.cursoActivo) {
-      const uiState = this.dataService.getUIState();
-      const courseState = uiState.courseStates?.[this.cursoActivo];
-      const rubricasAsociadas = courseState?.rubricasAsociadas;
+  async cancelarCreacionCurso() {
+    this.modoEdicion = false;
+    this.limpiarFormulario();
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ cursosModoEdicion: false });
+    Logger.log('🔘 [CursosPage] Creación de curso cancelada');
+  }
 
-      if (rubricasAsociadas) {
-        let rubricaId: string | null = null;
+  toggleInfo() {
+    this.infoExpanded = !this.infoExpanded;
+  }
 
-        if (entrega === 'E1') rubricaId = rubricasAsociadas.entrega1;
-        else if (entrega === 'E2') rubricaId = rubricasAsociadas.entrega2;
-        else if (entrega === 'EF') rubricaId = rubricasAsociadas.entregaFinal;
+  seleccionarCurso(codigo: string) {
+    this.cursoSeleccionado = codigo;
+    this.modoEdicion = false;
+    this.cargarRubricasAsociadas(codigo);
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ cursosModoEdicion: false });
+  }
 
-        if (rubricaId) {
-          // Verificar que la rúbrica exista
-          const existe = this.dataService.getRubrica(rubricaId);
-          if (existe) {
-            console.log(`✅[obtenerRubricaIdPorDefecto] Usando rúbrica asociada: ${rubricaId} `);
-            return rubricaId;
+  deseleccionarCurso() {
+    this.cursoSeleccionado = null;
+    this.modoEdicion = false;
+    this.limpiarFormulario();
+    this.rubricasAsociadas = [];
+    // Limpiar estado en UIState
+    this.dataService.updateUIState({ cursosModoEdicion: false });
+  }
+
+  cargarRubricasAsociadas(codigoCurso: string) {
+    const todasRubricas = this.dataService.obtenerRubricasArray();
+    this.rubricasAsociadas = todasRubricas.filter(rubrica =>
+      rubrica.cursosCodigos?.includes(codigoCurso)
+    ).sort((a, b) => {
+      // Ordenar por tipo de entrega
+      const ordenEntrega: any = { 'E1': 1, 'E2': 2, 'EF': 3 };
+      const ordenA = ordenEntrega[a.tipoEntrega || ''] || 999;
+      const ordenB = ordenEntrega[b.tipoEntrega || ''] || 999;
+
+      if (ordenA !== ordenB) {
+        return ordenA - ordenB;
+      }
+
+      // Luego por tipo de rúbrica (PG antes que PI)
+      const tipoA = a.tipoRubrica === 'PG' ? 0 : 1;
+      const tipoB = b.tipoRubrica === 'PG' ? 0 : 1;
+
+      return tipoA - tipoB;
+    });
+  }
+
+  editarCursoSeleccionado() {
+    if (!this.cursoSeleccionado) return;
+
+    const curso = this.cursosDisponibles.find(c => c.codigo === this.cursoSeleccionado);
+    if (!curso) return;
+
+    this.modoEdicion = true;
+    this.codigoCursoEnEdicion = curso.codigo;
+    this.cursoParseado = {
+      nombre: curso.nombre,
+      codigo: curso.codigo,
+      bloque: curso.bloque
+    };
+
+    // Cargar estudiantes del curso desde storage
+    const estudiantes = this.dataService.getCurso(curso.codigo);
+    if (estudiantes && estudiantes.length > 0) {
+      this.estudiantesCargados = estudiantes;
+      this.estudiantesFileName = `${curso.codigo}_estudiantes.csv`;
+    }
+
+    // Cargar archivo de calificaciones si existe
+    const archivo = this.dataService.obtenerArchivoCalificaciones(curso.codigo);
+    if (archivo) {
+      this.calificacionesCargadas = archivo;
+      this.calificacionesFileName = archivo.nombre;
+    }
+  }
+
+  async onEstudiantesFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.estudiantesFileName = file.name;
+
+    try {
+      const contenido = await this.leerArchivo(file);
+
+      // Parsear CSV con soporte para campos con comas entre comillas
+      const lineas = contenido.split('\n').filter(l => l.trim());
+      if (lineas.length < 2) throw new Error('Archivo CSV vacío');
+
+      // Función para parsear línea CSV respetando comillas
+      const parsearLineaCSV = (linea: string): string[] => {
+        const resultado: string[] = [];
+        let dentroComillas = false;
+        let valorActual = '';
+
+        for (let i = 0; i < linea.length; i++) {
+          const char = linea[i];
+
+          if (char === '"') {
+            dentroComillas = !dentroComillas;
+          } else if (char === ',' && !dentroComillas) {
+            resultado.push(valorActual.trim());
+            valorActual = '';
           } else {
-            console.warn(`⚠️ Rúbrica asociada ${rubricaId} no encontrada en storage`);
+            valorActual += char;
           }
         }
+        resultado.push(valorActual.trim());
+        return resultado;
+      };
+
+      const headers = parsearLineaCSV(lineas[0]);
+      Logger.log('========================================');
+      Logger.log('📋 ANÁLISIS COMPLETO DEL CSV');
+      Logger.log('========================================');
+      Logger.log('Total de líneas en el archivo:', lineas.length);
+      Logger.log('Headers completos:', headers);
+      Logger.log('Primeros 4 headers:', headers.slice(0, 4));
+
+      // Detectar índices de columnas importantes
+      // Mapeo correcto para formato Canvas:
+      // Student, ID, SIS Login ID, Section, [otras columnas de tareas], [columnas de grupo si aplica]
+      const nombreIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower === 'student' || lower === 'nombre';
+      });
+      const canvasUserIdIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower === 'id' || lower === 'canvas_user_id' || lower === 'canvas user id';
+      });
+      const loginIdIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower === 'sis login id' || lower === 'login_id' || lower === 'sis user id';
+      });
+      const seccionesIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower === 'section' || lower === 'secciones';
+      });
+      const groupNameIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower === 'group_name' || lower === 'group name';
+      });
+      const canvasGroupIdIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower === 'canvas_group_id' || lower === 'canvas group id';
+      });
+
+      // Para CSV con columnas separadas
+      const apellidoIndex = headers.findIndex(h => h.toLowerCase().trim().includes('apellido'));
+      const correoIndex = headers.findIndex(h => h.toLowerCase().trim().includes('correo'));
+      const pgIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pg');
+      const piIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pi');
+
+      Logger.log('📍 Índices de columnas detectados:', {
+        nombreIndex,
+        canvasUserIdIndex,
+        loginIdIndex,
+        seccionesIndex,
+        groupNameIndex,
+        canvasGroupIdIndex,
+        apellidoIndex,
+        correoIndex,
+        pgIndex,
+        piIndex
+      });
+
+      // Verificar línea 2 (puede ser "Manual Posting" o "Points Possible")
+      if (lineas.length > 1) {
+        const linea2 = parsearLineaCSV(lineas[1]);
+        Logger.log('Línea 2:', linea2.slice(0, 6));
       }
-    }
+      if (lineas.length > 2) {
+        const linea3 = parsearLineaCSV(lineas[2]);
+        Logger.log('Línea 3:', linea3.slice(0, 6));
+      }
 
-    // 2️⃣ Si no hay rubricasAsociadas, usar categoría por defecto
-    const categoria = this.CATEGORIA_RUBRICAS_DEFAULT;
-    console.log('🏷️ [obtenerRubricaIdPorDefecto] Categoría por defecto:', categoria);
+      // Filtrar líneas de datos (saltar "Manual Posting", "Points Possible" y líneas vacías)
+      const lineasDatos = lineas.slice(1).filter((linea, idx) => {
+        const valores = parsearLineaCSV(linea);
+        const primeraColumna = valores[0]?.trim().toLowerCase() || '';
 
-    const rubricasDisponibles = this.dataService.obtenerIdsRubricas();
-    console.log('📚 [obtenerRubricaIdPorDefecto] Rúbricas disponibles:', rubricasDisponibles);
+        // Detectar líneas a filtrar
+        const esPointsPossible = primeraColumna.includes('points possible');
+        const esManualPosting = primeraColumna === '' && valores[5]?.toLowerCase().includes('manual posting');
+        const esVacia = primeraColumna === '' && linea.trim() === '';
 
-    if (tipo === 'PG') {
-      // Para rúbricas grupales, buscar dinámicamente según la entrega
-      const palabraClave = entrega === 'E1' ? 'entrega-1' : entrega === 'E2' ? 'entrega-2' : 'final';
+        if (idx < 4) {
+          Logger.log(`Filtro línea ${idx + 2}: "${primeraColumna.substring(0, 30)}" - Points:${esPointsPossible}, ManualPosting:${esManualPosting}, Vacía:${esVacia}`);
+        }
 
-      const rubricasGrupales = rubricasDisponibles.filter(id =>
-        id.toLowerCase().includes('grupal') && id.toLowerCase().includes(palabraClave)
+        // Filtrar "Manual Posting", "Points Possible" y líneas vacías
+        return !esPointsPossible && !esManualPosting && !esVacia;
+      });
+
+      Logger.log(`📊 Total de líneas de datos después de filtrar: ${lineasDatos.length}`);
+
+      const estudiantes = lineasDatos.map((linea, index) => {
+        const valores = parsearLineaCSV(linea).map(v => v.trim());
+
+        // Debug: mostrar valores de las primeras 3 líneas
+        if (index < 3) {
+          Logger.log(`🔍 DEBUG Línea ${index + 1} del CSV:`);
+          Logger.log(`   Total columnas: ${valores.length}`);
+          valores.slice(0, 6).forEach((val, idx) => {
+            Logger.log(`   [${idx}]: "${val}"`);
+          });
+        }
+
+        // Obtener el nombre completo del CSV (formato: "APELLIDOS, NOMBRE")
+        let nombreCompleto = '';
+        let apellido = '';
+        let nombre = '';
+
+        if (nombreIndex >= 0 && nombreIndex < valores.length) {
+          // Si hay columna "Student" en el CSV de Canvas (índice 0)
+          nombreCompleto = (valores[nombreIndex] || '').trim();
+
+          if (index === 0) {
+            Logger.log(`📝 Valor en nombreIndex [${nombreIndex}]: "${nombreCompleto}"`);
+          }
+
+          // Separar por coma: "APELLIDOS, NOMBRE" -> apellidos / nombres
+          if (nombreCompleto.includes(',')) {
+            const partes = nombreCompleto.split(',').map(p => p.trim());
+            apellido = partes[0] || '';
+            nombre = partes[1] || '';
+          } else {
+            // Si no tiene coma, usar el valor completo como apellido
+            apellido = nombreCompleto;
+            nombre = '';
+          }
+        } else if (apellidoIndex >= 0) {
+          // Si hay columnas separadas de apellido/nombre
+          apellido = (valores[apellidoIndex] || '').trim();
+          nombre = (valores[0] || '').trim();
+        } else {
+          // Fallback
+          apellido = (valores[1] || '').trim();
+          nombre = (valores[0] || '').trim();
+        }
+
+        // Extraer número de grupo del groupName (ej: "G1" -> "1", "Grupo 2" -> "2")
+        const groupNameValue = groupNameIndex >= 0 ? (valores[groupNameIndex] || '').trim() : '';
+        let grupoNumero = '';
+        if (groupNameValue) {
+          const grupoMatch = groupNameValue.match(/\d+/);
+          grupoNumero = grupoMatch ? grupoMatch[0] : '';
+        }
+
+        // Crear objeto base con información del estudiante
+        const estudiante: any = {
+          canvasUserId: canvasUserIdIndex >= 0 ? (valores[canvasUserIdIndex] || '').trim() : '',
+          canvasGroupId: canvasGroupIdIndex >= 0 ? (valores[canvasGroupIdIndex] || '').trim() : '',
+          apellido: apellido,
+          nombre: nombre,
+          correo: loginIdIndex >= 0 ? (valores[loginIdIndex] || '').trim() : (correoIndex >= 0 ? (valores[correoIndex] || '').trim() : ''),
+          grupo: grupoNumero,
+          groupName: groupNameValue,
+          secciones: seccionesIndex >= 0 ? (valores[seccionesIndex] || '').trim() : '',
+          pg: pgIndex >= 0 ? (valores[pgIndex] || '').trim() : '',
+          pi: piIndex >= 0 ? (valores[piIndex] || '').trim() : '',
+          calificaciones: {} // Objeto para almacenar todas las calificaciones
+        };
+
+        // Extraer columnas de calificaciones (después de Section, índice 4 en adelante)
+        // Saltar columnas de metadatos que terminan en "Points", "Score", etc.
+        const primeraColumnaCalificaciones = Math.max(4, seccionesIndex + 1);
+
+        // Debug: Mostrar mapeo de columnas para el primer estudiante
+        if (index === 0) {
+          Logger.log('🔍 MAPEO DE COLUMNAS (Primer estudiante):');
+          Logger.log('Total valores parseados:', valores.length);
+          Logger.log('Total headers:', headers.length);
+          for (let i = 4; i < Math.min(10, headers.length); i++) {
+            Logger.log(`  [${i}] "${headers[i]}" = "${valores[i] || '(vacío)'}"`);
+          }
+        }
+
+        for (let i = primeraColumnaCalificaciones; i < valores.length && i < headers.length; i++) {
+          const headerName = headers[i];
+          const valor = valores[i];
+          const headerLower = headerName.toLowerCase().trim();
+
+          // PRIMERO: Filtrar todas las columnas de metadata de Canvas
+          // Estas columnas NUNCA deben incluirse como calificaciones
+          const esColumnaMetadata = headerLower.includes('current points') ||
+            headerLower.includes('final points') ||
+            headerLower.includes('current score') ||
+            headerLower.includes('final score') ||
+            headerLower.includes('unposted') ||
+            headerLower.includes('solo lectura') ||
+            headerLower.includes('tareas current') ||
+            headerLower.includes('tareas final') ||
+            headerLower.includes('tareas unposted') ||
+            headerLower.includes('herramientas profesor');
+
+          // Filtrar columna "Notas" vacía (si existe)
+          const esColumnaNotas = headerLower === 'notas';
+
+          // Si es metadata o "Notas", saltar esta columna
+          if (esColumnaMetadata || esColumnaNotas) {
+            continue;
+          }
+
+          // SEGUNDO: Solo incluir columnas que realmente son entregas/evaluaciones
+          // Estas deben contener palabras específicas de entregas
+          const esColumnaEntrega = headerName.trim() !== '' &&
+            (headerLower.includes('entrega') ||
+              headerLower.includes('proyecto') ||
+              headerLower.includes('escenario') ||
+              headerLower.includes('sustentacion'));
+
+          if (esColumnaEntrega) {
+            estudiante.calificaciones[headerName] = valor || '';
+          }
+        }
+
+        if (index === 0) {
+          Logger.log('👤 Primer estudiante parseado:', estudiante);
+          Logger.log('📊 Calificaciones extraídas:', Object.keys(estudiante.calificaciones));
+        }
+
+        return estudiante;
+      }).filter(e => {
+        // Filtrar líneas vacías y la línea de "Points Possible" si quedó alguna
+        const tieneNombre = (e.nombre || e.apellido) && (e.nombre + e.apellido).toLowerCase() !== 'points possible';
+        const tieneCorreo = e.correo && e.correo.includes('@');
+        return tieneNombre || tieneCorreo;
+      });
+
+      // Parsear información del curso desde la columna 'secciones' del CSV
+      // Formato esperado: "SEGUNDO BLOQUE-VIRTUAL/ÉNFASIS EN PROGRAMACIÓN MÓVIL-[GRUPO B01]"
+      const primeraSeccion = estudiantes[0]?.secciones || '';
+
+      let nombreCompleto = '';
+      let codigoAbreviado = '';
+      let bloqueTexto = '';
+
+      if (primeraSeccion) {
+        // Extraer nombre completo del énfasis (todo lo que está entre / y -)
+        const enfasisMatch = primeraSeccion.match(/\/([^-]+)-/);
+        nombreCompleto = enfasisMatch?.[1]?.trim() || '';
+
+        // Generar siglas del énfasis (ej: ÉNFASIS EN PROGRAMACIÓN MÓVIL → EPM)
+        // Normalizar texto: quitar tildes y convertir a mayúsculas
+        const normalizarTexto = (texto: string): string => {
+          return texto
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase();
+        };
+
+        // Lista de preposiciones a excluir
+        const preposiciones = ['DE', 'EN', 'DEL', 'LA', 'EL', 'LOS', 'LAS', 'A', 'CON', 'PARA', 'POR', 'Y'];
+
+        const palabras = nombreCompleto.split(/\s+/);
+        const siglas = palabras
+          .filter(p => p.length > 2)
+          .map(p => normalizarTexto(p))
+          .filter(p => !preposiciones.includes(p))
+          .map(p => p[0])
+          .join('');
+
+        // Solo agregar 'E' si el nombre empieza con "ÉNFASIS"
+        const esEnfasis = normalizarTexto(nombreCompleto).startsWith('ENFASIS');
+        const enfasisCodigo = esEnfasis ? 'E' + siglas : siglas;
+
+        // Extraer grupo (ej: B01)
+        const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z0-9]+)\]/i);
+        const grupo = grupoMatch?.[1] || 'B01';
+
+        // Extraer bloque (ej: SEGUNDO → 2)
+        const bloqueMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i);
+        bloqueTexto = bloqueMatch?.[1] || '';
+        const bloqueNum = this.convertirBloqueTextoANumero(bloqueTexto);
+
+        // Extraer modalidad (ej: VIRTUAL → V)
+        const modalidadMatch = primeraSeccion.match(/BLOQUE-([A-Z]+)\//i);
+        const modalidad = modalidadMatch?.[1]?.[0] || 'P';
+
+        // Generar código abreviado: EPM-B01-BLQ2-V
+        codigoAbreviado = `${enfasisCodigo}-${grupo}-BLQ${bloqueNum}-${modalidad}`;
+      } else {
+        // Fallback: usar nombre del archivo
+        const nombreArchivo = file.name.replace('.csv', '');
+        const codigoMatch = nombreArchivo.match(/^([A-Z]{2,4})(?=B\d+)|([A-Z]{2,4})(?=_)|([A-Z]{2,4})$/);
+        const bloqueMatch = nombreArchivo.match(/(B\d+)/i);
+
+        nombreCompleto = nombreArchivo;
+        codigoAbreviado = codigoMatch?.[0] || '';
+        bloqueTexto = bloqueMatch?.[1] || '';
+      }
+
+      this.estudiantesCargados = estudiantes;
+      this.cursoParseado = {
+        nombre: nombreCompleto,
+        codigo: codigoAbreviado,
+        bloque: bloqueTexto
+      };
+      await this.mostrarToastExito(`${estudiantes.length} estudiantes cargados`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      Logger.error('[CursosPage] Error cargando estudiantes:', {
+        error: errorMessage,
+        archivo: file.name,
+        stack: error instanceof Error ? error.stack : undefined
+      });
+
+      await this.mostrarToastError(
+        `Error al cargar archivo de estudiantes: ${errorMessage}`,
+        4000
       );
 
-      console.log(`🔍[obtenerRubricaIdPorDefecto] Buscando rúbrica grupal para ${entrega}: `, rubricasGrupales);
+      // Limpiar estado en caso de error
+      this.estudiantesCargados = [];
+      this.estudiantesFileName = '';
+    }
+  }
 
-      if (rubricasGrupales.length === 0) {
-        console.error(`❌ No se encontró rúbrica grupal para ${entrega} `);
-        this.mostrarError(
-          'Rúbrica Grupal No Encontrada',
-          `No hay ninguna rúbrica grupal para ${entrega} importada en el sistema.\n\n` +
-          'Por favor, importe la rúbrica correspondiente desde Configuración.'
-        );
-        return '';
+  async onCalificacionesFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.calificacionesFileName = file.name;
+
+    try {
+      // Validar que primero se haya cargado el archivo de Personas
+      if (this.estudiantesCargados.length === 0) {
+        await this.mostrarToastError('Primero debe cargar el archivo de Personas');
+        this.calificacionesFileName = '';
+        input.value = '';
+        return;
       }
 
-      const rubricaId = rubricasGrupales[0];
-      console.log('✅ [obtenerRubricaIdPorDefecto] Usando rúbrica grupal:', rubricaId);
-      return rubricaId;
+      const contenido = await this.leerArchivo(file);
 
-    } else {
-      // Para rúbricas individuales, buscar dinámicamente cualquier rúbrica que contenga "individual"
-      console.log('🔍 [obtenerRubricaIdPorDefecto] Buscando rúbrica individual...');
+      // Parsear calificaciones usando el método del servicio
+      const calificaciones = this.parsearCalificacionesCanvasLocal(contenido);
 
-      const rubricasDisponibles = this.dataService.obtenerIdsRubricas();
-      console.log('� [obtenerRubricaIdPorDefecto] Rúbricas disponibles:', rubricasDisponibles);
+      // VALIDACIÓN: Verificar que los estudiantes coincidan entre ambos archivos
+      const validacion = this.validarCoincidenciaEstudiantes(calificaciones);
 
-      // Buscar cualquier rúbrica que contenga "individual" en su ID
-      const rubricasIndividuales = rubricasDisponibles.filter(id =>
-        id.toLowerCase().includes('individual')
+      if (!validacion.esValido) {
+        await this.mostrarToastError(validacion.mensaje, 5000);
+        this.calificacionesFileName = '';
+        input.value = '';
+        return;
+      }
+
+      this.calificacionesCargadas = {
+        nombre: file.name,
+        fechaCarga: new Date().toISOString(),
+        contenidoOriginal: contenido,  // CSV completo para exportar
+        calificaciones: calificaciones  // Array procesado para búsquedas
+      };
+
+      Logger.log('✅ Calificaciones cargadas:', {
+        archivo: file.name,
+        totalRegistros: calificaciones.length,
+        primerRegistro: calificaciones[0]
+      });
+
+      // Parsear calificaciones para vista previa
+      this.parsearCalificaciones(contenido);
+
+      // OPTIMIZACIÓN: Notificar al sistema que las calificaciones cambiaron
+      // Esto invalidará el cache en cursos.page.ts cuando se guarde
+      Logger.log('🔄 [cargarArchivoCalificaciones] Calificaciones cargadas - cache se invalidará al guardar');
+
+      await this.mostrarToastExito('Archivo de calificaciones cargado');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      Logger.error('[CursosPage] Error cargando calificaciones:', {
+        error: errorMessage,
+        archivo: file.name,
+        stack: error instanceof Error ? error.stack : undefined
+      });
+
+      await this.mostrarToastError(
+        `Error al procesar calificaciones: ${errorMessage}`,
+        4000
       );
 
-      console.log('� [obtenerRubricaIdPorDefecto] Rúbricas individuales encontradas:', rubricasIndividuales);
-
-      if (rubricasIndividuales.length === 0) {
-        console.error('❌ No se encontró ninguna rúbrica individual en el sistema');
-        this.mostrarError(
-          'Rúbrica Individual No Encontrada',
-          'No hay ninguna rúbrica individual importada en el sistema.\n\n' +
-          'Por favor, importe una rúbrica individual desde la pestaña de Configuración.'
-        );
-        return '';
-      }
-
-      // Usar la primera rúbrica individual encontrada
-      const rubricaId = rubricasIndividuales[0];
-      console.log('✅ [obtenerRubricaIdPorDefecto] Usando rúbrica individual:', rubricaId);
-
-      return rubricaId;
+      // Limpiar estado en caso de error
+      this.calificacionesCargadas = null;
+      this.calificacionesFileName = '';
+      this.calificacionesParseadas = [];
     }
   }
 
-  // === MÉTODOS AUXILIARES DE EVALUACIÓN ===
-
   /**
-   * Obtiene los puntos máximos de una rúbrica sumando todos los pesos de criterios
-   * @param entrega - Código de la entrega (E1, E2, EF)
-   * @param tipo - Tipo de evaluación (PG o PI)
-   * @returns Puntos máximos totales de la rúbrica, o 0 si no hay rúbrica asociada
+   * Valida que los estudiantes del archivo de Calificaciones coincidan con los de Personas
+   * @param calificaciones Array de calificaciones parseadas
+   * @returns Objeto con resultado de validación y mensaje de error si aplica
    */
-  obtenerPuntosMaximosRubrica(entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI'): number {
-    if (!this.cursoActivo) return 0;
+  private validarCoincidenciaEstudiantes(calificaciones: Array<{ id: string; e1: string; e2: string; ef: string }>): { esValido: boolean; mensaje: string } {
+    // Obtener IDs de estudiantes cargados (archivo Personas)
+    const idsPersonas = new Set(
+      this.estudiantesCargados
+        .map(est => est.canvasUserId?.trim())
+        .filter(id => id && id !== '')
+    );
 
-    // Obtener el ID de la rúbrica asociada
-    const rubricaId = this.obtenerRubricaIdPorDefecto(entrega, tipo);
-    if (!rubricaId) return 0;
+    // Obtener IDs de calificaciones
+    const idsCalificaciones = new Set(
+      calificaciones
+        .map(cal => cal.id?.trim())
+        .filter(id => id && id !== '')
+    );
 
-    // Obtener la rúbrica del servicio
-    const rubrica = this.dataService.getRubrica(rubricaId);
-    if (!rubrica || !rubrica.criterios) return 0;
-
-    // Sumar todos los pesos de los criterios
-    const puntosMaximos = rubrica.criterios.reduce((total, criterio) => {
-      return total + (criterio.peso || criterio.pesoMaximo || 0);
-    }, 0);
-
-    return puntosMaximos;
-  }
-
-  // Método auxiliar para obtener nota de evaluación
-  obtenerNota(estudiante: Estudiante, entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI'): number {
-    if (!this.cursoActivo) return 0;
-
-    // Para PG, primero intentar buscar evaluación individual del estudiante
-    if (tipo === 'PG') {
-      // Intentar obtener evaluación PG individual (por correo)
-      const evaluacionIndividual = this.dataService.getEvaluacion(this.cursoActivo, entrega, tipo, estudiante.correo);
-      if (evaluacionIndividual) {
-        return evaluacionIndividual.puntosTotales || 0;
-      }
-
-      // Si no hay individual, buscar por grupo (evaluación grupal normal)
-      const evaluacionGrupal = this.dataService.getEvaluacion(this.cursoActivo, entrega, tipo, estudiante.grupo);
-      return evaluacionGrupal?.puntosTotales || 0;
+    // Verificar si hay datos para comparar
+    if (idsPersonas.size === 0) {
+      return {
+        esValido: false,
+        mensaje: 'El archivo de Personas no tiene IDs válidos'
+      };
     }
 
-    // Para PI, buscar por correo
-    const identificador = estudiante.correo;
-    const evaluacion = this.dataService.getEvaluacion(this.cursoActivo, entrega, tipo, identificador);
-    return evaluacion?.puntosTotales || 0;
-  }
+    if (idsCalificaciones.size === 0) {
+      return {
+        esValido: false,
+        mensaje: 'El archivo de Calificaciones no tiene IDs válidos'
+      };
+    }
 
-  obtenerSumatoria(estudiante: Estudiante, entrega: 'E1' | 'E2' | 'EF'): number {
-    const pg = this.obtenerNota(estudiante, entrega, 'PG');
-    const pi = this.obtenerNota(estudiante, entrega, 'PI');
-    return pg + pi;
+    // Encontrar estudiantes que están en Personas pero NO en Calificaciones
+    const faltanEnCalificaciones: string[] = [];
+    idsPersonas.forEach(id => {
+      if (!idsCalificaciones.has(id)) {
+        faltanEnCalificaciones.push(id);
+      }
+    });
+
+    // Encontrar estudiantes que están en Calificaciones pero NO en Personas
+    const sobranEnCalificaciones: string[] = [];
+    idsCalificaciones.forEach(id => {
+      if (!idsPersonas.has(id)) {
+        sobranEnCalificaciones.push(id);
+      }
+    });
+
+    // Si hay diferencias significativas, rechazar
+    const totalDiferencias = faltanEnCalificaciones.length + sobranEnCalificaciones.length;
+
+    if (totalDiferencias > 0) {
+      let mensaje = 'Los archivos no coinciden: ';
+
+      if (faltanEnCalificaciones.length > 0) {
+        mensaje += `${faltanEnCalificaciones.length} estudiantes de Personas no están en Calificaciones`;
+      }
+
+      if (sobranEnCalificaciones.length > 0) {
+        if (faltanEnCalificaciones.length > 0) mensaje += ', ';
+        mensaje += `${sobranEnCalificaciones.length} estudiantes de Calificaciones no están en Personas`;
+      }
+
+      Logger.warn('⚠️ Validación fallida - Estudiantes no coinciden:', {
+        faltanEnCalificaciones,
+        sobranEnCalificaciones,
+        totalPersonas: idsPersonas.size,
+        totalCalificaciones: idsCalificaciones.size
+      });
+
+      return {
+        esValido: false,
+        mensaje
+      };
+    }
+
+    Logger.log('✅ Validación exitosa - Estudiantes coinciden:', {
+      totalPersonas: idsPersonas.size,
+      totalCalificaciones: idsCalificaciones.size
+    });
+
+    return {
+      esValido: true,
+      mensaje: ''
+    };
   }
 
   /**
-   * Maneja el evento de guardado de evaluación desde el componente hijo
+   * Parsea el CSV de calificaciones Canvas extrayendo solo los campos necesarios
    */
-  async onEvaluacionGuardada(evaluacionData: any) {
-    console.log('📥 [onEvaluacionGuardada] Recibiendo datos de evaluación:', evaluacionData);
+  private parsearCalificacionesCanvasLocal(contenido: string): Array<{
+    id: string;
+    e1: string;
+    e2: string;
+    ef: string;
+  }> {
+    const lineas = contenido.split('\n').filter(l => l.trim());
+    if (lineas.length < 3) return [];
 
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando || !this.rubricaActual) {
-      console.error('❌ [onEvaluacionGuardada] Faltan datos necesarios');
-      await this.mostrarError('Error', 'Faltan datos para guardar la evaluación');
+    // Saltar header (línea 0) y "Points Possible" (línea 1)
+    const calificaciones = [];
+    for (let i = 2; i < lineas.length; i++) {
+      const campos = this.parseCSVRow(lineas[i]);
+
+      if (campos.length >= 7) {
+        calificaciones.push({
+          id: campos[1] || '',   // Campo 1: ID de Canvas (canvasUserId)
+          e1: campos[4] || '',   // Campo 4: Entrega proyecto 1 - Escenario 3
+          e2: campos[5] || '',   // Campo 5: Entrega proyecto 2 - Escenario 5
+          ef: campos[6] || ''    // Campo 6: Entrega final y sustentacion - Escenario 7 y 8
+        });
+      }
+    }
+
+    return calificaciones;
+  }
+
+  /**
+   * Parser CSV robusto que maneja comillas correctamente
+   */
+  private parseCSVRow(csvRow: string): string[] {
+    const result: string[] = [];
+    let currentField = '';
+    let insideQuotes = false;
+    let i = 0;
+
+    while (i < csvRow.length) {
+      const char = csvRow[i];
+
+      if (char === '"' && (i === 0 || csvRow[i - 1] === ',')) {
+        insideQuotes = true;
+      } else if (char === '"' && insideQuotes && (i === csvRow.length - 1 || csvRow[i + 1] === ',')) {
+        insideQuotes = false;
+      } else if (char === ',' && !insideQuotes) {
+        result.push(currentField.trim());
+        currentField = '';
+        i++;
+        continue;
+      } else {
+        currentField += char;
+      }
+
+      i++;
+    }
+
+    result.push(currentField.trim());
+    return result;
+  }
+
+  parsearCalificaciones(contenido: string) {
+    const lineas = contenido.split('\n').filter(l => l.trim());
+    if (lineas.length < 2) return;
+
+    // Parser CSV con soporte para comillas
+    const parsearLineaCSV = (linea: string): string[] => {
+      return this.parseCSVRow(linea);
+    };
+
+    const headers = parsearLineaCSV(lineas[0]);
+
+    // Filtrar líneas de datos (saltar "Points Possible" y líneas vacías)
+    const lineasDatos = lineas.slice(1).filter((linea) => {
+      const valores = parsearLineaCSV(linea);
+      const primeraColumna = valores[0]?.trim().toLowerCase() || '';
+      return !primeraColumna.includes('points possible') && primeraColumna !== '';
+    });
+
+    // Detectar índices de columnas
+    const nombreIndex = headers.findIndex(h => h.toLowerCase().trim() === 'student' || h.toLowerCase().trim() === 'nombre');
+    const loginIdIndex = headers.findIndex(h => h.toLowerCase().trim() === 'sis login id' || h.toLowerCase().trim() === 'login_id');
+    const seccionesIndex = headers.findIndex(h => h.toLowerCase().trim() === 'section' || h.toLowerCase().trim() === 'secciones');
+
+    // Parsear estudiantes con calificaciones
+    this.calificacionesParseadas = lineasDatos.map(linea => {
+      const valores = parsearLineaCSV(linea);
+      const estudiante: any = {
+        nombre: valores[nombreIndex] || '',
+        correo: valores[loginIdIndex] || '',
+        seccion: valores[seccionesIndex] || '',
+        calificaciones: {}
+      };
+
+      // Extraer columnas de calificaciones (índice 4 en adelante)
+      for (let i = 4; i < Math.min(valores.length, headers.length); i++) {
+        const headerName = headers[i];
+        const valor = valores[i];
+        const headerLower = headerName.toLowerCase().trim();
+
+        // Filtrar metadata
+        const esColumnaMetadata = headerLower.includes('current points') ||
+          headerLower.includes('final points') ||
+          headerLower.includes('current score') ||
+          headerLower.includes('final score') ||
+          headerLower.includes('unposted') ||
+          headerLower.includes('solo lectura') ||
+          headerLower.includes('tareas current') ||
+          headerLower.includes('tareas final') ||
+          headerLower.includes('tareas unposted') ||
+          headerLower.includes('herramientas profesor');
+
+        if (esColumnaMetadata || headerLower === 'notas') continue;
+
+        // Solo incluir columnas de entregas
+        const esColumnaEntrega = headerName.trim() !== '' &&
+          (headerLower.includes('entrega') ||
+            headerLower.includes('proyecto') ||
+            headerLower.includes('escenario') ||
+            headerLower.includes('sustentacion'));
+
+        if (esColumnaEntrega) {
+          estudiante.calificaciones[headerName] = valor || '';
+        }
+      }
+
+      return estudiante;
+    });
+  }
+
+  async guardarCurso() {
+    if (!this.cursoParseado || this.estudiantesCargados.length === 0) {
+      await this.mostrarToastWarning('Debe cargar al menos el archivo de estudiantes', 3000);
+      return;
+    }
+
+    // Validar que se haya detectado el código del curso
+    if (!this.cursoParseado.codigo) {
+      await this.mostrarToastWarning('No se pudo detectar el código del curso. Por favor, renombre el archivo con formato: CODIGOB##.csv (ej: EPMB01.csv)', 4000);
       return;
     }
 
     try {
-      // Convertir calificaciones del componente hijo al formato de criterios evaluados
-      const criterios = this.rubricaActual.criterios.map((criterio, index) => {
-        const puntos = evaluacionData.calificaciones[criterio.titulo] || 0;
-        const nivel = this.obtenerNivelPorPuntos(criterio, puntos);
-
+      // Transformar estudiantes al formato correcto incluyendo canvas_user_id, canvas_group_id y grupo
+      const estudiantesTransformados = this.estudiantesCargados.map(est => {
         return {
-          criterioTitulo: criterio.titulo,
-          nivelSeleccionado: nivel?.titulo || '',
-          puntosObtenidos: puntos,
-          puntosPersonalizados: false,
-          comentario: '',
-          criterioDescripcion: criterio.descripcion,
-          nivelDescripcion: nivel?.descripcion || ''
+          canvasUserId: est.canvasUserId || '',
+          canvasGroupId: est.canvasGroupId || '',
+          // Soportar tanto formato singular (apellido/nombre) como plural (apellidos/nombres)
+          apellidos: (est as any).apellidos || (est as any).apellido || '',
+          nombres: (est as any).nombres || (est as any).nombre || '',
+          correo: est.correo || '',
+          grupo: est.grupo || '', // Ya fue extraído en el parser del CSV
+          groupName: est.groupName || ''
         };
       });
 
-      // Determinar identificador según tipo
-      let identificador: string;
-      let grupo = '';
-      let estudianteEmail = '';
+      let codigoCurso: string;
 
-      if (this.tipoEvaluando === 'PG') {
-        if (!this.grupoSeguimientoActivo) {
-          await this.mostrarError('Error', 'No hay un grupo seleccionado');
-          return;
-        }
-        identificador = this.grupoSeguimientoActivo;
-        grupo = this.grupoSeguimientoActivo;
-      } else {
-        if (!this.estudianteSeleccionado) {
-          await this.mostrarError('Error', 'Debe seleccionar un estudiante');
-          return;
-        }
-        identificador = this.estudianteSeleccionado;
-        estudianteEmail = this.estudianteSeleccionado;
-      }
+      // Verificar si es edición o creación
+      if (this.codigoCursoEnEdicion) {
+        // MODO EDICIÓN: Actualizar curso existente
+        codigoCurso = this.codigoCursoEnEdicion;
 
-      // Guardar evaluación en DataService
-      const evaluacion: Evaluacion = {
-        cursoNombre: this.cursoActivo,
-        entrega: this.entregaEvaluando,
-        tipo: this.tipoEvaluando,
-        grupo: grupo,
-        estudianteEmail: estudianteEmail,
-        rubricaId: this.rubricaActual.id || '',
-        criterios: criterios,
-        puntosTotales: evaluacionData.puntuacionTotal,
-        fechaEvaluacion: new Date(),
-        comentarioGeneral: evaluacionData.observaciones || ''
-      };
+        // Actualizar estudiantes del curso
+        await this.dataService.actualizarEstudiantesCurso(codigoCurso, estudiantesTransformados);
 
-      console.log('💾 [onEvaluacionGuardada] Guardando evaluación:', evaluacion);
-      await this.dataService.guardarEvaluacion(evaluacion);
+        // Obtener metadata existente para preservar fechaCreacion y profesor
+        const uiState = this.dataService.getUIState();
+        const courseState = uiState.courseStates?.[codigoCurso];
+        const metadataExistente = courseState?.metadata;
 
-      // Actualizar estado local
-      this.evaluacionActual = evaluacion;
-      this.puntosRubricaTotales = evaluacionData.puntuacionTotal;
-
-      // Forzar actualización de la UI
-      this.cdr.detectChanges();
-
-      console.log('✅ [onEvaluacionGuardada] Evaluación guardada exitosamente');
-    } catch (error: any) {
-      console.error('❌ [onEvaluacionGuardada] Error:', error);
-      await this.mostrarError('Error', 'No se pudo guardar la evaluación: ' + error.message);
-    }
-  }
-
-  /**
-   * Obtiene el nivel de un criterio según los puntos asignados
-   */
-  private obtenerNivelPorPuntos(criterio: any, puntos: number): any {
-    if (!criterio.nivelesDetalle) return null;
-
-    return criterio.nivelesDetalle.find((nivel: any) => {
-      const puntosNivel = nivel.puntos.includes('-')
-        ? nivel.puntos.split('-').map((p: string) => parseInt(p.trim()))
-        : [parseInt(nivel.puntos), parseInt(nivel.puntos)];
-
-      if (puntosNivel.length === 2) {
-        return puntos >= puntosNivel[0] && puntos <= puntosNivel[1];
-      } else {
-        return puntos === puntosNivel[0];
-      }
-    });
-  }
-
-  // Métodos de edición de puntajes en tabla eliminadas (tabla removida)
-
-  calcularPuntosTotales() {
-    this.puntosRubricaTotales = this.criteriosEvaluados.reduce(
-      (sum, criterio) => sum + (criterio.puntosObtenidos || 0), 0
-    );
-  }
-
-  actualizarComentarioDesdeRubrica() {
-    const textoCriterios = this.criteriosEvaluados
-      .filter(c => c.nivelSeleccionado)
-      .map(c => `${c.criterioTitulo}: ${c.comentario} `)
-      .join('\n');
-
-    if (textoCriterios) {
-      this.nuevoComentario = textoCriterios;
-    }
-  }
-
-  async guardarRubricaGrupo() {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando) {
-      this.mostrarError('Error', 'Faltan datos para guardar la evaluación');
-      return;
-    }
-
-    // Determinar el identificador y validar según el tipo
-    let identificador: string;
-    let estudianteEmail: string = '';
-    let grupo: string = '';
-
-    if (this.tipoEvaluando === 'PG') {
-      // Evaluación grupal - SOLO aplicar a estudiantes seleccionados
-      if (!this.grupoSeguimientoActivo) {
-        this.mostrarError('Error', 'No hay un grupo seleccionado');
-        return;
-      }
-
-      const todosDelGrupo = this.estudiantesFiltrados.filter(e =>
-        e.grupo === this.grupoSeguimientoActivo
-      );
-
-      const estudiantesSeleccionados = this.estudiantesFiltrados.filter(e =>
-        this.estudiantesSeleccionados.has(e.correo) && e.grupo === this.grupoSeguimientoActivo
-      );
-
-      if (estudiantesSeleccionados.length === 0) {
-        this.mostrarError('Error', 'Debe seleccionar al menos un estudiante del grupo');
-        return;
-      }
-
-      identificador = this.grupoSeguimientoActivo;
-      let grupo = this.grupoSeguimientoActivo;
-
-      // Si están seleccionados TODOS los del grupo, guardar como PG grupal normal
-      if (estudiantesSeleccionados.length === todosDelGrupo.length) {
-        await this.dataService.guardarEvaluacion({
-          cursoNombre: this.cursoActivo,
-          entrega: this.entregaEvaluando,
-          tipo: 'PG',
-          grupo: grupo,
-          estudianteEmail: '', // PG grupal (sin email específico)
-          rubricaId: this.rubricaActual?.id || '',
-          criterios: this.criteriosEvaluados,
-          puntosTotales: this.puntosRubricaTotales,
-          fechaEvaluacion: new Date(),
-          comentarioGeneral: this.textoSeguimientoRubrica.join('\n\n')
+        // Actualizar metadata del curso preservando campos existentes
+        await this.dataService.updateCourseState(codigoCurso, {
+          metadata: {
+            nombre: this.cursoParseado.nombre,
+            codigo: this.cursoParseado.codigo,
+            bloque: this.cursoParseado.bloque,
+            fechaCreacion: metadataExistente?.fechaCreacion || new Date().toISOString(),
+            profesor: metadataExistente?.profesor || '',
+            nombreAbreviado: metadataExistente?.nombreAbreviado,
+            codigoUnico: metadataExistente?.codigoUnico
+          }
         });
       } else {
-        // Si NO todos están seleccionados, guardar PG INDIVIDUAL para cada seleccionado
-        for (const estudiante of estudiantesSeleccionados) {
-          await this.dataService.guardarEvaluacion({
-            cursoNombre: this.cursoActivo,
-            entrega: this.entregaEvaluando,
-            tipo: 'PG', // Guardar como PG individual
-            grupo: grupo,
-            estudianteEmail: estudiante.correo, // PG individual (con email específico)
-            rubricaId: this.rubricaActual?.id || '',
-            criterios: [...this.criteriosEvaluados], // Copia independiente
-            puntosTotales: this.puntosRubricaTotales,
-            fechaEvaluacion: new Date(),
-            comentarioGeneral: this.textoSeguimientoRubrica.join('\n\n')
-          });
-        }
+        // MODO CREACIÓN: Crear nuevo curso
+        codigoCurso = await this.dataService.crearCurso({
+          nombre: this.cursoParseado.nombre,
+          codigo: this.cursoParseado.codigo,
+          bloque: this.cursoParseado.bloque,
+          fechaCreacion: new Date().toISOString(),
+          profesor: '',
+          estudiantes: estudiantesTransformados
+        });
       }
 
-    } else if (this.tipoEvaluando === 'PI') {
-      // Evaluación individual - usar el estudiante seleccionado
-      if (!this.estudianteSeleccionado) {
-        this.mostrarError('Error', 'Debe seleccionar un estudiante para evaluaciones individuales');
-        return;
+      // Si hay archivo de calificaciones, actualizarlo
+      if (this.calificacionesCargadas) {
+        await this.dataService.updateCourseState(codigoCurso, {
+          archivoCalificaciones: this.calificacionesCargadas
+        });
       }
 
-      identificador = this.estudianteSeleccionado;
-      estudianteEmail = this.estudianteSeleccionado;
-
-      // Guardar evaluación para el estudiante seleccionado
-      await this.dataService.guardarEvaluacion({
-        cursoNombre: this.cursoActivo,
-        entrega: this.entregaEvaluando,
-        tipo: this.tipoEvaluando,
-        grupo: grupo,
-        estudianteEmail: estudianteEmail,
-        rubricaId: this.rubricaActual?.id || '',
-        criterios: this.criteriosEvaluados,
-        puntosTotales: this.puntosRubricaTotales,
-        fechaEvaluacion: new Date(),
-        comentarioGeneral: this.textoSeguimientoRubrica.join('\n\n')
-      });
-
-      // Si "Aplicar a +" está activo, aplicar a otros estudiantes seleccionados
-      if (this.aplicarAMas && this.estudiantesSeleccionados.size > 1) {
-        const otrosEstudiantes = this.estudiantesFiltrados.filter(e =>
-          this.estudiantesSeleccionados.has(e.correo) && e.correo !== this.estudianteSeleccionado
-        );
-
-        for (const estudiante of otrosEstudiantes) {
-          await this.dataService.guardarEvaluacion({
-            cursoNombre: this.cursoActivo,
-            entrega: this.entregaEvaluando,
-            tipo: 'PI',
-            grupo: estudiante.grupo,
-            estudianteEmail: estudiante.correo,
-            rubricaId: this.rubricaActual?.id || '',
-            criterios: [...this.criteriosEvaluados], // Copia independiente
-            puntosTotales: this.puntosRubricaTotales,
-            fechaEvaluacion: new Date(),
-            comentarioGeneral: this.textoSeguimientoRubrica.join('\n\n')
-          });
-        }
-
-        console.log(`✅[Aplicar a +] Evaluación aplicada a ${otrosEstudiantes.length} estudiantes adicionales`);
-        this.aplicarAMas = false; // Resetear checkbox
-      }
-
-    } else {
-      this.mostrarError('Error', 'Tipo de evaluación no válido');
-      return;
-    }
-
-    this.modoEdicionRubrica = false;
-
-    const mensaje = this.tipoEvaluando === 'PG'
-      ? `Rúbrica guardada para ${this.estudiantesSeleccionados.size} estudiante(s) del grupo`
-      : 'Rúbrica guardada para el estudiante';
-
-    this.mostrarError('Éxito', mensaje);
-    console.log(`✅[guardarRubricaGrupo] Evaluación ${this.tipoEvaluando} guardada para ${identificador} `);
-  }
-
-  private inicializarCriteriosRubrica() {
-    if (!this.rubricaActual) return;
-
-    this.criteriosEvaluados = this.rubricaActual.criterios.map(criterio => ({
-      criterioTitulo: criterio.titulo,
-      nivelSeleccionado: undefined,
-      puntosObtenidos: 0,
-      puntosPersonalizados: false
-    }));
-
-    this.calcularPuntosTotales();
-  }
-
-  private cargarEvaluacionExistente() {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando) return;
-
-    const identificador = this.tipoEvaluando === 'PG' ?
-      this.filtroGrupo :
-      this.estudianteSeleccionado;
-
-    if (!identificador) return;
-
-    const evaluacionExistente = this.dataService.getEvaluacion(
-      this.cursoActivo,
-      this.entregaEvaluando,
-      this.tipoEvaluando,
-      identificador
-    );
-
-    if (evaluacionExistente) {
-      this.criteriosEvaluados = [...evaluacionExistente.criterios];
-      this.calcularPuntosTotales();
-    }
-  }
-
-  // === MÉTODOS ELIMINADOS - FORMATO ANTIGUO SPA ===
-  // seleccionarNivelRubrica() - eliminado, usaba formato antiguo con códigos I, A, E
-
-  actualizarPuntosPersonalizadosRubrica(criterioIndex: number, puntos: number) {
-    this.criteriosEvaluados[criterioIndex] = {
-      ...this.criteriosEvaluados[criterioIndex],
-      puntosObtenidos: puntos,
-      puntosPersonalizados: true,
-      nivelSeleccionado: undefined
-    };
-
-    this.calcularPuntosTotales();
-  }
-
-  guardarEvaluacionRubrica() {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando || !this.rubricaActual) {
-      this.mostrarError('Error', 'Faltan datos para guardar la evaluación');
-      return;
-    }
-
-    // Comportamiento normal para una evaluación
-    const identificador = this.tipoEvaluando === 'PG' ?
-      this.filtroGrupo :
-      this.estudianteSeleccionado;
-
-    if (!identificador) {
-      this.mostrarError('Error', 'No se ha seleccionado el objetivo de evaluación');
-      return;
-    }
-
-    const evaluacion: Evaluacion = {
-      cursoNombre: this.cursoActivo,
-      entrega: this.entregaEvaluando,
-      tipo: this.tipoEvaluando,
-      rubricaId: this.rubricaActual.id,
-      criterios: [...this.criteriosEvaluados],
-      puntosTotales: this.puntosRubricaTotales,
-      fechaEvaluacion: new Date()
-    };
-
-    if (this.tipoEvaluando === 'PG') {
-      evaluacion.grupo = identificador;
-    } else {
-      evaluacion.estudianteEmail = identificador;
-    }
-
-    try {
-      this.dataService.guardarEvaluacion(evaluacion);
-
-      // Guardar en cache
-      this.guardarEnCache();
-
-      // Actualizar panel de seguimiento
-      this.emitToSeguimientoPanel();
-
-      // Forzar detección de cambios
-      this.cdr.detectChanges();
-
-      this.mostrarMensajeExito('Evaluación guardada correctamente');
-      this.cerrarRubrica();
-    } catch (error: any) {
-      this.mostrarError('Error', 'No se pudo guardar la evaluación: ' + error.message);
-    }
-  }
-
-
-  /**
-   * Abre la rúbrica para una entrega específica (E1, E2, EF) y tipo (PG, PI)
-   */
-  async abrirRubricaEntrega(entrega: 'E1' | 'E2' | 'EF', tipo: 'PG' | 'PI') {
-    console.log(`📋[abrirRubricaEntrega] Abriendo rúbrica: ${entrega} - ${tipo} `);
-
-    // Verificar si hay curso activo
-    if (!this.cursoActivo) {
-      await this.mostrarError('Error', 'No hay curso activo seleccionado');
-      return;
-    }
-    // Para PI (Individual), verificar que haya un estudiante seleccionado
-    // Para PG (Grupal), NO se requiere selección de estudiante
-    if (tipo === 'PI' && !this.estudianteSeleccionado) {
-      await this.mostrarError('Atención', 'Para evaluar con rúbrica individual (PI), primero debe seleccionar un estudiante de la lista.');
-      return;
-    }
-
-    const codigoCurso = this.cursoActivo;
-    // Buscar rúbrica asociada al curso, entrega y tipo
-    const rubricas = this.dataService.obtenerRubricasArray();
-    console.log(`🔍[abrirRubricaEntrega] Total rúbricas disponibles: ${rubricas.length} `);
-
-    const rubricaEncontrada = rubricas.find(r =>
-      r.cursosCodigos?.includes(codigoCurso!) &&
-      r.tipoEntrega === entrega &&
-      r.tipoRubrica === tipo
-    );
-
-    if (!rubricaEncontrada) {
-      await this.mostrarError(
-        'Rúbrica no encontrada',
-        `No hay rúbrica ${tipo} configurada para ${entrega} en este curso.`
-      );
-      console.warn(`⚠️[abrirRubricaEntrega] No se encontró rúbrica para ${codigoCurso} - ${entrega} - ${tipo} `);
-      return;
-    }
-
-    console.log(`✅[abrirRubricaEntrega] Rúbrica encontrada: ${rubricaEncontrada.nombre} `);
-    // Establecer variables de estado
-    this.entregaEvaluando = entrega;
-    this.tipoEvaluando = tipo;
-    this.rubricaActual = rubricaEncontrada;
-    this.mostrarRubrica = true;
-
-    console.log(`✅[abrirRubricaEntrega] Estado actualizado: `, {
-      entrega: this.entregaEvaluando,
-      tipo: this.tipoEvaluando,
-      rubrica: this.rubricaActual?.nombre,
-      mostrarRubrica: this.mostrarRubrica,
-      estudianteSeleccionado: this.estudianteSeleccionado
-    });
-
-    // Cargar evaluación guardada si existe
-    await this.cargarEvaluacionGuardada();
-
-    // Forzar detección de cambios para actualizar la UI
-    this.cdr.detectChanges();
-
-    console.log(`✅[abrirRubricaEntrega] Rúbrica cargada: ${rubricaEncontrada.nombre} `);
-    console.log(`✅[abrirRubricaEntrega] mostrarRubrica: ${this.mostrarRubrica} `);
-  }
-
-
-  cerrarRubrica() {
-    // Guardar en cache antes de cerrar
-    this.guardarEnCache();
-
-    this.mostrarRubrica = false;
-    this.rubricaActual = null;
-    this.entregaEvaluando = null;
-    this.tipoEvaluando = null;
-    this.criteriosEvaluados = [];
-    this.puntosRubricaTotales = 0;
-    this.criterioActualIndex = 0;
-    this.textoSeguimientoRubrica = [];
-    this.timestampsSeguimiento = []; // Limpiar timestamps
-    this.modoEdicionRubrica = false;
-
-    // Limpiar panel de seguimiento al cerrar la rúbrica
-    this.limpiarPanelSeguimiento();
-  }
-
-  /**
-   * Obtiene el nombre completo del estudiante seleccionado
-   */
-  obtenerNombreEstudianteSeleccionado(): string {
-    if (!this.estudianteSeleccionado) return '';
-
-    const estudiante = this.estudiantesActuales.find(
-      est => est.correo === this.estudianteSeleccionado
-    );
-
-    if (!estudiante) return this.estudianteSeleccionado;
-
-    return `${estudiante.apellidos}, ${estudiante.nombres} `;
-  }
-
-  habilitarEdicionRubrica() {
-    this.modoEdicionRubrica = true;
-  }
-
-  cancelarEdicionRubrica() {
-    // Recargar la evaluación guardada
-    this.cargarEvaluacionExistente();
-    this.modoEdicionRubrica = false;
-  }
-
-  // === MÉTODOS PARA NAVEGACIÓN DE CRITERIOS ===
-
-  avanzarCriterio() {
-    if (!this.rubricaActual) return;
-    if (this.criterioActualIndex < this.rubricaActual.criterios.length - 1) {
-      this.criterioActualIndex++;
-    }
-  }
-
-  retrocederCriterio() {
-    if (this.criterioActualIndex > 0) {
-      this.criterioActualIndex--;
-    }
-  }
-
-  get criterioActual() {
-    if (!this.rubricaActual || this.criterioActualIndex < 0 ||
-      this.criterioActualIndex >= this.rubricaActual.criterios.length) {
-      return null;
-    }
-    return this.rubricaActual.criterios[this.criterioActualIndex];
-  }
-
-  get nivelesDelCriterioActual(): any[] {
-    if (!this.criterioActual) return [];
-
-    // Usar nivelesDetalle (único formato soportado)
-    return this.criterioActual.nivelesDetalle || [];
-  }
-
-  // Método para cargar la evaluación guardada desde el servicio
-  async cargarEvaluacionGuardada() {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.grupoSeguimientoActivo) {
-      console.warn('⚠️ [cargarEvaluacionGuardada] Faltan datos necesarios');
-      return;
-    }
-
-    // Determinar identificador según tipo
-    let identificador: string;
-    if (this.tipoEvaluando === 'PI') {
-      // Para Individual: usar email del estudiante
-      identificador = this.estudianteSeleccionado || '';
-      if (!identificador) {
-        console.warn('⚠️ [cargarEvaluacionGuardada] PI requiere estudiante seleccionado');
-        return;
-      }
-    } else {
-      // Para Grupal: usar ID del grupo (grupoSeguimientoActivo ya ES el ID)
-      identificador = this.grupoSeguimientoActivo;
-    }
-
-    console.log(`🔍[cargarEvaluacionGuardada] Buscando evaluación: `, {
-      curso: this.cursoActivo,
-      entrega: this.entregaEvaluando,
-      tipo: this.tipoEvaluando,
-      identificador
-    });
-
-    // Obtener evaluación del servicio (4 parámetros correctos)
-    const evaluacionExistente = this.dataService.getEvaluacion(
-      this.cursoActivo,
-      this.entregaEvaluando,
-      this.tipoEvaluando || 'PG',
-      identificador
-    );
-
-    if (evaluacionExistente) {
-      console.log(`📂[cargarEvaluacionGuardada] ✅ Evaluación recuperada para ${this.entregaEvaluando}: `, evaluacionExistente);
-      this.evaluacionActual = evaluacionExistente;
-      this.reconstruirEstadoDesdeEvaluacion(evaluacionExistente);
-    } else {
-      console.log(`🆕[cargarEvaluacionGuardada] ❌ Sin evaluación previa para ${this.entregaEvaluando} `);
-      this.evaluacionActual = null;
-      this.reiniciarEstadoEvaluacion();
-    }
-  }
-
-
-  // Helper para reconstruir estado interno (compatibilidad)
-  private reconstruirEstadoDesdeEvaluacion(evaluacion: Evaluacion) {
-    if (!evaluacion || !evaluacion.criterios) {
-      console.warn('⚠️ [reconstruirEstadoDesdeEvaluacion] Evaluación sin criterios');
-      return;
-    }
-
-    console.log('🔄 [reconstruirEstadoDesdeEvaluacion] Reconstruyendo estado desde evaluación:', evaluacion);
-
-    // Restaurar criteriosEvaluados desde la evaluación guardada
-    this.criteriosEvaluados = evaluacion.criterios.map((crit, index) => {
-      // Actualizar también nivelesSeleccionados para la UI
-      if (crit.nivelSeleccionado) {
-        this.nivelesSeleccionados[index] = crit.nivelSeleccionado;
-      }
-
-      // Restaurar comentarios si existen
-      if (crit.comentario) {
-        this.comentariosCriterios[index] = crit.comentario;
-      }
-
-      // Restaurar puntos personalizados si fueron usados
-      if (crit.puntosPersonalizados) {
-        this.puntosPersonalizados[index] = crit.puntosObtenidos || 0;
-      }
-
-      return {
-        criterioTitulo: crit.criterioTitulo,
-        nivelSeleccionado: crit.nivelSeleccionado,
-        puntosObtenidos: crit.puntosObtenidos || 0,
-        puntosPersonalizados: crit.puntosPersonalizados || false,
-        comentario: crit.comentario || ''
-      };
-    });
-
-    // Restaurar puntos totales
-    this.puntosRubricaTotales = evaluacion.puntosTotales || 0;
-
-    // Reconstruir el texto de seguimiento desde los criterios
-    const textoSeguimiento = this.generarTextoSeguimientoFromCriterios(evaluacion.criterios);
-
-    if (this.tipoEvaluando === 'PG') {
-      this.textoSeguimientoRubricaGrupal = textoSeguimiento;
-    } else {
-      this.textoSeguimientoRubricaIndividual = textoSeguimiento;
-    }
-
-    // Actualizar timestamps (usar fecha de evaluación o actual)
-    const timestamp = evaluacion.fechaEvaluacion
-      ? new Date(evaluacion.fechaEvaluacion).toLocaleString('es-ES')
-      : new Date().toLocaleString('es-ES');
-
-    this.timestampsSeguimiento = evaluacion.criterios.map(() => timestamp);
-
-    console.log('✅ [reconstruirEstadoDesdeEvaluacion] Estado reconstruido:', {
-      criterios: this.criteriosEvaluados.length,
-      puntosTotal: this.puntosRubricaTotales,
-      textoParrafos: textoSeguimiento.length
-    });
-
-    // Actualizar el panel de seguimiento
-    this.emitToSeguimientoPanel();
-  }
-
-  /**
-   * Genera el texto de seguimiento desde criterios evaluados
-   */
-  private generarTextoSeguimientoFromCriterios(criterios: any[]): string[] {
-    return criterios.map((crit: any) => {
-      const comentarioParte = crit.comentario ? `\n  💬 ${crit.comentario} ` : '';
-      const nivel = crit.nivelSeleccionado || 'Sin nivel';
-      const puntos = crit.puntosObtenidos || 0;
-      return `📌 ${crit.criterioTitulo} \n  ✓ ${nivel} \n  📊 ${puntos} puntos${comentarioParte} `;
-    });
-  }
-
-  private reiniciarEstadoEvaluacion() {
-    this.puntosRubricaTotales = 0;
-    this.criteriosEvaluados = [];
-  }
-
-  get nivelSeleccionadoActual(): any {
-
-    if (!this.criterioActual) return null;
-
-    const evaluacion = this.criteriosEvaluados[this.criterioActualIndex];
-    if (!evaluacion || !evaluacion.nivelSeleccionado) return null;
-
-    return this.nivelesDelCriterioActual.find((n: any) => n.titulo === evaluacion.nivelSeleccionado);
-  }
-
-  get esPrimerCriterio(): boolean {
-    return this.criterioActualIndex === 0;
-  }
-
-  get esUltimoCriterio(): boolean {
-    if (!this.rubricaActual) return true;
-    return this.criterioActualIndex === this.rubricaActual.criterios.length - 1;
-  }
-
-  get rubricaEstaGuardada(): boolean {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.grupoSeguimientoActivo) {
-      return false;
-    }
-
-    const evaluacionExistente = this.dataService.getEvaluacion(
-      this.cursoActivo,
-      this.entregaEvaluando,
-      'PG',
-      this.grupoSeguimientoActivo
-    );
-
-    return !!evaluacionExistente;
-  }
-
-
-  seleccionarNivelCriterioActual(nivel: any) {
-    if (!this.criterioActual || !nivel) return;
-
-    console.log('📝 [seleccionarNivelCriterioActual] Seleccionando nivel:', nivel.titulo, 'para criterio:', this.criterioActualIndex);
-
-    if (this.aplicarATodos && this.rubricaActual) {
-      // APLICAR A TODOS LOS CRITERIOS
-      console.log('🔄 [Aplicar a Todos] Aplicando nivel a todos los criterios');
-      console.log('🔍 [Aplicar a Todos] Estado inicial - criteriosEvaluados.length:', this.criteriosEvaluados.length);
-
-      // 🧹 PRIMERO: Limpiar completamente el texto del panel de seguimiento
-      console.log('🧹 [Aplicar a Todos] Limpiando texto de seguimiento previo...');
-      this.textoSeguimientoRubrica = [];
-      this.textoSeguimientoRubricaGrupal = [];
-      this.textoSeguimientoRubricaIndividual = [];
-      this.timestampsSeguimiento = [];
-
-      // Limpiar también puntos personalizados y comentarios para reiniciar
-      this.puntosPersonalizados = {};
-      this.comentariosCriterios = {};
-
-      // IMPORTANTE: Limpiar inmediatamente el servicio de seguimiento
-      if (this.tipoEvaluando) {
-        this.seguimientoService.actualizarTextoRubrica(this.tipoEvaluando, [], []);
-        console.log('🧹 [Aplicar a Todos] Servicio de seguimiento limpiado');
-      }
-
-      // IMPORTANTE: Reconstruir completamente el array de criterios evaluados para evitar duplicaciones
-      const nuevosEvaluados: any[] = [];
-
-      for (let i = 0; i < this.rubricaActual.criterios.length; i++) {
-        const criterio = this.rubricaActual.criterios[i];
-
-        // Buscar un nivel equivalente en este criterio (por índice de nivel)
-        const niveles = criterio.nivelesDetalle || [];
-        const nivelIndex = this.nivelesDelCriterioActual.findIndex(n => n.titulo === nivel.titulo);
-        const nivelEquivalente = niveles[nivelIndex] || niveles[0]; // Usar el mismo índice o el primero
-
-        if (nivelEquivalente) {
-          const puntosNivel = nivelEquivalente.puntosMax || nivelEquivalente.puntosMin || 0;
-
-          // Guardar nivel seleccionado
-          this.nivelesSeleccionados[i] = nivelEquivalente.titulo;
-
-          // CREAR NUEVO OBJETO para evitar referencias duplicadas
-          const nuevoCriterio = {
-            criterioTitulo: criterio.titulo,
-            nivelSeleccionado: nivelEquivalente.titulo,
-            puntosObtenidos: puntosNivel,
-            puntosPersonalizados: false,
-            comentario: nivelEquivalente.descripcion || ''
-          };
-
-          // Agregar al nuevo array
-          nuevosEvaluados.push(nuevoCriterio);
-
-          // Actualizar texto de seguimiento para este criterio
-          const criterioTemp = this.criterioActual;
-          const indexTemp = this.criterioActualIndex;
-          this.criterioActualIndex = i;
-          this.actualizarTextoSeguimiento(nivelEquivalente, puntosNivel, puntosNivel, undefined);
-          this.criterioActualIndex = indexTemp;
-
-          console.log(`✅[Aplicar a Todos] Criterio ${i}: "${criterio.titulo}" -> Nivel: "${nivelEquivalente.titulo}"(${puntosNivel} pts)`);
-        } else {
-          console.warn(`⚠️[Aplicar a Todos] No se encontró nivel equivalente para criterio ${i}: "${criterio.titulo}"`);
-
-          // Mantener el criterio existente si no hay nivel equivalente
-          if (this.criteriosEvaluados[i]) {
-            nuevosEvaluados.push({ ...this.criteriosEvaluados[i] });
-          } else {
-            // Crear criterio vacío
-            nuevosEvaluados.push({
-              criterioTitulo: criterio.titulo,
-              nivelSeleccionado: undefined,
-              puntosObtenidos: 0,
-              puntosPersonalizados: false,
-              comentario: ''
-            });
-          }
-        }
-      }
-
-      // REEMPLAZAR completamente el array de criterios evaluados
-      this.criteriosEvaluados = nuevosEvaluados;
-
-      console.log('✅ [Aplicar a Todos] Array reconstruido - nuevosEvaluados.length:', this.criteriosEvaluados.length);
-      console.log('📊 [Aplicar a Todos] Criterios finales:', this.criteriosEvaluados.map(c => `${c.criterioTitulo}: ${c.nivelSeleccionado} `));
-
-      // 🔄 IMPORTANTE: Forzar actualización completa del panel de seguimiento después de aplicar a todos
-      console.log('🔄 [Aplicar a Todos] Forzando actualización del panel de seguimiento...');
-
-      this.aplicarATodos = false; // Resetear checkbox
-
-    } else {
-      // APLICAR SOLO AL CRITERIO ACTUAL
-      // IMPORTANTE: Guardar el nivel seleccionado para este criterio
-      this.nivelesSeleccionados[this.criterioActualIndex] = nivel.titulo;
-
-      // Obtener puntos personalizados si existen, sino usar los del nivel
-      const puntosNivel = nivel.puntosMax || nivel.puntosMin || 0;
-      const puntosAsignados = this.puntosPersonalizados[this.criterioActualIndex] || puntosNivel;
-      const comentario = this.comentariosCriterios[this.criterioActualIndex];
-
-      // Generar texto formateado para seguimiento (SIEMPRE actualizar, incluso en modo edición)
-      this.actualizarTextoSeguimiento(nivel, puntosNivel, puntosAsignados, comentario);
-
-      // Actualizar evaluación del criterio
-      this.criteriosEvaluados[this.criterioActualIndex] = {
-        criterioTitulo: this.criterioActual.titulo,
-        nivelSeleccionado: nivel.titulo,
-        puntosObtenidos: puntosAsignados,
-        puntosPersonalizados: this.puntosPersonalizados[this.criterioActualIndex] !== undefined,
-        comentario: comentario || '' // Solo incluir comentario si hay uno personalizado
-      };
-    }
-
-    this.calcularPuntosTotales();
-
-    // Actualizar panel de seguimiento en tiempo real
-    this.emitToSeguimientoPanel();
-
-    // Enviar texto al servicio de seguimiento
-    this.actualizarTextoEnServicio();
-
-    console.log('✅ [seleccionarNivelCriterioActual] Nivel guardado. Niveles seleccionados:', this.nivelesSeleccionados);
-    console.log('📄 [seleccionarNivelCriterioActual] Texto de seguimiento actualizado:', this.textoSeguimientoRubrica[this.criterioActualIndex]);
-  }
-
-  actualizarPuntosPersonalizados(puntos: number) {
-    this.puntosPersonalizados[this.criterioActualIndex] = puntos;
-
-    // Actualizar la evaluación si ya hay un nivel seleccionado
-    if (this.criteriosEvaluados[this.criterioActualIndex]) {
-      this.criteriosEvaluados[this.criterioActualIndex].puntosObtenidos = puntos;
-      this.criteriosEvaluados[this.criterioActualIndex].puntosPersonalizados = true;
-
-      // Reconstruir el texto de seguimiento
-      const evaluacion = this.criteriosEvaluados[this.criterioActualIndex];
-      if (this.criterioActual && evaluacion.nivelSeleccionado) {
-        const nivel = this.nivelesDelCriterioActual.find((n: any) => n.titulo === evaluacion.nivelSeleccionado);
-        if (nivel) {
-          const puntosNivel = nivel.puntosMax || nivel.puntosMin || 0;
-          const comentario = this.comentariosCriterios[this.criterioActualIndex];
-          this.actualizarTextoSeguimiento(nivel, puntosNivel, puntos, comentario);
-        }
-      }
-
-      this.calcularPuntosTotales();
-    }
-  }
-
-  actualizarComentarioCriterio(comentario: string) {
-    this.comentariosCriterios[this.criterioActualIndex] = comentario;
-
-    // Actualizar la evaluación si ya hay un nivel seleccionado
-    if (this.criteriosEvaluados[this.criterioActualIndex]) {
-      this.criteriosEvaluados[this.criterioActualIndex].comentario = comentario;
-
-      // Reconstruir el texto de seguimiento
-      const evaluacion = this.criteriosEvaluados[this.criterioActualIndex];
-      if (this.criterioActual && evaluacion.nivelSeleccionado) {
-        const nivel = this.nivelesDelCriterioActual.find((n: any) => n.titulo === evaluacion.nivelSeleccionado);
-        if (nivel) {
-          const puntosNivel = nivel.puntosMax || nivel.puntosMin || 0;
-          const puntosAsignados = this.puntosPersonalizados[this.criterioActualIndex] || puntosNivel;
-          this.actualizarTextoSeguimiento(nivel, puntosNivel, puntosAsignados, comentario);
-        }
-      }
-    }
-  }
-
-  private limpiarCacheCalificaciones() {
-    this.cacheCalificacionesCanvas.clear();
-    this._calificacionesCargadasPorCurso.clear();
-  }
-
-  private async precargarCalificacionesCurso() {
-    if (!this.cursoActivo) return;
-    this._calificacionesCargadasPorCurso.set(this.cursoActivo, true);
-  }
-
-  agregarComentarioFrecuente(comentario: string) {
-    if (comentario && !this.comentariosFrecuentes.includes(comentario)) {
-      this.comentariosFrecuentes.push(comentario);
-      // Guardar en localStorage
-      localStorage.setItem('comentariosFrecuentes', JSON.stringify(this.comentariosFrecuentes));
-    }
-  }
-
-  cargarComentariosFrecuentes() {
-    const guardados = localStorage.getItem('comentariosFrecuentes');
-    if (guardados) {
-      this.comentariosFrecuentes = JSON.parse(guardados);
-    }
-  }
-
-  cancelarEvaluacionRubrica() {
-    this.mostrarRubrica = false;
-    this.rubricaActual = null;
-    this.entregaEvaluando = null;
-    this.tipoEvaluando = null;
-    this.criteriosEvaluados = [];
-    this.puntosRubricaTotales = 0;
-    this.criterioActualIndex = 0;
-
-    this.timestampsSeguimiento = []; // Limpiar timestamps
-    this.puntosPersonalizados = {};
-    this.comentariosCriterios = {};
-    this.nivelesSeleccionados = {}; // Limpiar niveles seleccionados
-
-    // Limpiar panel de seguimiento al cancelar la evaluación
-    this.limpiarPanelSeguimiento();
-  }
-
-  async borrarEvaluacionRubrica() {
-    if (!this.cursoActivo || !this.entregaEvaluando || !this.tipoEvaluando) return;
-
-    // Determinar qué tipo de evaluación borrar según la cabecera seleccionada
-    const esGrupal = this.tipoEvaluando === 'PG';
-    const identificador = esGrupal ? this.grupoSeguimientoActivo : this.estudianteSeleccionado;
-
-    if (!identificador) return;
-
-    const tipoTexto = esGrupal ? 'grupal (PG)' : 'individual (PI)';
-    const mensaje = esGrupal
-      ? `¿Estás seguro de que deseas eliminar la evaluación ${tipoTexto} de este grupo ? Esta acción no se puede deshacer.`
-      : `¿Estás seguro de que deseas eliminar la evaluación ${tipoTexto} de este estudiante ? Esta acción no se puede deshacer.`;
-
-    const alert = await this.alertController.create({
-      header: 'Confirmar borrado',
-      message: mensaje,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Borrar',
-          role: 'destructive',
-          handler: async () => {
-            if (esGrupal) {
-              // Borrar SOLO evaluación grupal (PG)
-              await this.dataService.borrarEvaluacion(
-                this.cursoActivo!,
-                this.entregaEvaluando!,
-                'PG',
-                this.grupoSeguimientoActivo!
-              );
-            } else {
-              // Borrar SOLO evaluación individual (PI) del estudiante seleccionado
-              await this.dataService.borrarEvaluacion(
-                this.cursoActivo!,
-                this.entregaEvaluando!,
-                'PI',
-                this.estudianteSeleccionado!
-              );
-            }
-
-            // Limpiar estado actual de la rúbrica
-            this.criteriosEvaluados = [];
-            this.puntosRubricaTotales = 0;
-            this.criterioActualIndex = 0;
-            this.textoSeguimientoRubrica = [];
-            this.timestampsSeguimiento = []; // Limpiar timestamps
-            this.puntosPersonalizados = {};
-            this.comentariosCriterios = {};
-            this.nivelesSeleccionados = {}; // Limpiar niveles seleccionados
-
-            // IMPORTANTE: Limpiar completamente el panel de seguimiento
-            this.limpiarPanelSeguimiento();
-
-            // Reinicializar criterios vacíos
-            this.inicializarCriteriosRubrica();
-
-            // IMPORTANTE: Cancelar modo edición después de borrar
-            this.modoEdicionRubrica = false;
-
-            // IMPORTANTE: Recargar datos para actualizar las tablas
-            console.log('🔄 Recargando datos después del borrado de evaluación...');
-
-            // Recargar el curso actual para actualizar todas las evaluaciones en las tablas
-            if (this.cursoActivo) {
-              await this.seleccionarCurso(this.cursoActivo);
-            }
-
-            const mensajeExito = esGrupal
-              ? `Evaluación ${tipoTexto} del grupo eliminada correctamente`
-              : `Evaluación ${tipoTexto} del estudiante eliminada correctamente`;
-
-            this.mostrarError('Éxito', mensajeExito);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  get textoSeguimientoCompleto(): string {
-    return this.textoSeguimientoRubrica.filter(t => t).join('\n\n');
-  }
-
-  async copiarTextoSeguimiento() {
-    // Generar el texto completo con formato específico que incluye PG y PI
-    const textoCompleto = this.generarTextoSeguimientoCompleto();
-
-    if (!textoCompleto) {
-      await this.mostrarError('Aviso', 'No hay evaluaciones para copiar');
-      return;
-    }
-
-    try {
-      // Intentar usar la API del portapapeles
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(textoCompleto);
-        await this.mostrarMensajeExito('Texto de seguimiento completo copiado al portapapeles');
-      } else {
-        // Fallback para navegadores antiguos
-        const textarea = document.createElement('textarea');
-        textarea.value = textoCompleto;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        await this.mostrarMensajeExito('Texto de seguimiento completo copiado al portapapeles');
-      }
+      // Logger.log('🔄 Recargando lista de cursos...');
+      this.cargarCursos();
+      // Logger.log('📋 Cursos disponibles:', this.cursosDisponibles.length);
+
+      // Limpiar formulario sin mostrar toast de cancelación
+      this.limpiarFormulario();
+      this.modoEdicion = false;
+      this.cursoSeleccionado = null;
+
+      const mensajeExito = this.codigoCursoEnEdicion ? 'Curso actualizado exitosamente' : 'Curso creado';
+      await this.mostrarToastExito(mensajeExito);
     } catch (error) {
-      console.error('Error al copiar texto:', error);
-      await this.mostrarError('Error', 'No se pudo copiar el texto al portapapeles');
-    }
-  }
-
-  /**
-   * Genera el texto completo de seguimiento con formato específico
-   * Incluye tanto puntos grupales (PG) como individuales (PI)
-   */
-  private generarTextoSeguimientoCompleto(): string {
-    if (!this.cursoActivo || !this.entregaEvaluando) {
-      return '';
-    }
-
-    const estudiante = this.obtenerEstudianteSeleccionado();
-    if (!estudiante) {
-      return '';
-    }
-
-    // Obtener evaluaciones PG y PI para el estudiante actual
-    const evaluacionPG = this.obtenerEvaluacionPG(estudiante);
-    const evaluacionPI = this.obtenerEvaluacionPI(estudiante);
-
-    if (!evaluacionPG && !evaluacionPI) {
-      return '';
-    }
-
-    let texto = '';
-    const fechaActual = new Date().toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-
-    // Encabezado general
-    texto += `EVALUACIÓN COMPLETA - ${this.entregaEvaluando} \n`;
-    texto += `Estudiante: ${estudiante.nombres} ${estudiante.apellidos} \n`;
-    texto += `Grupo: ${estudiante.grupo} \n`;
-    texto += `Fecha: ${fechaActual} \n\n`;
-
-    // Resumen de puntos
-    const puntosGrupales = evaluacionPG?.puntosTotales || 0;
-    const puntosIndividuales = evaluacionPI?.puntosTotales || 0;
-    const total = puntosGrupales + puntosIndividuales;
-
-    texto += `RESUMEN DE PUNTUACIÓN: \n`;
-    texto += `Puntos Grupales: PG = ${puntosGrupales} \n`;
-    texto += `Puntos Individuales: PI = ${puntosIndividuales} \n`;
-    texto += `Total: PG + PI = ${total} \n\n`;
-
-    // Detalle de puntos grupales
-    if (evaluacionPG) {
-      texto += `DETALLE PUNTOS GRUPALES(PG) \n`;
-      texto += `========================================\n\n`;
-      texto += this.generarDetalleCriterios(evaluacionPG, 'Grupal');
-      texto += `\n`;
-    }
-
-    // Detalle de puntos individuales
-    if (evaluacionPI) {
-      texto += `DETALLE PUNTOS INDIVIDUALES(PI) \n`;
-      texto += `=========================================\n\n`;
-      texto += this.generarDetalleCriterios(evaluacionPI, 'Individual');
-    }
-
-    return texto;
-  }
-
-  /**
-   * Genera el detalle de criterios para una evaluación específica
-   */
-  private generarDetalleCriterios(evaluacion: any, tipo: 'Grupal' | 'Individual'): string {
-    if (!evaluacion.criterios || evaluacion.criterios.length === 0) {
-      return `No hay criterios evaluados para la rúbrica ${tipo.toLowerCase()}.\n\n`;
-    }
-
-    let detalle = '';
-
-    evaluacion.criterios.forEach((criterio: any, index: number) => {
-      const numeroCriterio = index + 1;
-
-      detalle += `Criterio ${numeroCriterio}: ${criterio.criterioTitulo} \n`;
-
-      // Obtener información del nivel si existe
-      if (criterio.nivelSeleccionado) {
-        detalle += `Nivel Obtenido: ${criterio.nivelSeleccionado} \n`;
-      }
-
-      // Puntos asignados
-      detalle += `Puntos Asignados: ${criterio.puntosObtenidos || 0} `;
-
-      // Agregar comentarios si los hay
-      if (criterio.comentario && criterio.comentario.trim()) {
-        detalle += ` (${criterio.comentario.trim()})`;
-      }
-
-      detalle += `\n`;
-
-      // Contenido del criterio de la rúbrica
-      if (criterio.nivelDescripcion) {
-        detalle += `Descripción: ${criterio.nivelDescripcion} \n`;
-      } else if (criterio.criterioDescripcion) {
-        detalle += `Descripción: ${criterio.criterioDescripcion} \n`;
-      }
-
-      detalle += `\n`;
-    });
-
-    return detalle;
-  }
-
-  /**
-   * Obtiene la evaluación PG para un estudiante específico
-   */
-  private obtenerEvaluacionPG(estudiante: any): any {
-    if (!this.cursoActivo || !this.entregaEvaluando) return null;
-
-    // Intentar obtener evaluación PG individual primero (por correo)
-    const evaluacionIndividual = this.dataService.getEvaluacion(
-      this.cursoActivo,
-      this.entregaEvaluando,
-      'PG',
-      estudiante.correo
-    );
-
-    if (evaluacionIndividual) {
-      return evaluacionIndividual;
-    }
-
-    // Si no hay individual, buscar por subgrupo (evaluación grupal normal)
-    const evaluacionGrupal = this.dataService.getEvaluacion(
-      this.cursoActivo,
-      this.entregaEvaluando,
-      'PG',
-      estudiante.grupo
-    );
-
-    return evaluacionGrupal;
-  }
-
-  /**
-   * Obtiene la evaluación PI para un estudiante específico
-   */
-  private obtenerEvaluacionPI(estudiante: any): any {
-    if (!this.cursoActivo || !this.entregaEvaluando) return null;
-
-    const evaluacionIndividual = this.dataService.getEvaluacion(
-      this.cursoActivo,
-      this.entregaEvaluando,
-      'PI',
-      estudiante.correo
-    );
-
-    return evaluacionIndividual;
-  }
-
-  private async mostrarMensajeExito(mensaje: string) {
-    const alert = await this.alertController.create({
-      header: 'Éxito',
-      message: mensaje,
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
-  // === MÉTODOS ELIMINADOS - CÓDIGO ANTIGUO SPA ===
-  // seleccionarPagina() - ya no se usa, era para navegación de páginas en panel lateral
-
-  obtenerNombreCompleto(correo: string): string {
-    const estudiante = this.estudiantesActuales.find(est => est.correo === correo);
-    if (estudiante) {
-      return `${estudiante.nombres} ${estudiante.apellidos} `;
-    }
-    return correo;
-  }
-
-  // Método evaluarRapido eliminado junto con la página de evaluación
-  // evaluarRapido(entrega: 'E1' | 'E2' | 'EF') {
-  //   // Funcionalidad movida al panel de seguimiento lateral
-  // }
-
-  // === MÉTODOS PARA EL PANEL REDIMENSIONABLE ===
-
-  /**
-   * Inicializa el gesto de redimensionamiento usando Ionic Gestures API
-   * Se debe llamar en ngAfterViewInit después de que el elemento esté disponible
-   */
-  inicializarGestoRedimensionar(element: HTMLElement): void {
-    const gesture = this.gestureCtrl.create({
-      el: element,
-      gestureName: 'resize-panel',
-      onStart: () => {
-        this.redimensionandoPanel = true;
-      },
-      onMove: (detail) => {
-        if (!this.redimensionandoPanel) return;
-
-        const nuevoAncho = window.innerWidth - detail.currentX;
-
-        if (nuevoAncho >= this.anchoMinimo && nuevoAncho <= this.anchoMaximo) {
-          this.anchoPanel = nuevoAncho;
-          // Usar propiedad vinculada en lugar de manipular DOM directamente
-          this.actualizarAnchoPanel(nuevoAncho);
-        }
-      },
-      onEnd: () => {
-        this.redimensionandoPanel = false;
-      }
-    });
-
-    gesture.enable();
-  }
-
-  /**
-   * Actualiza el ancho del panel de forma reactiva
-   */
-  private actualizarAnchoPanel(nuevoAncho: number): void {
-    this.anchoPanel = nuevoAncho;
-    // El ancho se aplicará mediante [ngStyle] en el template
-  }
-
-  // === MÉTODOS AUXILIARES PARA FILTROS ===
-
-  extraerNumeroGrupo(grupo: string): string {
-    const match = grupo.match(/G(\d+)/i);
-    return match ? match[1] : grupo;
-  }
-
-  obtenerEstudianteSeleccionado(): Estudiante | null {
-    if (!this.estudianteSeleccionado) return null;
-    return this.estudiantesActuales.find(est => est.correo === this.estudianteSeleccionado) || null;
-  }
-
-  /**
-   * Limpia la rúbrica para evitar que se muestren datos del estudiante anterior
-   * Asegura que cada integrante tenga evaluaciones independientes y persistentes
-   */
-  private limpiarRubricaParaNuevoEstudiante() {
-    console.log('🧹 [limpiarRubricaParaNuevoEstudiante] Limpiando rúbrica para nuevo estudiante');
-
-    // Limpiar niveles seleccionados
-    this.nivelesSeleccionados = {};
-
-    // Limpiar puntos personalizados
-    this.puntosPersonalizados = {};
-
-    // Limpiar comentarios de criterios
-    this.comentariosCriterios = {};
-
-    // Limpiar criterios evaluados
-    this.criteriosEvaluados = [];
-
-    // Resetear puntos totales
-    this.puntosRubricaTotales = 0;
-
-    // Limpiar texto de seguimiento individual (mantener grupal)
-    if (this.tipoEvaluando === 'PI') {
-      this.textoSeguimientoRubricaIndividual = [];
-    }
-
-    // Salir del modo edición
-    this.modoEdicionRubrica = false;
-
-    console.log('✅ [limpiarRubricaParaNuevoEstudiante] Rúbrica limpiada correctamente');
-  }
-
-  /**
-   * Limpia la rúbrica al cambiar de subgrupo para mostrar rúbrica en blanco
-   * Se ejecuta solo si no está habilitada la aplicación masiva de rúbrica grupal
-   */
-  private limpiarRubricaParaNuevoSubgrupo() {
-    console.log('🧹 [limpiarRubricaParaNuevoSubgrupo] Limpiando rúbrica por cambio de subgrupo');
-
-    // Limpiar niveles seleccionados
-    this.nivelesSeleccionados = {};
-
-    // Limpiar puntos personalizados
-    this.puntosPersonalizados = {};
-
-    // Limpiar comentarios de criterios
-    this.comentariosCriterios = {};
-
-    // Limpiar criterios evaluados
-    this.criteriosEvaluados = [];
-
-    // Resetear puntos totales
-    this.puntosRubricaTotales = 0;
-
-    // Limpiar textos de seguimiento
-    this.textoSeguimientoRubricaGrupal = [];
-    this.textoSeguimientoRubricaIndividual = [];
-
-    // Salir del modo edición
-    this.modoEdicionRubrica = false;
-
-    // Limpiar selección de estudiantes para empezar fresh
-    this.estudiantesSeleccionados.clear();
-    this.estudianteSeleccionado = null;
-
-    // Reinicializar criterios de la rúbrica para mostrarla en blanco
-    if (this.rubricaActual) {
-      this.inicializarCriteriosRubrica();
-      console.log('🔄 [limpiarRubricaParaNuevoSubgrupo] Criterios reinicializados para rúbrica en blanco');
-    }
-
-    console.log('✅ [limpiarRubricaParaNuevoSubgrupo] Rúbrica limpiada para nuevo subgrupo');
-  }
-
-  // === MÉTODOS PARA METADATA DE CURSOS ===
-
-  getCursoMetadata() {
-    if (!this.cursoActivo) return null;
-    const uiState = this.dataService.getUIState();
-    return uiState.courseStates?.[this.cursoActivo]?.metadata || null;
-  }
-
-  getCursoMetadataForCourse(curso: string) {
-    const uiState = this.dataService.getUIState();
-    return uiState.courseStates?.[curso]?.metadata || null;
-  }
-
-  /**
-   * Extrae el número de un grupo (G1 -> 1, G2 -> 2, etc.)
-   */
-  getNumeroGrupo(grupo: string): string {
-    const match = grupo.match(/G(\d+)/i);
-    return match ? match[1] : grupo;
-  }
-
-  /**
-   * Selecciona un grupo para seguimiento y filtra estudiantes
-   */
-  seleccionarGrupoSeguimiento(grupo: string | null): void {
-    // Comportamiento normal: cambiar el grupo activo
-    const grupoAnterior = this.grupoSeguimientoActivo;
-    const cambioDeGrupo = grupoAnterior !== grupo;
-
-    // OPTIMIZACIÓN: Si no cambió el grupo, no hacer nada
-    if (!cambioDeGrupo) {
-      console.log('⚡ [seleccionarGrupoSeguimiento] Grupo ya seleccionado, evitando recarga:', grupo);
-      return;
-    }
-
-    this.grupoSeguimientoActivo = grupo;
-    this.filtroGrupo = grupo || 'todos';
-
-    // Actualizar el servicio de seguimiento para sincronizar con el panel
-    if (!this.actualizandoGrupoDesdeSuscripcion) {
-      const grupoNum = grupo ? parseInt(grupo.replace(/\D/g, '')) : 0;
-      this.seguimientoService.setGrupoSeleccionado(grupoNum);
-    }
-
-    // Si cambió de grupo y hay rúbrica activa, limpiarla (comportamiento normal)
-    if (this.mostrarRubrica) {
-      console.log('🧹 [seleccionarGrupoSeguimiento] Limpiando rúbrica por cambio de grupo');
-      this.limpiarRubricaParaNuevoSubgrupo();
-    }
-
-    this.aplicarFiltros();
-
-    // Guardar grupo seleccionado en CourseState para persistencia por curso
-    if (this.cursoActivo) {
-      this.dataService.updateCourseState(this.cursoActivo, {
-        filtroGrupo: grupo || 'todos'
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      Logger.error('[CursosPage] Error guardando curso:', {
+        error: errorMessage,
+        codigo: this.cursoParseado?.codigo,
+        modo: this.codigoCursoEnEdicion ? 'edición' : 'creación',
+        stack: error instanceof Error ? error.stack : undefined
       });
+
+      await this.mostrarToastError(
+        `Error al guardar curso: ${errorMessage}`,
+        4000
+      );
     }
-
-    // También mantener en UIState global (para compatibilidad)
-    this.dataService.updateUIState({
-      grupoSeguimientoActivo: grupo
-    });
-
-    // Cargar comentarios del grupo seleccionado
-    this.cargarComentariosGrupo();
-
-    // Forzar una única detección de cambios al final del proceso
-    this.cdr.detectChanges();
   }
 
+  async cancelarEdicion() {
+    // Determinar si es curso nuevo o edición de curso existente
+    const esCursoNuevo = !this.codigoCursoEnEdicion;
+    const mensaje = esCursoNuevo
+      ? 'Creación de nuevo curso cancelada'
+      : 'Edición cancelada';
 
+    this.modoEdicion = false;
+    this.cursoSeleccionado = null;
+    this.limpiarFormulario();
 
-  /**
-   * Alterna entre mostrar nombre completo y nombre corto en los botones de curso
-   */
-  toggleMostrarNombreCorto(): void {
-    this.mostrarNombreCorto = !this.mostrarNombreCorto;
-
-    // Persistir la preferencia en UIState
-    this.dataService.updateUIState({
-      mostrarNombreCorto: this.mostrarNombreCorto
-    });
-
-    console.log('🔤 [InicioPage] Mostrar nombre corto:', this.mostrarNombreCorto ? 'Activado' : 'Desactivado');
+    await this.mostrarToastWarning(mensaje);
   }
 
-  // === MÉTODOS PARA COMENTARIOS DE GRUPO ===
+  limpiarFormulario() {
+    this.estudiantesFileName = '';
+    this.calificacionesFileName = '';
+    this.rubricaFileName = '';
+    this.estudiantesCargados = [];
+    this.calificacionesCargadas = null;
+    this.rubricaCargada = null;
+    this.cursoParseado = null;
+    this.codigoCursoEnEdicion = '';
 
-  /**
-   * Carga los comentarios del grupo actualmente seleccionado
-   */
-  cargarComentariosGrupo(): void {
-    if (!this.cursoActivo || !this.grupoSeguimientoActivo) {
-      this.comentariosGrupoActual = [];
-      return;
+    if (this.estudiantesFileInput) {
+      this.estudiantesFileInput.nativeElement.value = '';
     }
-
-    this.comentariosGrupoActual = this.dataService.getComentariosGrupo(
-      this.cursoActivo,
-      this.grupoSeguimientoActivo
-    );
-
-    console.log('💬 [InicioPage] Comentarios cargados:', this.comentariosGrupoActual.length);
+    if (this.calificacionesFileInput) {
+      this.calificacionesFileInput.nativeElement.value = '';
+    }
+    if (this.rubricaFileInput) {
+      this.rubricaFileInput.nativeElement.value = '';
+    }
   }
 
-  /**
-   * Agrega un nuevo comentario al grupo actual
-   */
-  async agregarComentario(): Promise<void> {
-    if (!this.nuevoComentario?.trim() || !this.cursoActivo || !this.grupoSeguimientoActivo) {
-      return;
+  limpiarEstudiantes() {
+    this.estudiantesCargados = [];
+    this.estudiantesFileName = '';
+    this.cursoParseado = null;
+
+    if (this.estudiantesFileInput?.nativeElement) {
+      this.estudiantesFileInput.nativeElement.value = '';
     }
-
-    await this.dataService.addComentarioGrupo(
-      this.cursoActivo,
-      this.grupoSeguimientoActivo,
-      this.nuevoComentario.trim()
-    );
-
-    // Limpiar el campo y recargar comentarios
-    this.nuevoComentario = '';
-    this.cargarComentariosGrupo();
-
-    console.log('✅ [InicioPage] Comentario agregado exitosamente');
   }
 
-  /**
-   * Elimina un comentario del grupo
-   */
-  async eliminarComentario(comentarioId: string): Promise<void> {
-    if (!this.cursoActivo || !this.grupoSeguimientoActivo) {
-      return;
+  limpiarCalificaciones() {
+    this.calificacionesFileName = '';
+    this.calificacionesCargadas = null;
+    this.calificacionesParseadas = [];
+    if (this.calificacionesFileInput) {
+      this.calificacionesFileInput.nativeElement.value = '';
     }
+  }
+
+  desvincularArchivoEstudiantes() {
+    this.estudiantesFileName = '';
+    this.estudiantesCargados = [];
+    this.cursoParseado = null;
+  }
+
+  desvincularArchivoCalificaciones() {
+    this.calificacionesFileName = '';
+    this.calificacionesCargadas = null;
+  }
+
+  async eliminarCurso(curso: any, event: Event) {
+    event.stopPropagation();
 
     const alert = await this.alertController.create({
-      header: 'Confirmar eliminación',
-      message: '¿Está seguro de eliminar este comentario?',
+      header: '🗑️ Confirmar Eliminación',
+      message: `¿Estás seguro de eliminar el curso "${curso.nombre}" (${curso.nombreAbreviado})?<br><br><strong>Se eliminarán:</strong><br>• Todos los estudiantes del curso<br>• Todas las evaluaciones asociadas<br>• Comentarios y seguimiento<br><br>Esta acción no se puede deshacer.`,
+      cssClass: 'alert-danger',
       buttons: [
         {
           text: 'Cancelar',
@@ -2718,22 +1107,20 @@ export class InicioPage implements OnInit, OnDestroy {
           text: 'Eliminar',
           role: 'destructive',
           handler: async () => {
-            await this.dataService.deleteComentarioGrupo(
-              this.cursoActivo!,
-              this.grupoSeguimientoActivo!,
-              comentarioId
-            );
-            this.cargarComentariosGrupo();
-            console.log('🗑️ [InicioPage] Comentario eliminado');
+            try {
+              // USAR CÓDIGO ÚNICO (curso.codigo contiene el código único completo)
+              await this.dataService.eliminarCurso(curso.codigo);
+              this.cargarCursos();
 
-            const toast = await this.toastController.create({
-              message: 'Comentario eliminado',
-              duration: 2000,
-              color: 'success',
-              position: 'top',
-              cssClass: 'toast-success'
-            });
-            await toast.present();
+              if (this.cursoSeleccionado === curso.codigo) {
+                this.deseleccionarCurso();
+              }
+
+              await this.mostrarToastExito(`Curso "${curso.nombreAbreviado}" eliminado`);
+            } catch (error) {
+              Logger.error('Error eliminando curso:', error);
+              await this.mostrarToastError('Error al eliminar curso');
+            }
           }
         }
       ]
@@ -2742,1363 +1129,212 @@ export class InicioPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  /**
-   * Inicia la edición de un comentario
-   */
-  iniciarEdicionComentario(comentarioId: string, textoActual: string): void {
-    this.comentarioEditando = comentarioId;
-    this.textoEditando = textoActual;
-    console.log('✏️ [InicioPage] Iniciando edición de comentario:', comentarioId);
+  convertirBloqueTextoANumero(texto: string): number {
+    const bloques: Record<string, number> = {
+      'PRIMER': 1, 'PRIMERO': 1, 'FIRST': 1,
+      'SEGUNDO': 2, 'SECOND': 2,
+      'TERCER': 3, 'TERCERO': 3, 'THIRD': 3,
+      'CUARTO': 4, 'FOURTH': 4,
+      'QUINTO': 5, 'FIFTH': 5,
+      'SEXTO': 6, 'SIXTH': 6
+    };
+    return bloques[texto.toUpperCase()] || 1;
   }
 
-  /**
-   * Cancela la edición de un comentario
-   */
-  cancelarEdicionComentario(): void {
-    this.comentarioEditando = null;
-    this.textoEditando = '';
-    console.log('❌ [InicioPage] Edición cancelada');
-  }
+  tieneArchivoCalificaciones(codigo: string): boolean {
+    // Buscar el curso en courseStates usando el código
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
 
-  /**
-   * Guarda los cambios de un comentario editado
-   */
-  async guardarEdicionComentario(comentarioId: string): Promise<void> {
-    if (!this.cursoActivo || !this.grupoSeguimientoActivo || !this.textoEditando.trim()) {
-      return;
-    }
-
-    await this.dataService.updateComentarioGrupo(
-      this.cursoActivo,
-      this.grupoSeguimientoActivo,
-      comentarioId,
-      this.textoEditando.trim()
+    // Buscar por nombreCurso (clave de courseStates)
+    const cursoEntry = Object.entries(courseStates).find(
+      ([nombreCurso, _]) => nombreCurso === codigo
     );
 
-    // Limpiar estado de edición y recargar comentarios
-    this.comentarioEditando = null;
-    this.textoEditando = '';
-    this.cargarComentariosGrupo();
+    if (!cursoEntry) return false;
 
-    console.log('✅ [InicioPage] Comentario actualizado exitosamente');
-
-    const toast = await this.toastController.create({
-      message: 'Comentario actualizado',
-      duration: 2000,
-      color: 'success',
-      position: 'top',
-      cssClass: 'toast-success'
-    });
-    await toast.present();
+    const [nombreCurso, _] = cursoEntry;
+    return this.dataService.obtenerArchivoCalificaciones(nombreCurso) !== null;
   }
 
-  /**
-   * Formatea la fecha del comentario
-   */
-  formatearFecha(fecha: Date | string): string {
-    const d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-    const ahora = new Date();
-    const diff = ahora.getTime() - d.getTime();
-    const minutos = Math.floor(diff / 60000);
+  obtenerNombreArchivoCalificaciones(codigo: string): string {
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
 
-    if (minutos < 1) return 'Ahora';
-    if (minutos < 60) return `Hace ${minutos} min`;
+    const cursoEntry = Object.entries(courseStates).find(
+      ([_, state]) => state.metadata?.codigo === codigo
+    );
 
-    const horas = Math.floor(minutos / 60);
-    if (horas < 24) return `Hace ${horas} h`;
-
-    const dias = Math.floor(horas / 24);
-    if (dias < 7) return `Hace ${dias} d`;
-
-    // Formato completo
-    const opciones: Intl.DateTimeFormatOptions = {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return d.toLocaleDateString('es-ES', opciones);
+    return cursoEntry?.[1].archivoCalificaciones?.nombre || '';
   }
 
-  /**
-   * Toggle del menú FAB en móvil
-   * @deprecated Ya no es necesario con ion-fab nativo
-   */
-  toggleMenuFab(): void {
-    // Ion-fab maneja su propio estado
-    this.menuFabAbierto = !this.menuFabAbierto;
-  }
-
-  /**
-   * Cierra el menú FAB después de ejecutar una acción
-   * @deprecated Ya no es necesario con ion-fab nativo
-   */
-  cerrarMenuFab(): void {
-    // Ion-fab se cierra automáticamente
-    this.menuFabAbierto = false;
-  }
-
-  /**
-   * Getter para verificar si hay un grupo anterior disponible
-   */
-  get grupoAnteriorDisponible(): boolean {
-    if (!this.grupoSeguimientoActivo || this.gruposDisponibles.length === 0) {
-      return false;
-    }
-    const indexActual = this.gruposDisponibles.indexOf(this.grupoSeguimientoActivo);
-    return indexActual > 0;
-  }
-
-  /**
-   * Getter para verificar si hay un grupo siguiente disponible
-   */
-  get grupoSiguienteDisponible(): boolean {
-    if (!this.grupoSeguimientoActivo || this.gruposDisponibles.length === 0) {
-      return false;
-    }
-    const indexActual = this.gruposDisponibles.indexOf(this.grupoSeguimientoActivo);
-    return indexActual < this.gruposDisponibles.length - 1;
-  }
-
-  /**
-   * Navega al grupo anterior
-   */
-  retrocederGrupo(): void {
-    if (!this.grupoAnteriorDisponible) return;
-
-    const indexActual = this.gruposDisponibles.indexOf(this.grupoSeguimientoActivo!);
-    const grupoAnterior = this.gruposDisponibles[indexActual - 1];
-
-    this.grupoSeguimientoActivo = grupoAnterior;
-    this.filtroGrupo = grupoAnterior;
-
-    console.log('⬅️ [retrocederGrupo] filtroGrupo actualizado a:', this.filtroGrupo);
-    console.log('⬅️ [retrocederGrupo] ¿Es todos?:', this.filtroGrupo === 'todos');
-
-    // Actualizar el servicio de seguimiento
-    const grupoNum = parseInt(grupoAnterior.replace(/\D/g, ''));
-    this.seguimientoService.setGrupoSeleccionado(grupoNum);
-
-    // OPTIMIZACIÓN: Solo cargar comentarios si realmente cambió el grupo
-    this.cargarComentariosGrupo();
-
-    // Si hay una rúbrica activa, recargarla para el nuevo grupo
-    if (this.mostrarRubrica && this.entregaEvaluando && this.tipoEvaluando) {
-      this.cargarEvaluacionGuardada().then(() => {
-        this.emitToSeguimientoPanel();
-        this.cdr.detectChanges();
-      });
-    } else {
-      // Si no hay rúbrica activa, limpiar el panel
-      this.limpiarPanelSeguimiento();
-      this.cdr.detectChanges();
-    }
-  }
-
-  /**
-   * Navega al grupo siguiente
-   */
-  avanzarGrupo(): void {
-    if (!this.grupoSiguienteDisponible) return;
-
-    const indexActual = this.gruposDisponibles.indexOf(this.grupoSeguimientoActivo!);
-    const grupoSiguiente = this.gruposDisponibles[indexActual + 1];
-
-    this.grupoSeguimientoActivo = grupoSiguiente;
-    this.filtroGrupo = grupoSiguiente;
-
-    // Actualizar el servicio de seguimiento
-    const grupoNum = parseInt(grupoSiguiente.replace(/\D/g, ''));
-    this.seguimientoService.setGrupoSeleccionado(grupoNum);
-
-    // OPTIMIZACIÓN: Solo cargar comentarios si realmente cambió el grupo
-    this.cargarComentariosGrupo();
-
-    // Si hay una rúbrica activa, recargarla para el nuevo grupo
-    if (this.mostrarRubrica && this.entregaEvaluando && this.tipoEvaluando) {
-      this.cargarEvaluacionGuardada().then(() => {
-        this.emitToSeguimientoPanel();
-        this.cdr.detectChanges();
-      });
-    } else {
-      // Si no hay rúbrica activa, limpiar el panel
-      this.limpiarPanelSeguimiento();
-      this.cdr.detectChanges();
-    }
-
-    console.log('➡️ [InicioPage] Navegado a grupo siguiente:', grupoSiguiente);
-  }
-
-  // === MÉTODOS PARA PERSISTENCIA POR SUBGRUPO ===
-
-  /**
-   * Inicializa el objeto SeguimientoGrupo en el servicio
-   */
-  private inicializarSeguimientoGrupo(): void {
-    if (!this.cursoActivo || !this.filtroGrupo) return;
-
-    // Verificar si hay evaluaciones en cache para este grupo
-    const key = this.getCacheKey();
-    const cached = key ? this.evaluacionesCache.get(key) : undefined;
-
-    const seguimientoGrupo = {
-      curso: this.cursoActivo,
-      grupo: this.filtroGrupo,
-      comentarios: [],
-      evaluacionGrupal: cached?.grupal,
-      evaluacionIndividual: cached?.individual,
-      textoRubricaGrupal: [],
-      textoRubricaIndividual: [],
-      timestampsGrupal: [],
-      timestampsIndividual: []
-    };
-
-    this.seguimientoService.setSeguimiento(seguimientoGrupo);
-
-    const grupoNumero = parseInt(this.filtroGrupo.replace(/\D/g, ''));
-    this.seguimientoService.setGrupoSeleccionado(grupoNumero);
-
-    console.log('🎯 Seguimiento inicializado:', this.cursoActivo, this.filtroGrupo, cached ? 'con cache' : 'sin cache');
-  }
-
-  /**
-   * Genera clave única para el cache de evaluaciones
-   */
-  private getCacheKey(): string {
-    if (!this.cursoActivo || !this.filtroGrupo || !this.entregaEvaluando) {
-      return '';
-    }
-    return `${this.cursoActivo}_${this.filtroGrupo}_${this.entregaEvaluando} `;
-  }
-
-  /**
-   * Guarda el estado actual en el cache con timestamp
-   */
-  private guardarEnCache(): void {
-    const key = this.getCacheKey();
-    if (!key || !this.tipoEvaluando) return;
-
-    const cached = this.evaluacionesCache.get(key) || { timestamp: Date.now() };
-
-    if (this.tipoEvaluando === 'PG') {
-      cached.grupal = this.buildEvaluacionRubrica();
-    } else {
-      cached.individual = this.buildEvaluacionRubrica();
-    }
-
-    cached.timestamp = Date.now(); // Actualizar timestamp
-    this.evaluacionesCache.set(key, cached);
-    // Log deshabilitado para evitar spam
-    // console.log('💾 Evaluación guardada en cache:', key, this.tipoEvaluando);
-  }
-
-  /**
-   * Restaura el estado desde el cache verificando TTL
-   */
-  private restaurarDesdeCache(): boolean {
-    const key = this.getCacheKey();
-    if (!key || !this.tipoEvaluando) return false;
-
-    const cached = this.evaluacionesCache.get(key);
-    if (!cached) return false;
-
-    // Verificar si el cache expiró
-    const now = Date.now();
-    if (cached.timestamp && (now - cached.timestamp) > this.CACHE_TTL) {
-      // Cache expirado, eliminarlo
-      this.evaluacionesCache.delete(key);
-      return false;
-    }
-
-    const evaluacion = this.tipoEvaluando === 'PG' ? cached.grupal : cached.individual;
-    if (!evaluacion) return false;
-
-    // Restaurar criteriosEvaluados y nivelesSeleccionados desde la evaluación cacheada
-    this.criteriosEvaluados = evaluacion.criterios.map((crit: any, index: number) => {
-      // Actualizar también nivelesSeleccionados para la UI
-      this.nivelesSeleccionados[index] = crit.nivelSeleccionado;
-      this.comentariosCriterios[index] = crit.comentario || '';
-
-      return {
-        criterioTitulo: crit.nombreCriterio,
-        nivelSeleccionado: crit.nivelSeleccionado,
-        puntosObtenidos: crit.puntosAsignados,
-        comentario: crit.comentario || ''
-      };
-    });
-
-    this.puntosRubricaTotales = evaluacion.puntosTotal;
-
-    // Reconstruir el texto de seguimiento
-    if (this.tipoEvaluando === 'PG') {
-      this.textoSeguimientoRubricaGrupal = this.generarTextoSeguimiento(evaluacion.criterios);
-    } else {
-      this.textoSeguimientoRubricaIndividual = this.generarTextoSeguimiento(evaluacion.criterios);
-    }
-
-    console.log('📂 Evaluación restaurada desde cache:', key, this.tipoEvaluando);
-    return true;
-  }
-
-  /**
-   * Genera el texto de seguimiento desde criterios evaluados
-   */
-  private generarTextoSeguimiento(criterios: any[]): string[] {
-    return criterios.map((crit: any) => {
-      const comentarioParte = crit.comentario ? `\n  💬 ${crit.comentario} ` : '';
-      return `📌 ${crit.nombreCriterio} \n  ✓ ${crit.nivelSeleccionado} \n  📊 ${crit.puntosAsignados} puntos${comentarioParte} `;
-    });
-  }
-
-  /**
-   * Construye objeto EvaluacionRubrica desde el estado actual
-   */
-  private buildEvaluacionRubrica(): any {
-    if (!this.rubricaActual || !this.tipoEvaluando) return null;
-
-    console.log('🔧 [buildEvaluacionRubrica] Criterios totales:', this.criteriosEvaluados.length);
-
-    // Filtrar solo criterios que realmente han sido evaluados (tienen nivel seleccionado Y título válido)
-    const criteriosEvaluados = this.criteriosEvaluados.filter((criterio: any, index: number) => {
-      const tieneNivel = criterio.nivelSeleccionado && criterio.nivelSeleccionado.trim() !== '';
-      const tieneTitulo = criterio.criterioTitulo && criterio.criterioTitulo.trim() !== '';
-
-      console.log(`🔍 Criterio ${index}: "${criterio.criterioTitulo}" - Nivel: "${criterio.nivelSeleccionado}" - Válido: ${tieneNivel && tieneTitulo} `);
-
-      return tieneNivel && tieneTitulo;
-    });
-
-    console.log('✅ [buildEvaluacionRubrica] Criterios evaluados válidos:', criteriosEvaluados.length);
-
-    // Si no hay criterios evaluados, retornar null para evitar mostrar contenido vacío
-    if (criteriosEvaluados.length === 0) {
-      return null;
-    }
-
-    const criterios = criteriosEvaluados.map((criterio: any, mapIndex: number) => {
-      // Encontrar el índice original en la rúbrica usando el título del criterio (más seguro)
-      const indexOriginal = this.criteriosEvaluados.findIndex((c: any) =>
-        c.criterioTitulo === criterio.criterioTitulo && c === criterio
-      );
-
-      if (indexOriginal === -1) {
-        console.warn('⚠️ No se encontró índice original para criterio:', criterio.criterioTitulo);
-        return null;
-      }
-
-      const criterioRubrica = this.rubricaActual!.criterios[indexOriginal];
-
-      if (!criterioRubrica) {
-        console.warn('⚠️ No se encontró criterioRubrica para índice:', indexOriginal);
-        return null;
-      }
-
-      console.log(`✅ Mapeando criterio ${mapIndex}: "${criterio.criterioTitulo}"(índice original: ${indexOriginal})`);
-
-      return {
-        nombreCriterio: criterio.criterioTitulo,
-        niveles: criterioRubrica.nivelesDetalle.map((nivel: any) => ({
-          nombre: nivel.titulo,
-          intervalo: nivel.puntos || `${nivel.puntosMin || 0} -${nivel.puntosMax || 0} `,
-          color: nivel.color || '#6c757d',
-          descripcion: nivel.descripcion || ''
-        })),
-        nivelSeleccionado: criterio.nivelSeleccionado,
-        puntosAsignados: criterio.puntosObtenidos,
-        comentario: criterio.comentario
-      };
-    }).filter(Boolean); // Filtrar elementos null
-
-    console.log('📊 [buildEvaluacionRubrica] Criterios finales para panel:', criterios.length);
-
-    return {
-      tipo: this.tipoEvaluando,
-      puntosTotal: this.puntosRubricaTotales,
-      criterios,
-      timestamp: new Date().toISOString()
-    };
-  }
-
-  /**
-   * Actualiza el panel de seguimiento con la evaluación actual
-   */
-  private emitToSeguimientoPanel(): void {
-    const evaluacion = this.buildEvaluacionRubrica();
-    if (!this.filtroGrupo) {
-      console.log('⚠️ No se puede emitir al panel: sin filtroGrupo');
-      return;
-    }
-
-    // Verificar que el seguimiento esté inicializado
-    const seguimientoActual = this.seguimientoService.getSeguimiento();
-    if (!seguimientoActual) {
-      console.log('🔄 Reinicializando seguimiento...');
-      this.inicializarSeguimientoGrupo();
-    }
-
-    const grupoNumero = parseInt(this.filtroGrupo.replace(/\D/g, ''));
-    this.seguimientoService.setGrupoSeleccionado(grupoNumero);
-
-    // Actualizar la entrega actual
-    this.seguimientoService.actualizarEntregaActual(this.entregaEvaluando);
-
-    // Actualizar el tipo de evaluación activa
-    this.seguimientoService.actualizarTipoEvaluacionActiva(this.tipoEvaluando);
-
-    if (evaluacion) {
-      this.seguimientoService.actualizarEvaluacionRubrica(this.tipoEvaluando!, evaluacion);
-
-      // Si es evaluación individual, enviar información del estudiante
-      if (this.tipoEvaluando === 'PI' && this.estudianteSeleccionado) {
-        const estudiante = this.estudiantesFiltrados.find(e => e.correo === this.estudianteSeleccionado);
-        if (estudiante) {
-          this.seguimientoService.actualizarIntegranteSeleccionado({
-            correo: estudiante.correo,
-            nombres: estudiante.nombres,
-            apellidos: estudiante.apellidos
-          });
-        }
-      } else if (this.tipoEvaluando === 'PG') {
-        // Limpiar integrante seleccionado si es evaluación grupal
-        this.seguimientoService.actualizarIntegranteSeleccionado(null);
-      }
-
-      console.log('📊 Panel actualizado:', {
-        tipo: this.tipoEvaluando,
-        grupo: grupoNumero,
-        criterios: evaluacion.criterios.length,
-        puntos: evaluacion.puntosTotal
-      });
-    } else {
-      // Si no hay evaluación, limpiar la evaluación del tipo actual
-      const seguimiento = this.seguimientoService.getSeguimiento();
-      if (seguimiento) {
-        if (this.tipoEvaluando === 'PG') {
-          seguimiento.evaluacionGrupal = undefined;
-        } else if (this.tipoEvaluando === 'PI') {
-          seguimiento.evaluacionIndividual = undefined;
-        }
-        this.seguimientoService.setSeguimiento(seguimiento);
-      }
-      console.log('🧹 Panel limpiado para tipo:', this.tipoEvaluando);
-    }
-  }
-
-  /**
-   * Actualiza el texto de seguimiento en el servicio
-   */
-  private actualizarTextoEnServicio(): void {
-    if (!this.tipoEvaluando) return;
-
-    const textos = this.tipoEvaluando === 'PG'
-      ? this.textoSeguimientoRubricaGrupal
-      : this.textoSeguimientoRubricaIndividual;
-
-    const timestamps = this.timestampsSeguimiento;
-
-    this.seguimientoService.actualizarTextoRubrica(this.tipoEvaluando, textos, timestamps);
-
-    console.log('📝 Texto actualizado en servicio:', {
-      tipo: this.tipoEvaluando,
-      parrafos: textos.length,
-      ultimoTexto: textos[textos.length - 1]
-    });
-  }
-
-  // === MÉTODOS FALTANTES IMPLEMENTADOS ===
-
-  /**
-   * Obtiene los integrantes del grupo actual para mostrar en la lista
-   */
-  obtenerIntegrantesGrupo(): Estudiante[] {
-    return this.estudiantesFiltrados;
-  }
-
-  /**
-   * Selecciona un estudiante y muestra su correo en un toast
-   */
-  async seleccionarEstudiante(correo: string) {
-    console.log('📧 Estudiante seleccionado:', correo);
-    this.estudianteSeleccionado = correo;
-
-    // Mostrar correo en un toast
-    const estudiante = this.estudiantesFiltrados.find(e => e.correo === correo);
-    if (estudiante) {
-      const toast = await this.toastController.create({
-        message: `📧 ${estudiante.nombres} ${estudiante.apellidos}: ${correo} `,
-        duration: 3000,
-        position: 'bottom',
-        color: 'primary',
-        buttons: [
-          {
-            text: 'Cerrar',
-            role: 'cancel'
-          }
-        ]
-      });
-      await toast.present();
-    }
-
-    this.cdr.detectChanges();
-  }
-
-  /**
-   * Obtiene el color para el badge de calificación
-   */
-  obtenerColorCalificacion(valor: number): string {
-    if (valor >= 4.0) return 'success';
-    if (valor >= 3.0) return 'warning';
-    return 'danger';
-  }
-
-  /**
-   * Obtiene la calificación total (PG + PI) para mostrar en el panel
-   */
-  obtenerCalificacionPanel(estudiante: Estudiante, entrega: string): number {
-    if (!this.cursoActivo) {
-      console.warn('⚠️ [obtenerCalificacionPanel] No hay curso activo');
-      return 0;
-    }
-
-    const pg = this.dataService.getEvaluacion(this.cursoActivo!, entrega, 'PG', estudiante.grupo)?.puntosTotales || 0;
-    const pi = this.dataService.getEvaluacion(this.cursoActivo!, entrega, 'PI', estudiante.correo)?.puntosTotales || 0;
-
-    const total = pg + pi;
-
-    // Log de depuración (solo si hay puntaje)
-    if (total > 0) {
-      console.log(`📊[obtenerCalificacionPanel] ${estudiante.apellidos}: ${entrega} = PG(${pg}) + PI(${pi}) = ${total} `);
-    }
-
-    return total;
-  }
-
-  /**
-   * Obtiene la suma total de todas las entregas
-   */
-  obtenerTotalCalificaciones(estudiante: Estudiante): number {
-    const e1 = this.obtenerCalificacionPanel(estudiante, 'E1');
-    const e2 = this.obtenerCalificacionPanel(estudiante, 'E2');
-    const ef = this.obtenerCalificacionPanel(estudiante, 'EF');
-    return e1 + e2 + ef;
-  }
-
-  /**
-   * Actualiza el texto de seguimiento.
-   * Acepta parámetros opcionales para compatibilidad con llamadas existentes,
-   * pero regenera todo el texto basado en el estado actual.
-   */
-  actualizarTextoSeguimiento(nivel?: any, puntosBase?: number, puntosAsignados?: number, comentario?: string): void {
-    // Los parámetros se ignoran porque regeneramos todo el texto desde el estado (criteriosEvaluados)
-    // Esto asegura consistencia total.
-    this.actualizarTextoEnServicio();
-  }
-
-  // === MÉTODOS PARA DRAG AND DROP DE CURSOS ===
-
-  /**
-   * Inicia el drag del curso
-   */
-  onDragStart(event: DragEvent, curso: string) {
-    if (!event.dataTransfer) return;
-
-    this.elementoArrastrado = curso;
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', curso);
-
-    // Agregar clase visual al elemento
-    const target = event.target as HTMLElement;
-    target.classList.add('dragging');
-
-    // Agregar clase al segmento para mostrar indicador
-    const segment = document.querySelector('.course-segment');
-    if (segment) {
-      segment.classList.add('drag-active');
-    }
-
-    console.log('🎯 [DragDrop] Iniciando drag de curso:', curso);
-  }
-
-  /**
-   * Maneja el evento dragover para permitir el drop
-   */
-  onDragOver(event: DragEvent, cursoDestino: string) {
-    event.preventDefault();
-    event.dataTransfer!.dropEffect = 'move';
-
-    // Actualizar el índice de destino
-    this.indiceDragDestino = this.cursosOrdenados.indexOf(cursoDestino);
-
-    // Agregar clase visual de drop zone
-    const target = event.currentTarget as HTMLElement;
-    target.classList.add('drag-over');
-  }
-
-  /**
-   * Limpia las clases visuales cuando sale del área de drop
-   */
-  onDragLeave(event: DragEvent) {
-    const target = event.currentTarget as HTMLElement;
-    target.classList.remove('drag-over');
-  }
-
-  /**
-   * Maneja el drop del elemento
-   */
-  onDrop(event: DragEvent, cursoDestino: string) {
-    event.preventDefault();
-
-    if (!this.elementoArrastrado || this.elementoArrastrado === cursoDestino) {
-      this.limpiarEstadoDrag();
-      return;
-    }
-
-    const indiceOrigen = this.cursosOrdenados.indexOf(this.elementoArrastrado);
-    const indiceDestino = this.cursosOrdenados.indexOf(cursoDestino);
-
-    if (indiceOrigen !== -1 && indiceDestino !== -1) {
-      // Crear nuevo array con el orden actualizado
-      const nuevosOrden = [...this.cursosOrdenados];
-      const cursoMovido = nuevosOrden.splice(indiceOrigen, 1)[0];
-      nuevosOrden.splice(indiceDestino, 0, cursoMovido);
-
-      this.cursosOrdenados = nuevosOrden;
-
-      // Guardar el nuevo orden en el localStorage
-      this.guardarOrdenCursos();
-
-      console.log('🎯 [DragDrop] Curso reordenado:', this.elementoArrastrado, 'movido a posición de:', cursoDestino);
-      console.log('📋 [DragDrop] Nuevo orden:', this.cursosOrdenados);
-    }
-
-    this.limpiarEstadoDrag();
-  }
-
-  /**
-   * Limpia el estado de drag cuando termina
-   */
-  onDragEnd(event: DragEvent) {
-    this.limpiarEstadoDrag();
-  }
-
-  /**
-   * Limpia todas las clases visuales y estado de drag
-   */
-  private limpiarEstadoDrag() {
-    this.elementoArrastrado = null;
-    this.indiceDragDestino = -1;
-
-    // Limpiar todas las clases visuales de elementos
-    document.querySelectorAll('.dragging, .drag-over').forEach(el => {
-      el.classList.remove('dragging', 'drag-over');
-    });
-
-    // Limpiar clase del segmento principal
-    const segment = document.querySelector('.course-segment');
-    if (segment) {
-      segment.classList.remove('drag-active');
-    }
-  }
-
-  /**
-   * Guarda el orden de cursos en localStorage
-   */
-  private guardarOrdenCursos() {
-    try {
-      localStorage.setItem('cursosOrden', JSON.stringify(this.cursosOrdenados));
-    } catch (error) {
-      console.error('Error al guardar orden de cursos:', error);
-    }
-  }
-
-  /**
-   * Carga el orden de cursos desde localStorage
-   */
-  private cargarOrdenCursos() {
-    try {
-      const ordenGuardado = localStorage.getItem('cursosOrden');
-      if (ordenGuardado) {
-        this.cursosOrdenados = JSON.parse(ordenGuardado);
-      }
-    } catch (error) {
-      console.error('Error al cargar orden de cursos:', error);
-      this.cursosOrdenados = [];
-    }
-  }
-
-  /**
-   * TrackBy function para optimizar el *ngFor de cursos
-   */
-  trackByCurso(index: number, curso: string): string {
-    return curso;
-  }
-
-  /**
-   * Abre el popover de selección de color (botón de 3 puntos)
-   */
-  async abrirMenuColor(event: Event, curso: string): Promise<void> {
-    event.stopPropagation();
-
-    this.cursoParaCambiarColor = curso;
-    // Siempre cargar el color actual del curso para persistencia
-    const colorActual = this.getCourseColor(curso);
-    this.colorSeleccionado = colorActual;
-    this.colorPopoverEvent = event;
-    this.menuColorVisible = true;
-
-    console.log('🎨 [abrirMenuColor] Color cargado:', colorActual, 'para curso:', curso);
-  }
-
-  /**
-   * Cierra el popover de selección de color
-   */
-  async cerrarMenuColor(): Promise<void> {
-    this.menuColorVisible = false;
-    this.cursoParaCambiarColor = null;
-    this.colorSeleccionado = null;
-    this.colorPopoverEvent = null;
-  }
-
-  /**
-   * Obtiene el color asignado a un curso
-   */
-  getCourseColor(curso: string): string {
-    if (!curso) return '#ff2719'; // Color por defecto
+  async eliminarArchivoCalificacionesGuardado() {
+    if (!this.codigoCursoEnEdicion) return;
 
     const uiState = this.dataService.getUIState();
-    const courseState = uiState.courseStates[curso];
-    return courseState?.color || '#ff2719'; // Color por defecto (rojo de la imagen)
-  }
+    const courseStates = uiState.courseStates || {};
 
-  /**
-   * Cambia temporalmente el color seleccionado
-   */
-  cambiarColorCurso(color: string): void {
-    this.colorSeleccionado = color;
-  }
+    const cursoEntry = Object.entries(courseStates).find(
+      ([_, state]) => state.metadata?.codigo === this.codigoCursoEnEdicion
+    );
 
-  /**
-   * Valida y formatea el código hexadecimal ingresado
-   */
-  validarColorHex(event: any): void {
-    let valor = event.target.value;
-
-    // Agregar # si no lo tiene
-    if (valor && !valor.startsWith('#')) {
-      valor = '#' + valor;
-    }
-
-    // Remover caracteres no válidos (solo permitir # y 0-9, a-f, A-F)
-    valor = valor.replace(/[^#0-9a-fA-F]/g, '');
-
-    // Limitar longitud a 7 caracteres (#RRGGBB)
-    if (valor.length > 7) {
-      valor = valor.substring(0, 7);
-    }
-
-    this.colorSeleccionado = valor.toUpperCase();
-  }
-
-  /**
-   * Aplica el color seleccionado al curso y lo persiste
-   */
-  aplicarColorCurso(): void {
-    if (!this.cursoParaCambiarColor || !this.colorSeleccionado) {
-      this.cerrarMenuColor();
-      return;
-    }
-
-    // Validar que el color sea un hex válido
-    const hexRegex = /^#[0-9A-F]{6}$/i;
-    if (!hexRegex.test(this.colorSeleccionado)) {
-      // Si no es válido, usar el color por defecto
-      this.colorSeleccionado = '#a6ce38';
-    }
-
-    // Actualizar el color en el CourseState
-    this.dataService.updateCourseState(this.cursoParaCambiarColor, {
-      color: this.colorSeleccionado
-    });
-
-    this.cerrarMenuColor();
-  }
-
-  /**
-   * Importa un CSV de sumatorias y actualiza el archivo Canvas
-   */
-  async importarCSVSumatorias() {
-    if (!this.cursoActivo) {
-      await this.mostrarError('Error', 'No hay curso activo seleccionado');
-      return;
-    }
-
-    if (!this.tieneArchivoCanvas()) {
-      await this.mostrarError('Sin archivo Canvas',
-        'No hay archivo de calificaciones Canvas asociado a este curso. Vaya a Configuración para cargar uno.');
-      return;
-    }
-
-    // Crear input file temporal
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.csv';
-
-    input.onchange = async (e: any) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const loading = await this.loadingController.create({
-        message: 'Procesando CSV de sumatorias...',
-        spinner: 'crescent'
+    if (cursoEntry) {
+      const [nombreCurso, _] = cursoEntry;
+      await this.dataService.updateCourseState(nombreCurso, {
+        archivoCalificaciones: undefined
       });
-      await loading.present();
 
-      try {
-        const content = await this.leerArchivoTexto(file);
-        await this.procesarCSVSumatorias(content);
-        await loading.dismiss();
-
-        const toast = await this.toastController.create({
-          message: '✅ CSV de sumatorias importado y sincronizado con Canvas',
-          duration: 4000,
-          position: 'top',
-          color: 'success',
-          cssClass: 'toast-success'
-        });
-        await toast.present();
-
-      } catch (error) {
-        await loading.dismiss();
-        console.error('Error importando CSV:', error);
-        await this.mostrarError('Error',
-          'Error al procesar el archivo CSV: ' + (error as Error).message);
-      }
-    };
-
-    input.click();
+      await this.mostrarToastExito('Archivo de calificaciones eliminado');
+    }
   }
 
-  /**
-   * Lee el contenido de un archivo como texto
-   */
-  private leerArchivoTexto(file: File): Promise<string> {
+  private leerArchivo(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = (e) => reject(new Error('Error leyendo archivo'));
-      reader.readAsText(file, 'UTF-8');
+      reader.onerror = () => reject(new Error('Error leyendo archivo'));
+      reader.readAsText(file);
     });
   }
 
-  /**
-   * Procesa el CSV de sumatorias y actualiza las evaluaciones
-   */
-  private async procesarCSVSumatorias(csvContent: string) {
-    const lineas = csvContent.split('\n').filter(l => l.trim());
-    if (lineas.length < 2) {
-      throw new Error('El archivo CSV está vacío o no tiene datos');
-    }
+  async onRubricaFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
 
-    // Parsear headers
-    const headers = lineas[0].split(',').map(h => h.trim().replace(/"/g, ''));
-    const indiceCorreo = headers.findIndex(h => h.toLowerCase() === 'correo');
-    const indiceE1 = headers.findIndex(h => h.toLowerCase() === 'e1');
-    const indiceE2 = headers.findIndex(h => h.toLowerCase() === 'e2');
-    const indiceEF = headers.findIndex(h => h.toLowerCase() === 'ef');
+    const file = input.files[0];
+    this.rubricaFileName = file.name;
 
-    if (indiceCorreo === -1) {
-      throw new Error('El CSV debe tener una columna "Correo"');
-    }
-
-    if (indiceE1 === -1 && indiceE2 === -1 && indiceEF === -1) {
-      throw new Error('El CSV debe tener al menos una columna de entregas (E1, E2, EF)');
-    }
-
-    console.log('📊 Procesando CSV sumatorias:', {
-      totalLineas: lineas.length - 1,
-      columnas: { correo: indiceCorreo, E1: indiceE1, E2: indiceE2, EF: indiceEF }
-    });
-
-    let actualizados = 0;
-    let noEncontrados = 0;
-
-    // Procesar cada línea
-    for (let i = 1; i < lineas.length; i++) {
-      const campos = lineas[i].split(',').map(c => c.trim().replace(/"/g, ''));
-
-      if (campos.length <= indiceCorreo) continue;
-
-      const correo = campos[indiceCorreo];
-      const estudiante = this.estudiantesActuales.find(e =>
-        e.correo.toLowerCase() === correo.toLowerCase()
-      );
-
-      if (!estudiante) {
-        console.warn(`👤 Estudiante no encontrado: ${correo} `);
-        noEncontrados++;
-        continue;
-      }
-
-      // Actualizar sumatorias para cada entrega
-      const entregas: Array<{ entrega: 'E1' | 'E2' | 'EF', indice: number }> = [
-        { entrega: 'E1', indice: indiceE1 },
-        { entrega: 'E2', indice: indiceE2 },
-        { entrega: 'EF', indice: indiceEF }
-      ];
-
-      for (const { entrega, indice } of entregas) {
-        if (indice === -1 || indice >= campos.length) continue;
-
-        const sumatoria = parseFloat(campos[indice]);
-        if (isNaN(sumatoria)) continue;
-
-        // Actualizar la evaluación con la sumatoria importada
-        await this.actualizarSumatoriaEstudiante(estudiante, entrega, sumatoria);
-        actualizados++;
-      }
-    }
-
-    console.log('✅ CSV procesado:', {
-      actualizados,
-      noEncontrados,
-      total: lineas.length - 1
-    });
-
-    // Sincronizar con Canvas después de actualizar
-    await this.dataService.sincronizarArchivoCalificaciones(this.cursoActivo!);
-  }
-
-  /**
-   * Actualiza la sumatoria de un estudiante para una entrega específica
-   */
-  private async actualizarSumatoriaEstudiante(
-    estudiante: Estudiante,
-    entrega: 'E1' | 'E2' | 'EF',
-    sumatoria: number
-  ) {
-    // Obtener evaluaciones actuales
-    const evalPG = this.dataService.getEvaluacion(this.cursoActivo!, entrega, 'PG', estudiante.grupo);
-    const evalPI = this.dataService.getEvaluacion(this.cursoActivo!, entrega, 'PI', estudiante.correo);
-
-    const pgActual = evalPG?.puntosTotales || 0;
-    const piActual = evalPI?.puntosTotales || 0;
-
-    // Si la sumatoria es igual a la actual, no hacer nada
-    if (Math.abs((pgActual + piActual) - sumatoria) < 0.01) {
-      return;
-    }
-
-    // Estrategia: distribuir la sumatoria entre PG y PI
-    // Si existe PG, mantenerlo y ajustar PI
-    // Si no existe PG, toda la sumatoria va a PI
-    let nuevoPG = pgActual;
-    let nuevoPI = sumatoria - pgActual;
-
-    // Si no hay PG previo, asignar toda la sumatoria a PI
-    if (pgActual === 0) {
-      nuevoPI = sumatoria;
-    }
-
-    // Actualizar PI si cambió
-    if (Math.abs(nuevoPI - piActual) > 0.01) {
-      const evaluacionPI: Evaluacion = {
-        cursoNombre: this.cursoActivo!,
-        entrega: entrega,
-        tipo: 'PI',
-        grupo: '',
-        estudianteEmail: estudiante.correo,
-        rubricaId: 'import-csv-sumatoria',
-        criterios: [{
-          criterioTitulo: 'Calificación Importada',
-          puntosObtenidos: nuevoPI,
-          puntosPersonalizados: true,
-          comentario: `Importado desde CSV de sumatorias(${entrega})`
-        }],
-        puntosTotales: nuevoPI,
-        fechaEvaluacion: new Date()
-      };
-
-      await this.dataService.guardarEvaluacion(evaluacionPI);
-    }
-  }
-
-  /**
-   * Exporta un CSV con correo y sumatorias de cada entrega
-   */
-  async exportarCSVSumatorias() {
-    if (!this.cursoActivo || this.estudiantesActuales.length === 0) {
-      const toast = await this.toastController.create({
-        message: 'No hay datos para exportar',
-        duration: 3000,
-        position: 'top',
-        color: 'warning',
-        cssClass: 'toast-warning'
-      });
-      await toast.present();
+    // Validar extensión
+    if (!file.name.endsWith('.txt')) {
+      await this.mostrarToastWarning('Solo se permiten archivos .txt');
       return;
     }
 
     try {
-      // Encabezados del CSV - Solo Correo, E1, EF
-      const headers = ['Correo', 'E1', 'E2', 'EF'];
+      const contenido = await this.leerArchivo(file);
+      const rubrica = this.dataService.parsearArchivoRubrica(contenido);
 
-      // Datos de estudiantes - Solo las columnas requeridas
-      const datos = this.estudiantesActuales.map(estudiante => {
-        const e1 = this.obtenerSumatoria(estudiante, 'E1') || 0;
-        const e2 = this.obtenerSumatoria(estudiante, 'E2') || 0;
-        const ef = this.obtenerSumatoria(estudiante, 'EF') || 0;
-
-        return [
-          estudiante.correo,
-          e1,
-          e2,
-          ef
-        ];
-      });
-
-      // Crear contenido CSV
-      const csvContent = [headers, ...datos]
-        .map(fila => fila.map(campo => `"${campo}"`).join(','))
-        .join('\n');
-
-      // Descargar archivo
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const fecha = new Date().toISOString().split('T')[0];
-      const nombreArchivo = `sumatorias_${this.cursoActivo}_${fecha}.csv`;
-
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', nombreArchivo);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
-
-      // Mostrar confirmación
-      const toast = await this.toastController.create({
-        message: `📊 CSV de Sumatorias exportado: ${nombreArchivo} `,
-        duration: 4000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success',
-        buttons: [{
-          text: 'OK',
-          role: 'cancel'
-        }]
-      });
-      await toast.present();
-
-    } catch (error) {
-      console.error('Error al exportar CSV:', error);
-      const toast = await this.toastController.create({
-        message: 'Error al exportar CSV: ' + (error as Error).message,
-        duration: 4000,
-        position: 'top',
-        color: 'danger',
-        cssClass: 'toast-danger'
-      });
-      await toast.present();
-    }
-  }
-
-  // === MÉTODOS CANVAS ===
-
-  /**
-   * Getter para información del archivo Canvas para el template
-   */
-  get archivoCanvasInfo(): { nombre: string; fechaCarga: string; enModoEscritura: boolean } | null {
-    if (!this.cursoActivo) return null;
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) return null;
-
-    return {
-      nombre: archivo.nombre,
-      fechaCarga: archivo.fechaCarga,
-      enModoEscritura: true // Por defecto asumimos que está en modo escritura
-    };
-  }
-
-  /**
-   * Obtiene el estado de sincronización con Canvas
-   */
-  get estadoSincronizacionCanvas(): { texto: string; color: string } {
-    if (!this.cursoActivo || !this.tieneArchivoCanvas()) {
-      return { texto: 'Sin Canvas', color: 'medium' };
-    }
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) {
-      return { texto: 'Sin Canvas', color: 'medium' };
-    }
-
-    // Verificar cuántos estudiantes tienen evaluaciones
-    const estudiantesConCalificaciones = this.estudiantesActuales.filter(est => {
-      const e1 = this.obtenerSumatoria(est, 'E1');
-      const e2 = this.obtenerSumatoria(est, 'E2');
-      const ef = this.obtenerSumatoria(est, 'EF');
-      return e1 > 0 || e2 > 0 || ef > 0;
-    }).length;
-
-    if (estudiantesConCalificaciones === 0) {
-      return { texto: 'Sin calificaciones', color: 'warning' };
-    }
-
-    if (estudiantesConCalificaciones === this.estudiantesActuales.length) {
-      return {
-        texto: `✓ Sincronizado(${estudiantesConCalificaciones} / ${this.estudiantesActuales.length})`,
-        color: 'success'
-      };
-    }
-
-    return {
-      texto: `Parcial(${estudiantesConCalificaciones} / ${this.estudiantesActuales.length})`,
-      color: 'warning'
-    };
-  }
-
-  /**
-   * Verifica si el curso actual tiene un archivo Canvas vinculado
-   */
-  tieneArchivoCanvas(): boolean {
-    if (!this.cursoActivo) return false;
-    return !!this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-  }
-
-  /**
-   * Obtiene la información del archivo Canvas vinculado
-   */
-  getArchivoCanvasInfo(): { nombre: string; fechaCarga: string; enModoEscritura: boolean } | null {
-    if (!this.cursoActivo) return null;
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) return null;
-
-    return {
-      nombre: archivo.nombre,
-      fechaCarga: archivo.fechaCarga,
-      enModoEscritura: true // Por defecto asumimos que está en modo escritura
-    };
-  }
-
-  /**
-   * Muestra una vista previa del archivo Canvas con las calificaciones actuales
-   */
-  async previsualizarArchivoCanvas() {
-    if (!this.cursoActivo || !this.tieneArchivoCanvas()) {
-      await this.mostrarError('Error', 'No hay archivo Canvas vinculado');
-      return;
-    }
-
-    console.log('👁️ [previsualizarArchivoCanvas] Obteniendo archivo para:', {
-      cursoActivo: this.cursoActivo,
-      cursoEncontrado: !!this.cursosData[this.cursoActivo]
-    });
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) {
-      console.error('❌ No se encontró archivo Canvas para:', this.cursoActivo);
-      return;
-    }
-
-    console.log('📄 [previsualizarArchivoCanvas] Archivo encontrado:', {
-      nombre: archivo.nombre,
-      fechaCarga: archivo.fechaCarga,
-      totalCalificaciones: archivo.calificaciones.length,
-      tamanoCSV: archivo.contenidoOriginal.length
-    });
-
-    // Usar CSV original para preview
-    const lineas = archivo.contenidoOriginal.split('\n');
-    const previewText = lineas.slice(0, 11).join('\n');  // Primeras 11 líneas
-    const totalLineas = lineas.length; const alert = await this.alertController.create({
-      header: 'Vista Previa Canvas',
-      subHeader: `${archivo.nombre} (${totalLineas} líneas) - Curso: ${this.cursoActivo} `,
-      message: `< pre style = "font-size: 0.7rem; overflow-x: auto; max-width: 100%;" > ${this.escapeHtml(previewText)} </pre>`,
-      buttons: [
-        {
-          text: 'Exportar',
-          handler: () => {
-            this.exportarArchivoCanvas();
-          }
-        },
-        {
-          text: 'Cerrar',
-          role: 'cancel'
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  /**
-   * Exporta el archivo Canvas con las calificaciones actualizadas
-   */
-  async exportarArchivoCanvas() {
-    if (!this.cursoActivo || !this.tieneArchivoCanvas()) {
-      await this.mostrarError('Error', 'No hay archivo Canvas vinculado');
-      return;
-    }
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) return;
-
-    try {
-      // Exportar CSV original idéntico para compatibilidad total con Canvas
-      const blob = new Blob([archivo.contenidoOriginal], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const fecha = new Date().toISOString().split('T')[0];
-      const nombreArchivo = `${archivo.nombre.replace('.csv', '')}_actualizado_${fecha}.csv`;
-
-      link.href = window.URL.createObjectURL(blob);
-      link.download = nombreArchivo;
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-
-      const toast = await this.toastController.create({
-        message: `📥 Archivo Canvas exportado: ${nombreArchivo}`,
-        duration: 3000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success'
-      });
-      await toast.present();
-
-    } catch (error) {
-      console.error('Error exportando Canvas:', error);
-      await this.mostrarError('Error', 'Error al exportar el archivo Canvas');
-    }
-  }
-
-  /**
-   * Escapa caracteres HTML para mostrar en alert
-   */
-  private escapeHtml(text: string): string {
-    const map: { [key: string]: string } = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
-  }
-
-  /**
-   * Actualiza las calificaciones en el archivo Canvas
-   */
-  async actualizarCalificacionesCanvas() {
-    if (!this.cursoActivo) {
-      await this.mostrarError('Error', 'No hay curso activo seleccionado');
-      return;
-    }
-
-    const archivo = this.dataService.obtenerArchivoCalificaciones(this.cursoActivo);
-    if (!archivo) {
-      await this.mostrarError('Sin archivo Canvas',
-        'No hay archivo de calificaciones Canvas asociado a este curso. Vaya a Configuración para cargar uno.');
-      return;
-    }
-
-    // Verificar que hay estudiantes
-    if (this.estudiantesActuales.length === 0) {
-      await this.mostrarError('Sin estudiantes', 'No hay estudiantes en el curso actual');
-      return;
-    }
-
-    try {
-      const loading = await this.loadingController.create({
-        message: 'Verificando archivo Canvas...',
-        spinner: 'crescent'
-      });
-      await loading.present();
-
-      // Verificar que el archivo está en modo escritura
-      const esEscribible = await this.verificarModoEscritura(archivo);
-
-      await loading.dismiss();
-
-      if (!esEscribible) {
-        await this.mostrarError('Archivo protegido',
-          'El archivo de calificaciones Canvas está en modo de solo lectura. No se pueden realizar cambios.');
+      if (!rubrica) {
+        await this.mostrarToastError('Error al parsear el archivo de rúbrica');
         return;
       }
 
-      // Proceder con la actualización
-      await this.realizarActualizacionCanvas();
+      this.rubricaCargada = rubrica;
 
+      await this.mostrarToastExito(`Rúbrica "${rubrica.nombre}" cargada exitosamente`);
     } catch (error) {
-      console.error('Error actualizando Canvas:', error);
-      await this.mostrarError('Error', 'Error al actualizar calificaciones: ' + (error as Error).message);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      Logger.error('[CursosPage] Error cargando rúbrica:', {
+        error: errorMessage,
+        archivo: file.name,
+        stack: error instanceof Error ? error.stack : undefined
+      });
+
+      await this.mostrarToastError(
+        `Error al cargar rúbrica: ${errorMessage}`,
+        4000
+      );
+
+      // Limpiar estado en caso de error
+      this.rubricaCargada = null;
+      this.rubricaFileName = '';
     }
   }
 
-  /**
-   * Verifica si el archivo Canvas está en modo escritura
-   */
-  private async verificarModoEscritura(archivo: any): Promise<boolean> {
-    // En un entorno web, no podemos verificar realmente el estado del archivo
-    // Este método simula la verificación y siempre retorna true para demo
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  }
-
-  /**
-   * Realiza la actualización efectiva del archivo Canvas
-   */
-  private async realizarActualizacionCanvas() {
-    const loading = await this.loadingController.create({
-      message: 'Actualizando calificaciones Canvas...',
-      spinner: 'dots'
-    });
-    await loading.present();
+  async guardarRubrica() {
+    if (!this.rubricaCargada) {
+      await this.mostrarToastWarning('No hay rúbrica para guardar');
+      return;
+    }
 
     try {
-      // Usar el método del DataService para sincronizar
-      await this.dataService.sincronizarArchivoCalificaciones(this.cursoActivo!);
+      await this.dataService.guardarRubrica(this.rubricaCargada);
 
-      await loading.dismiss();
+      await this.mostrarToastExito(`Rúbrica "${this.rubricaCargada.nombre}" guardada exitosamente`);
 
-      const toast = await this.toastController.create({
-        message: `✅ Calificaciones actualizadas en Canvas\n📊 Archivo: ${this.getArchivoCanvasInfo()?.nombre}\n🎯 ${this.estudiantesActuales.length} estudiantes procesados`,
-        duration: 5000,
-        position: 'top',
-        color: 'success',
-        cssClass: 'toast-success',
-        buttons: [{
-          text: 'OK',
-          role: 'cancel'
-        }]
-      });
-      await toast.present();
-
+      // Limpiar estado
+      this.rubricaCargada = null;
+      this.rubricaFileName = '';
+      if (this.rubricaFileInput) {
+        this.rubricaFileInput.nativeElement.value = '';
+      }
     } catch (error) {
-      await loading.dismiss();
-      console.error('Error en actualización Canvas:', error);
-
-      const toast = await this.toastController.create({
-        message: '❌ Error actualizando Canvas: ' + (error as Error).message,
-        duration: 4000,
-        position: 'top',
-        color: 'danger',
-        cssClass: 'toast-danger'
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      Logger.error('[CursosPage] Error guardando rúbrica:', {
+        error: errorMessage,
+        rubrica: this.rubricaCargada?.nombre,
+        stack: error instanceof Error ? error.stack : undefined
       });
-      await toast.present();
+
+      await this.mostrarToastError(
+        `Error al guardar rúbrica: ${errorMessage}`,
+        4000
+      );
     }
   }
+
+  desvincularArchivoRubrica() {
+    this.rubricaFileName = '';
+    this.rubricaCargada = null;
+    if (this.rubricaFileInput) {
+      this.rubricaFileInput.nativeElement.value = '';
+    }
+  }
+
+  obtenerColumnasCalificaciones(): string[] {
+    if (this.calificacionesParseadas.length === 0) return [];
+    return Object.keys(this.calificacionesParseadas[0]?.calificaciones || {});
+  }
+
+  verCalificaciones(codigo: string) {
+    // Navegar a la página de calificaciones con el curso seleccionado
+    Logger.log('Ver calificaciones:', codigo);
+  }
+
+  async exportarCalificaciones(codigo: string) {
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
+
+    const cursoEntry = Object.entries(courseStates).find(
+      ([_, state]) => state.metadata?.codigo === codigo
+    );
+
+    if (cursoEntry && cursoEntry[1].archivoCalificaciones) {
+      const archivo = cursoEntry[1].archivoCalificaciones;
+      const blob = new Blob([archivo.contenidoOriginal], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `calificaciones_${codigo}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      await this.mostrarToastExito('Calificaciones exportadas');
+    }
+  }
+
+  /**
+   * Método helper para mostrar mensajes de error de forma consistente
+   * Usa ToastService que respeta la preferencia del usuario
+   */
+  private async mostrarToastError(mensaje: string, duracion: number = 3000): Promise<void> {
+    await this.toastService.error(mensaje, undefined, duracion);
+  }
+
+  /**
+   * Método helper para mostrar mensajes de éxito de forma consistente
+   * Usa ToastService que respeta la preferencia del usuario
+   */
+  private async mostrarToastExito(mensaje: string, duracion: number = 2000): Promise<void> {
+    await this.toastService.success(mensaje, undefined, duracion);
+  }
+
+  /**
+   * Método helper para mostrar mensajes de advertencia
+   */
+  private async mostrarToastWarning(mensaje: string, duracion: number = 2000): Promise<void> {
+    await this.toastService.warning(mensaje, undefined, duracion);
+  }
+
 }
-
-
-
-
-
 

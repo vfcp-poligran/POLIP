@@ -1,0 +1,113 @@
+=== RIE2 ===
+==CURSO: ÉNFASIS EN PROGRAMACIÓN MÓVIL
+==PUNTUACIÓN_TOTAL: 75===
+
+===ESCALA_CALIFICACION===
+=0,24|Insuficiente:Requiere reelaboración significativa=
+=25,39|Aceptable:Cumple con requisitos mínimos pero requiere mejoras=
+=40,59|Bueno:Cumple con lo esperado con buen nivel de calidad=
+=60,75|Excelente:Supera expectativas, alta calidad profesional=
+
+---
+
+CRITERIO_1: Participación Individual
+PESO: 50
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 8
+TITULO: Insuficiente
+DESCRIPCION: Participación mínima o nula en el proyecto. No demuestra compromiso ni aportes significativos. No cumple con las tareas asignadas.
+
+--
+NIVEL_2:
+MINIMO: 9
+MAXIMO: 20
+TITULO: Aceptable
+DESCRIPCION: Participación adecuada. Realiza sus tareas asignadas de manera satisfactoria con cumplimiento básico de responsabilidades.
+
+--
+NIVEL_3:
+MINIMO: 21
+MAXIMO: 35
+TITULO: Bueno
+DESCRIPCION: Participación activa y constante. Cumple con todas sus responsabilidades y aporta ideas valiosas al equipo.
+
+--
+NIVEL_4:
+MINIMO: 36
+MAXIMO: 50
+TITULO: Excelente
+DESCRIPCION: Participación destacada y ejemplar. Va más allá de lo esperado, lidera iniciativas y contribuye significativamente al éxito del proyecto.
+
+---
+
+CRITERIO_2: Calidad del Código Individual
+PESO: 15
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 2
+TITULO: Insuficiente
+DESCRIPCION: Código de baja calidad, con múltiples errores o sin seguir estándares. Difícil de mantener o entender.
+
+--
+NIVEL_2:
+MINIMO: 3
+MAXIMO: 6
+TITULO: Aceptable
+DESCRIPCION: Código funcional que cumple con los requisitos básicos y estándares mínimos. Legible pero podría mejorar.
+
+--
+NIVEL_3:
+MINIMO: 7
+MAXIMO: 11
+TITULO: Bueno
+DESCRIPCION: Código bien estructurado, documentado y funcional. Sigue buenas prácticas de programación.
+
+--
+NIVEL_4:
+MINIMO: 12
+MAXIMO: 15
+TITULO: Excelente
+DESCRIPCION: Código limpio, muy bien documentado, eficiente y siguiendo mejores prácticas. Código de nivel profesional.
+
+---
+
+CRITERIO_3: Creatividad e Innovación
+PESO: 10
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 2
+TITULO: Insuficiente
+DESCRIPCION: Soluciones básicas sin originalidad ni innovación. No demuestra pensamiento creativo.
+
+--
+NIVEL_2:
+MINIMO: 3
+MAXIMO: 4
+TITULO: Aceptable
+DESCRIPCION: Soluciones funcionales con algunos elementos creativos. Muestra esfuerzo por innovar.
+
+--
+NIVEL_3:
+MINIMO: 5
+MAXIMO: 7
+TITULO: Bueno
+DESCRIPCION: Soluciones creativas con aportes innovadores. Demuestra pensamiento original en varios aspectos.
+
+--
+NIVEL_4:
+MINIMO: 8
+MAXIMO: 10
+TITULO: Excelente
+DESCRIPCION: Soluciones altamente innovadoras que demuestran pensamiento creativo excepcional y originalidad sobresaliente.
+
+===FIN_RIE2===

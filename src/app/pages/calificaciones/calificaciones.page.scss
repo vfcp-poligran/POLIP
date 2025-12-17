@@ -6,153 +6,392 @@ ion-content {
 }
 
 .page-container {
-  padding: 9.6px;
+  padding: 8px;
   width: 100%;
-  height: 100%; /* Ajuste exacto sin scroll */
+  height: 100%;
 
   @media (max-width: 768px) {
-    padding: 4.8px;
+    padding: 4px;
     height: auto;
     min-height: 100%;
   }
 }
 
 // ============================================
-// Estilos Tabla Calificaciones con Ionic
+// TÍTULO DE PÁGINA
 // ============================================
+.page-title-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: transparent;
+  border-radius: 10px;
+  box-shadow: none;
 
-.tabla-calificaciones-card {
-  margin: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  overflow: hidden;
+  ion-icon {
+    font-size: 1.5rem;
+    color: #ffffff;
+  }
 
-  .tabla-content {
-    padding: 0;
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
   }
 }
 
-// Header info con chips
-.tabla-header-info {
+// ============================================
+// TAB CONTENT
+// ============================================
+.calificaciones-tab-content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  gap: 8px;
+}
+
+// ============================================
+// HEADER - Selector de cursos
+// ============================================
+.header-selector-cursos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+
+  .selector-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+
+    .selector-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .no-cursos {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-style: italic;
+    }
+  }
+
+  .selector-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+
+    .archivo-nombre {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .archivo-fecha {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.6);
+      padding-left: 8px;
+      border-left: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    ion-button {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      height: 32px;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px;
+
+    .selector-left {
+      width: 100%;
+    }
+
+    .selector-right {
+      width: 100%;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+
+      .archivo-nombre {
+        max-width: 150px;
+      }
+    }
+  }
+}
+
+// ============================================
+// BARRA DE BOTONES DE CURSOS
+// ============================================
+.cursos-botones-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow-x: hidden;
+  overflow-y: visible;
+  flex-shrink: 0;
+
+  // Estilo estándar de botones tipo grupo-btn
+  .curso-btn {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--azul-oscuro, #0f385a);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: none;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(15, 56, 90, 0.08), transparent);
+      transition: left 0.4s ease;
+    }
+
+    &:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 2px 8px rgba(15, 56, 90, 0.12);
+      background: rgba(15, 56, 90, 0.06);
+
+      &::before {
+        left: 100%;
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 4px rgba(15, 56, 90, 0.1);
+    }
+
+    // Estado activo/seleccionado - azul oscuro
+    &.activo {
+      background: var(--azul-oscuro, #0f385a);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(15, 56, 90, 0.35);
+      transform: scale(1.03);
+      font-weight: 700;
+
+      &:hover {
+        background: #0d2e47;
+      }
+    }
+  }
+
+  .no-cursos-msg {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+
+    ion-icon {
+      font-size: 1.2rem;
+      opacity: 0.6;
+    }
+  }
+}
+
+// ============================================
+// ÁREA DE TABLA
+// ============================================
+.tabla-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+// Barra de info (chips)
+.tabla-info-bar {
   display: flex;
   gap: 8px;
-  padding: 12px;
+  padding: 10px 16px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-bottom: 2px solid var(--azul-claro, #4a90e2);
+  border-bottom: 1px solid #dee2e6;
+  flex-shrink: 0;
 
-  ion-chip {
+  .chip-info {
     font-weight: 600;
     font-size: 0.75rem;
+    height: 26px;
     margin: 0;
 
     ion-icon {
+      font-size: 0.9rem;
       margin-right: 4px;
     }
   }
 }
 
-// Wrapper con scroll horizontal
-.tabla-scroll-wrapper {
-  overflow-x: auto;
-  overflow-y: visible;
-  max-height: calc(100vh - 280px);
+// Wrapper con scroll
+.tabla-wrapper {
+  overflow: auto;
+  flex: 1;
 
-  // Scrollbar personalizado
   &::-webkit-scrollbar {
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background: #f1f1f1;
   }
 
   &::-webkit-scrollbar-thumb {
     background: var(--azul-claro, #4a90e2);
-    border-radius: 5px;
+    border-radius: 4px;
 
     &:hover {
       background: var(--azul-oscuro, #0f385a);
     }
   }
+
+  // Tabla completa con columna sticky
+  &.tabla-completa {
+    overflow-x: auto;
+    overflow-y: auto;
+
+    .tabla-calificaciones {
+      min-width: max-content;
+    }
+  }
 }
 
-// Tabla principal
+// ============================================
+// TABLA DE CALIFICACIONES
+// ============================================
 .tabla-calificaciones {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 
-  // Header
   thead {
     position: sticky;
     top: 0;
-    z-index: var(--z-dropdown, 50);
+    z-index: 10;
     background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, var(--azul-claro, #4a90e2) 100%);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    tr {
-      th {
-        position: sticky;
-        top: 0;
-        background: inherit;
-      }
+    tr th {
+      position: sticky;
+      top: 0;
+      background: inherit;
     }
   }
 
   .tabla-header {
-    padding: 10px 12px;
+    padding: 8px 6px;
     text-align: left;
     color: white;
     font-weight: 600;
-    font-size: 0.7rem;
-    white-space: normal; // Permitir wrap para títulos largos
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 100px;
-    max-width: 200px;
+    font-size: 0.58rem; // Reducido 20% de 0.72rem
+    white-space: normal; // Permitir wrap del texto
+    word-wrap: break-word;
+    line-height: 1.2;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    min-width: 60px;
+    max-width: 140px;
     vertical-align: middle;
-    line-height: 1.3;
 
     &:last-child {
       border-right: none;
     }
 
-    // Columnas numéricas más estrechas
     &.col-numeric {
-      min-width: 80px;
-      max-width: 110px;
+      min-width: 50px;
+      max-width: 80px;
       text-align: center;
     }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      justify-content: flex-start;
-
-      .header-icon {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        flex-shrink: 0;
-      }
-
-      .header-text {
-        line-height: 1.3;
-      }
+    &.col-estudiante {
+      min-width: 140px;
+      max-width: 200px;
     }
 
-    // Columnas numéricas centradas
-    &.col-numeric .header-content {
-      justify-content: center;
+    &.col-id {
+      min-width: 50px;
+      max-width: 70px;
+      text-align: center;
+    }
+
+    &.col-grupo {
+      min-width: 35px;
+      max-width: 45px;
+      text-align: center;
+      padding: 6px 3px;
+    }
+
+    &.col-sticky {
+      position: sticky;
+      left: 0;
+      z-index: 11;
+      background: var(--azul-oscuro, #0f385a);
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+    }
+
+    &.col-editable {
+      position: relative;
+
+      &::after {
+        content: '✎';
+        font-size: 0.55rem;
+        margin-left: 3px;
+        opacity: 0.6;
+      }
     }
   }
 
-  // Body
   tbody {
     tr {
-      transition: all 0.2s ease;
+      transition: background-color 0.15s ease;
       border-bottom: 1px solid #e9ecef;
 
       &:hover {
-        background-color: #f8f9fa;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        background-color: rgba(74, 144, 226, 0.08);
       }
 
       &.fila-par {
@@ -160,7 +399,7 @@ ion-content {
       }
 
       &.fila-impar {
-        background-color: #fafbfc;
+        background-color: #f8f9fc;
       }
 
       &:last-child {
@@ -175,49 +414,124 @@ ion-content {
     color: #333;
     border-right: 1px solid #e9ecef;
     vertical-align: middle;
-    white-space: normal; // Permitir wrap en contenido largo
-    font-size: 0.7rem;
+    white-space: nowrap;
+    font-size: 0.78rem;
     max-width: 200px;
-    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:last-child {
       border-right: none;
     }
 
-    // Celdas numéricas
-    &.cell-numeric {
-      text-align: center;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
+    &.col-estudiante {
+      min-width: 180px;
+      max-width: 280px;
     }
 
-    // Calificación alta (>=90)
+    &.col-id {
+      min-width: 60px;
+      max-width: 80px;
+      text-align: center;
+      font-family: 'Segoe UI', 'Roboto Mono', monospace;
+      font-size: 0.72rem;
+      color: #6c757d;
+    }
+
+    &.col-grupo {
+      text-align: center;
+      min-width: 40px;
+      max-width: 50px;
+      padding: 8px 4px;
+
+      .grupo-badge {
+        display: inline-block;
+        color: var(--azul-oscuro, #0f385a);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+    }
+
+    &.col-sticky {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: inherit;
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.08);
+    }
+
+    &.col-editable {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+
+      &:hover:not(.editing) {
+        background: rgba(74, 144, 226, 0.12);
+        box-shadow: inset 0 0 0 2px rgba(74, 144, 226, 0.3);
+      }
+
+      &.editing {
+        padding: 4px;
+        background: #ffffff !important;
+        box-shadow: inset 0 0 0 2px var(--azul-claro, #4a90e2);
+      }
+    }
+
+    &.cell-numeric {
+      text-align: center;
+      font-family: 'Segoe UI', 'Roboto Mono', monospace;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
     &.cell-grade-high {
       background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
       color: #155724;
       font-weight: 700;
-      border-radius: 3px;
-      padding: 6px 8px;
+
+      &.col-editable:hover:not(.editing) {
+        background: linear-gradient(135deg, #c3e6cb 0%, #b1dbb9 100%);
+      }
     }
 
-    // Calificación baja (<=50)
     &.cell-grade-low {
       background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
       color: #721c24;
       font-weight: 700;
-      border-radius: 3px;
-      padding: 6px 8px;
+
+      &.col-editable:hover:not(.editing) {
+        background: linear-gradient(135deg, #f5c6cb 0%, #f1b6bb 100%);
+      }
+    }
+  }
+
+  // Input de edición inline
+  .edit-input {
+    width: 100%;
+    height: 28px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    background: #f8f9fa;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    font-family: 'Segoe UI', 'Roboto Mono', monospace;
+    color: var(--azul-oscuro, #0f385a);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--azul-claro, #4a90e2);
+
+    &:focus {
+      background: #ffffff;
     }
   }
 }
 
-// Animación de entrada
-@keyframes fadeIn {
+// Animación de entrada para filas
+@keyframes fadeInRow {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -226,98 +540,266 @@ ion-content {
 }
 
 .tabla-calificaciones tbody tr {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeInRow 0.2s ease-out;
   animation-fill-mode: both;
 
-  @for $i from 1 through 30 {
+  @for $i from 1 through 20 {
     &:nth-child(#{$i}) {
       animation-delay: #{$i * 0.015}s;
     }
   }
 }
 
-// Responsive: Tablet
+// ============================================
+// EMPTY STATE
+// ============================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  color: #6c757d;
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 0;
+    max-width: 300px;
+  }
+}
+
+// ============================================
+// RESPONSIVE - Ionic Breakpoints
+// ============================================
+
+// Tablet landscape y desktop pequeño
 @media (max-width: 1024px) {
   .tabla-calificaciones {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
 
     .tabla-header {
       padding: 8px 10px;
-      font-size: 0.65rem;
-      min-width: 85px;
-
-      &.col-numeric {
-        min-width: 70px;
-      }
+      font-size: 0.7rem;
     }
 
     .tabla-cell {
       padding: 6px 10px;
-      font-size: 0.65rem;
+      font-size: 0.75rem;
     }
   }
 }
 
-// Responsive: Móvil
+// Tablet portrait (md breakpoint Ionic)
 @media (max-width: 768px) {
-  .tabla-calificaciones-card {
-    margin: 4px;
+  .page-container {
+    padding: 4px;
   }
 
-  .tabla-header-info {
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px;
+  .page-title-header {
+    padding: 10px 12px;
+    margin-bottom: 6px;
 
-    ion-chip {
-      font-size: 0.7rem;
+    ion-icon {
+      font-size: 1.3rem;
+    }
+
+    h2 {
+      font-size: 1rem;
     }
   }
 
-  .tabla-scroll-wrapper {
-    max-height: calc(100vh - 320px);
+  .calificaciones-tab-content {
+    height: auto;
+    min-height: calc(100vh - 140px);
+    gap: 6px;
+  }
+
+  .cursos-botones-bar {
+    padding: 6px 8px;
+    gap: 4px;
+
+    .curso-btn {
+      height: 34px;
+      padding: 0 10px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+  }
+
+  .header-selector-cursos {
+    padding: 8px 12px;
+    flex-direction: column;
+    gap: 8px;
+
+    .selector-left,
+    .selector-right {
+      width: 100%;
+    }
+
+    .selector-right {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+  }
+
+  .tabla-info-bar {
+    padding: 8px 12px;
+
+    .chip-info {
+      font-size: 0.7rem;
+      height: 24px;
+    }
+  }
+
+  .tabla-area {
+    min-height: 350px;
   }
 
   .tabla-calificaciones {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
 
     .tabla-header {
       padding: 6px 8px;
-      font-size: 0.6rem;
-      min-width: 75px;
+      font-size: 0.65rem;
+      min-width: 50px;
 
-      &.col-numeric {
-        min-width: 60px;
-      }
-
-      .header-content {
-        gap: 3px;
-
-        .header-icon {
-          font-size: 0.8rem;
-        }
+      &.col-grupo {
+        min-width: 35px;
+        max-width: 40px;
+        padding: 6px 2px;
       }
     }
 
     .tabla-cell {
       padding: 5px 8px;
-      font-size: 0.6rem;
+      font-size: 0.7rem;
 
-      &.cell-grade-high,
-      &.cell-grade-low {
-        padding: 4px 6px;
+      &.col-grupo {
+        min-width: 35px;
+        max-width: 40px;
+        padding: 5px 2px;
+
+        .grupo-badge {
+          font-size: 0.75rem;
+        }
       }
     }
   }
 }
 
-// Print styles
+// Mobile landscape (sm breakpoint Ionic)
+@media (max-width: 576px) {
+  .page-title-header {
+    padding: 8px 10px;
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+
+    h2 {
+      font-size: 0.9rem;
+    }
+  }
+
+  .cursos-botones-bar {
+    .curso-btn {
+      height: 32px;
+      padding: 0 8px;
+      font-size: 0.75rem;
+      min-width: 32px;
+    }
+  }
+
+  .header-selector-cursos {
+    .selector-label {
+      font-size: 0.8rem;
+    }
+
+    .archivo-nombre {
+      max-width: 120px;
+      font-size: 0.7rem;
+    }
+
+    ion-button {
+      height: 28px;
+      font-size: 0.7rem;
+    }
+  }
+
+  .tabla-calificaciones {
+    .tabla-header {
+      padding: 5px 6px;
+      font-size: 0.6rem;
+
+      &.col-grupo {
+        min-width: 30px;
+        max-width: 35px;
+      }
+    }
+
+    .tabla-cell {
+      padding: 4px 6px;
+      font-size: 0.65rem;
+
+      &.col-grupo {
+        min-width: 30px;
+        max-width: 35px;
+
+        .grupo-badge {
+          font-size: 0.7rem;
+        }
+      }
+
+      .edit-input {
+        font-size: 0.7rem;
+        padding: 4px 6px;
+      }
+    }
+  }
+
+  .empty-state {
+    min-height: 200px;
+    padding: 24px 16px;
+
+    ion-icon {
+      font-size: 3rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Safe area para dispositivos con notch (iOS)
+@supports (padding-top: env(safe-area-inset-top)) {
+  .page-container {
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+}
+
+// ============================================
+// PRINT STYLES
+// ============================================
 @media print {
-  .tabla-header-info {
+  .header-selector-cursos,
+  .cursos-botones-bar,
+  .tabla-info-bar {
     display: none;
   }
 
-  .tabla-scroll-wrapper {
+  .tabla-wrapper {
     overflow: visible;
     max-height: none;
   }

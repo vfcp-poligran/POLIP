@@ -1,114 +1,159 @@
-<!-- Layout con ion-split-pane - Componente nativo de Ionic para sidebar permanente -->
-<ion-split-pane contentId="main-content" [when]="isDesktop">
+<!-- Layout sin ion-split-pane - Usando ion-menu estándar de Ionic -->
 
-  <!-- Sidebar usando ion-menu nativo de Ionic -->
-  <ion-menu contentId="main-content" type="push" side="start" menuId="mainMenu" class="sidebar-menu">
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-avatar slot="start" class="sidebar-logo-avatar">
-          <img
-            src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
-            alt="Logo Politécnico Grancolombiano" />
-        </ion-avatar>
-        <ion-title>Navegación</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<!-- Sidebar usando ion-menu - SOLO en móvil -->
+<ion-menu *ngIf="!isDesktop" contentId="main-content" type="overlay" side="start" menuId="mainMenu" class="sidebar-menu">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-avatar slot="start" class="sidebar-logo-avatar">
+        <img
+          src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
+          alt="Logo Politécnico Grancolombiano" />
+      </ion-avatar>
+      <ion-title class="sidebar-app-title">POLIProject</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-content>
-      <ion-list lines="none" class="sidebar-nav-list">
-        <!-- Navegación Principal -->
-        <!-- ion-menu-toggle solo activo en móvil (auto-hide=true cierra menú solo cuando está como overlay) -->
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="home-outline"></ion-icon>
-            <ion-label>Inicio</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+  <ion-content>
+    <ion-list lines="none" class="sidebar-nav-list">
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="home" color="tertiary"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="document-text-outline"></ion-icon>
-            <ion-label>Cursos</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="school" color="primary"></ion-icon>
+          <ion-label>Cursos</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="list-outline"></ion-icon>
-            <ion-label>Rúbricas</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="document-text" color="warning"></ion-icon>
+          <ion-label>Rúbricas de Evaluación</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="analytics-outline"></ion-icon>
-            <ion-label>Calificaciones</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="star" color="success"></ion-icon>
+          <ion-label>Calificaciones</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
 
-        <ion-menu-toggle [autoHide]="!isDesktop">
-          <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
-            <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-            <ion-label>Sistema</ion-label>
-          </ion-item>
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
+          <ion-icon slot="start" name="cog" color="medium"></ion-icon>
+          <ion-label>Sistema</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
 
-    <ion-footer>
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-button fill="clear" (click)="toggleFullscreen()" aria-label="Pantalla completa">
-            <ion-icon slot="icon-only" name="expand-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button fill="clear" (click)="toggleSearch()" [attr.aria-label]="searchExpanded ? 'Cerrar búsqueda' : 'Abrir búsqueda'">
-            <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-footer>
-  </ion-menu>
+  <ion-footer class="sidebar-footer">
+    <ion-toolbar>
+      <div class="footer-actions">
+        <ion-button fill="clear" expand="block" (click)="toggleFullscreen()" class="footer-btn">
+          <ion-icon slot="start" name="expand-outline"></ion-icon>
+          <ion-label>Pantalla completa</ion-label>
+        </ion-button>
+        <ion-button fill="clear" expand="block" (click)="toggleSearch()" class="footer-btn">
+          <ion-icon slot="start" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+          <ion-label>{{ searchExpanded ? 'Cerrar' : 'Buscar' }}</ion-label>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
+</ion-menu>
 
-  <!-- Contenido principal - IMPORTANTE: atributo 'main' requerido por ion-split-pane -->
-  <div id="main-content" class="ion-page" main>
-    <!-- Header móvil -->
-    <ion-header class="mobile-header">
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-menu-button menu="mainMenu"></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Gestor de Proyectos</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="toggleSearch()">
-            <ion-icon slot="icon-only" name="search-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+<!-- Sidebar permanente para desktop - sin ion-split-pane -->
+<ion-card class="desktop-sidebar" [class.collapsed]="!sidebarExpanded" *ngIf="isDesktop">
+  <ion-card-header>
+    <ion-avatar class="sidebar-logo-avatar">
+      <img
+        src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
+        alt="Logo Politécnico Grancolombiano" />
+    </ion-avatar>
+    <span class="sidebar-title">POLIProject</span>
+  </ion-card-header>
 
-    <!-- Wrapper para ion-tabs con margen para el panel -->
-    <div class="tabs-wrapper">
-      <ion-tabs>
-        <ion-router-outlet></ion-router-outlet>
-        <ion-tab-bar slot="bottom" class="hidden-tab-bar">
-          <ion-tab-button tab="inicio" href="/tabs/inicio"></ion-tab-button>
-          <ion-tab-button tab="cursos" href="/tabs/cursos"></ion-tab-button>
-          <ion-tab-button tab="rubricas" href="/tabs/rubricas"></ion-tab-button>
-          <ion-tab-button tab="calificaciones" href="/tabs/calificaciones"></ion-tab-button>
-          <ion-tab-button tab="sistema" href="/tabs/sistema"></ion-tab-button>
-        </ion-tab-bar>
-      </ion-tabs>
-    </div>
-  </div>
+  <ion-card-content class="desktop-sidebar-content">
+    <ion-list lines="none" class="desktop-nav-list">
+      <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/inicio') ? 'home' : 'home-outline'"></ion-icon>
+        <ion-label>Inicio</ion-label>
+      </ion-item>
 
-</ion-split-pane>
+      <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/cursos') ? 'library' : 'library-outline'"></ion-icon>
+        <ion-label>Cursos</ion-label>
+      </ion-item>
 
-<!-- Panel de Seguimiento - COMPLETAMENTE FUERA del split-pane, posición fija -->
+      <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/rubricas') ? 'speedometer' : 'speedometer-outline'"></ion-icon>
+        <ion-label>Rúbricas</ion-label>
+      </ion-item>
+
+      <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/calificaciones') ? 'ribbon' : 'ribbon-outline'"></ion-icon>
+        <ion-label>Calificaciones</ion-label>
+      </ion-item>
+
+      <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/sistema') ? 'settings' : 'settings-outline'"></ion-icon>
+        <ion-label>Sistema</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+
+  <ion-footer class="sidebar-footer-desktop">
+    <ion-button fill="clear" class="expand-btn" (click)="toggleSidebar()">
+      <ion-icon slot="icon-only" [name]="sidebarExpanded ? 'arrow-back-outline' : 'arrow-forward-outline'"></ion-icon>
+    </ion-button>
+  </ion-footer>
+</ion-card>
+
+<!-- Contenido principal - SOLO ion-router-outlet sin ion-tabs -->
+<div id="main-content" class="main-content-area" [class.sidebar-collapsed]="!sidebarExpanded">
+  <ion-router-outlet></ion-router-outlet>
+</div>
+
+<!-- FAB para abrir menú y panel de seguimiento en móvil -->
+@if (!isDesktop) {
+<div class="mobile-fab-container">
+  <!-- FAB para abrir menú lateral -->
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed" class="menu-fab">
+    <ion-fab-button size="small" color="primary" (click)="openMenu()">
+      <ion-icon name="menu-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <!-- FAB para abrir panel de seguimiento -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="seguimiento-fab">
+    <ion-fab-button size="small" color="secondary" (click)="toggleMobileSeguimiento()">
+      <ion-icon [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</div>
+}
+
+<!-- Hidden navigation helper (para mantener compatibilidad con rutas) -->
+<div class="hidden-navigation-helper">
+  <ion-tab-bar class="hidden-tab-bar">
+    <ion-tab-button tab="inicio" href="/tabs/inicio"></ion-tab-button>
+    <ion-tab-button tab="cursos" href="/tabs/cursos"></ion-tab-button>
+    <ion-tab-button tab="rubricas" href="/tabs/rubricas"></ion-tab-button>
+    <ion-tab-button tab="calificaciones" href="/tabs/calificaciones"></ion-tab-button>
+    <ion-tab-button tab="sistema" href="/tabs/sistema"></ion-tab-button>
+  </ion-tab-bar>
+</div>
+
+<!-- Panel de Seguimiento - posición fija a la derecha (Desktop) -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">
         <ion-card-header class="panel-seguimiento-header">
-          <ion-card-title>📋 Seguimiento</ion-card-title>
+          <ion-card-title><ion-icon name="book"></ion-icon> Seguimiento</ion-card-title>
         </ion-card-header>
         <ion-card-content class="panel-seguimiento-content">
 
@@ -138,7 +183,7 @@
           </div>
           } @else if (searchTerm && searchResults.length === 0) {
           <div class="seguimiento-placeholder">
-            <ion-icon name="search-outline" size="large" color="medium"></ion-icon>
+            <ion-icon name="search" size="large" color="medium"></ion-icon>
             <h4>Sin resultados</h4>
             <p>No se encontraron estudiantes con "{{searchTerm}}"</p>
           </div>
@@ -147,90 +192,228 @@
           <!-- Mensaje cuando no hay curso activo -->
           @if (!mostrarGrupos && !searchTerm) {
           <div class="seguimiento-placeholder">
-            <ion-icon name="school-outline" size="large" color="medium"></ion-icon>
+            <ion-icon name="school" size="large" color="medium"></ion-icon>
             <h4>Sin curso activo</h4>
             <p>Seleccione un curso en la pestaña <strong>"Cursos"</strong> para ver el seguimiento de grupos.</p>
           </div>
           }
 
-          <!-- Sección de Grupos - Solo visible cuando hay curso activo -->
-          @if (mostrarGrupos) {
-          <div class="seguimiento-section">
-            <ion-label class="section-title">GRUPOS</ion-label>
-            <div class="grupos-grid">
-              <ion-button fill="solid" class="grupo-btn grupo-btn-dashboard" [class.active]="selectedGrupo === 0"
-                (click)="selectGrupo('todos')" title="Ver todos los grupos">
-                <ion-icon name="list-outline"></ion-icon>
-              </ion-button>
-              @for (grupo of grupos; track grupo) {
-              <ion-button fill="solid" class="grupo-btn" [class.active]="selectedGrupo === parseInt(grupo)"
-                (click)="selectGrupo(grupo)">
-                {{ grupo }}
-              </ion-button>
-              }
-            </div>
-          </div>
+          <!-- Sección de Puntos/Rúbricas - Visible cuando hay grupo visualizado -->
+          @if (grupoVisualizado > 0) {
+          <div class="seguimiento-section puntos-section">
+            <!-- Barra unificada de selección de rúbrica -->
+            <div class="rubrica-selector-bar">
+              <!-- Toggle tipo de rúbrica con íconos -->
+              <div class="tipo-rubrica-toggle">
+                <button type="button"
+                        class="tipo-btn"
+                        [class.activo]="tipoRubricaSeleccionado === 'PG'"
+                        (click)="tipoRubricaSeleccionado = 'PG'"
+                        title="Rúbrica Grupal">
+                  <ion-icon name="people"></ion-icon>
+                  <span>Grupal</span>
+                </button>
+                <button type="button"
+                        class="tipo-btn"
+                        [class.activo]="tipoRubricaSeleccionado === 'PI'"
+                        (click)="tipoRubricaSeleccionado = 'PI'"
+                        title="Rúbrica Individual">
+                  <ion-icon name="person"></ion-icon>
+                  <span>Individual</span>
+                </button>
+              </div>
 
-          <!-- Sección de Rúbricas - Solo visible cuando hay grupo seleccionado -->
-          @if (selectedGrupo > 0) {
-          <div class="seguimiento-section">
-            <ion-label class="section-title">EVALUAR CON RÚBRICA</ion-label>
+              <!-- Separador visual -->
+              <div class="selector-divider"></div>
 
-            <!-- Toggle PG/PI -->
-            <ion-segment [(ngModel)]="tipoRubricaSeleccionado" mode="md" class="rubrica-toggle">
-              <ion-segment-button value="PG">
-                <ion-label>PG</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="PI">
-                <ion-label>PI</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-
-            <!-- Botones de Entregas -->
-            <div class="rubricas-grid-horizontal ion-margin-top">
-              <ion-button size="small" fill="outline" color="medium"
-                (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)">
-                E1
-              </ion-button>
-              <ion-button size="small" fill="outline" color="medium"
-                (click)="abrirRubricaEntrega('E2', tipoRubricaSeleccionado)">
-                E2
-              </ion-button>
-              <ion-button size="small" fill="outline" color="medium"
-                (click)="abrirRubricaEntrega('EF', tipoRubricaSeleccionado)">
-                EF
-              </ion-button>
+              <!-- Botones de entrega -->
+              <div class="entrega-buttons">
+                <button type="button"
+                        class="entrega-btn"
+                        (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)"
+                        title="Entrega 1">
+                  E1
+                </button>
+                <button type="button"
+                        class="entrega-btn"
+                        (click)="abrirRubricaEntrega('E2', tipoRubricaSeleccionado)"
+                        title="Entrega 2">
+                  E2
+                </button>
+                <button type="button"
+                        class="entrega-btn"
+                        (click)="abrirRubricaEntrega('EF', tipoRubricaSeleccionado)"
+                        title="Entrega Final">
+                  EF
+                </button>
+              </div>
             </div>
           </div>
           }
 
-          <!-- Información del Grupo Seleccionado -->
-          <div class="seguimiento-section">
-            <ion-label class="grupo-info-title">
-              @if (cursoPrefix) {
-              <ion-chip class="curso-prefix" color="primary" outline="true">{{ cursoPrefix }}</ion-chip>
+          <!-- Tabla de integrantes - Visible cuando hay grupo visualizado -->
+          @if (grupoVisualizado > 0 && integrantesGrupoActual.length > 0) {
+          <div class="seguimiento-section integrantes-section">
+            <!-- Toolbar de estados - Siempre visible cuando hay integrantes -->
+            <div class="estados-toolbar-panel">
+              <ion-button
+                [fill]="modoSeleccionEstado === 'ok' ? 'solid' : 'outline'"
+                size="small"
+                color="success"
+                (click)="toggleModoSeleccionEstado('ok')"
+                title="Marcar Ok">
+                <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button
+                [fill]="modoSeleccionEstado === 'solo' ? 'solid' : 'outline'"
+                size="small"
+                color="warning"
+                (click)="toggleModoSeleccionEstado('solo')"
+                title="Marcar Solo">
+                <ion-icon name="git-merge" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button
+                [fill]="modoSeleccionEstado === 'ausente' ? 'solid' : 'outline'"
+                size="small"
+                color="danger"
+                (click)="toggleModoSeleccionEstado('ausente')"
+                title="Marcar Ausente">
+                <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+              </ion-button>
+              @if (modoSeleccionEstado) {
+              <ion-button
+                fill="clear"
+                size="small"
+                color="medium"
+                (click)="salirModoSeleccion()"
+                title="Salir del modo de selección">
+                <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+              </ion-button>
               }
-              {{ selectedGrupo === 0 ? 'Todos los Grupos' : 'Grupo ' + selectedGrupo }}
-            </ion-label>
-
-            <!-- Badge de Entrega -->
-            @if (mostrarEntregaBadge) {
-            <div class="entrega-badge-container">
-              <ion-chip class="entrega-badge entrega-e1" color="tertiary">
-                <ion-label>
-                  {{ entregaBadgeText }}
-                  @if (tipoEvaluacionText) {
-                  <span class="tipo-evaluacion">- {{ tipoEvaluacionText }}</span>
-                  }
-                </ion-label>
-              </ion-chip>
             </div>
-            }
+            <div class="integrantes-table-container">
+              <table class="integrantes-calificaciones-table responsive-table">
+                <thead>
+                  <tr>
+                    <th class="col-check">
+                      <ion-checkbox
+                        [checked]="areAllIntegrantesSelected()"
+                        [indeterminate]="selectedIntegrantes.size > 0 && !areAllIntegrantesSelected()"
+                        (ionChange)="toggleSelectAllIntegrantes()"
+                        mode="ios">
+                      </ion-checkbox>
+                    </th>
+                    <th class="col-nombre">ESTUDIANTE</th>
+                    <th class="col-entrega">E1</th>
+                    <th class="col-entrega">E2</th>
+                    <th class="col-entrega">EF</th>
+                    <th class="col-total">
+                      <ion-icon name="trophy"></ion-icon>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (integrante of integrantesGrupoActual; track integrante.correo) {
+                  <tr class="integrante-row"
+                      [class.selected]="isIntegranteSelected(integrante.correo)"
+                      [class.estado-ok]="getEstadoEstudiante(integrante.correo) === 'ok'"
+                      [class.estado-solo]="getEstadoEstudiante(integrante.correo) === 'solo'"
+                      [class.estado-ausente]="getEstadoEstudiante(integrante.correo) === 'ausente'">
+                    <td class="col-check">
+                      <ion-checkbox
+                        [checked]="isIntegranteSelected(integrante.correo)"
+                        (ionChange)="toggleIntegranteSelection(integrante.correo, $event)"
+                        mode="ios">
+                      </ion-checkbox>
+                    </td>
+                    <td class="col-nombre">
+                      @if (getEstadoEstudiante(integrante.correo)) {
+                        <ion-icon [name]="getIconoEstado(getEstadoEstudiante(integrante.correo))" [color]="getColorEstado(getEstadoEstudiante(integrante.correo))" class="estado-icono"></ion-icon>
+                      }
+                      <span class="nombre-estudiante" [title]="integrante.apellidos + ', ' + integrante.nombres">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
+                    </td>
+                    <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'E1', $event)">
+                      @if (estaEditandoCalificacion(integrante, 'E1')) {
+                        <input type="text"
+                               class="edit-input-inline"
+                               placeholder="Nota"
+                               title="Editar E1"
+                               [(ngModel)]="valorCalificacionEditando"
+                               (blur)="guardarCalificacionInicio()"
+                               (keydown)="onKeyDownCalificacion($event)"
+                               autofocus />
+                      } @else {
+                        <span class="calificacion-badge"
+                          [class.canvas]="tieneCalificacionCanvas(integrante, 'E1')"
+                          [class.success]="obtenerCalificacionEstudiante(integrante, 'E1') >= 4.0"
+                          [class.warning]="obtenerCalificacionEstudiante(integrante, 'E1') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E1') < 4.0"
+                          [class.danger]="obtenerCalificacionEstudiante(integrante, 'E1') > 0 && obtenerCalificacionEstudiante(integrante, 'E1') < 3.0"
+                          [class.empty]="obtenerCalificacionEstudiante(integrante, 'E1') === 0">
+                          {{ obtenerCalificacionEstudiante(integrante, 'E1') || '-' }}
+                        </span>
+                      }
+                    </td>
+                    <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'E2', $event)">
+                      @if (estaEditandoCalificacion(integrante, 'E2')) {
+                        <input type="text"
+                               class="edit-input-inline"
+                               placeholder="Nota"
+                               title="Editar E2"
+                               [(ngModel)]="valorCalificacionEditando"
+                               (blur)="guardarCalificacionInicio()"
+                               (keydown)="onKeyDownCalificacion($event)"
+                               autofocus />
+                      } @else {
+                        <span class="calificacion-badge"
+                          [class.canvas]="tieneCalificacionCanvas(integrante, 'E2')"
+                          [class.success]="obtenerCalificacionEstudiante(integrante, 'E2') >= 4.0"
+                          [class.warning]="obtenerCalificacionEstudiante(integrante, 'E2') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'E2') < 4.0"
+                          [class.danger]="obtenerCalificacionEstudiante(integrante, 'E2') > 0 && obtenerCalificacionEstudiante(integrante, 'E2') < 3.0"
+                          [class.empty]="obtenerCalificacionEstudiante(integrante, 'E2') === 0">
+                          {{ obtenerCalificacionEstudiante(integrante, 'E2') || '-' }}
+                        </span>
+                      }
+                    </td>
+                    <td class="col-entrega editable-cell" (click)="iniciarEdicionCalificacion(integrante, 'EF', $event)">
+                      @if (estaEditandoCalificacion(integrante, 'EF')) {
+                        <input type="text"
+                               class="edit-input-inline"
+                               placeholder="Nota"
+                               title="Editar EF"
+                               [(ngModel)]="valorCalificacionEditando"
+                               (blur)="guardarCalificacionInicio()"
+                               (keydown)="onKeyDownCalificacion($event)"
+                               autofocus />
+                      } @else {
+                        <span class="calificacion-badge"
+                          [class.canvas]="tieneCalificacionCanvas(integrante, 'EF')"
+                          [class.success]="obtenerCalificacionEstudiante(integrante, 'EF') >= 4.0"
+                          [class.warning]="obtenerCalificacionEstudiante(integrante, 'EF') >= 3.0 && obtenerCalificacionEstudiante(integrante, 'EF') < 4.0"
+                          [class.danger]="obtenerCalificacionEstudiante(integrante, 'EF') > 0 && obtenerCalificacionEstudiante(integrante, 'EF') < 3.0"
+                          [class.empty]="obtenerCalificacionEstudiante(integrante, 'EF') === 0">
+                          {{ obtenerCalificacionEstudiante(integrante, 'EF') || '-' }}
+                        </span>
+                      }
+                    </td>
+                    <td class="col-total">
+                      <span class="total-badge">
+                        {{ obtenerTotalEstudiante(integrante) || '-' }}
+                      </span>
+                    </td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+          }
 
-            <!-- Comentarios del grupo -->
+          <!-- Comentarios del grupo -->
+          @if (mostrarGrupos) {
+          <div class="seguimiento-section comentarios-section-wrapper">
             <div class="comentarios-section" [class.comentarios-fijados]="comentariosFijados">
               <ion-item class="comentarios-header" button (click)="toggleComentarios()" lines="none">
-                <ion-icon name="chatbox-outline" slot="start"></ion-icon>
+                <ion-icon name="chatbubble" slot="start"></ion-icon>
                 <ion-label class="comentarios-label">Comentarios</ion-label>
                 <div class="comentarios-controls" slot="end">
                   <ion-button fill="clear" size="small" (click)="toggleFijarComentarios(); $event.stopPropagation()"
@@ -249,22 +432,71 @@
               <div class="comentarios-content" [@slideInOut]>
                 @if (selectedGrupo === 0) {
                 <p class="no-comentarios">Selecciona un grupo para ver los comentarios</p>
-                } @else if (comentariosGrupoActual.length === 0) {
-                <p class="no-comentarios">No hay comentarios registrados para este grupo</p>
                 } @else {
-                <ion-list class="comentarios-lista" lines="none">
-                  @for (comentario of comentariosGrupoActual; track comentario.id) {
-                  <ion-card class="comentario-card">
-                    <ion-card-header>
-                      <ion-badge color="medium">{{ comentario.fecha | date: 'dd/MM/yyyy HH:mm' }}</ion-badge>
-                      <ion-badge color="primary">{{ comentario.autor }}</ion-badge>
-                    </ion-card-header>
-                    <ion-card-content class="comentario-texto">
-                      {{ comentario.comentario }}
-                    </ion-card-content>
-                  </ion-card>
+                  <!-- Input para agregar nuevo comentario -->
+                  <div class="nuevo-comentario-form">
+                    <ion-textarea
+                      [(ngModel)]="nuevoComentarioTexto"
+                      placeholder="Escribe un comentario sobre este grupo..."
+                      [autoGrow]="true"
+                      [rows]="2"
+                      class="comentario-textarea"
+                    ></ion-textarea>
+                    <ion-button
+                      size="small"
+                      (click)="agregarComentario()"
+                      [disabled]="!nuevoComentarioTexto.trim()"
+                      class="btn-agregar-comentario"
+                    >
+                      <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                      Agregar
+                    </ion-button>
+                  </div>
+
+                  @if (comentariosGrupoActual.length === 0) {
+                  <p class="no-comentarios">No hay comentarios registrados para este grupo</p>
+                  } @else {
+                  <ion-list class="comentarios-lista" lines="none">
+                    @for (comentario of comentariosGrupoActual; track comentario.id) {
+                    <ion-card class="comentario-card">
+                      <ion-card-header>
+                        <ion-badge color="medium">{{ comentario.fecha | date: 'dd/MM/yyyy HH:mm' }}</ion-badge>
+                        <ion-badge color="primary">{{ comentario.autor }}</ion-badge>
+                        <div class="comentario-acciones">
+                          <ion-button fill="clear" size="small" (click)="iniciarEdicionComentario(comentario)">
+                            <ion-icon slot="icon-only" name="pencil-outline" color="primary"></ion-icon>
+                          </ion-button>
+                          <ion-button fill="clear" size="small" (click)="eliminarComentario(comentario.id)">
+                            <ion-icon slot="icon-only" name="trash-outline" color="danger"></ion-icon>
+                          </ion-button>
+                        </div>
+                      </ion-card-header>
+                      @if (editandoComentarioId === comentario.id) {
+                      <ion-card-content class="comentario-edicion">
+                        <ion-textarea
+                          [(ngModel)]="editandoComentarioTexto"
+                          [autoGrow]="true"
+                          class="comentario-textarea edicion"
+                        ></ion-textarea>
+                        <div class="edicion-acciones">
+                          <ion-button size="small" fill="outline" (click)="cancelarEdicionComentario()">
+                            Cancelar
+                          </ion-button>
+                          <ion-button size="small" (click)="guardarEdicionComentario()">
+                            <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                            Guardar
+                          </ion-button>
+                        </div>
+                      </ion-card-content>
+                      } @else {
+                      <ion-card-content class="comentario-texto">
+                        {{ comentario.comentario }}
+                      </ion-card-content>
+                      }
+                    </ion-card>
+                    }
+                  </ion-list>
                   }
-                </ion-list>
                 }
               </div>
               }
@@ -308,7 +540,7 @@
                 <h4>Calificación Individual</h4>
                 @if (integranteSeleccionado) {
                 <p class="integrante-info">
-                  <ion-icon name="person-outline"></ion-icon>
+                  <ion-icon name="person"></ion-icon>
                   {{ integranteSeleccionado.nombres }} {{ integranteSeleccionado.apellidos }}
                 </p>
                 }
@@ -341,6 +573,85 @@
           }
         </ion-card-content>
       </ion-card>
+
+<!-- Panel de Seguimiento Móvil - Deslizante desde abajo -->
+@if (!isDesktop) {
+<div class="mobile-seguimiento-panel" [class.visible]="mobileSeguimientoVisible">
+  <div class="mobile-panel-header">
+    <div class="panel-title">
+      <ion-icon name="book"></ion-icon>
+      <span>Seguimiento</span>
+    </div>
+    <ion-button fill="clear" size="small" (click)="toggleMobileSeguimiento()">
+      <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+  <div class="mobile-panel-content">
+    <!-- Mensaje cuando no hay curso activo -->
+    @if (!mostrarGrupos && !searchTerm) {
+    <div class="seguimiento-placeholder-mobile">
+      <ion-icon name="school" size="large" color="medium"></ion-icon>
+      <h4>Sin curso activo</h4>
+      <p>Seleccione un curso en la pestaña <strong>"Cursos"</strong> para ver el seguimiento.</p>
+    </div>
+    }
+
+    <!-- Sección de Puntos Mobile -->
+    @if (grupoVisualizado > 0) {
+    <div class="mobile-puntos-section">
+      <div class="puntos-header-mobile">
+        <span class="section-title-mobile">PUNTOS</span>
+        <ion-segment [(ngModel)]="tipoRubricaSeleccionado" mode="ios" class="puntos-toggle-mobile">
+          <ion-segment-button value="PG"><ion-label>Grupal</ion-label></ion-segment-button>
+          <ion-segment-button value="PI"><ion-label>Individual</ion-label></ion-segment-button>
+        </ion-segment>
+      </div>
+      <div class="rubricas-grid-mobile">
+        <ion-button size="small" fill="outline" (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)">E1</ion-button>
+        <ion-button size="small" fill="outline" (click)="abrirRubricaEntrega('E2', tipoRubricaSeleccionado)">E2</ion-button>
+        <ion-button size="small" fill="outline" (click)="abrirRubricaEntrega('EF', tipoRubricaSeleccionado)">EF</ion-button>
+      </div>
+    </div>
+
+    <!-- Integrantes Mobile -->
+    @if (integrantesGrupoActual.length > 0) {
+    <div class="mobile-integrantes-section">
+      <span class="section-title-mobile">INTEGRANTES ({{ integrantesGrupoActual.length }})</span>
+      <div class="integrantes-list-mobile">
+        @for (integrante of integrantesGrupoActual; track integrante.correo) {
+        <div class="integrante-item-mobile" [class.estado-ok]="getEstadoEstudiante(integrante.correo) === 'ok'"
+             [class.estado-solo]="getEstadoEstudiante(integrante.correo) === 'solo'"
+             [class.estado-ausente]="getEstadoEstudiante(integrante.correo) === 'ausente'">
+          @if (getEstadoEstudiante(integrante.correo)) {
+          <ion-icon [name]="getIconoEstado(getEstadoEstudiante(integrante.correo))"
+                    [color]="getColorEstado(getEstadoEstudiante(integrante.correo))" class="estado-icono-mobile"></ion-icon>
+          }
+          <span class="nombre-mobile">{{ integrante.apellidos }}, {{ integrante.nombres }}</span>
+          <div class="calificaciones-mobile">
+            <span class="cal-badge-mobile" [class.success]="obtenerCalificacionEstudiante(integrante, 'E1') >= 4.0">
+              {{ obtenerCalificacionEstudiante(integrante, 'E1') || '-' }}
+            </span>
+            <span class="cal-badge-mobile" [class.success]="obtenerCalificacionEstudiante(integrante, 'E2') >= 4.0">
+              {{ obtenerCalificacionEstudiante(integrante, 'E2') || '-' }}
+            </span>
+            <span class="cal-badge-mobile" [class.success]="obtenerCalificacionEstudiante(integrante, 'EF') >= 4.0">
+              {{ obtenerCalificacionEstudiante(integrante, 'EF') || '-' }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+    }
+  </div>
+</div>
+}
+
+<!-- Overlay para cerrar el panel móvil -->
+@if (!isDesktop) {
+<div class="mobile-seguimiento-overlay" [class.visible]="mobileSeguimientoVisible" (click)="toggleMobileSeguimiento()"></div>
+}
 
 <!-- Barra de búsqueda flotante cuando se expande -->
 @if (searchExpanded) {

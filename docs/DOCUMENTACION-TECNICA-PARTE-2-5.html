@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 2.5: Configuración Raíz y PWA</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+  <div class="container">
+    <header class="theme-cyan">
+      <h1>⚙️ POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📡 Parte 2.5: Configuración Raíz y PWA</span>
+    </header>
+
+    <nav class="nav-parts theme-cyan">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html">2.2: docs/ y src/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">2.3: src/app/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">2.4: Archivos Base</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html" class="active">2.5: Config Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- KARMA.CONF.JS -->
+    <!-- ============================================ -->
+    <section class="section theme-cyan">
+      <h2>🧪 karma.conf.js - Test Runner</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon js">JS</span>karma.conf.js</h4>
+        <p><strong>Propósito:</strong> Configuración de <strong>Karma</strong>, el test runner utilizado para ejecutar pruebas unitarias de Angular.</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Test Early, Test Often"</h4>
+        <p>Las pruebas unitarias son fundamentales en desarrollo profesional:</p>
+        <ul>
+          <li><strong>Detectan bugs temprano:</strong> Antes de que lleguen a producción</li>
+          <li><strong>Documentan comportamiento:</strong> Los tests muestran cómo debe funcionar el código</li>
+          <li><strong>Permiten refactoring seguro:</strong> Puedes cambiar código con confianza</li>
+          <li><strong>CI/CD:</strong> Se ejecutan automáticamente en pipelines</li>
+        </ul>
+      </div>
+
+      <h3>📋 Configuraciones Clave</h3>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// karma.conf.js</span>
+module.exports = <span class="keyword">function</span> (config) {
+  config.set({
+    <span class="property">basePath</span>: <span class="string">''</span>,
+    <span class="property">frameworks</span>: [<span class="string">'jasmine'</span>, <span class="string">'@angular-devkit/build-angular'</span>],
+    <span class="property">plugins</span>: [
+      require(<span class="string">'karma-jasmine'</span>),
+      require(<span class="string">'karma-chrome-launcher'</span>),
+      require(<span class="string">'karma-coverage'</span>)
+    ],
+    <span class="property">browsers</span>: [<span class="string">'Chrome'</span>],           <span class="comment">// Navegadores para tests</span>
+    <span class="property">singleRun</span>: <span class="keyword">false</span>,                <span class="comment">// Watch mode</span>
+    <span class="property">coverageReporter</span>: {             <span class="comment">// Reportes de cobertura</span>
+      <span class="property">dir</span>: <span class="string">'./coverage'</span>,
+      <span class="property">reporters</span>: [{ <span class="property">type</span>: <span class="string">'html'</span> }, { <span class="property">type</span>: <span class="string">'text-summary'</span> }]
+    }
+  });
+};
+        </code>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>Ejecutar tests:</p>
+        <pre class="code-block-dark mt-10"><code>npm test</code>   <span class="syntax-comment"># Ejecuta tests y observa cambios</span>
+<code>ng test --code-coverage</code>   <span class="syntax-comment"># Con reporte de cobertura</span></pre>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🔬 Analogía: El Laboratorio de Calidad</h4>
+        <p><code>karma.conf.js</code> configura el <strong>laboratorio de control de calidad</strong>:</p>
+        <ul>
+          <li><strong>Jasmine:</strong> Las herramientas de prueba (microscopio, tubos de ensayo)</li>
+          <li><strong>Chrome:</strong> El ambiente donde se hacen las pruebas</li>
+          <li><strong>Coverage:</strong> El informe de qué tan bien se revisó el producto</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- NGSW-CONFIG.JSON -->
+    <!-- ============================================ -->
+    <section class="section theme-cyan">
+      <h2>📡 ngsw-config.json - Service Worker PWA</h2>
+
+      <div class="file-card">
+        <h4><span class="file-icon pwa">PWA</span>ngsw-config.json</h4>
+        <p><strong>Propósito:</strong> Configuración del <strong>Service Worker de Angular</strong> para funcionalidades PWA (Progressive Web App).</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Offline First"</h4>
+        <p>Las PWAs priorizan la <strong>experiencia offline</strong>:</p>
+        <ul>
+          <li><strong>Cache primero:</strong> La app funciona incluso sin internet</li>
+          <li><strong>Actualización en segundo plano:</strong> Nuevas versiones se descargan automáticamente</li>
+          <li><strong>Instalable:</strong> Se puede agregar a la pantalla de inicio</li>
+          <li><strong>Nativo-like:</strong> Se siente como una app nativa</li>
+        </ul>
+      </div>
+
+      <h3>📋 Funcionalidades Configuradas</h3>
+
+      <div class="pwa-features">
+        <div class="pwa-feature">
+          <div class="icon">📦</div>
+          <h4>Asset Groups</h4>
+          <p>Qué archivos cachear (JS, CSS, imágenes)</p>
+        </div>
+        <div class="pwa-feature">
+          <div class="icon">🔄</div>
+          <h4>Update Strategy</h4>
+          <p>Cómo actualizar la app</p>
+        </div>
+        <div class="pwa-feature">
+          <div class="icon">📴</div>
+          <h4>Offline Mode</h4>
+          <p>Funcionamiento sin conexión</p>
+        </div>
+        <div class="pwa-feature">
+          <div class="icon">💾</div>
+          <h4>Data Groups</h4>
+          <p>Cache de datos dinámicos</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <code>
+<span class="comment">// ngsw-config.json</span>
+{
+  <span class="property">"$schema"</span>: <span class="string">"./node_modules/@angular/service-worker/config/schema.json"</span>,
+  <span class="property">"index"</span>: <span class="string">"/index.html"</span>,
+  <span class="property">"assetGroups"</span>: [
+    {
+      <span class="property">"name"</span>: <span class="string">"app"</span>,
+      <span class="property">"installMode"</span>: <span class="string">"prefetch"</span>,     <span class="comment">// Descargar inmediatamente</span>
+      <span class="property">"resources"</span>: {
+        <span class="property">"files"</span>: [
+          <span class="string">"/favicon.ico"</span>,
+          <span class="string">"/index.html"</span>,
+          <span class="string">"/*.css"</span>,
+          <span class="string">"/*.js"</span>
+        ]
+      }
+    },
+    {
+      <span class="property">"name"</span>: <span class="string">"assets"</span>,
+      <span class="property">"installMode"</span>: <span class="string">"lazy"</span>,          <span class="comment">// Descargar cuando se necesite</span>
+      <span class="property">"resources"</span>: {
+        <span class="property">"files"</span>: [
+          <span class="string">"/assets/**"</span>,
+          <span class="string">"/*.(png|jpg|svg|ico)"</span>
+        ]
+      }
+    }
+  ]
+}
+        </code>
+      </div>
+
+      <div class="success-box">
+        <strong>📱 Capacidades PWA de POLIProject:</strong>
+        <ul class="mt-10 ml-20">
+          <li>✅ Instalable en pantalla de inicio</li>
+          <li>✅ Funciona completamente offline</li>
+          <li>✅ Actualización automática en segundo plano</li>
+          <li>✅ Carga instantánea en visitas repetidas</li>
+          <li>✅ Menor consumo de datos móviles</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 Importante:</strong> El Service Worker solo se activa en <strong>builds de producción</strong>:
+        <pre class="mt-10"><code>ng build --configuration=production</code></pre>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- BANNER DE COMPLETACIÓN -->
+    <!-- ============================================ -->
+    <div class="completion-banner">
+      <h3>🎉 ¡Parte 2 Completa!</h3>
+      <p>Has completado la documentación de Estructura de Carpetas y Archivos de POLIProject.</p>
+      <p class="mt-15 text-sm">
+        2.1 Estructura &nbsp;|&nbsp;
+        2.2 docs/ y src/ &nbsp;|&nbsp;
+        2.3 src/app/ &nbsp;|&nbsp;
+        2.4 Archivos Base &nbsp;|&nbsp;
+        2.5 Config Raíz
+      </p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GLOSARIO -->
+    <!-- ============================================ -->
+    <section class="section theme-cyan">
+      <h2>📖 Glosario de Términos de Estructura</h2>
+
+      <h3>📁 Estructura de Carpetas</h3>
+
+      <table class="glossary-table">
+        <thead>
+          <tr>
+            <th>Término</th>
+            <th>Definición</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>app/</strong></td>
+            <td>Directorio principal con toda la lógica de la aplicación Angular: componentes, servicios, páginas, modelos.</td>
+          </tr>
+          <tr>
+            <td><strong>assets/</strong></td>
+            <td>Recursos estáticos (imágenes, iconos, fuentes). Se copian tal cual al build sin procesamiento.</td>
+          </tr>
+          <tr>
+            <td><strong>components/</strong></td>
+            <td>Componentes reutilizables que se usan en múltiples páginas. Piezas de UI modulares.</td>
+          </tr>
+          <tr>
+            <td><strong>core/</strong></td>
+            <td>Servicios fundamentales, guards e interceptors. Se cargan una sola vez (singleton).</td>
+          </tr>
+          <tr>
+            <td><strong>docs/</strong></td>
+            <td>Documentación técnica y archivos de referencia. NO se incluye en el build.</td>
+          </tr>
+          <tr>
+            <td><strong>environments/</strong></td>
+            <td>Configuraciones por entorno (dev/prod). Angular las intercambia automáticamente en build.</td>
+          </tr>
+          <tr>
+            <td><strong>models/</strong></td>
+            <td>Interfaces y tipos TypeScript que definen la estructura de datos del dominio.</td>
+          </tr>
+          <tr>
+            <td><strong>pages/</strong></td>
+            <td>Páginas/vistas de la aplicación. Cada una representa una pantalla navegable completa.</td>
+          </tr>
+          <tr>
+            <td><strong>services/</strong></td>
+            <td>Servicios inyectables con lógica de negocio y acceso a datos. Usan providedIn: 'root'.</td>
+          </tr>
+          <tr>
+            <td><strong>theme/</strong></td>
+            <td>Variables CSS de Ionic que controlan el tema visual global de la aplicación.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>📄 Archivos Clave</h3>
+
+      <table class="glossary-table">
+        <thead>
+          <tr>
+            <th>Término</th>
+            <th>Definición</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>index.html</strong></td>
+            <td>Punto de entrada HTML. Contiene &lt;app-root&gt; donde Angular inyecta la aplicación.</td>
+          </tr>
+          <tr>
+            <td><strong>main.ts</strong></td>
+            <td>Bootstrap de Angular. Llama a bootstrapApplication() para arrancar la app standalone.</td>
+          </tr>
+          <tr>
+            <td><strong>global.scss</strong></td>
+            <td>Estilos CSS globales aplicados a toda la aplicación. Incluye imports de Ionic Core.</td>
+          </tr>
+          <tr>
+            <td><strong>polyfills.ts</strong></td>
+            <td>Importa Zone.js (requerido por Angular) y polyfills para compatibilidad con browsers antiguos.</td>
+          </tr>
+          <tr>
+            <td><strong>karma.conf.js</strong></td>
+            <td>Configuración de Karma (test runner). Define navegadores, reporters y configuración de tests.</td>
+          </tr>
+          <tr>
+            <td><strong>ngsw-config.json</strong></td>
+            <td>Configuración del Service Worker de Angular para funcionalidades PWA (offline, cache).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>🔧 Patrones y Convenciones</h3>
+
+      <table class="glossary-table">
+        <thead>
+          <tr>
+            <th>Término</th>
+            <th>Definición</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>.page.ts</strong></td>
+            <td>Convención para páginas en Ionic. Ejemplo: inicio.page.ts representa una vista navegable.</td>
+          </tr>
+          <tr>
+            <td><strong>.service.ts</strong></td>
+            <td>Convención para servicios inyectables. Ejemplo: data.service.ts contiene lógica de negocio.</td>
+          </tr>
+          <tr>
+            <td><strong>.model.ts</strong></td>
+            <td>Convención para modelos TypeScript. Ejemplo: estudiante.model.ts define interfaces.</td>
+          </tr>
+          <tr>
+            <td><strong>.spec.ts</strong></td>
+            <td>Archivos de pruebas unitarias con Jasmine. Se ejecutan con npm test.</td>
+          </tr>
+          <tr>
+            <td><strong>Barrel Export</strong></td>
+            <td>index.ts que re-exporta módulos de una carpeta. Simplifica imports: import { X } from '@models';</td>
+          </tr>
+          <tr>
+            <td><strong>PWA</strong></td>
+            <td>Progressive Web App: aplicación web instalable con capacidades offline y experiencia nativa.</td>
+          </tr>
+          <tr>
+            <td><strong>Service Worker</strong></td>
+            <td>Script en segundo plano que intercepta requests para funcionalidad offline y caching.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN PARTE 2 -->
+    <!-- ============================================ -->
+    <section class="section theme-cyan">
+      <h2>📝 Resumen Final de Parte 2</h2>
+
+      <table class="glossary-table">
+        <thead>
+          <tr>
+            <th>Carpeta/Archivo</th>
+            <th>Función Principal</th>
+            <th>Categoría</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>docs/</code></td>
+            <td>Documentación, datos de prueba, rúbricas</td>
+            <td>📄 Documentación</td>
+          </tr>
+          <tr>
+            <td><code>src/app/</code></td>
+            <td>Aplicación Angular completa</td>
+            <td>💻 Código</td>
+          </tr>
+          <tr>
+            <td><code>src/assets/</code></td>
+            <td>Recursos estáticos</td>
+            <td>🖼️ Assets</td>
+          </tr>
+          <tr>
+            <td><code>src/environments/</code></td>
+            <td>Config por entorno (dev/prod)</td>
+            <td>⚙️ Config</td>
+          </tr>
+          <tr>
+            <td><code>src/theme/</code></td>
+            <td>Variables de tema Ionic</td>
+            <td>🎨 Estilos</td>
+          </tr>
+          <tr>
+            <td><code>main.ts</code></td>
+            <td>Bootstrap de Angular</td>
+            <td>⚡ Core</td>
+          </tr>
+          <tr>
+            <td><code>karma.conf.js</code></td>
+            <td>Configuración de tests</td>
+            <td>🧪 Testing</td>
+          </tr>
+          <tr>
+            <td><code>ngsw-config.json</code></td>
+            <td>Service Worker PWA</td>
+            <td>📡 PWA</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="project-box">
+        <h4>✅ Conclusión Parte 2</h4>
+        <p>La estructura de carpetas de <strong>POLIProject</strong> sigue las mejores prácticas de Ionic/Angular, organizando el código en capas funcionales claramente separadas:</p>
+        <ul class="list-spaced mt-10">
+          <li><strong>Configuración Base:</strong> Archivos en raíz (.json, .js, .ts)</li>
+          <li><strong>Código Fuente:</strong> src/ con subcarpetas especializadas</li>
+          <li><strong>Lógica de Aplicación:</strong> src/app/ con arquitectura por capas</li>
+          <li><strong>Recursos Estáticos:</strong> assets/, docs/, theme/</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="theme-cyan">
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 2.5 de 5 (Final de Parte 2) | Politécnico Grancolombiano</p>
+      <p class="mt-10">
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">← Anterior: 2.4 Archivos Base</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Siguiente: Parte 3 - Código Fuente →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,141 @@
+{
+    "rubrica_id": "RIEF",
+    "curso": "ÉNFASIS EN PROGRAMACIÓN MÓVIL",
+    "puntuacion_total": 100,
+    "escala_calificacion": [
+        {
+            "min": 0,
+            "max": 29,
+            "nivel": "Insuficiente",
+            "descripcion": "Requiere reelaboración significativa"
+        },
+        {
+            "min": 30,
+            "max": 49,
+            "nivel": "Aceptable",
+            "descripcion": "Cumple con requisitos mínimos pero requiere mejoras"
+        },
+        {
+            "min": 50,
+            "max": 69,
+            "nivel": "Bueno",
+            "descripcion": "Cumple con lo esperado con buen nivel de calidad"
+        },
+        {
+            "min": 70,
+            "max": 100,
+            "nivel": "Excelente",
+            "descripcion": "Supera expectativas, alta calidad profesional"
+        }
+    ],
+    "criterios": [
+        {
+            "id": 1,
+            "nombre": "Participación Individual",
+            "peso": 80,
+            "niveles": 4,
+            "nivel": [
+                {
+                    "numero": 1,
+                    "minimo": 0,
+                    "maximo": 10,
+                    "titulo": "Insuficiente",
+                    "descripcion": "Participación mínima o nula en el proyecto. No demuestra compromiso ni aportes significativos. No cumple con las tareas asignadas."
+                },
+                {
+                    "numero": 2,
+                    "minimo": 11,
+                    "maximo": 40,
+                    "titulo": "Aceptable",
+                    "descripcion": "Participación adecuada. Realiza sus tareas asignadas de manera satisfactoria con cumplimiento básico de responsabilidades."
+                },
+                {
+                    "numero": 3,
+                    "minimo": 41,
+                    "maximo": 65,
+                    "titulo": "Bueno",
+                    "descripcion": "Participación activa y constante. Cumple con todas sus responsabilidades y aporta ideas valiosas al equipo."
+                },
+                {
+                    "numero": 4,
+                    "minimo": 66,
+                    "maximo": 80,
+                    "titulo": "Excelente",
+                    "descripcion": "Participación destacada y ejemplar. Va más allá de lo esperado, lidera iniciativas y contribuye significativamente al éxito del proyecto."
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "nombre": "Calidad del Código Individual",
+            "peso": 10,
+            "niveles": 4,
+            "nivel": [
+                {
+                    "numero": 1,
+                    "minimo": 0,
+                    "maximo": 2,
+                    "titulo": "Insuficiente",
+                    "descripcion": "Código de baja calidad, con múltiples errores o sin seguir estándares. Difícil de mantener o entender."
+                },
+                {
+                    "numero": 2,
+                    "minimo": 3,
+                    "maximo": 5,
+                    "titulo": "Aceptable",
+                    "descripcion": "Código funcional que cumple con los requisitos básicos y estándares mínimos. Legible pero podría mejorar."
+                },
+                {
+                    "numero": 3,
+                    "minimo": 6,
+                    "maximo": 8,
+                    "titulo": "Bueno",
+                    "descripcion": "Código bien estructurado, documentado y funcional. Sigue buenas prácticas de programación."
+                },
+                {
+                    "numero": 4,
+                    "minimo": 9,
+                    "maximo": 10,
+                    "titulo": "Excelente",
+                    "descripcion": "Código limpio, muy bien documentado, eficiente y siguiendo mejores prácticas. Código de nivel profesional."
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "nombre": "Creatividad e Innovación",
+            "peso": 10,
+            "niveles": 4,
+            "nivel": [
+                {
+                    "numero": 1,
+                    "minimo": 0,
+                    "maximo": 2,
+                    "titulo": "Insuficiente",
+                    "descripcion": "Soluciones básicas sin originalidad ni innovación. No demuestra pensamiento creativo."
+                },
+                {
+                    "numero": 2,
+                    "minimo": 3,
+                    "maximo": 5,
+                    "titulo": "Aceptable",
+                    "descripcion": "Soluciones funcionales con algunos elementos creativos. Muestra esfuerzo por innovar."
+                },
+                {
+                    "numero": 3,
+                    "minimo": 6,
+                    "maximo": 8,
+                    "titulo": "Bueno",
+                    "descripcion": "Soluciones creativas con aportes innovadores. Demuestra pensamiento original en varios aspectos."
+                },
+                {
+                    "numero": 4,
+                    "minimo": 9,
+                    "maximo": 10,
+                    "titulo": "Excelente",
+                    "descripcion": "Soluciones altamente innovadoras que demuestran pensamiento creativo excepcional y originalidad sobresaliente."
+                }
+            ]
+        }
+    ]
+}

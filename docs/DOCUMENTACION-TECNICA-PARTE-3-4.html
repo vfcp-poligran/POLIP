@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 3.4: Styles</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+  <div class="container">
+    <header class="theme-blue">
+      <h1>🎨 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📄 Parte 3.4: UI Design System (Sistema de Estilos)</span>
+    </header>
+
+    <nav class="nav-parts theme-blue">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1.html">Parte 1: Config</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2.html">Parte 2: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">3.1: Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-2.html">3.2: Core</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">3.3: Tabs</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-4.html" class="active">3.4: Styles</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">3.5: Models</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-6.html">3.6: Services</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-7.html">3.7: Components</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-8.html">3.8: Pages</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- INTRODUCCIÓN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🎯 ¿Qué es el UI Design System?</h2>
+      <p>El archivo <strong>ui-design-system.scss</strong> (~1300 líneas) es el <span class="tech-term" title="Colección de componentes visuales reutilizables">sistema de diseño</span> de POLIProject. Define:</p>
+
+      <ul class="list-styled">
+        <li>🎨 <strong>Paleta de colores</strong> institucionales del Politécnico</li>
+        <li>📐 <strong>Variables CSS</strong> para espaciado, tipografía y sombras</li>
+        <li>🧩 <strong>Componentes reutilizables</strong>: cards, badges, botones, formularios</li>
+        <li>✨ <strong>Animaciones</strong> y micro-interacciones</li>
+        <li>📱 <strong>Utilidades responsive</strong> para móvil/desktop</li>
+      </ul>
+
+      <div class="info-box primary">
+        <strong>💡 Ubicación:</strong> <code>src/app/styles/ui-design-system.scss</code> — Importado globalmente en <code>global.scss</code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- PALETA DE COLORES -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🎨 Paleta de Colores Institucional</h2>
+      <p>Colores oficiales del Politécnico Grancolombiano definidos como <span class="tech-term" title="Variables reutilizables en CSS">CSS Custom Properties</span>.</p>
+
+      <div class="color-palette">
+        <div class="color-card">
+          <div class="swatch swatch-primary"></div>
+          <div class="info">
+            <div class="name">Azul Oscuro</div>
+            <div class="hex">--azul-oscuro: #0f385a</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="swatch swatch-secondary"></div>
+          <div class="info">
+            <div class="name">Azul Claro</div>
+            <div class="hex">--azul-claro: #1fb2de</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="swatch swatch-success"></div>
+          <div class="info">
+            <div class="name">Verde</div>
+            <div class="hex">--verde: #a6ce38</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="swatch swatch-warning"></div>
+          <div class="info">
+            <div class="name">Naranja</div>
+            <div class="hex">--naranja: #fbaf17</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="swatch swatch-magenta"></div>
+          <div class="info">
+            <div class="name">Magenta</div>
+            <div class="hex">--magenta: #ec0677</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="swatch swatch-gradient"></div>
+          <div class="info">
+            <div class="name">Gradiente Principal</div>
+            <div class="hex">--bg-gradient</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="file-header">📄 Variables de color en SCSS</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">/* Colores institucionales Politécnico Grancolombiano */</span></span>
+<span class="code-line"><span class="selector">:root</span> {</span>
+<span class="code-line">  <span class="property">--azul-oscuro</span>: <span class="value">#0f385a</span>;    <span class="comment">/* Primary - Sidebar, headers */</span></span>
+<span class="code-line">  <span class="property">--azul-claro</span>: <span class="value">#1fb2de</span>;     <span class="comment">/* Secondary - Acentos, links */</span></span>
+<span class="code-line">  <span class="property">--verde</span>: <span class="value">#a6ce38</span>;          <span class="comment">/* Success - Completado */</span></span>
+<span class="code-line">  <span class="property">--naranja</span>: <span class="value">#fbaf17</span>;        <span class="comment">/* Warning - En progreso */</span></span>
+<span class="code-line">  <span class="property">--magenta</span>: <span class="value">#ec0677</span>;        <span class="comment">/* Danger - Errores */</span></span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ANIMACIONES -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>✨ Micro-interacciones y Animaciones</h2>
+      <p>Efectos visuales para mejorar la experiencia de usuario.</p>
+
+      <div class="file-header">📄 Animaciones definidas</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">/* Transición suave por defecto */</span></span>
+<span class="code-line"><span class="selector">.ui-transition</span> {</span>
+<span class="code-line">  <span class="property">transition</span>: all <span class="number">0.2s</span> ease;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* Efecto hover con elevación */</span></span>
+<span class="code-line"><span class="selector">.ui-hover-elevate</span> {</span>
+<span class="code-line">  <span class="property">transition</span>: transform <span class="number">0.2s</span> ease, box-shadow <span class="number">0.2s</span> ease;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&:hover</span> {</span>
+<span class="code-line">    <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">-2px</span>);</span>
+<span class="code-line">    <span class="property">box-shadow</span>: <span class="number">0 4px 12px</span> <span class="function">rgba</span>(<span class="number">0, 0, 0, 0.15</span>);</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* Animación de entrada */</span></span>
+<span class="code-line"><span class="keyword">@keyframes</span> ui-fade-in-up {</span>
+<span class="code-line">  <span class="selector">from</span> {</span>
+<span class="code-line">    <span class="property">opacity</span>: <span class="number">0</span>;</span>
+<span class="code-line">    <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">20px</span>);</span>
+<span class="code-line">  }</span>
+<span class="code-line">  <span class="selector">to</span> {</span>
+<span class="code-line">    <span class="property">opacity</span>: <span class="number">1</span>;</span>
+<span class="code-line">    <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">0</span>);</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="selector">.ui-animate-in</span> {</span>
+<span class="code-line">  <span class="property">animation</span>: ui-fade-in-up <span class="number">0.3s</span> ease forwards;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* Skeleton loading (efecto shimmer) */</span></span>
+<span class="code-line"><span class="keyword">@keyframes</span> ui-skeleton-shimmer {</span>
+<span class="code-line">  <span class="selector">0%</span> { <span class="property">background-position</span>: <span class="number">-200%</span> <span class="number">0</span>; }</span>
+<span class="code-line">  <span class="selector">100%</span> { <span class="property">background-position</span>: <span class="number">200%</span> <span class="number">0</span>; }</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Tipos de Animación</h4>
+        <ul>
+          <li><strong>ui-transition:</strong> Transición suave genérica para cualquier propiedad</li>
+          <li><strong>ui-hover-elevate:</strong> Efecto de "levantar" al pasar el mouse</li>
+          <li><strong>ui-fade-in-up:</strong> Entrada con fade + deslizamiento hacia arriba</li>
+          <li><strong>ui-skeleton:</strong> Efecto shimmer para estados de carga</li>
+          <li><strong>ui-ripple:</strong> Efecto Material Design al hacer clic</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- COMPONENTES UI -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>🧩 Componentes UI Reutilizables</h2>
+      <p>Clases CSS listas para usar en cualquier parte de la aplicación.</p>
+
+      <div class="component-grid">
+        <div class="component-card">
+          <h5>.ui-badge</h5>
+          <p>Etiquetas de estado con variantes de color.</p>
+          <div class="preview">
+            <span class="demo-badge primary">PRIMARY</span>
+            <span class="demo-badge success">SUCCESS</span>
+            <span class="demo-badge warning">WARNING</span>
+            <span class="demo-badge danger">DANGER</span>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <h5>.ui-btn</h5>
+          <p>Botones con variantes solid, outline, rounded.</p>
+          <div class="preview">
+            <button class="demo-btn solid">Solid</button>
+            <button class="demo-btn outline">Outline</button>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <h5>.ui-progress</h5>
+          <p>Barra de progreso animada con gradiente.</p>
+          <div class="preview">
+            <div class="demo-progress">
+              <div class="demo-progress-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-card">
+          <h5>.ui-card</h5>
+          <p>Tarjetas con header, body y footer.</p>
+          <div class="preview preview-no-pad">
+            <div class="card-header-preview">Header</div>
+            <div class="card-content-preview">Contenido del card</div>
+            <div class="card-footer-preview">Footer</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Código de .ui-badge</h3>
+      <div class="file-header">📄 Definición de badges</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="selector">.ui-badge</span> {</span>
+<span class="code-line">  <span class="property">display</span>: inline-flex;</span>
+<span class="code-line">  <span class="property">align-items</span>: center;</span>
+<span class="code-line">  <span class="property">padding</span>: <span class="number">2px 8px</span>;</span>
+<span class="code-line">  <span class="property">font-size</span>: <span class="function">var</span>(<span class="value">--badge-size, 0.75rem</span>);</span>
+<span class="code-line">  <span class="property">font-weight</span>: <span class="number">600</span>;</span>
+<span class="code-line">  <span class="property">border-radius</span>: <span class="number">12px</span>;</span>
+<span class="code-line">  <span class="property">text-transform</span>: uppercase;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&--primary</span> {</span>
+<span class="code-line">    <span class="property">background</span>: <span class="function">var</span>(<span class="value">--azul-oscuro, #0f385a</span>);</span>
+<span class="code-line">    <span class="property">color</span>: <span class="value">#ffffff</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&--success</span> {</span>
+<span class="code-line">    <span class="property">background</span>: <span class="function">var</span>(<span class="value">--verde, #a6ce38</span>);</span>
+<span class="code-line">    <span class="property">color</span>: <span class="value">#000000</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&--warning</span> {</span>
+<span class="code-line">    <span class="property">background</span>: <span class="function">var</span>(<span class="value">--naranja, #fbaf17</span>);</span>
+<span class="code-line">    <span class="property">color</span>: <span class="value">#000000</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&--danger</span> {</span>
+<span class="code-line">    <span class="property">background</span>: <span class="function">var</span>(<span class="value">--magenta, #ec0677</span>);</span>
+<span class="code-line">    <span class="property">color</span>: <span class="value">#ffffff</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- UTILIDADES RESPONSIVE -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📱 Utilidades Responsive</h2>
+      <p>Clases para controlar visibilidad según el tamaño de pantalla.</p>
+
+      <div class="file-header">📄 Clases responsive</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="comment">/* Mostrar solo en desktop (>= 992px) */</span></span>
+<span class="code-line"><span class="selector">.desktop-only</span> {</span>
+<span class="code-line">  <span class="property">display</span>: none;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="keyword">@media</span> (min-width: <span class="number">992px</span>) {</span>
+<span class="code-line">    <span class="property">display</span>: block;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* Mostrar solo en móvil (< 992px) */</span></span>
+<span class="code-line"><span class="selector">.mobile-only</span> {</span>
+<span class="code-line">  <span class="property">display</span>: block;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="keyword">@media</span> (min-width: <span class="number">992px</span>) {</span>
+<span class="code-line">    <span class="property">display</span>: none;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* Ocultar en móvil */</span></span>
+<span class="code-line"><span class="keyword">@media</span> (max-width: <span class="number">767px</span>) {</span>
+<span class="code-line">  <span class="selector">.ui-hide-mobile</span> { <span class="property">display</span>: none <span class="keyword">!important</span>; }</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* Ocultar en desktop */</span></span>
+<span class="code-line"><span class="keyword">@media</span> (min-width: <span class="number">768px</span>) {</span>
+<span class="code-line">  <span class="selector">.ui-hide-desktop</span> { <span class="property">display</span>: none <span class="keyword">!important</span>; }</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Clase</th>
+            <th>Visible en Móvil</th>
+            <th>Visible en Desktop</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>.desktop-only</code></td>
+            <td>❌ No</td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td><code>.mobile-only</code></td>
+            <td>✅ Sí</td>
+            <td>❌ No</td>
+          </tr>
+          <tr>
+            <td><code>.ui-hide-mobile</code></td>
+            <td>❌ No</td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td><code>.ui-hide-desktop</code></td>
+            <td>✅ Sí</td>
+            <td>❌ No</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- TOOLTIPS Y ESTADOS VACÍOS -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>💬 Tooltips y Empty States</h2>
+
+      <h3>Tooltips con CSS puro</h3>
+      <div class="file-header">📄 Sistema de tooltips</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="selector">[data-tooltip]</span> {</span>
+<span class="code-line">  <span class="property">position</span>: relative;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&::before</span> {</span>
+<span class="code-line">    <span class="property">content</span>: <span class="function">attr</span>(data-tooltip);</span>
+<span class="code-line">    <span class="property">position</span>: absolute;</span>
+<span class="code-line">    <span class="property">bottom</span>: <span class="number">100%</span>;</span>
+<span class="code-line">    <span class="property">left</span>: <span class="number">50%</span>;</span>
+<span class="code-line">    <span class="property">transform</span>: <span class="function">translateX</span>(<span class="number">-50%</span>);</span>
+<span class="code-line">    <span class="property">padding</span>: <span class="number">6px 10px</span>;</span>
+<span class="code-line">    <span class="property">background</span>: <span class="function">rgba</span>(<span class="number">0, 0, 0, 0.85</span>);</span>
+<span class="code-line">    <span class="property">color</span>: <span class="value">#ffffff</span>;</span>
+<span class="code-line">    <span class="property">font-size</span>: <span class="function">var</span>(<span class="value">--fs-xs</span>);</span>
+<span class="code-line">    <span class="property">border-radius</span>: <span class="number">4px</span>;</span>
+<span class="code-line">    <span class="property">opacity</span>: <span class="number">0</span>;</span>
+<span class="code-line">    <span class="property">visibility</span>: hidden;</span>
+<span class="code-line">    <span class="property">transition</span>: opacity <span class="number">0.2s</span> ease;</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">&:hover::before</span> {</span>
+<span class="code-line">    <span class="property">opacity</span>: <span class="number">1</span>;</span>
+<span class="code-line">    <span class="property">visibility</span>: visible;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+
+      <div class="explanation">
+        <h4>📚 Uso de Tooltips</h4>
+        <p>Simplemente agrega el atributo <code>data-tooltip</code> a cualquier elemento:</p>
+        <div class="code-inline-block">
+          &lt;ion-button data-tooltip="Guardar cambios"&gt;💾&lt;/ion-button&gt;
+        </div>
+      </div>
+
+      <h3>Empty States (Estados Vacíos)</h3>
+      <div class="file-header">📄 Componente de estado vacío</div>
+      <div class="code-block">
+        <code>
+<span class="code-line"><span class="selector">.ui-empty-state</span> {</span>
+<span class="code-line">  <span class="property">display</span>: flex;</span>
+<span class="code-line">  <span class="property">flex-direction</span>: column;</span>
+<span class="code-line">  <span class="property">align-items</span>: center;</span>
+<span class="code-line">  <span class="property">justify-content</span>: center;</span>
+<span class="code-line">  <span class="property">padding</span>: <span class="number">48px 24px</span>;</span>
+<span class="code-line">  <span class="property">text-align</span>: center;</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">ion-icon</span> {</span>
+<span class="code-line">    <span class="property">font-size</span>: <span class="number">4rem</span>;</span>
+<span class="code-line">    <span class="property">color</span>: <span class="function">var</span>(<span class="value">--texto-secundario</span>);</span>
+<span class="code-line">    <span class="property">opacity</span>: <span class="number">0.5</span>;</span>
+<span class="code-line">    <span class="property">margin-bottom</span>: <span class="function">var</span>(<span class="value">--spacing-lg</span>);</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">h3</span> {</span>
+<span class="code-line">    <span class="property">font-size</span>: <span class="function">var</span>(<span class="value">--fs-lg</span>);</span>
+<span class="code-line">    <span class="property">color</span>: <span class="function">var</span>(<span class="value">--texto-principal</span>);</span>
+<span class="code-line">  }</span>
+<span class="code-line"></span>
+<span class="code-line">  <span class="selector">p</span> {</span>
+<span class="code-line">    <span class="property">color</span>: <span class="function">var</span>(<span class="value">--texto-secundario</span>);</span>
+<span class="code-line">    <span class="property">max-width</span>: <span class="number">280px</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span>
+        </code>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- RESUMEN -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📋 Resumen - UI Design System</h2>
+
+      <table class="property-table">
+        <thead>
+          <tr>
+            <th>Sección</th>
+            <th>Clases Principales</th>
+            <th>Propósito</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Animaciones</td>
+            <td><code>.ui-transition</code>, <code>.ui-hover-elevate</code>, <code>.ui-animate-in</code></td>
+            <td>Micro-interacciones y efectos visuales</td>
+          </tr>
+          <tr>
+            <td>Cards</td>
+            <td><code>.ui-card</code>, <code>.ui-card--elevated</code>, <code>.ui-card--interactive</code></td>
+            <td>Contenedores con secciones</td>
+          </tr>
+          <tr>
+            <td>Badges</td>
+            <td><code>.ui-badge--primary</code>, <code>--success</code>, <code>--warning</code>, <code>--danger</code></td>
+            <td>Etiquetas de estado</td>
+          </tr>
+          <tr>
+            <td>Botones</td>
+            <td><code>.ui-btn</code>, <code>.ui-btn--rounded</code>, <code>.ui-btn-loading</code></td>
+            <td>Botones con variantes</td>
+          </tr>
+          <tr>
+            <td>Formularios</td>
+            <td><code>.ui-input-group</code>, <code>.ui-input-error</code></td>
+            <td>Campos de entrada estilizados</td>
+          </tr>
+          <tr>
+            <td>Listas</td>
+            <td><code>.ui-list</code>, <code>.ui-list--compact</code>, <code>.ui-list--divided</code></td>
+            <td>Listas con variantes</td>
+          </tr>
+          <tr>
+            <td>Progress</td>
+            <td><code>.ui-progress</code>, <code>.ui-progress--striped</code>, <code>.ui-progress--animated</code></td>
+            <td>Barras de progreso</td>
+          </tr>
+          <tr>
+            <td>Responsive</td>
+            <td><code>.desktop-only</code>, <code>.mobile-only</code>, <code>.ui-hide-mobile</code></td>
+            <td>Control de visibilidad</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box success">
+        <strong>✅ Uso:</strong> Todas las clases <code>.ui-*</code> están disponibles globalmente. Solo agrégalas a cualquier elemento HTML para aplicar los estilos.
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- GLOSARIO -->
+    <!-- ============================================ -->
+    <section class="section theme-blue">
+      <h2>📖 Glosario CSS/SCSS</h2>
+
+      <div class="component-card" class="mb-15">
+        <h5>CSS Custom Properties (Variables)</h5>
+        <p>Variables definidas con <code>--nombre</code> y usadas con <code>var(--nombre)</code>. Permiten temas dinámicos y reutilización de valores.</p>
+      </div>
+
+      <div class="component-card" class="mb-15">
+        <h5>@keyframes</h5>
+        <p>Define los pasos de una animación CSS. Se usa con la propiedad <code>animation</code>.</p>
+      </div>
+
+      <div class="component-card" class="mb-15">
+        <h5>BEM (&--modifier)</h5>
+        <p><strong>Block Element Modifier</strong>. El <code>&</code> en SCSS refiere al selector padre. <code>&--danger</code> compila a <code>.ui-badge--danger</code>.</p>
+      </div>
+
+      <div class="component-card" class="mb-15">
+        <h5>::before / ::after</h5>
+        <p>Pseudo-elementos que insertan contenido antes/después del elemento. Útiles para tooltips y decoraciones.</p>
+      </div>
+
+      <div class="component-card" class="mb-15">
+        <h5>@media queries</h5>
+        <p>Reglas CSS condicionales basadas en características del dispositivo (ancho, orientación, etc.).</p>
+      </div>
+
+      <div class="component-card">
+        <h5>attr()</h5>
+        <p>Función CSS que lee el valor de un atributo HTML. Usado en <code>content: attr(data-tooltip)</code>.</p>
+      </div>
+    </section>
+
+    <footer class="theme-blue">
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 3.4 de 8 | Politécnico Grancolombiano</p>
+      <p class="mt-10">
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-3.html">← Anterior: 3.3 Tabs</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-3-5.html">Siguiente: 3.5 Models →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

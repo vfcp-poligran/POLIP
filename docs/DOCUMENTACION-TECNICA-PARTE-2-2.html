@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLIProject - Parte 2.2: Carpetas docs/ y src/</title>
+  <link rel="stylesheet" href="css/documentacion-tecnica.css">
+</head>
+<body>
+  <div class="container">
+    <header class="theme-orange">
+      <h1>📁 POLIProject</h1>
+      <p class="subtitle">Documentación Técnica del Código Fuente</p>
+      <span class="part-indicator">📂 Parte 2.2: Carpetas docs/ y src/</span>
+    </header>
+
+    <nav class="nav-parts theme-orange">
+      <a href="DOCUMENTACION-TECNICA-PARTE-1-1.html">Parte 1</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">2.1: Estructura</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-2.html" class="active">2.2: docs/ y src/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">2.3: src/app/</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-4.html">2.4: Archivos Base</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-2-5.html">2.5: Config Raíz</a>
+      <a href="DOCUMENTACION-TECNICA-PARTE-3-1.html">Parte 3</a>
+    </nav>
+
+    <!-- ============================================ -->
+    <!-- CARPETA DOCS -->
+    <!-- ============================================ -->
+    <section class="section theme-orange">
+      <h2>📄 Carpeta docs/</h2>
+
+      <div class="folder-card docs">
+        <h4><span class="icon">📁</span>docs/</h4>
+        <p><strong>Propósito:</strong> Repositorio de documentación técnica, archivos de referencia, datos de prueba y recursos que <strong>NO</strong> forman parte del código ejecutable de la aplicación.</p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Documentación como Código"</h4>
+        <p>La carpeta <code>docs/</code> sigue el principio de <strong>Documentation as Code</strong>:</p>
+        <ul>
+          <li><strong>Versionada:</strong> Se guarda junto al código en Git</li>
+          <li><strong>Revisable:</strong> Cambios pasan por pull requests</li>
+          <li><strong>Sincronizada:</strong> Documentación siempre actualizada con el código</li>
+          <li><strong>Accesible:</strong> Cualquiera con el repo tiene la documentación</li>
+        </ul>
+      </div>
+
+      <h3>📊 Contenido de docs/</h3>
+
+      <div class="content-grid">
+        <div class="content-card">
+          <div class="icon">📊</div>
+          <h4>Archivos CSV</h4>
+          <p>Datos de estudiantes, calificaciones y grupos para importar en la aplicación.</p>
+          <p class="mt-10 text-sm text-muted">
+            Ejemplos: <code>EPMB01.csv</code>, <code>SO-B09.csv</code>
+          </p>
+        </div>
+        <div class="content-card">
+          <div class="icon">📋</div>
+          <h4>Rúbricas</h4>
+          <p>Definiciones de rúbricas de evaluación en formato <code>.json</code> y <code>.txt</code>.</p>
+          <p class="mt-10 text-sm text-muted">
+            Ejemplos: <code>RGE1.json</code>, <code>RIE2.txt</code>
+          </p>
+        </div>
+        <div class="content-card">
+          <div class="icon">📚</div>
+          <h4>Documentación HTML</h4>
+          <p>Documentación técnica generada (como este archivo).</p>
+          <p class="mt-10 text-sm text-muted">
+            Series: <code>PARTE-1-X</code>, <code>PARTE-2-X</code>, <code>PARTE-3-X</code>
+          </p>
+        </div>
+        <div class="content-card">
+          <div class="icon">📦</div>
+          <h4>Archivos de Referencia</h4>
+          <p>SRS (Software Requirements Specification), plantillas y especificaciones.</p>
+          <p class="mt-10 text-sm text-muted">
+            Ejemplo: <code>SRS-Original.html</code>
+          </p>
+        </div>
+      </div>
+
+      <div class="tree-structure">
+<span class="folder">docs/</span>
+├── <span class="comment"># 📊 Datos de Estudiantes (CSV para importar)</span>
+├── <span class="file">EPMB01.csv</span>                        <span class="comment"># Énfasis Prog. Móvil - Grupo B01</span>
+├── <span class="file">EPMB02.csv</span>                        <span class="comment"># Énfasis Prog. Móvil - Grupo B02</span>
+├── <span class="file">EPMB03.csv</span>                        <span class="comment"># Énfasis Prog. Móvil - Grupo B03</span>
+├── <span class="file">SO-B09.csv</span>                        <span class="comment"># Sistemas Operacionales - Grupo B09</span>
+│
+├── <span class="comment"># 📋 Rúbricas de Evaluación</span>
+├── <span class="file">RGE1.json</span>                         <span class="comment"># Rúbrica Grupal E1 (formato JSON)</span>
+├── <span class="file">RGE1.txt</span>                          <span class="comment"># Rúbrica Grupal E1 (formato TXT legacy)</span>
+├── <span class="file">RGE2.txt</span>                          <span class="comment"># Rúbrica Grupal E2</span>
+├── <span class="file">RGEF.txt</span>                          <span class="comment"># Rúbrica Grupal Final</span>
+├── <span class="file">RIE1.txt</span>                          <span class="comment"># Rúbrica Individual E1</span>
+├── <span class="file">RIE2.txt</span>                          <span class="comment"># Rúbrica Individual E2</span>
+├── <span class="file">RIEF.txt</span>                          <span class="comment"># Rúbrica Individual Final</span>
+├── <span class="folder">rubricas/</span>                         <span class="comment"># Carpeta adicional de rúbricas</span>
+│
+├── <span class="comment"># 📚 Documentación Técnica</span>
+├── <span class="file">DOCUMENTACION-TECNICA-PARTE-1-1.html</span>
+├── <span class="file">DOCUMENTACION-TECNICA-PARTE-1-2.html</span>
+├── <span class="file">... (continúa)</span>
+│
+└── <span class="file">SRS-Original.html</span>                 <span class="comment"># Especificación de Requisitos</span>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Importante:</strong><br>
+        Los archivos en <code>docs/</code> <strong>NO se compilan</strong> ni se envían a dispositivos móviles. Son exclusivamente para desarrollo, testing y documentación.
+      </div>
+
+      <div class="analogy-box">
+        <h4>📚 Analogía: La Biblioteca del Edificio</h4>
+        <p>Si POLIProject es un edificio corporativo, <code>docs/</code> es la <strong>biblioteca y archivo central</strong>:</p>
+        <ul>
+          <li><strong>No es oficina de trabajo:</strong> No se ejecuta código aquí</li>
+          <li><strong>Es referencia:</strong> Donde consultas manuales, políticas, ejemplos</li>
+          <li><strong>Historial:</strong> Guarda versiones anteriores de documentos</li>
+          <li><strong>Acceso restringido al público:</strong> Solo desarrolladores la ven</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CARPETA SRC -->
+    <!-- ============================================ -->
+    <section class="section src-section theme-green">
+      <h2>💻 Carpeta src/ - Código Fuente</h2>
+
+      <div class="folder-card src">
+        <h4><span class="icon">📁</span>src/</h4>
+        <p><strong>Propósito:</strong> Directorio raíz del código fuente de la aplicación. Contiene <strong>TODO</strong> lo que se compila y empaqueta para ejecución en web, Android e iOS.</p>
+        <p class="mt-10"><strong>Es el corazón de POLIProject.</strong></p>
+      </div>
+
+      <div class="philosophy-box">
+        <h4>📐 Filosofía: "Source of Truth"</h4>
+        <p>La carpeta <code>src/</code> es la <strong>única fuente de verdad</strong> del código:</p>
+        <ul>
+          <li><strong>Todo el código ejecutable</strong> está aquí (no en raíz, no en docs/)</li>
+          <li><strong>Estructura predecible:</strong> Angular/Ionic esperan esta organización</li>
+          <li><strong>Compilable:</strong> <code>ng build</code> procesa solo esta carpeta</li>
+          <li><strong>Portátil:</strong> Copiar <code>src/</code> a otro proyecto funciona</li>
+        </ul>
+      </div>
+
+      <h3>📂 Subcarpetas de src/</h3>
+
+      <div class="tree-structure">
+<span class="folder">src/</span>
+├── <span class="folder">app/</span>               <span class="comment"># ⚙️ Aplicación Angular (ver Parte 2.3)</span>
+│   ├── <span class="folder">components/</span>    <span class="comment"># Componentes reutilizables</span>
+│   ├── <span class="folder">core/</span>          <span class="comment"># Servicios core y guards</span>
+│   ├── <span class="folder">models/</span>        <span class="comment"># Interfaces TypeScript</span>
+│   ├── <span class="folder">pages/</span>         <span class="comment"># Páginas de la app</span>
+│   ├── <span class="folder">services/</span>      <span class="comment"># Servicios inyectables</span>
+│   ├── <span class="folder">styles/</span>        <span class="comment"># SCSS compartidos</span>
+│   └── <span class="folder">tabs/</span>          <span class="comment"># Navegación por tabs</span>
+│
+├── <span class="folder">assets/</span>            <span class="comment"># 🖼️ Recursos estáticos</span>
+│   └── <span class="folder">icon/</span>          <span class="comment"># Iconos de la app</span>
+│
+├── <span class="folder">environments/</span>      <span class="comment"># 🌍 Config por entorno</span>
+│   ├── <span class="file">environment.ts</span>         <span class="comment"># Desarrollo</span>
+│   └── <span class="file">environment.prod.ts</span>    <span class="comment"># Producción</span>
+│
+├── <span class="folder">theme/</span>             <span class="comment"># 🎨 Variables de tema Ionic</span>
+│   └── <span class="file">variables.scss</span>
+│
+├── <span class="file">global.scss</span>        <span class="comment"># Estilos globales</span>
+├── <span class="file">index.html</span>         <span class="comment"># Punto de entrada HTML</span>
+├── <span class="file">main.ts</span>            <span class="comment"># Bootstrap Angular</span>
+├── <span class="file">polyfills.ts</span>       <span class="comment"># Compatibilidad browsers</span>
+├── <span class="file">test.ts</span>            <span class="comment"># Config testing</span>
+└── <span class="file">zone-flags.ts</span>      <span class="comment"># Optimización Zone.js</span>
+      </div>
+
+      <h3>🖼️ src/assets/ - Recursos Estáticos</h3>
+
+      <div class="folder-card">
+        <h4><span class="icon">🖼️</span>assets/</h4>
+        <p><strong>Propósito:</strong> Almacena recursos que se sirven <strong>tal cual</strong> sin procesamiento: imágenes, iconos, fuentes, archivos JSON estáticos.</p>
+        <p class="mt-10"><strong>Acceso:</strong> Referenciados con <code>/assets/...</code> desde HTML/CSS.</p>
+      </div>
+
+      <table class="comparison-table src">
+        <thead>
+          <tr>
+            <th>Archivo/Carpeta</th>
+            <th>Tipo</th>
+            <th>Uso en POLIProject</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>icon/</code></td>
+            <td>Carpeta</td>
+            <td>Iconos de la app (launcher icon, splash)</td>
+          </tr>
+          <tr>
+            <td><code>shapes.svg</code></td>
+            <td>SVG</td>
+            <td>Formas decorativas de Ionic</td>
+          </tr>
+          <tr>
+            <td><code>*.png, *.jpg</code></td>
+            <td>Imágenes</td>
+            <td>Logos, ilustraciones, fondos</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>🌍 src/environments/ - Configuración por Entorno</h3>
+
+      <div class="folder-card">
+        <h4><span class="icon">🌍</span>environments/</h4>
+        <p><strong>Propósito:</strong> Archivos de configuración que <strong>cambian según el entorno</strong> (desarrollo vs producción).</p>
+      </div>
+
+      <div class="content-grid">
+        <div class="content-card">
+          <h4>🛠️ environment.ts (Desarrollo)</h4>
+          <pre class="code-block-dark">
+export const environment = {
+  production: <span class="syntax-bool">false</span>,
+  enableLogging: <span class="syntax-bool">true</span>,
+  apiUrl: <span class="syntax-string">'http://localhost:3000'</span>
+};</pre>
+        </div>
+        <div class="content-card">
+          <h4>🚀 environment.prod.ts (Producción)</h4>
+          <pre class="code-block-dark">
+export const environment = {
+  production: <span class="syntax-bool">true</span>,
+  enableLogging: <span class="syntax-bool">false</span>,
+  apiUrl: <span class="syntax-string">'https://api.poliproject.com'</span>
+};</pre>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 ¿Cómo funciona?</strong><br>
+        Angular reemplaza automáticamente <code>environment.ts</code> por <code>environment.prod.ts</code> cuando compilas con:
+        <pre class="mt-10"><code>ng build --configuration=production</code></pre>
+      </div>
+
+      <h3>🎨 src/theme/ - Variables de Tema</h3>
+
+      <div class="folder-card">
+        <h4><span class="icon">🎨</span>theme/</h4>
+        <p><strong>Propósito:</strong> Define las <strong>variables CSS de Ionic</strong> que controlan el tema visual de toda la aplicación.</p>
+        <p class="mt-10"><strong>Archivo principal:</strong> <code>variables.scss</code></p>
+      </div>
+
+      <div class="project-box">
+        <h4>📋 En POLIProject:</h4>
+        <p>El archivo <code>variables.scss</code> define los colores institucionales del Politécnico:</p>
+        <pre class="code-block-dark mt-10">
+<span class="syntax-comment">// Colores principales de POLIProject</span>
+--ion-color-primary: <span class="syntax-string">#0f385a</span>;    <span class="syntax-comment">// Azul Politécnico</span>
+--ion-color-secondary: <span class="syntax-string">#667eea</span>; <span class="syntax-comment">// Púrpura acento</span>
+--ion-color-success: <span class="syntax-string">#28a745</span>;   <span class="syntax-comment">// Verde éxito</span>
+--ion-color-warning: <span class="syntax-string">#ffc107</span>;   <span class="syntax-comment">// Amarillo advertencia</span></pre>
+      </div>
+
+      <div class="analogy-box">
+        <h4>🎨 Analogía: La Paleta del Pintor</h4>
+        <p><code>theme/variables.scss</code> es como la <strong>paleta de colores oficial</strong> de un artista corporativo:</p>
+        <ul>
+          <li><strong>Define los colores aprobados:</strong> Nadie usa colores fuera de la paleta</li>
+          <li><strong>Un cambio afecta todo:</strong> Cambiar <code>--ion-color-primary</code> actualiza toda la app</li>
+          <li><strong>Consistencia visual:</strong> Garantiza que la marca sea coherente</li>
+        </ul>
+      </div>
+
+      <div class="success-box">
+        <strong>✨ Organización por Capas en src/:</strong>
+        <ul class="mt-10 ml-20">
+          <li><strong>Presentación:</strong> <code>app/pages/</code>, <code>app/components/</code>, <code>app/tabs/</code></li>
+          <li><strong>Lógica de Negocio:</strong> <code>app/services/</code>, <code>app/core/</code></li>
+          <li><strong>Modelo de Datos:</strong> <code>app/models/</code></li>
+          <li><strong>Estilos:</strong> <code>theme/</code>, <code>app/styles/</code>, <code>global.scss</code></li>
+          <li><strong>Configuración:</strong> <code>environments/</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="theme-orange">
+      <p><strong>POLIProject</strong> - Documentación Técnica</p>
+      <p>Parte 2.2 de 5 | Politécnico Grancolombiano</p>
+      <p class="mt-10">
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-1.html">← Anterior: 2.1 Estructura General</a>
+        &nbsp;|&nbsp;
+        <a href="DOCUMENTACION-TECNICA-PARTE-2-3.html">Siguiente: 2.3 src/app/ →</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

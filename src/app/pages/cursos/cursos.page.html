@@ -1,349 +1,224 @@
-<ion-content class="mobile-optimized" [fullscreen]="true">
-  <!-- FAB nativo de Ionic para móvil portrait -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="primary">
-      <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-    </ion-fab-button>
+<ion-content [fullscreen]="true">
+  <div class="page-container">
+    <div class="tab-content cursos-tab-content">
 
-    <ion-fab-list side="top">
-      <!-- Navegación de grupo anterior -->
-      <ion-fab-button color="primary" [disabled]="!grupoAnteriorDisponible" (click)="retrocederGrupo()"
-        data-desc="Grupo anterior">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-fab-button>
-
-      <!-- Navegación de grupo siguiente -->
-      <ion-fab-button color="primary" [disabled]="!grupoSiguienteDisponible" (click)="avanzarGrupo()"
-        data-desc="Grupo siguiente">
-        <ion-icon name="arrow-forward-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab-list>
-  </ion-fab>
-
-  <div class="layout" [ngStyle]="layoutStyles">
-    <div class="page-container">
-      <!-- Selector de Curso -->
-      <ion-card *ngIf="cursosDisponibles.length > 0">
-        <ion-card-content>
-          <ion-segment [(ngModel)]="cursoActivo" (ionChange)="onCursoChange($event)" class="course-segment" scrollable
-            mode="md">
-            <ion-segment-button *ngFor="let curso of cursosDisponibles; trackBy: trackByCurso" [value]="curso"
-              [style.--background-checked]="getCourseColor(curso)" [style.--color-checked]="'#ffffff'"
-              [style.--border-color]="getCourseColor(curso)">
-              <ion-label>
-                <div class="course-label">
-                  <div class="course-name-wrapper">
-                    <span class="course-tab-name">{{ getCursoMetadataForCourse(curso)?.nombre || curso }}</span>
-                  </div>
-                  <ion-button fill="clear" size="small" class="course-menu-btn"
-                    (click)="abrirMenuColor($event, curso); $event.stopPropagation()">
-                    <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
-                  </ion-button>
-                </div>
-              </ion-label>
-            </ion-segment-button>
-          </ion-segment>
-
-          <!-- Popover para cambiar color (Ionic nativo) - Botón 3 puntos -->
-          <ion-popover [isOpen]="menuColorVisible" [event]="colorPopoverEvent" (didDismiss)="cerrarMenuColor()"
-            size="auto" alignment="start" class="color-picker-popover-wrapper">
-            <ng-template>
-              <div class="color-picker-popover">
-                <div class="color-picker-header">
-                  <span>🎨 Selector de Color</span>
-                  <ion-button fill="clear" size="small" (click)="cerrarMenuColor()">
-                    <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-                  </ion-button>
-                </div>
-                <div class="color-picker-content">
-                  <!-- Grid de colores predefinidos -->
-                  <div class="color-picker-grid">
-                    @for (color of coloresDisponibles; track color) {
-                    <div class="color-option" [style.background-color]="color"
-                      [class.selected]="colorSeleccionado === color" (click)="cambiarColorCurso(color)" [title]="color">
-                      @if (colorSeleccionado === color) {
-                      <ion-icon name="checkmark-circle"></ion-icon>
-                      }
-                    </div>
-                    }
-                  </div>
-
-                  <!-- Sección de código HEX -->
-                  <div class="color-picker-input-section">
-                    <div class="hex-input-wrapper">
-                      <label class="hex-label">Código Hexadecimal</label>
-                      <ion-input [(ngModel)]="colorSeleccionado" type="text" placeholder="#FF0000" maxlength="7"
-                        (ionInput)="validarColorHex($event)" fill="outline" class="color-hex-input">
-                      </ion-input>
-                      <p class="hex-hint">Ej: #FF5733, #1976D2</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="color-picker-actions">
-                  <ion-button fill="outline" size="small" (click)="cerrarMenuColor()">
-                    Cancelar
-                  </ion-button>
-                  <ion-button fill="solid" size="small" (click)="aplicarColorCurso()">
-                    Aplicar Color
-                  </ion-button>
-                </div>
-              </div>
-            </ng-template>
-          </ion-popover>
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Mensaje si no hay cursos -->
-      <div *ngIf="cursosDisponibles.length === 0" class="empty-state-fullscreen">
-        <div class="empty-state-content">
-          <ion-icon name="document-text-outline" size="large" color="medium"></ion-icon>
-          <h3>No hay cursos disponibles.</h3>
-          <p>Seleccione (botón <strong>Crear</strong>)</p>
+      <!-- Título de la página -->
+      <div class="page-title-header">
+        <div class="title-wrapper">
+          <h2>Cursos</h2>
+        </div>
+        <div class="header-actions">
+          @if (!modoEdicion) {
+            <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
+              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+              Crear
+            </ion-button>
+          } @else {
+            <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
+              <ion-icon name="save-outline" slot="start"></ion-icon>
+              Guardar
+            </ion-button>
+            <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()">
+              Cancelar
+            </ion-button>
+          }
         </div>
       </div>
 
-      <!-- Lista de Estudiantes -->
-      @if (cursoActivo && estudiantesActuales.length > 0) {
-      <div class="estudiantes-section">
+      @if (modoEdicion) {
+        <!-- Contenedor principal que agrupa info + uploads -->
+        <div class="upload-wrapper" [class.expanded]="infoExpanded">
+          <!-- Mensaje instructivo con icono -->
+          <div class="upload-instructions">
+            <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
+            <span class="info-text">Cargue los archivos en formato CSV de Personas y Calificaciones del LMS Canvas</span>
+          </div>
 
-        <!-- Panel General -->
-        <ion-card class="dashboard-options">
-          <ion-card-header>
-            <ion-card-title>
-              <ion-icon name="analytics-outline"></ion-icon>
-              Panel General
-            </ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
+          <!-- Barra de info (Personas y Calificaciones) -->
+          <div class="tabla-info-bar">
+            <!-- Input oculto para archivo de estudiantes -->
+            <input
+              type="file"
+              #estudiantesFileInput
+              accept=".csv"
+              (change)="onEstudiantesFileSelected($event)"
+              class="file-input-hidden"
+              aria-label="Cargar archivo CSV de estudiantes"
+            />
 
-            <!-- Vista: Todos los grupos -->
-            @if (filtroGrupo === 'todos') {
-            <ion-grid>
-              <ion-row>
-                <!-- Columna 1: Grupos Calificados -->
-                <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
-                  <ion-card class="panel-section-card compact">
-                    <ion-card-header class="section-header-ionic">
-                      <ion-card-subtitle>
-                        <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
-                        <ion-text color="dark">Calificados</ion-text>
-                        <ion-badge color="success">{{ getEstadisticasResumidas().calificados }}</ion-badge>
-                      </ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <ion-list class="grupos-list compact">
-                        @if (getGruposCalificados().length > 0) {
-                        @for (grupoInfo of getGruposCalificados(); track grupoInfo.grupo) {
-                        <ion-item button (click)="navegarAGrupo(grupoInfo.grupo)" lines="none" class="grupo-item">
-                          <ion-label>
-                            <div class="grupo-header">
-                              <span class="grupo-numero">G{{ grupoInfo.grupo }}</span>
-                              <span class="grupo-integrantes">({{ grupoInfo.integrantes }})</span>
-                              <div class="entregas-inline">
-                                <ion-badge [color]="grupoInfo.entregas.E1 ? 'success' : 'medium'"
-                                  class="mini-badge">E1</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.E2 ? 'success' : 'medium'"
-                                  class="mini-badge">E2</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.EF ? 'success' : 'medium'"
-                                  class="mini-badge">EF</ion-badge>
-                              </div>
-                              <ion-badge [color]="grupoInfo.porcentaje === 100 ? 'success' : 'warning'"
-                                class="porcentaje-badge">
-                                {{ grupoInfo.porcentaje }}%
-                              </ion-badge>
-                            </div>
-                          </ion-label>
-                        </ion-item>
-                        }
-                        } @else {
-                        <ion-item lines="none" class="placeholder-item compact">
-                          <ion-label color="medium" class="ion-text-center">
-                            <p>Sin grupos calificados</p>
-                          </ion-label>
-                        </ion-item>
-                        }
-                      </ion-list>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
+            <!-- Input oculto para archivo de calificaciones -->
+            <input
+              type="file"
+              #calificacionesFileInput
+              accept=".csv"
+              (change)="onCalificacionesFileSelected($event)"
+              class="file-input-hidden"
+              aria-label="Cargar archivo CSV de calificaciones"
+            />
 
-                <!-- Columna 2: Grupos Por Calificar -->
-                <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
-                  <ion-card class="panel-section-card compact">
-                    <ion-card-header class="section-header-ionic">
-                      <ion-card-subtitle>
-                        <ion-icon name="time-outline" color="warning"></ion-icon>
-                        <ion-text color="dark">Pendientes</ion-text>
-                        <ion-badge color="warning">{{ getEstadisticasResumidas().pendientes }}</ion-badge>
-                      </ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <ion-list class="grupos-list compact">
-                        @if (getGruposPendientes().length > 0) {
-                        @for (grupoInfo of getGruposPendientes(); track grupoInfo.grupo) {
-                        <ion-item button (click)="navegarAGrupo(grupoInfo.grupo)" lines="none" class="grupo-item">
-                          <ion-label>
-                            <div class="grupo-header">
-                              <span class="grupo-numero">G{{ grupoInfo.grupo }}</span>
-                              <span class="grupo-integrantes">({{ grupoInfo.integrantes }})</span>
-                              <div class="entregas-inline">
-                                <ion-badge [color]="grupoInfo.entregas.E1 ? 'success' : 'danger'"
-                                  class="mini-badge">E1</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.E2 ? 'success' : 'danger'"
-                                  class="mini-badge">E2</ion-badge>
-                                <ion-badge [color]="grupoInfo.entregas.EF ? 'success' : 'danger'"
-                                  class="mini-badge">EF</ion-badge>
-                              </div>
-                              <ion-badge color="danger" class="porcentaje-badge">
-                                {{ grupoInfo.totalPendientes }}
-                              </ion-badge>
-                            </div>
-                          </ion-label>
-                        </ion-item>
-                        }
-                        } @else {
-                        <ion-item lines="none" class="placeholder-item compact">
-                          <ion-label color="success" class="ion-text-center">
-                            <p>¡Todos calificados!</p>
-                          </ion-label>
-                        </ion-item>
-                        }
-                      </ion-list>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
-
-                <!-- Columna 3: Casos Especiales -->
-                <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3">
-                  <ion-card class="panel-section-card">
-                    <ion-card-header class="section-header-ionic">
-                      <ion-card-subtitle>
-                        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
-                        <ion-text color="dark">Casos Especiales (Novelas)</ion-text>
-                        <ion-badge color="danger">0</ion-badge>
-                      </ion-card-subtitle>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <ion-list class="casos-especiales-list">
-                        <ion-item lines="none" class="placeholder-item">
-                          <ion-icon name="document-text-outline" slot="start" color="medium"></ion-icon>
-                          <ion-label color="medium">
-                            <p>Funcionalidad en desarrollo</p>
-                            <p class="ion-text-wrap">Aquí se mostrarán casos especiales</p>
-                          </ion-label>
-                        </ion-item>
-                      </ion-list>
-                    </ion-card-content>
-                  </ion-card>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-            } @else {
-            <!-- Vista: Grupo específico seleccionado -->
-            <ion-card>
-              <ion-card-content class="no-padding">
-                @if (obtenerIntegrantesGrupo().length > 0) {
-                <!-- Tabla de calificaciones con diseño Ionic -->
-                <ion-list class="estudiantes-list" lines="none">
-                  <!-- Header -->
-                  <ion-item class="list-header">
-                    <ion-label class="header-label" slot="start">ESTUDIANTE</ion-label>
-                    <ion-label class="header-label ion-text-center header-e1">E1</ion-label>
-                    <ion-label class="header-label ion-text-center header-e2">E2</ion-label>
-                    <ion-label class="header-label ion-text-center header-ef">EF</ion-label>
-                    <ion-label class="header-label ion-text-center header-total">TOTAL</ion-label>
-                  </ion-item>
-
-                  <!-- Filas de estudiantes -->
-                  @for (integrante of obtenerIntegrantesGrupo(); track integrante.correo) {
-                  <ion-item class="student-row" [class.selected]="integrante.correo === estudianteSeleccionado" button
-                    (click)="seleccionarEstudiante(integrante.correo)">
-                    <ion-label slot="start" class="student-info-label">
-                      <div class="student-name">{{ integrante.apellidos }}, {{ integrante.nombres }}</div>
-                    </ion-label>
-
-                    <ion-badge slot="end" [color]="obtenerColorCalificacion(obtenerCalificacionPanel(integrante, 'E1'))"
-                      class="grade-badge">
-                      {{ obtenerCalificacionPanel(integrante, 'E1') || '-' }}
-                    </ion-badge>
-
-                    <ion-badge slot="end" [color]="obtenerColorCalificacion(obtenerCalificacionPanel(integrante, 'E2'))"
-                      class="grade-badge">
-                      {{ obtenerCalificacionPanel(integrante, 'E2') || '-' }}
-                    </ion-badge>
-
-                    <ion-badge slot="end" [color]="obtenerColorCalificacion(obtenerCalificacionPanel(integrante, 'EF'))"
-                      class="grade-badge">
-                      {{ obtenerCalificacionPanel(integrante, 'EF') || '-' }}
-                    </ion-badge>
-
-                    <ion-chip slot="end" color="warning" class="total-chip">
-                      <ion-label>{{ obtenerTotalCalificaciones(integrante) }}</ion-label>
-                    </ion-chip>
-                  </ion-item>
-                  }
-                </ion-list>
-
-                <!-- Información adicional -->
-                @if (!tieneArchivoCanvas()) {
-                <ion-item lines="none" class="ion-margin-top">
-                  <ion-icon name="information-circle-outline" slot="start" color="warning"></ion-icon>
-                  <ion-label color="warning">
-                    <p class="ion-text-wrap">No hay archivo de calificaciones Canvas cargado.</p>
-                  </ion-label>
-                </ion-item>
-                }
-                } @else {
-                <ion-item lines="none">
-                  <ion-icon name="alert-circle-outline" slot="start" color="medium"></ion-icon>
-                  <ion-label color="medium">
-                    <p>No hay integrantes en este grupo</p>
-                  </ion-label>
-                </ion-item>
-                }
-
-                <!-- Contenedor para Rúbrica - Debajo de la lista de estudiantes -->
-                @if (mostrarRubrica && rubricaActual) {
-                <div class="rubrica-container ion-margin-top">
-                  <ion-card color="light">
-                    <ion-card-header>
-                      <ion-toolbar color="light">
-                        <ion-title class="rubrica-title">
-                          📋 {{ rubricaActual.nombre }}
-                          @if (puntosRubricaTotales > 0) {
-                          <ion-chip color="success" mode="ios" class="ion-margin-start rubrica-points-chip">
-                            <strong>{{ puntosRubricaTotales }} / {{ rubricaActual.puntuacionTotal }} pts</strong>
-                          </ion-chip>
-                          }
-                        </ion-title>
-                        <ion-buttons slot="end">
-                          <ion-button (click)="cerrarRubrica()" color="medium" size="small">
-                            ✖
-                          </ion-button>
-                        </ion-buttons>
-                      </ion-toolbar>
-                    </ion-card-header>
-                    <ion-card-content>
-                      <!-- Componente de Evaluación de Rúbrica -->
-                      <app-evaluacion-rubrica [rubrica]="rubricaActual"
-                        [estudianteId]="estudianteSeleccionado || 'grupal'"
-                        [nombreEstudiante]="estudianteSeleccionado ? obtenerNombreEstudianteSeleccionado() : 'Evaluación Grupal'"
-                        [evaluacionExistente]="evaluacionActual" (puntuacionChange)="puntosRubricaTotales = $event"
-                        (evaluacionGuardada)="onEvaluacionGuardada($event)">
-                      </app-evaluacion-rubrica>
-                    </ion-card-content>
-                  </ion-card>
+            <div class="upload-section">
+              <div class="upload-btn-container" (click)="estudiantesFileInput.click()">
+                <ion-icon name="cloud-upload"></ion-icon>
+                <span class="btn-label">Personas</span>
+              </div>
+              @if (estudiantesFileName) {
+                <div class="file-loaded-info">
+                  <div class="file-details">
+                    <span class="file-full-name">{{ estudiantesFileName }}</span>
+                    <ion-icon name="close-circle" (click)="limpiarEstudiantes()" class="remove-file"></ion-icon>
+                  </div>
                 </div>
-                }
-              </ion-card-content>
-            </ion-card>
-            }
+              }
+            </div>
 
-          </ion-card-content>
-        </ion-card>
-      </div>
+            <div class="upload-section">
+              <div class="upload-btn-container" (click)="calificacionesFileInput.click()">
+                <ion-icon name="cloud-upload"></ion-icon>
+                <span class="btn-label">Calificaciones</span>
+              </div>
+              @if (calificacionesFileName) {
+                <div class="file-loaded-info">
+                  <div class="file-details">
+                    <span class="file-full-name">{{ calificacionesFileName }}</span>
+                    <ion-icon name="close-circle" (click)="limpiarCalificaciones()" class="remove-file"></ion-icon>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
       }
+
+      <!-- Área principal: Tabla de cursos -->
+      <div class="tabla-area">
+        @if (cursosDisponibles.length > 0) {
+
+          <!-- Vista Desktop: Tabla tradicional -->
+          <div class="tabla-wrapper tabla-completa desktop-only">
+            <table class="tabla-cursos">
+              <thead>
+                <tr>
+                  <th class="tabla-header col-codigo">Código</th>
+                  <th class="tabla-header col-nombre">Nombre del Curso</th>
+                  <th class="tabla-header col-bloque">Bloque</th>
+                  <th class="tabla-header col-fecha">Fecha Creación</th>
+                  <th class="tabla-header col-estado">Estado</th>
+                  <th class="tabla-header col-acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (curso of cursosDisponibles; track curso.codigo; let i = $index; let isOdd = $odd) {
+                  <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
+                    <td class="tabla-cell col-codigo">
+                      <span class="codigo-badge">{{ curso.nombreAbreviado || curso.codigoBase || '—' }}</span>
+                    </td>
+                    <td class="tabla-cell col-nombre">{{ curso.nombre }}</td>
+                    <td class="tabla-cell col-bloque">{{ curso.bloque || '—' }}</td>
+                    <td class="tabla-cell col-fecha">{{ curso.fechaCreacion || '—' }}</td>
+                    <td class="tabla-cell col-estado">
+                      @if (curso.tieneCalificaciones) {
+                        <span class="estado-badge estado-activo">
+                          <ion-icon name="checkmark-circle"></ion-icon>
+                          Activo
+                        </span>
+                      } @else {
+                        <span class="estado-badge estado-pendiente">
+                          <ion-icon name="ellipse-outline"></ion-icon>
+                          Sin datos
+                        </span>
+                      }
+                    </td>
+                    <td class="tabla-cell col-acciones">
+                      <ion-button size="small" fill="clear" color="primary" (click)="editarCurso(curso)">
+                        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                      </ion-button>
+                      <ion-button size="small" fill="clear" color="danger" (click)="confirmarEliminarCurso(curso)">
+                        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                      </ion-button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Vista Móvil: Cards con componentes Ionic -->
+          <ion-list class="mobile-only curso-cards">
+            @for (curso of cursosDisponibles; track curso.codigo) {
+              <ion-item lines="none" class="curso-card">
+                <ion-card>
+                  <ion-card-header>
+                    <ion-card-title>
+                      <span class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</span>
+                      <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
+                    </ion-card-title>
+                  </ion-card-header>
+
+                  <ion-card-content>
+                    <ion-grid>
+                      <ion-row>
+                        <ion-col size="6">
+                          <div class="info-item">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span class="info-label">Bloque:</span>
+                            <span class="info-value">{{ curso.bloque || '—' }}</span>
+                          </div>
+                        </ion-col>
+                        <ion-col size="6">
+                          <div class="info-item">
+                            <ion-icon name="time-outline"></ion-icon>
+                            <span class="info-label">Creación:</span>
+                            <span class="info-value">{{ curso.fechaCreacion || '—' }}</span>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="12">
+                          <div class="estado-wrapper">
+                            @if (curso.tieneCalificaciones) {
+                              <ion-chip color="success">
+                                <ion-icon name="checkmark-circle"></ion-icon>
+                                <ion-label>Activo</ion-label>
+                              </ion-chip>
+                            } @else {
+                              <ion-chip color="warning">
+                                <ion-icon name="ellipse-outline"></ion-icon>
+                                <ion-label>Sin datos</ion-label>
+                              </ion-chip>
+                            }
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="12">
+                          <div class="acciones-mobile">
+                            <ion-button expand="block" fill="outline" color="primary" (click)="editarCurso(curso)">
+                              <ion-icon name="create-outline" slot="start"></ion-icon>
+                              Editar
+                            </ion-button>
+                            <ion-button expand="block" fill="outline" color="danger" (click)="confirmarEliminarCurso(curso)">
+                              <ion-icon name="trash-outline" slot="start"></ion-icon>
+                              Eliminar
+                            </ion-button>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </ion-card-content>
+                </ion-card>
+              </ion-item>
+            }
+          </ion-list>
+
+        } @else {
+          <!-- Empty state -->
+          <div class="empty-state">
+            <h3>No hay Cursos Registrados</h3>
+            <p>Seleccione "Crear" para agregar un nuevo curso</p>
+          </div>
+        }
+      </div>
+
     </div>
   </div>
 </ion-content>

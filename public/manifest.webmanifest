@@ -1,12 +1,18 @@
 {
-  "name": "Gestor de Proyectos EPM",
-  "short_name": "EPM Gestor",
-  "display": "fullscreen",
+  "name": "POLIProject",
+  "short_name": "POLIProject",
+  "description": "Gestor de Seguimiento de Proyectos para evaluación educativa - Politécnico Grancolombiano",
+  "display": "standalone",
   "orientation": "any",
   "theme_color": "#0f385a",
   "background_color": "#0f385a",
   "scope": "./",
   "start_url": "./",
+  "id": "com.poligran.gestorproyectos",
+  "categories": ["education", "productivity"],
+  "lang": "es-CO",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icons/icon-72x72.png",

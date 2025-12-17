@@ -1,170 +1,131 @@
 <ion-content [fullscreen]="true">
   <div class="page-container">
-    <div class="tab-content calificaciones-tab-content tab-content-padding-bottom">
+    <div class="tab-content calificaciones-tab-content">
 
-    <div class="grid-calificaciones">
+      <!-- Título de la página -->
+      <div class="page-title-header">
+        <ion-icon name="ribbon"></ion-icon>
+        <h2>Calificaciones Canvas</h2>
+      </div>
 
-      <!-- Panel izquierdo: Lista de cursos -->
-      <div class="sidebar-calificaciones">
-        <h3 class="h3-cursos-calificaciones">
-          <ion-icon name="folder-outline"></ion-icon>
-          Cursos con Calificaciones
-        </h3>
-
+      <!-- Barra de botones de cursos -->
+      <div class="cursos-botones-bar">
         @if (cursosConCalificaciones.length > 0) {
           @for (curso of cursosConCalificaciones; track curso.codigo) {
-            <ion-card
-              [style.border]="cursoCalificacionesSeleccionado === curso.codigo ? '2px solid var(--azul-oscuro)' : '1px solid #ddd'"
-              [style.cursor]="'pointer'"
-              [style.margin-bottom]="'8px'"
+            <button
+              class="curso-btn"
+              [class.activo]="cursoCalificacionesSeleccionado === curso.codigo"
               (click)="seleccionarCursoCalificaciones(curso.codigo)">
-              <ion-card-header class="card-header-calificaciones">
-                <ion-card-title class="card-title-calificaciones">
-                  <ion-icon name="school-outline" class="icon-school-blue"></ion-icon>
-                  {{ curso.nombre }}
-                  @if (cursoCalificacionesSeleccionado === curso.codigo) {
-                    <ion-icon name="checkmark-circle" class="icon-checkmark-success-auto"></ion-icon>
-                  }
-                </ion-card-title>
-                <ion-card-subtitle class="card-subtitle-calificaciones">
-                  {{ curso.codigo }} - {{ curso.bloque }}
-                </ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content class="card-content-calificaciones">
-                <div class="col-flex-gap-6-small">
-                  <div class="row-flex-gap-6">
-                    <ion-icon name="document-text-outline" class="icon-document-success"></ion-icon>
-                    <span class="span-ellipsis">{{ curso.archivoCalificaciones.nombre }}</span>
-                  </div>
-                  <div class="row-flex-gap-6">
-                    <ion-icon name="calendar-outline" class="icon-calendar-medium"></ion-icon>
-                    <span>{{ formatearFecha(curso.archivoCalificaciones.fechaCarga) }}</span>
-                  </div>
-                </div>
-
-                <!-- Botones de acción en el card -->
-                @if (cursoCalificacionesSeleccionado === curso.codigo) {
-                  <div class="actions-gap-top-8">
-                    <ion-button
-                      size="small"
-                      fill="solid"
-                      color="success"
-                      class="button-visualizar-small"
-                      (click)="exportarCalificaciones(curso.codigo); $event.stopPropagation()">
-                      <ion-icon name="download-outline" slot="start"></ion-icon>
-                      Exportar
-                    </ion-button>
-                    <ion-button
-                      size="small"
-                      fill="outline"
-                      color="danger"
-                      class="button-eliminar-archivo-small"
-                      (click)="eliminarArchivoCalificacionesCurso(curso.codigo); $event.stopPropagation()">
-                      <ion-icon name="trash-outline" slot="start"></ion-icon>
-                      Eliminar
-                    </ion-button>
-                  </div>
-                }
-              </ion-card-content>
-            </ion-card>
+              {{ curso.codigo }}
+            </button>
           }
         } @else {
-          <div class="empty-state-calificaciones">
-            <ion-icon name="document-outline" class="icon-document-large"></ion-icon>
-            <p class="text-empty-state">No hay archivos de calificaciones</p>
-            <p class="text-empty-subtitle">Los archivos se cargan al crear/editar cursos</p>
+          <div class="no-cursos-msg">
+            <ion-icon name="folder"></ion-icon>
+            <span>No hay archivos de calificaciones cargados</span>
           </div>
         }
       </div>
 
-      <!-- Panel derecho: Vista del CSV -->
-      <div class="panel-calificaciones">
-        @if (cursoCalificacionesSeleccionado && csvCalificacionesTabla) {
-          <!-- Header -->
-          <div class="header-panel-calificaciones">
-            <div class="row-flex-space-between">
-              <div>
-                <h3 class="title-panel-calificaciones">
-                  <ion-icon name="analytics-outline"></ion-icon>
-                  Vista de Calificaciones Canvas
-                </h3>
-                <p class="subtitle-panel-calificaciones">
-                  {{ archivoCalificacionesVisualizacion?.nombre }}
-                </p>
-              </div>
-              <ion-button
-                size="small"
-                fill="clear"
-                (click)="refrescarVistaCalificaciones()"
-                class="button-refresh-white">
-                <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
-              </ion-button>
-            </div>
+      <!-- Header con info del archivo y acciones -->
+      @if (cursoCalificacionesSeleccionado && filasCalificaciones.length > 0) {
+        <div class="header-selector-cursos">
+          <div class="selector-left">
+            <span class="selector-label">{{ obtenerNombreCursoSeleccionado() }}</span>
+          </div>
+          <div class="selector-right">
+            <span class="archivo-nombre">
+              <ion-icon name="document-text"></ion-icon>
+              {{ archivoCalificacionesVisualizacion?.nombre }}
+            </span>
+            <span class="archivo-fecha">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
+            <ion-button size="small" fill="solid" color="success"
+              (click)="exportarCalificaciones(cursoCalificacionesSeleccionado)">
+              <ion-icon name="download" slot="start"></ion-icon>
+              Exportar
+            </ion-button>
+            <ion-button size="small" fill="outline" color="danger"
+              (click)="eliminarArchivoCalificacionesCurso(cursoCalificacionesSeleccionado)">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Eliminar
+            </ion-button>
+          </div>
+        </div>
+      }
+
+      <!-- Área principal: Tabla de calificaciones -->
+      <div class="tabla-area">
+        @if (cursoCalificacionesSeleccionado && filasCompletas.length > 0) {
+          <!-- Info de conteo -->
+          <div class="tabla-info-bar">
+            <ion-chip color="primary" class="chip-info">
+              <ion-icon name="people"></ion-icon>
+              <ion-label>{{ filasCompletas.length }} estudiantes</ion-label>
+            </ion-chip>
           </div>
 
-          <!-- Tabla responsive con ion-card -->
-          <ion-card class="tabla-calificaciones-card">
-            <ion-card-content class="tabla-content">
-              <!-- Contador superior -->
-              <div class="tabla-header-info">
-                <ion-chip color="primary">
-                  <ion-icon name="list-outline"></ion-icon>
-                  <ion-label>{{ csvCalificacionesTabla.filas.length }} estudiantes</ion-label>
-                </ion-chip>
-                <ion-chip color="secondary">
-                  <ion-icon name="grid-outline"></ion-icon>
-                  <ion-label>{{ csvCalificacionesTabla.headers.length }} columnas</ion-label>
-                </ion-chip>
-              </div>
-
-              <!-- Tabla con scroll horizontal -->
-              <div class="tabla-scroll-wrapper">
-                <table class="tabla-calificaciones">
-                  <thead>
-                    <tr>
-                      @for (header of csvCalificacionesTabla.headers; track $index) {
-                        <th class="tabla-header" [class.col-numeric]="esColumnaNumerico(header)">
-                          <div class="header-content">
-                            <ion-icon
-                              [name]="obtenerIconoHeader(header)"
-                              class="header-icon">
-                            </ion-icon>
-                            <span class="header-text">{{ header }}</span>
-                          </div>
-                        </th>
-                      }
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (fila of csvCalificacionesTabla.filas; track $index; let isOdd = $odd) {
-                      <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
-                        @for (celda of fila; track celdaIndex; let celdaIndex = $index) {
-                          <td
-                            class="tabla-cell"
-                            [class.cell-numeric]="esNumerico(celda)"
-                            [class.cell-grade-high]="esCalificacionAlta(celda)"
-                            [class.cell-grade-low]="esCalificacionBaja(celda)">
-                            {{ celda || '-' }}
-                          </td>
+          <!-- Tabla con scroll horizontal y vertical -->
+          <div class="tabla-wrapper tabla-completa">
+            <table class="tabla-calificaciones">
+              <thead>
+                <tr>
+                  <!-- Columna fija: Grupo (del curso) -->
+                  <th class="tabla-header col-grupo col-sticky">Grupo</th>
+                  <!-- Headers originales del CSV -->
+                  @for (col of getHeadersVisibles(); track col.indice) {
+                    <th class="tabla-header"
+                        [class.col-estudiante]="col.header === 'Student'"
+                        [class.col-id]="col.header === 'ID'"
+                        [class.col-numeric]="esColumnaEditable(col.indice)"
+                        [class.col-editable]="esColumnaEditable(col.indice)">
+                      {{ col.header }}
+                    </th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (fila of filasCompletas; track fila.filaOriginalIndex; let i = $index; let isOdd = $odd) {
+                  <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
+                    <!-- Columna fija: Grupo -->
+                    <td class="tabla-cell col-grupo col-sticky">
+                      <span class="grupo-badge">{{ fila.grupo }}</span>
+                    </td>
+                    <!-- Columnas del CSV -->
+                    @for (col of getHeadersVisibles(); track col.indice) {
+                      <td class="tabla-cell"
+                          [class.col-estudiante]="col.header === 'Student'"
+                          [class.col-id]="col.header === 'ID'"
+                          [class.cell-numeric]="esColumnaEditable(col.indice)"
+                          [class.col-editable]="esColumnaEditable(col.indice)"
+                          [class.editing]="estaEditandoCelda(i, col.indice)"
+                          (click)="esColumnaEditable(col.indice) ? iniciarEdicionCelda(i, col.indice) : null">
+                        @if (estaEditandoCelda(i, col.indice)) {
+                          <input type="text"
+                                 class="edit-input"
+                                 placeholder="Valor"
+                                 [title]="'Editar ' + col.header"
+                                 [(ngModel)]="valorEditando"
+                                 (blur)="guardarEdicionCelda()"
+                                 (keydown)="onKeyDown($event)"
+                                 autofocus />
+                        } @else {
+                          {{ fila.valores[col.indice] || '-' }}
                         }
-                      </tr>
+                      </td>
                     }
-                  </tbody>
-                </table>
-              </div>
-            </ion-card-content>
-          </ion-card>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         } @else {
-          <!-- Mensaje cuando no hay selección -->
-          <div class="empty-state-panel-center">
-            <ion-icon name="bar-chart-outline" class="icon-barchart-large"></ion-icon>
-            <p class="text-select-curso">Selecciona un curso</p>
-            <p class="text-select-subtitle">Haz clic en un curso de la izquierda para ver sus calificaciones</p>
+          <!-- Empty state -->
+          <div class="empty-state">
+            <ion-icon name="stats-chart"></ion-icon>
+            <p>Selecciona un curso para ver sus calificaciones de Canvas</p>
           </div>
         }
       </div>
-
-    </div>
 
     </div>
   </div>

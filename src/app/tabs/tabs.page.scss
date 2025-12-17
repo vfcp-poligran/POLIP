@@ -1,74 +1,182 @@
 /* ============================================================
-   CONFIGURACIÓN DE LAYOUT CON ION-SPLIT-PANE
+   CONFIGURACIÓN DE LAYOUT SIN ION-SPLIT-PANE
+   Layout simple: ion-menu (móvil) + ion-card sidebar (desktop)
    ============================================================ */
 
-/* ion-split-pane - Layout nativo de Ionic */
-ion-split-pane {
-  --side-width: 280px;
-  --side-max-width: 300px;
-  --side-min-width: 250px;
-  --border: none;
-
-  /* 🔧 FIX: Asegurar que el contenido principal reciba eventos de clic */
-  &.split-pane-visible {
-    /* El main-content debe ser completamente interactivo */
-    #main-content {
-      pointer-events: auto;
-      z-index: 1;
-    }
-
-    /* El menú lateral no debe tener backdrop visible */
-    ion-menu {
-      /* Backdrop desactivado cuando split-pane está activo */
-      --backdrop-opacity: 0;
-    }
-  }
+/* Host element - usar flexbox para layout */
+:host {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
-/* 🔧🔧🔧 FIX CRÍTICO: Clase .menu-content-open bloquea eventos 🔧🔧🔧 */
-/* Ionic aplica esta clase cuando el menú está "abierto" lo cual */
-/* en modo split-pane significa siempre - debemos desactivar el bloqueo */
-:host ::ng-deep {
-  .menu-content-open,
-  .menu-content.menu-content-open {
-    pointer-events: auto;
-    z-index: 0;
+/* Desktop sidebar como ion-card fija */
+.desktop-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 220px;
+  margin: 0;
+  border-radius: 0;
+  z-index: 99;
+  background: var(--azul-oscuro, #0f385a);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+
+  // Estado colapsado - solo recorta el ancho
+  &.collapsed {
+    width: 64px;
   }
 
-  /* ion-backdrop del menú debe estar siempre oculto en split-pane */
-  ion-backdrop {
-    display: none;
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
+  ion-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px;
+    gap: 12px;
+    background: var(--azul-oscuro, #0f385a);
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: flex-direction 0.3s ease, padding 0.3s ease, gap 0.3s ease;
+    container-type: inline-size;
+    container-name: sidebar-header;
+
+    .sidebar-logo-avatar {
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-title {
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: font-size 0.3s ease, transform 0.3s ease;
+    }
+
+    ion-card-title {
+      display: none;
+    }
   }
 
-  /* El contenedor del ion-tabs debe ser interactivo */
-  .tabs-wrapper,
-  ion-tabs,
-  ion-router-outlet {
-    pointer-events: auto;
+  // Cuando está colapsado, reorganizar header en columna
+  &.collapsed ion-card-header {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 2px;
+    gap: 2px;
+
+    .sidebar-logo-avatar {
+      width: 32px;
+      height: 32px;
+    }
+
+    .sidebar-title {
+      // Responsive: ajusta al ancho del contenedor
+      font-size: clamp(0.4rem, 8cqw, 0.55rem);
+      text-align: center;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
-  /* Todas las páginas dentro del router deben ser clickeables */
-  ion-router-outlet .ion-page {
-    pointer-events: auto;
-  }
-}
-
-/* Menú lateral - estilos nativos */
-.sidebar-menu {
-  --background: var(--azul-oscuro, #0f385a);
-  --width: 280px;
-  --max-width: 300px;
-
-  ion-content {
-    --background: var(--azul-oscuro, #0f385a);
+  .desktop-sidebar-content {
+    flex: 1;
+    padding: 12px 0 0 0;
+    background: var(--azul-oscuro, #0f385a);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
-  ion-header ion-toolbar {
-    --background: var(--azul-oscuro, #0f385a);
-    --color: white;
+  .desktop-nav-list {
+    background: transparent;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    ion-item.nav-item {
+      --background: transparent;
+      --color: white;
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --inner-border-width: 0;
+      --min-height: 48px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background 0.25s ease;
+      margin: 0;
+
+      ion-icon {
+        color: white;
+        font-size: 26px;
+        flex-shrink: 0;
+        margin-right: 12px;
+      }
+
+      ion-label {
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      &:hover:not(.active-menu-item) {
+        --background: rgba(255, 255, 255, 0.15);
+      }
+
+      // Estado activo: fondo blanco, icono y texto azul oscuro
+      &.active-menu-item {
+        --background: white;
+        --color: var(--azul-oscuro, #0f385a);
+
+        ion-icon {
+          color: var(--azul-oscuro, #0f385a);
+        }
+
+        ion-label {
+          color: var(--azul-oscuro, #0f385a);
+        }
+      }
+    }
+  }
+
+  // Footer con botón de expandir/colapsar
+  .sidebar-footer-desktop {
+    flex-shrink: 0;
+    padding: 8px;
+    background: var(--azul-oscuro, #0f385a);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: center;
+
+    .expand-btn {
+      --background: transparent;
+      --background-hover: rgba(255, 255, 255, 0.15);
+      --color: white;
+      width: 48px;
+      height: 40px;
+      margin: 0;
+      --border-radius: 8px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
   }
 
   ion-footer ion-toolbar {
@@ -77,157 +185,187 @@ ion-split-pane {
   }
 }
 
-/* Contenido principal */
-.ion-page {
-  display: flex;
-  flex-direction: column;
+/* Contenedor principal - SOLO div sin ion-tabs */
+div#main-content.main-content-area,
+div.main-content-area {
+  display: block;
+  width: 100%;
   height: 100%;
-}
-
-.main-content-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
+  position: relative;
   overflow: hidden;
+  transition: left 0.3s ease;
 
-  ion-tabs {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+  /* Con sidebar izquierda y panel derecho en desktop */
+  @media (min-width: 992px) {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 220px; /* Sidebar expandido por defecto */
+    right: 350px;
+    width: auto;
+    z-index: 1;
   }
 
-  /* Panel de seguimiento dentro del layout - solo desktop */
-  .panel-seguimiento-global {
-    width: 350px;
-    min-width: 280px;
-    max-width: 450px;
-    height: 100%;
-    margin: 0;
-    border-radius: 0;
-    overflow-y: auto;
-    flex-shrink: 0;
-    background: white;
-    border-left: 1px solid #e0e0e0;
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    right: 320px;
+  }
 
-    @media (max-width: 991px) {
-      display: none;
+  @media (min-width: 1280px) and (max-width: 1599px) {
+    right: 380px;
+  }
+
+  @media (min-width: 1600px) {
+    right: 420px;
+  }
+
+  /* Ajuste cuando sidebar está colapsado */
+  &.sidebar-collapsed {
+    @media (min-width: 992px) {
+      left: 64px;
     }
   }
-}
 
-/* Header móvil solo visible en pantallas pequeñas */
-.mobile-header {
-  display: none;
-
-  @media (max-width: 991px) {
-    display: block;
+  /* ion-router-outlet dentro del div */
+  ion-router-outlet {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: 100%;
+    pointer-events: auto;
+    overflow: hidden;
   }
-
-  ion-toolbar {
-    --background: var(--azul-oscuro);
-    --color: white;
-  }
 }
 
-/* Ocultar ion-tab-bar */
-.hidden-tab-bar {
-  display: none;
-}
-
-/* NOTE: Critical pointer-events fix for ion-tabs/ion-router-outlet
-   is now in global.scss for proper global scope without view encapsulation */
-
-// ========================================
-// ION-MENU SIDEBAR - COMPONENTE NATIVO
-// ========================================
+/* ion-menu solo visible en móvil (desktop usa .desktop-sidebar) */
 .sidebar-menu {
-  --width: 250px;
-  --min-width: 250px;
-  --max-width: 300px;
-
-  // Variables de Ionic para deshabilitar animaciones del menú
-  --ion-menu-animation-duration: 0ms;
-  --ion-menu-animation-easing: none;
-
-  ion-toolbar {
-    --background: var(--azul-oscuro);
-    --color: white;
-    --padding-start: 12px;
-    --padding-end: 12px;
-  }
-
-  .sidebar-logo-avatar {
-    width: 40px;
-    height: 40px;
-    margin-right: 8px;
-  }
+  --background: var(--azul-oscuro, #0f385a);
+  --width: 220px;
+  --max-width: 240px;
 
   ion-content {
-    --background: var(--azul-oscuro);
+    --background: var(--azul-oscuro, #0f385a);
   }
 
+  ion-header ion-toolbar {
+    --background: var(--azul-oscuro, #0f385a);
+    --color: white;
+    padding: 8px 12px;
+  }
+
+  /* Título de la app en el sidebar */
+  .sidebar-app-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+  }
+
+  ion-footer ion-toolbar {
+    --background: var(--azul-oscuro, #0f385a);
+    --color: white;
+    padding: 6px 12px;
+  }
+
+  // Estilos para la lista de navegación móvil
   .sidebar-nav-list {
     background: transparent;
+    padding: 6px;
+
+    ion-menu-toggle {
+      margin-bottom: 2px;
+    }
 
     ion-item {
       --background: transparent;
-      --color: rgba(255, 255, 255, 0.8);
-      --padding-start: 16px;
-      --padding-end: 16px;
-      --inner-padding-end: 8px;
-      --inner-border-width: 0;
-      --min-height: 48px;
-      margin: 4px 8px;
-      border-radius: 8px;
-
-      &:hover {
-        --background: rgba(31, 178, 222, 0.15);
-        --color: white;
-      }
-
-      &.active-menu-item {
-        --background: rgba(31, 178, 222, 0.25);
-        --color: var(--azul-claro, #1fb2de);
-        font-weight: 600;
-
-        ion-icon {
-          color: var(--azul-claro, #1fb2de);
-        }
-      }
+      --background-hover: rgba(255, 255, 255, 0.1);
+      --background-activated: rgba(255, 255, 255, 0.15);
+      --color: rgba(255, 255, 255, 0.85);
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --min-height: 42px;
+      --border-radius: 10px;
+      margin: 2px 0;
+      font-weight: 500;
+      transition: all 0.2s ease;
 
       ion-icon {
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 1.5rem;
+        font-size: 20px;
         margin-right: 12px;
+        // Preservar color del atributo HTML (tertiary, primary, warning, success, medium)
+        // No sobrescribir con color fijo
       }
 
       ion-label {
-        font-size: 0.95rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+      }
+
+      &.active-menu-item {
+        --background: rgba(31, 178, 222, 0.2);
+        --color: #ffffff;
+
+        // En estado activo, usar color azul claro para destacar
+        ion-icon {
+          color: var(--azul-claro, #1fb2de) !important;
+        }
       }
     }
   }
 
-  ion-footer {
+  // Estilos para el footer del menú móvil
+  .sidebar-footer {
     ion-toolbar {
-      --background: rgba(0, 0, 0, 0.1);
-      --border-width: 1px 0 0 0;
-      --border-color: rgba(255, 255, 255, 0.1);
+      --background: rgba(0, 0, 0, 0.2);
+      --padding-start: 8px;
+      --padding-end: 8px;
+      padding: 6px 0;
     }
 
-    ion-button {
-      --color: white;
-      --color-hover: var(--azul-claro);
+    .footer-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 6px;
+    }
+
+    .footer-btn {
+      --background: transparent;
+      --background-hover: rgba(255, 255, 255, 0.1);
+      --color: rgba(255, 255, 255, 0.85);
+      --padding-start: 10px;
+      --padding-end: 10px;
+      height: 38px;
+      margin: 0;
+      font-size: 0.75rem;
+      text-transform: none;
+      justify-content: flex-start;
+      border-radius: 8px;
+
+      ion-icon {
+        font-size: 18px;
+        margin-right: 10px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      ion-label {
+        font-weight: 500;
+      }
+
+      &:hover {
+        --background: rgba(255, 255, 255, 0.1);
+      }
     }
   }
+}
 
-  // NOTA: ion-split-pane maneja automáticamente la visibilidad del menú
-  // Ya no se necesitan estilos de position: fixed porque ion-split-pane
-  // controla el layout de manera nativa
-
-  @media (min-width: 1200px) {
-    --width: 300px;
-  }
+/* Ocultar helper de navegación */
+.hidden-navigation-helper,
+.hidden-tab-bar {
+  display: none;
 }
 
 // ========================================
@@ -2712,76 +2850,8 @@ ion-tab-button[tab="inicio"].circular-tab {
 }
 
 // ========================================
-// LAYOUT PRINCIPAL - USANDO ION-SPLIT-PANE
+// PANEL DE SEGUIMIENTO - ESTILOS
 // ========================================
-:host {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-// ion-split-pane ocupa todo el espacio
-ion-split-pane {
-  height: 100%;
-}
-
-// Contenido principal dentro del split-pane
-#main-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-}
-
-// Wrapper de tabs con margen para el panel
-.tabs-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: visible; // Cambiado de hidden a visible
-  position: relative;
-
-  @media (min-width: 992px) {
-    margin-right: 350px; // Espacio para el panel
-  }
-
-  @media (min-width: 1024px) and (max-width: 1279px) {
-    margin-right: 320px;
-  }
-
-  @media (min-width: 1280px) and (max-width: 1599px) {
-    margin-right: 380px;
-  }
-
-  @media (min-width: 1600px) {
-    margin-right: 420px;
-  }
-}
-
-// ion-tabs y router-outlet - asegurar que sean clickeables
-ion-tabs {
-  flex: 1;
-  height: 100%;
-  width: 100%;
-  position: relative;
-
-  ion-router-outlet {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    .ion-page {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      contain: layout size style;
-    }
-  }
-}
 
 // Panel de seguimiento - position fixed a la derecha
 .panel-seguimiento-global {
@@ -2836,11 +2906,16 @@ ion-tabs {
     ion-card-title {
       color: #ffffff;
       margin: 0;
-      font-size: 0.66rem;
+      font-size: 0.72rem;
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 4.8px;
+      gap: 6px;
+
+      ion-icon {
+        font-size: 1rem;
+        color: #ffffff;
+      }
     }
   }
 
@@ -2939,101 +3014,398 @@ ion-tabs {
     }
   }
 
-  // Grid de grupos con Ionic Buttons - Diseño moderno sin bordes
+  // Header de grupos con badge de selección
+  .grupos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 2px;
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--azul-oscuro);
+      letter-spacing: 0.5px;
+    }
+
+    .grupo-seleccionado-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      --padding-start: 8px;
+      --padding-end: 10px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      border-radius: 12px;
+      animation: pulseIn 0.3s ease-out;
+
+      ion-icon {
+        font-size: 0.75rem;
+      }
+    }
+
+    // Badge especial para cuando se visualiza un grupo diferente al seleccionado
+    .grupo-visualizado-badge {
+      animation: blink-soft 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink-soft {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  @keyframes pulseIn {
+    0% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  // Grid de grupos con Ionic Buttons - Usando variables CSS nativas de Ionic
   .grupos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(31.2px, 1fr));
     gap: 6px;
 
-    // Ionic Button como grupo-btn - Usando variables CSS nativas de Ionic
-    ion-button.grupo-btn {
-      // Padding interno - Forzar consistencia en todas las vistas
-      --padding-start: 7.2px;
-      --padding-end: 7.2px;
-      --padding-top: 6px;
-      --padding-bottom: 6px;
-      padding: 0;
+    // Botón nativo grupo-btn - Estandarizado con _seguimiento.scss
+    .grupo-btn {
+      // Reset de botón nativo
+      border: none;
+      outline: none;
+      cursor: pointer;
 
-      // Eliminar bordes completamente
-      --border-width: 0;
-      --border-style: none;
-      --border-color: transparent;
+      // Centrado del contenido (números e iconos)
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      // Colores de fondo por estado - Más visibles y sólidos
-      --background: rgba(31, 178, 222, 0.18);
-      --background-hover: rgba(31, 178, 222, 0.28);
-      --background-activated: rgba(31, 178, 222, 0.35);
-      --background-focused: rgba(31, 178, 222, 0.22);
-
-      // Colores de texto por estado
-      --color: var(--azul-oscuro);
-      --color-hover: var(--azul-oscuro);
-      --color-activated: var(--azul-oscuro);
-      --color-focused: var(--azul-oscuro);
-
-      // Forma y sombra
-      --border-radius: 6px;
-      --box-shadow: 0 1px 2.4px rgba(0, 0, 0, 0.06);
-
-      // Efecto ripple
-      --ripple-color: rgba(31, 178, 222, 0.4);
-
-      // Propiedades del botón
-      font-size: 0.54rem;
-      font-weight: 600;
-      letter-spacing: 0.18px;
-      min-height: 24px;
-      height: auto;
+      // Dimensiones compactas
+      padding: 6px 7.2px;
       margin: 0;
-      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+      min-height: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 6px;
 
-      // Estado hover usando pseudo-clase de Ionic
-      &::part(native):hover {
-        transform: translateY(-2px) scale(1.02);
-      }
+      // Colores base
+      background: transparent;
+      color: var(--azul-oscuro);
 
+      // Tipografía
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      line-height: 1;
+
+      // Transiciones suaves
+      transition: all 0.2s ease;
+
+      // Estados hover/active
       &:hover {
-        --box-shadow: 0 4px 12px rgba(31, 178, 222, 0.2);
+        background: rgba(15, 56, 90, 0.08);
       }
 
-      // Estado activo (seleccionado)
-      &.active {
-        --background: var(--azul-claro);
-        --background-hover: var(--azul-oscuro);
-        --background-activated: var(--azul-oscuro);
-        --color: #ffffff;
-        --color-hover: #ffffff;
-        --color-activated: #ffffff;
-        --box-shadow: 0 4px 12px rgba(31, 178, 222, 0.35);
+      &:active {
+        background: rgba(15, 56, 90, 0.12);
+        transform: scale(0.98);
+      }
+
+      // Estado activo (seleccionado) - Azul oscuro sólido
+      &.activo {
+        background: var(--azul-oscuro);
+        color: #ffffff;
         font-weight: 700;
         transform: scale(1.03);
+        box-shadow: 0 2px 8px rgba(15, 56, 90, 0.25);
+
+        &:hover {
+          background: #0d2e47;
+        }
       }
 
       // Variante dashboard con color magenta
       &.grupo-btn-dashboard {
-        --background: rgba(236, 6, 119, 0.18);
-        --background-hover: rgba(236, 6, 119, 0.28);
-        --background-activated: rgba(236, 6, 119, 0.35);
-        --background-focused: rgba(236, 6, 119, 0.22);
-        --ripple-color: rgba(236, 6, 119, 0.4);
+        color: var(--magenta, #ec0677);
 
         ion-icon {
           font-size: 0.78rem;
           transition: transform 0.25s ease;
         }
 
-        &:hover ion-icon {
-          transform: rotate(90deg) scale(1.1);
+        &:hover {
+          background: rgba(236, 6, 119, 0.08);
+
+          ion-icon {
+            transform: rotate(90deg) scale(1.1);
+          }
         }
 
-        &.active {
-          --background: var(--magenta);
-          --background-hover: #c7055f;
-          --background-activated: #c7055f;
-          --color: #ffffff;
-          --color-hover: #ffffff;
-          --color-activated: #ffffff;
-          --box-shadow: 0 4px 12px rgba(236, 6, 119, 0.35);
+        &.activo {
+          background: var(--magenta);
+          color: #ffffff;
+
+          &:hover {
+            background: #c7055f;
+          }
+        }
+      }
+    }
+  }
+
+  // Tabla de integrantes con calificaciones - Estilo Ionic List
+  .integrantes-table-container {
+    margin-top: 8px;
+    padding: 0;
+    border-top: 1px solid rgba(31, 178, 222, 0.15);
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 260px;
+
+    // Tabla responsive con texto reducido 20%
+    .integrantes-calificaciones-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.58rem; // Reducido 20% de 0.72rem
+
+      &.responsive-table {
+        table-layout: fixed;
+      }
+
+      thead {
+        tr {
+          background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+          position: sticky;
+          top: 0;
+          z-index: 1;
+
+          th {
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: 600;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            font-size: 0.52rem; // Reducido 20% de 0.65rem
+
+            &.col-nombre {
+              text-align: left;
+              padding-left: 8px;
+              width: 45%;
+            }
+
+            &.col-entrega {
+              width: 32px;
+              min-width: 32px;
+            }
+
+            &.col-total {
+              width: 36px;
+              min-width: 36px;
+
+              ion-icon {
+                font-size: 0.68rem; // Reducido 20%
+                color: var(--amarillo);
+              }
+            }
+          }
+        }
+      }
+
+      tbody {
+        .integrante-row {
+          transition: all 0.2s ease;
+          cursor: pointer;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+          &:hover {
+            background-color: rgba(31, 178, 222, 0.08);
+          }
+
+          &:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.015);
+          }
+
+          // Estados de estudiantes
+          &.estado-ok {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+          }
+
+          &.estado-solo {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+          }
+
+          &.estado-ausente {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+
+            .nombre-estudiante {
+              text-decoration: line-through;
+              opacity: 0.6;
+            }
+          }
+
+          td {
+            padding: 6px 4px;
+            text-align: center;
+            vertical-align: middle;
+
+            &.col-nombre {
+              text-align: left;
+              padding-left: 8px;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+
+              .estado-icono {
+                font-size: 0.9rem;
+                flex-shrink: 0;
+              }
+
+              .nombre-estudiante {
+                display: block;
+                font-weight: 500;
+                color: var(--azul-oscuro);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 110px;
+                line-height: 1.3;
+                font-size: 0.60rem; // Reducido 20% de 0.75rem
+              }
+            }
+
+            &.col-entrega {
+              // Celda editable - hover y estado de edición
+              &.editable-cell {
+                cursor: pointer;
+                transition: all 0.15s ease;
+                position: relative;
+
+                &:hover {
+                  background: rgba(31, 178, 222, 0.1);
+                }
+              }
+
+              .calificacion-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 26px;
+                height: 22px;
+                padding: 2px 5px;
+                border-radius: 5px;
+                font-weight: 700;
+                font-size: 0.56rem;
+                background-color: transparent;
+                color: var(--azul-oscuro, #0f385a);
+                border: 1px solid var(--azul-oscuro, #0f385a);
+
+                // Estilo vacío
+                &.empty {
+                  background-color: transparent;
+                  color: var(--azul-oscuro, #0f385a);
+                  border: 1px solid rgba(15, 56, 90, 0.3);
+                }
+
+                // Todos los estados con mismo estilo azul oscuro
+                &.success,
+                &.warning,
+                &.danger {
+                  background-color: transparent;
+                  color: var(--azul-oscuro, #0f385a);
+                  border: 1px solid var(--azul-oscuro, #0f385a);
+                }
+
+                // Indicador visual de calificación desde Canvas
+                &.canvas {
+                  position: relative;
+                  border: 2px solid #1fb2de;
+                  box-shadow: 0 0 4px rgba(31, 178, 222, 0.4);
+
+                  // Pequeño indicador de Canvas en la esquina
+                  &::after {
+                    content: '';
+                    position: absolute;
+                    top: -2px;
+                    right: -2px;
+                    width: 8px;
+                    height: 8px;
+                    background-color: #1fb2de;
+                    border-radius: 50%;
+                    border: 1px solid #ffffff;
+                  }
+                }
+              }
+
+              // Input de edición inline en el panel de seguimiento
+              .edit-input-inline {
+                width: 50px;
+                height: 26px;
+                padding: 2px 6px;
+                border: 2px solid #1fb2de;
+                border-radius: 6px;
+                background: #ffffff;
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-align: center;
+                color: var(--azul-oscuro);
+                outline: none;
+                box-shadow: 0 0 6px rgba(31, 178, 222, 0.4);
+
+                &:focus {
+                  border-color: #28a745;
+                }
+              }
+            }
+
+            &.col-total {
+              .total-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                height: 26px;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-weight: 700;
+                font-size: 0.75rem;
+                background: transparent;
+                color: var(--azul-claro);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Responsive: Ajustar ancho del nombre según el tamaño del panel
+    @media (min-width: 1280px) {
+      .integrantes-calificaciones-table {
+        tbody .integrante-row td.col-nombre .nombre-estudiante {
+          max-width: 160px;
+        }
+      }
+    }
+
+    @media (min-width: 1600px) {
+      .integrantes-calificaciones-table {
+        tbody .integrante-row td.col-nombre .nombre-estudiante {
+          max-width: 180px;
         }
       }
     }
@@ -3676,6 +4048,99 @@ ion-tabs {
     animation: slideDown 0.3s ease;
   }
 
+  // ===== FORMULARIO NUEVO COMENTARIO =====
+  .nuevo-comentario-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(15, 56, 90, 0.03);
+    border-radius: 8px;
+    border: 1px dashed rgba(15, 56, 90, 0.15);
+
+    .comentario-textarea {
+      --background: white;
+      --border-radius: 6px;
+      --padding-start: 10px;
+      --padding-end: 10px;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      font-size: 0.82rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+
+      &.edicion {
+        --background: #fffef0;
+        border-color: #ffc107;
+      }
+    }
+
+    .btn-agregar-comentario {
+      align-self: flex-end;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      font-size: 0.75rem;
+    }
+  }
+
+  // Acciones en comentarios existentes
+  .comentario-card {
+    margin: 6px 0;
+
+    ion-card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+
+      ion-badge {
+        font-size: 0.65rem;
+      }
+
+      .comentario-acciones {
+        margin-left: auto;
+        display: flex;
+        gap: 2px;
+
+        ion-button {
+          --padding-start: 4px;
+          --padding-end: 4px;
+          margin: 0;
+
+          ion-icon {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    .comentario-texto {
+      padding: 8px 12px 12px;
+      font-size: 0.8rem;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .comentario-edicion {
+      padding: 8px 12px;
+
+      .edicion-acciones {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 8px;
+
+        ion-button {
+          --padding-start: 10px;
+          --padding-end: 10px;
+          font-size: 0.72rem;
+        }
+      }
+    }
+  }
+
   @keyframes slideDown {
     from {
       max-height: 0;
@@ -4061,22 +4526,507 @@ ion-tabs {
   }
 }
 
+// ========================================
+// SECCIÓN DE PUNTOS - BARRA UNIFICADA
+// ========================================
+.puntos-section {
+  padding: 0 !important;
+
+  .rubrica-selector-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: linear-gradient(135deg, rgba(15, 56, 90, 0.08) 0%, rgba(15, 56, 90, 0.04) 100%);
+    border-radius: var(--rad-sm, 8px);
+    border: 1px solid rgba(15, 56, 90, 0.1);
+  }
+
+  // Toggle tipo de rúbrica (Grupal/Individual)
+  .tipo-rubrica-toggle {
+    display: flex;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    padding: 2px;
+
+    .tipo-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--azul-oscuro);
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      ion-icon {
+        font-size: 0.85rem;
+      }
+
+      &:hover {
+        background: rgba(15, 56, 90, 0.08);
+      }
+
+      &.activo {
+        background: var(--azul-oscuro);
+        color: #ffffff;
+        box-shadow: 0 2px 6px rgba(15, 56, 90, 0.3);
+
+        ion-icon {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  // Separador visual
+  .selector-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(15, 56, 90, 0.2);
+    margin: 0 4px;
+  }
+
+  // Botones de entrega
+  .entrega-buttons {
+    display: flex;
+    gap: 4px;
+
+    .entrega-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--azul-claro);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--azul-oscuro);
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--azul-claro);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(15, 56, 90, 0.25);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 4px rgba(15, 56, 90, 0.2);
+      }
+    }
+  }
+}
+
+// Sección de integrantes con responsive
+.integrantes-section {
+  padding: 0;
+
+  // Toolbar de estados
+  .estados-toolbar-panel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    background: rgba(15, 56, 90, 0.03);
+    border-bottom: 1px solid rgba(15, 56, 90, 0.1);
+
+    ion-button {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      height: 28px;
+      min-width: 32px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+
+    .entrega-badge {
+      margin-left: auto;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+  }
+}
+
+// Columna de checkbox en la tabla
+.col-check {
+  width: 32px !important;
+  min-width: 32px !important;
+  padding: 4px !important;
+  text-align: center !important;
+
+  ion-checkbox {
+    --size: 18px;
+    --checkbox-background: rgba(15, 56, 90, 0.08);
+    --checkbox-background-checked: var(--azul-claro);
+    --border-color: rgba(15, 56, 90, 0.3);
+    --border-color-checked: var(--azul-claro);
+    --checkmark-color: #ffffff;
+    --border-radius: 4px;
+    --border-width: 1.5px;
+    margin: 0;
+    cursor: pointer;
+  }
+}
+
+// Fila seleccionada en tabla de integrantes
+.integrante-row {
+  &.selected {
+    background: rgba(14, 165, 233, 0.08) !important;
+
+    .col-nombre .nombre-estudiante {
+      font-weight: 600;
+      color: var(--azul-oscuro);
+    }
+  }
+}
+
 .rubricas-grid-horizontal {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  margin-top: 6px;
 
   ion-button {
     flex: 1;
     min-width: 0;
     margin: 0;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     --padding-start: 4px;
     --padding-end: 4px;
+    height: 28px;
 
     ion-icon {
       font-size: 0.85rem;
       margin-right: 2px;
     }
+  }
+}
+
+// ========================================
+// ESTILOS MÓVIL - FAB Y PANEL DE SEGUIMIENTO
+// ========================================
+
+// Contenedor de FABs móvil
+.mobile-fab-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+
+  ion-fab {
+    pointer-events: auto;
+  }
+
+  .menu-fab {
+    --offset-bottom: 16px;
+    --offset-start: 16px;
+
+    ion-fab-button {
+      --background: var(--azul-oscuro);
+      --background-activated: #0d2e47;
+      --box-shadow: 0 4px 12px rgba(15, 56, 90, 0.4);
+    }
+  }
+
+  .seguimiento-fab {
+    --offset-bottom: 16px;
+    --offset-end: 16px;
+
+    ion-fab-button {
+      --background: var(--azul-claro);
+      --background-activated: #1a8cb8;
+      --box-shadow: 0 4px 12px rgba(31, 178, 222, 0.4);
+    }
+  }
+}
+
+// Overlay para cerrar el panel móvil
+.mobile-seguimiento-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 199;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Panel de seguimiento móvil - Desliza desde abajo
+.mobile-seguimiento-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 70vh;
+  min-height: 200px;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &.visible {
+    transform: translateY(0);
+  }
+
+  // Header del panel móvil
+  .mobile-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
+    border-bottom: 2px solid var(--azul-claro);
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+
+    ion-button {
+      --color: #ffffff;
+      margin: 0;
+    }
+  }
+
+  // Contenido del panel móvil
+  .mobile-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    // Nota: -webkit-overflow-scrolling removido (obsoleto en iOS 13+)
+  }
+}
+
+// Placeholder móvil cuando no hay curso
+.seguimiento-placeholder-mobile {
+  text-align: center;
+  padding: 24px 16px;
+  color: #666;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--azul-oscuro);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+
+    strong {
+      color: var(--azul-claro);
+    }
+  }
+}
+
+// Sección de puntos móvil
+.mobile-puntos-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  .puntos-header-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 12px;
+
+    .section-title-mobile {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--azul-oscuro);
+      letter-spacing: 0.5px;
+    }
+
+    .puntos-toggle-mobile {
+      --background: rgba(15, 56, 90, 0.1);
+      height: 28px;
+      min-width: 150px;
+      border-radius: 14px;
+
+      ion-segment-button {
+        --background-checked: var(--azul-claro);
+        --color: var(--azul-oscuro);
+        --color-checked: white;
+        --indicator-color: transparent;
+        min-height: 26px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: none;
+        border-radius: 12px;
+        margin: 1px;
+      }
+    }
+  }
+
+  .rubricas-grid-mobile {
+    display: flex;
+    gap: 8px;
+
+    ion-button {
+      flex: 1;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      height: 36px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  }
+}
+
+// Sección de integrantes móvil
+.mobile-integrantes-section {
+  .section-title-mobile {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--azul-oscuro);
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .integrantes-list-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .integrante-item-mobile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 3px solid transparent;
+
+    &.estado-ok {
+      border-left-color: var(--ion-color-success);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    &.estado-solo {
+      border-left-color: var(--ion-color-warning);
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    &.estado-ausente {
+      border-left-color: var(--ion-color-danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .estado-icono-mobile {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .nombre-mobile {
+      flex: 1;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #333;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .calificaciones-mobile {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+
+      .cal-badge-mobile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 24px;
+        padding: 0 6px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.08);
+        color: #666;
+        font-size: 0.7rem;
+        font-weight: 600;
+
+        &.success {
+          background: rgba(16, 185, 129, 0.15);
+          color: #059669;
+        }
+      }
+    }
+  }
+}
+
+// Ajuste del contenido principal para móvil
+@media (max-width: 991px) {
+  div#main-content.main-content-area,
+  div.main-content-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+
+    ion-router-outlet {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+
+  // Ocultar sidebar desktop en móvil
+  .desktop-sidebar {
+    display: none !important;
   }
 }

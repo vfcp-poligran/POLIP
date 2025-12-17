@@ -60,7 +60,9 @@ const cursos = this.dataService.getCursos();
 
 ### File Import Patterns
 - CSV import via `PapaCSV` with `DataService.importarEstudiantesCSV()`
-- Rubric import from `.txt` files with structured parser in `DataService.importarRubrica()`
+- Rubric import from `.json` (recommended) or `.txt` files via `DataService.cargarArchivoRubrica()`
+- JSON rubric parsing via `DataService.parsearArchivoRubricaJSON()` using `RubricaJSON` interface
+- TXT rubric parsing via `DataService.parsearArchivoRubrica()` (legacy format)
 - All imports include validation and preview before save
 
 ### Storage Keys Convention
@@ -109,8 +111,20 @@ UI state persists across refreshes via `UIState.courseStates[courseName]` includ
 ### CSV Data Format
 Student CSV requires: `nombre,apellido,curso,pg,pi` headers with validation for existing course structure.
 
-### Rubric Text Format
-Structured `.txt` files with `=== TÍTULO ===`, `CRITERIO_X:`, `PESO:`, and `NIVEL_X:` markers. Parser in `DataService.parsearRubricaTexto()`.
+### Rubric JSON Format (Recommended)
+Structured `.json` files following `RubricaJSON` interface in `evaluacion.model.ts`:
+```json
+{
+  "rubrica_id": "RGE1",
+  "curso": "NOMBRE DEL CURSO",
+  "puntuacion_total": 75,
+  "escala_calificacion": [{"min": 0, "max": 29, "nivel": "Insuficiente", "descripcion": "..."}],
+  "criterios": [{"id": 1, "nombre": "Criterio", "peso": 5, "niveles": 4, "nivel": [...]}]
+}
+```
+
+### Rubric Text Format (Legacy)
+Structured `.txt` files with `=== TÍTULO ===`, `CRITERIO_X:`, `PESO:`, and `NIVEL_X:` markers.
 
 ### Cross-Component Evaluation Flow
 1. Select course → sets `cursoActivo` in UIState  

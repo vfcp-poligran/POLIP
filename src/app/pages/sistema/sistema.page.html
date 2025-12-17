@@ -44,6 +44,50 @@
         </ion-card-content>
       </ion-card>
 
+      <!-- Preferencias de la Aplicación -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="settings-outline"></ion-icon>
+            Preferencias
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Mensajes Emergentes</h3>
+                <p class="text-gray-medium">Mostrar notificaciones de confirmación y alertas</p>
+              </ion-label>
+              <ion-toggle
+                slot="end"
+                [checked]="mostrarMensajesEmergentes"
+                (ionChange)="toggleMensajesEmergentes($event)">
+              </ion-toggle>
+            </ion-item>
+
+            <!-- Control de duración de toasts -->
+            <ion-item *ngIf="mostrarMensajesEmergentes">
+              <ion-icon name="time-outline" slot="start" color="secondary"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Duración en Pantalla</h3>
+                <p class="text-gray-medium">Tiempo visible: {{ duracionToast }} segundo{{ duracionToast !== 1 ? 's' : '' }}</p>
+              </ion-label>
+              <div slot="end" class="duration-control">
+                <ion-button fill="clear" size="small" [disabled]="duracionToast <= 1" (click)="decrementarDuracion()">
+                  <ion-icon name="remove-circle-outline"></ion-icon>
+                </ion-button>
+                <span class="duration-value">{{ duracionToast }}s</span>
+                <ion-button fill="clear" size="small" [disabled]="duracionToast >= 4" (click)="incrementarDuracion()">
+                  <ion-icon name="add-circle-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
       <!-- Gestión de Base de Datos -->
       <ion-card>
         <ion-card-header>
@@ -123,6 +167,33 @@
                 </ion-label>
               </ion-item>
             </ion-list>
+
+            <!-- Limpiar Caché PWA -->
+            <div>
+              <h3 class="h3-system-section">Mantenimiento PWA</h3>
+              <p class="text-gray-small">
+                Limpia la caché del Service Worker para forzar la actualización de la aplicación. Útil si la app muestra una versión desactualizada.
+              </p>
+              <ion-button
+                fill="outline"
+                size="default"
+                (click)="limpiarCachePWA()"
+                class="button-cache-warning">
+                <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                Limpiar Caché PWA
+              </ion-button>
+            </div>
+
+            <ion-list class="metadata-section">
+              <ion-item lines="none">
+                <ion-icon name="information-circle-outline" slot="start" color="tertiary"></ion-icon>
+                <ion-label class="ion-text-wrap">
+                  <p class="text-info-blue">
+                    <strong>Info:</strong> Esta acción NO elimina tus datos. Solo limpia archivos estáticos (JS, CSS, imágenes) para forzar una recarga desde el servidor.
+                  </p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
           </div>
         </ion-card-content>
       </ion-card>
@@ -137,10 +208,11 @@
         </ion-card-header>
         <ion-card-content>
           <div class="app-info">
-            <h2 class="h2-app-title-blue">Gestor de Seguimiento de Proyectos</h2>
-            <p class="text-gray-medium"><strong>Versión:</strong> 8.0.0</p>
-            <p class="text-gray-medium"><strong>Desarrollador:</strong> Víctor Castro Pérez</p>
+            <h2 class="h2-app-title-blue">POLIProject</h2>
+            <p class="text-gray-medium"><strong>Versión:</strong> 1.2.0</p>
+            <p class="text-gray-medium"><strong>Autor:</strong> Ing. MG. Víctor Castro Pérez</p>
             <p class="text-gray-medium"><strong>Email:</strong> vfcastro@poligran.edu.co</p>
+            <p class="text-gray-medium"><strong>Institución:</strong> Politécnico Grancolombiano</p>
 
             <div class="tech-stack">
               <h3 class="h3-stack-blue">Stack Tecnológico</h3>

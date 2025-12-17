@@ -12,14 +12,23 @@
   <meta name="format-detection" content="telephone=no"/>
   <meta name="msapplication-tap-highlight" content="no"/>
 
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="POLIProject - Gestión de Proyectos para evaluación educativa - Politécnico Grancolombiano"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="application-name" content="POLIProject"/>
+
   <link rel="icon" type="image/png" sizes="32x32" href="https://www.poli.edu.co/themes/custom/ptecnico2023/dist/favicons/favicon-32x32.png"/>
   <link rel="icon" type="image/png" sizes="16x16" href="https://www.poli.edu.co/themes/custom/ptecnico2023/dist/favicons/favicon-16x16.png"/>
 
   <!-- add to homescreen for ios -->
   <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="POLIProject"/>
   <link rel="apple-touch-icon" href="https://www.poli.edu.co/themes/custom/ptecnico2023/dist/favicons/apple-touch-icon.png"/>
   <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Preconnect para optimización de carga -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
   <!-- jeep-sqlite para SQLite en WEB - Versión 2.8.0 -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/jeep-sqlite@2.8.0/dist/jeep-sqlite/jeep-sqlite.esm.js"></script>
@@ -28,7 +37,7 @@
 
 <body>
   <app-root></app-root>
-  <noscript>Please enable JavaScript to continue using this application.</noscript>
+  <noscript>Por favor, habilite JavaScript para continuar usando esta aplicación.</noscript>
 </body>
 
 </html>

@@ -1,0 +1,213 @@
+{
+  "rubrica_id": "RGE1",
+  "curso": "ÉNFASIS EN PROGRAMACIÓN MÓVIL",
+  "puntuacion_total": 75,
+  "escala_calificacion": [
+    {
+      "min": 0,
+      "max": 29,
+      "nivel": "Insuficiente",
+      "descripcion": "Requiere reelaboración significativa"
+    },
+    {
+      "min": 30,
+      "max": 49,
+      "nivel": "Aceptable",
+      "descripcion": "Cumple con requisitos mínimos pero requiere mejoras"
+    },
+    {
+      "min": 50,
+      "max": 64,
+      "nivel": "Bueno",
+      "descripcion": "Cumple con lo esperado con buen nivel de calidad"
+    },
+    {
+      "min": 65,
+      "max": 75,
+      "nivel": "Excelente",
+      "descripcion": "Supera expectativas, alta calidad profesional"
+    }
+  ],
+  "criterios": [
+    {
+      "id": 1,
+      "nombre": "Justificación",
+      "peso": 5,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 1,
+          "titulo": "Insuficiente",
+          "descripcion": "El documento no incluye justificación o es muy deficiente. No explica la relevancia ni la necesidad del proyecto. Carece de argumentos."
+        },
+        {
+          "numero": 2,
+          "minimo": 2,
+          "maximo": 2,
+          "titulo": "Aceptable",
+          "descripcion": "El documento incluye una justificación básica. Explica de manera general la relevancia del proyecto, pero los argumentos son débiles o poco profundos."
+        },
+        {
+          "numero": 3,
+          "minimo": 3,
+          "maximo": 4,
+          "titulo": "Bueno",
+          "descripcion": "El documento presenta una justificación adecuada. Explica la relevancia y necesidad del proyecto con argumentos válidos, aunque podría profundizar más en el impacto."
+        },
+        {
+          "numero": 4,
+          "minimo": 5,
+          "maximo": 5,
+          "titulo": "Excelente",
+          "descripcion": "El documento presenta una justificación clara, completa y convincente. Explica con profundidad la relevancia, necesidad e impacto del proyecto. Incluye argumentos sólidos y bien fundamentados."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Objetivos",
+      "peso": 5,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 1,
+          "titulo": "Insuficiente",
+          "descripcion": "El documento no define objetivos claros o son muy vagos e inalcanzables. Falta estructura (general y específicos)."
+        },
+        {
+          "numero": 2,
+          "minimo": 2,
+          "maximo": 2,
+          "titulo": "Aceptable",
+          "descripcion": "Define objetivos, pero algunos son confusos o difíciles de medir. La distinción entre general y específicos es débil."
+        },
+        {
+          "numero": 3,
+          "minimo": 3,
+          "maximo": 4,
+          "titulo": "Bueno",
+          "descripcion": "El documento define objetivos claros y alcanzables. Distingue correctamente entre objetivo general y específicos. Son medibles y coherentes con el proyecto."
+        },
+        {
+          "numero": 4,
+          "minimo": 5,
+          "maximo": 5,
+          "titulo": "Excelente",
+          "descripcion": "El documento define objetivos claros, específicos, medibles, alcanzables y relevantes (SMART). Excelente distinción y alineación perfecta con el proyecto."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "Requerimientos",
+      "peso": 35,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 10,
+          "titulo": "Insuficiente",
+          "descripcion": "Lista de requerimientos muy incompleta o inexistente. Faltan elementos funcionales o técnicos críticos. Documentación desorganizada."
+        },
+        {
+          "numero": 2,
+          "minimo": 11,
+          "maximo": 20,
+          "titulo": "Aceptable",
+          "descripcion": "Identifica los requerimientos básicos funcionales y no funcionales. Faltan detalles importantes o hay cierta desorganización en la presentación."
+        },
+        {
+          "numero": 3,
+          "minimo": 21,
+          "maximo": 29,
+          "titulo": "Bueno",
+          "descripcion": "Identifica la mayoría de los requerimientos necesarios de forma organizada. Incluye funcionales y no funcionales con buen nivel de detalle, aunque podría ser más exhaustivo en aspectos técnicos."
+        },
+        {
+          "numero": 4,
+          "minimo": 30,
+          "maximo": 35,
+          "titulo": "Excelente",
+          "descripcion": "Identifica exhaustivamente todos los requerimientos (funcionales, no funcionales, técnicos y recursos). Documentación detallada, completa, clara y muy bien organizada."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "nombre": "Flujo de Navegación",
+      "peso": 15,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 5,
+          "titulo": "Insuficiente",
+          "descripcion": "No incluye flujo o es incomprensible. Faltan pantallas críticas o conexiones lógicas. No se entiende el recorrido."
+        },
+        {
+          "numero": 2,
+          "minimo": 6,
+          "maximo": 9,
+          "titulo": "Aceptable",
+          "descripcion": "Flujo funcional básico. Se entienden las conexiones principales, pero faltan casos de uso o detalles en las transiciones. Diseño lógico simple."
+        },
+        {
+          "numero": 3,
+          "minimo": 10,
+          "maximo": 12,
+          "titulo": "Bueno",
+          "descripcion": "Flujo de navegación completo y comprensible. Estructura lógica sólida con la mayoría de pantallas y conexiones. El recorrido es claro y funcional."
+        },
+        {
+          "numero": 4,
+          "minimo": 13,
+          "maximo": 15,
+          "titulo": "Excelente",
+          "descripcion": "Flujo completo, detallado y profesional. Arquitectura de información excelente. Incluye transiciones, estados y casos alternativos. Recorrido intuitivo y perfectamente documentado."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "nombre": "Mockups",
+      "peso": 15,
+      "niveles": 4,
+      "nivel": [
+        {
+          "numero": 1,
+          "minimo": 0,
+          "maximo": 5,
+          "titulo": "Insuficiente",
+          "descripcion": "No hay mockups o son bocetos de muy baja calidad. No representan la solución propuesta."
+        },
+        {
+          "numero": 2,
+          "minimo": 6,
+          "maximo": 9,
+          "titulo": "Aceptable",
+          "descripcion": "Mockups básicos de pantallas principales. Representan la idea pero carecen de consistencia visual, alineación o detalles de diseño UI."
+        },
+        {
+          "numero": 3,
+          "minimo": 10,
+          "maximo": 12,
+          "titulo": "Bueno",
+          "descripcion": "Mockups funcionales y estéticamente agradables. Buena representación de las interfaces con consistencia en colores y tipografía, aunque no llegan a alta fidelidad."
+        },
+        {
+          "numero": 4,
+          "minimo": 13,
+          "maximo": 15,
+          "titulo": "Excelente",
+          "descripcion": "Mockups de alta fidelidad, detallados y profesionales. Excelente diseño UI/UX. Uso consistente de componentes, estilos, paleta y tipografía. Listos para desarrollo."
+        }
+      ]
+    }
+  ]
+}

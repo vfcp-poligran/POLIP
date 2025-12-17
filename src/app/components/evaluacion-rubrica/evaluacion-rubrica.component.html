@@ -1,94 +1,47 @@
 <div class="evaluacion-container">
-
-  <!-- DEBUG INFO: Eliminar en producción -->
-  @if (!rubrica) {
-  <ion-item color="warning">
-    <ion-label>⚠️ Cargando rúbrica o datos no disponibles...</ion-label>
-  </ion-item>
-  }
-
   @if (rubrica) {
-  <!-- Criterios de evaluación -->
-  <div class="criterios-container">
+  <div class="rubrica-table">
+    <!-- Encabezado de niveles (solo una vez) -->
+    @if (rubrica.criterios.length > 0 && rubrica.criterios[0].nivelesDetalle) {
+    <div class="rubrica-row rubrica-header-row">
+      <div class="rubrica-cell criterio-label">Criterio</div>
+      @for (nivel of rubrica.criterios[0].nivelesDetalle; track nivel.titulo; let j = $index) {
+      <div class="rubrica-cell nivel-label"
+        [class.nivel-insuficiente]="j === 0"
+        [class.nivel-aceptable]="j === 1"
+        [class.nivel-excelente]="j >= 2">
+        {{ nivel.titulo }}
+      </div>
+      }
+    </div>
+    }
+    <!-- Filas de criterios -->
     @for (criterio of rubrica.criterios; track criterio.titulo; let i = $index) {
-    <ion-card>
-      <ion-card-content>
-        <div class="criterio-header">
-          <ion-card-title style="font-size: 1.1rem;">{{ criterio.titulo }}</ion-card-title>
-          <ion-badge color="primary">Peso: {{ criterio.peso }}</ion-badge>
-        </div>
-
-        <!-- Niveles con scroll horizontal (Swipe) -->
-        <div class="niveles-scroll-container">
-          @if (!criterio.nivelesDetalle || criterio.nivelesDetalle.length === 0) {
-          <p>⚠️ No hay niveles definidos para este criterio.</p>
-          }
-
-          @for (nivel of criterio.nivelesDetalle; track nivel.titulo) {
-          <!-- Tarjeta de Nivel Interactiva -->
-          <div class="nivel-card"
-            [class.selected]="calificaciones[criterio.titulo] === obtenerPuntosNivel(nivel.puntos)"
-            (click)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))">
-
-            <div class="nivel-puntos">
-              <ion-badge [color]="obtenerColorNota()" mode="ios">{{ nivel.puntos }} pts</ion-badge>
-              <div class="selection-indicator">
-                <span>✅</span>
-              </div>
-            </div>
-
-            <div class="nivel-titulo">{{ nivel.titulo }}</div>
-            <p class="nivel-descripcion">{{ nivel.descripcion }}</p>
-          </div>
+    <div class="rubrica-row criterio-row">
+      <div class="rubrica-cell criterio-cell">
+        <span class="criterio-titulo">{{ criterio.titulo }}</span>
+        <ion-badge color="primary">{{ criterio.peso }}</ion-badge>
+      </div>
+      @for (nivel of criterio.nivelesDetalle; track nivel.titulo; let j = $index) {
+      <div class="rubrica-cell nivel-card"
+        [class.selected]="estaEnRangoNivel(criterio.titulo, nivel.puntos)"
+        [class.nivel-insuficiente]="j === 0"
+        [class.nivel-aceptable]="j === 1"
+        [class.nivel-excelente]="j >= 2"
+        (click)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))">
+        <div class="nivel-header">
+          <ion-badge mode="ios">{{ nivel.puntos }} pts</ion-badge>
+          @if (estaEnRangoNivel(criterio.titulo, nivel.puntos)) {
+          <span class="check-icon">✓</span>
           }
         </div>
-
-        <!-- Feedback de selección (opcional, ya visualmente claro con la tarjeta) -->
-        @if (obtenerNivelSeleccionado(criterio)) {
-        <div class="ion-text-center ion-padding-top">
-          <ion-text color="success" style="font-size: 0.9rem;">
-            <small>Seleccionado: <strong>{{ obtenerNivelSeleccionado(criterio).titulo }}</strong> ({{
-              calificaciones[criterio.titulo] }} pts)</small>
-          </ion-text>
-        </div>
-        }
-
-      </ion-card-content>
-    </ion-card>
+        <p class="nivel-descripcion">{{ nivel.descripcion }}</p>
+      </div>
+      }
+    </div>
     }
   </div>
-
-
-
-  <!-- Observaciones -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        💬 Observaciones
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-textarea [(ngModel)]="observaciones" placeholder="Comentarios adicionales sobre la evaluación..." rows="4"
-        fill="outline">
-      </ion-textarea>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Botones de acción -->
-  <div class="action-buttons">
-    <ion-button expand="block" color="primary" size="large" (click)="guardarEvaluacion()">
-      💾 Guardar Evaluación
-    </ion-button>
-
-    <ion-button expand="block" fill="outline" color="medium" (click)="cerrar()">
-      ✖ Cancelar
-    </ion-button>
-  </div>
   } @else {
-  <ion-card>
-    <ion-card-content>
-      <p class="ion-text-center">Cargando rúbrica...</p>
-    </ion-card-content>
-  </ion-card>
+  <p class="loading-text">Cargando rúbrica...</p>
   }
 </div>

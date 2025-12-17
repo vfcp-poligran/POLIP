@@ -1,0 +1,181 @@
+=== RGE1 ===
+==CURSO: ÉNFASIS EN PROGRAMACIÓN MÓVIL
+==PUNTUACIÓN_TOTAL: 75===
+
+===ESCALA_CALIFICACION===
+=0,29|Insuficiente:Requiere reelaboración significativa=
+=30,49|Aceptable:Cumple con requisitos mínimos pero requiere mejoras=
+=50,64|Bueno:Cumple con lo esperado con buen nivel de calidad=
+=65,75|Excelente:Supera expectativas, alta calidad profesional=
+
+---
+
+CRITERIO_1: Justificación
+PESO: 5
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 1
+TITULO: Insuficiente
+DESCRIPCION: El documento no incluye justificación o es muy deficiente. No explica la relevancia ni la necesidad del proyecto. Carece de argumentos.
+
+--
+NIVEL_2:
+MINIMO: 2
+MAXIMO: 2
+TITULO: Aceptable
+DESCRIPCION: El documento incluye una justificación básica. Explica de manera general la relevancia del proyecto, pero los argumentos son débiles o poco profundos.
+
+--
+NIVEL_3:
+MINIMO: 3
+MAXIMO: 4
+TITULO: Bueno
+DESCRIPCION: El documento presenta una justificación adecuada. Explica la relevancia y necesidad del proyecto con argumentos válidos, aunque podría profundizar más en el impacto.
+
+--
+NIVEL_4:
+MINIMO: 5
+MAXIMO: 5
+TITULO: Excelente
+DESCRIPCION: El documento presenta una justificación clara, completa y convincente. Explica con profundidad la relevancia, necesidad e impacto del proyecto. Incluye argumentos sólidos y bien fundamentados.
+
+---
+
+CRITERIO_2: Objetivos
+PESO: 5
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 1
+TITULO: Insuficiente
+DESCRIPCION: El documento no define objetivos claros o son muy vagos e inalcanzables. Falta estructura (general y específicos).
+
+--
+NIVEL_2:
+MINIMO: 2
+MAXIMO: 2
+TITULO: Aceptable
+DESCRIPCION: Define objetivos, pero algunos son confusos o difíciles de medir. La distinción entre general y específicos es débil.
+
+--
+NIVEL_3:
+MINIMO: 3
+MAXIMO: 4
+TITULO: Bueno
+DESCRIPCION: El documento define objetivos claros y alcanzables. Distingue correctamente entre objetivo general y específicos. Son medibles y coherentes con el proyecto.
+
+--
+NIVEL_4:
+MINIMO: 5
+MAXIMO: 5
+TITULO: Excelente
+DESCRIPCION: El documento define objetivos claros, específicos, medibles, alcanzables y relevantes (SMART). Excelente distinción y alineación perfecta con el proyecto.
+
+---
+
+CRITERIO_3: Requerimientos
+PESO: 35
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 10
+TITULO: Insuficiente
+DESCRIPCION: Lista de requerimientos muy incompleta o inexistente. Faltan elementos funcionales o técnicos críticos. Documentación desorganizada.
+
+--
+NIVEL_2:
+MINIMO: 11
+MAXIMO: 20
+TITULO: Aceptable
+DESCRIPCION: Identifica los requerimientos básicos funcionales y no funcionales. Faltan detalles importantes o hay cierta desorganización en la presentación.
+
+--
+NIVEL_3:
+MINIMO: 21
+MAXIMO: 29
+TITULO: Bueno
+DESCRIPCION: Identifica la mayoría de los requerimientos necesarios de forma organizada. Incluye funcionales y no funcionales con buen nivel de detalle, aunque podría ser más exhaustivo en aspectos técnicos.
+
+--
+NIVEL_4:
+MINIMO: 30
+MAXIMO: 35
+TITULO: Excelente
+DESCRIPCION: Identifica exhaustivamente todos los requerimientos (funcionales, no funcionales, técnicos y recursos). Documentación detallada, completa, clara y muy bien organizada.
+
+---
+
+CRITERIO_4: Flujo de Navegación
+PESO: 15
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 5
+TITULO: Insuficiente
+DESCRIPCION: No incluye flujo o es incomprensible. Faltan pantallas críticas o conexiones lógicas. No se entiende el recorrido.
+
+--
+NIVEL_2:
+MINIMO: 6
+MAXIMO: 9
+TITULO: Aceptable
+DESCRIPCION: Flujo funcional básico. Se entienden las conexiones principales, pero faltan casos de uso o detalles en las transiciones. Diseño lógico simple.
+
+--
+NIVEL_3:
+MINIMO: 10
+MAXIMO: 12
+TITULO: Bueno
+DESCRIPCION: Flujo de navegación completo y comprensible. Estructura lógica sólida con la mayoría de pantallas y conexiones. El recorrido es claro y funcional.
+
+--
+NIVEL_4:
+MINIMO: 13
+MAXIMO: 15
+TITULO: Excelente
+DESCRIPCION: Flujo completo, detallado y profesional. Arquitectura de información excelente. Incluye transiciones, estados y casos alternativos. Recorrido intuitivo y perfectamente documentado.
+
+---
+
+CRITERIO_5: Mockups
+PESO: 15
+NIVELES: 4
+
+--
+NIVEL_1:
+MINIMO: 0
+MAXIMO: 5
+TITULO: Insuficiente
+DESCRIPCION: No hay mockups o son bocetos de muy baja calidad. No representan la solución propuesta.
+
+--
+NIVEL_2:
+MINIMO: 6
+MAXIMO: 9
+TITULO: Aceptable
+DESCRIPCION: Mockups básicos de pantallas principales. Representan la idea pero carecen de consistencia visual, alineación o detalles de diseño UI.
+
+--
+NIVEL_3:
+MINIMO: 10
+MAXIMO: 12
+TITULO: Bueno
+DESCRIPCION: Mockups funcionales y estéticamente agradables. Buena representación de las interfaces con consistencia en colores y tipografía, aunque no llegan a alta fidelidad.
+
+--
+NIVEL_4:
+MINIMO: 13
+MAXIMO: 15
+TITULO: Excelente
+DESCRIPCION: Mockups de alta fidelidad, detallados y profesionales. Excelente diseño UI/UX. Uso consistente de componentes, estilos, paleta y tipografía. Listos para desarrollo.
+
+===FIN_RGE1===
