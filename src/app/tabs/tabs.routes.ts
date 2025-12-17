@@ -29,7 +29,7 @@ export const routes: Routes = [
       {
         path: 'sistema',
         loadComponent: () =>
-          import('.././pages/sistema/sistema.page').then((m) => m.SistemaPage),
+          import('../pages/sistema/sistema.page').then((m) => m.SistemaPage),
       },
       {
         path: '',

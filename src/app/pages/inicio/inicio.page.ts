@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -93,7 +93,6 @@ import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriteri
   selector: 'app-inicio',
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule,
@@ -115,7 +114,7 @@ import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriteri
     IonSearchbar
   ]
 })
-export class InicioPage implements OnInit, OnDestroy {
+export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   cursosData: CursoData = {};
   cursoActivo: string | null = null;
   // Variables de estado
