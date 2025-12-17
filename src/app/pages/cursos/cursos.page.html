@@ -1,9 +1,28 @@
 <ion-content [fullscreen]="true">
   <!-- FAB flotante para crear curso (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso ion-hide-md-up">
+    @if (!modoEdicion) {
     <ion-fab-button color="success" (click)="iniciarCreacionCurso()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
+    }
+  </ion-fab>
+
+  <!-- FAB list para acciones de guardar/cancelar (móvil/tablet) -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-curso ion-hide-md-up">
+    @if (modoEdicion) {
+    <ion-fab-button color="primary" [activated]="true">
+      <ion-icon name="ellipsis-vertical"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button color="success" (click)="guardarCurso()" aria-label="Guardar curso">
+        <ion-icon name="save-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+    }
   </ion-fab>
 
   <div class="page-container">
@@ -30,18 +49,7 @@
           </ion-button>
           }
         </div>
-        <!-- Botones de acción en móvil cuando está en modo edición -->
-        <div class="header-actions ion-hide-md-up">
-          @if (modoEdicion) {
-          <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()" aria-label="Guardar curso">
-            <ion-icon name="save-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()"
-            aria-label="Cancelar creación de curso">
-            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          }
-        </div>
+        <!-- Botones removidos - ahora se usan FABs flotantes -->
       </div>
 
       @if (modoEdicion) {

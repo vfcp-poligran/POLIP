@@ -1070,13 +1070,11 @@ ion-content {
       background: #f8f9fa;
 
       .codigo-badge {
-        display: inline-block;
-        padding: 2px 6px;
-        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-        color: #1565c0;
-        border-radius: 4px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.75rem;
         font-weight: 600;
-        font-size: 0.7rem;
+        color: #6c757d;
+        letter-spacing: 0.3px;
       }
 
       .version-badge {
@@ -1302,8 +1300,7 @@ ion-content {
     }
 
     .codigo-badge {
-      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
-      color: #fff;
+      // Styles inherited from parent .col-codigo
     }
 
     &:hover {
@@ -1978,8 +1975,8 @@ ion-card {
         }
 
         .codigo-badge-mobile {
-          background: #e0e0e0 !important;
-          color: #757575 !important;
+          // Inactive state - keep dimmed
+          opacity: 0.6;
         }
       }
     }
@@ -2057,19 +2054,15 @@ ion-card {
           }
 
           .codigo-badge-mobile {
-            display: inline-block;
-            padding: 2px 6px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.68rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.72rem;
             font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.2px;
 
             // Landscape móvil
             @media (max-height: 500px) and (orientation: landscape) {
-              padding: 1px 4px;
-              font-size: 0.58rem;
+              font-size: 0.62rem;
             }
           }
 
