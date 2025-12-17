@@ -215,7 +215,7 @@ export class DataService {
       await this.loadRubricas();
       await this.loadComentariosGrupo();
 
-      const resultadoMigracion = await this.migrarRubricasAntiguas();
+      const resultadoMigracion = await this.rubricService.migrarRubricasAntiguas();
       if (resultadoMigracion.migradas > 0) {
         await this.loadRubricas();
       }
@@ -229,66 +229,8 @@ export class DataService {
     }
   }
 
-  /**
-   * Migra datos de rúbricas del sistema antiguo al nuevo
-   * Sistema antiguo: localStorage.getItem('rubricas')
-   * Sistema nuevo: STORAGE_KEYS.RUBRICAS
-   */
-  async migrarRubricasAntiguas(): Promise<{ migradas: number; errores: number }> {
-    let migradas = 0;
-    let errores = 0;
 
-    try {
-      const yaMigrado = localStorage.getItem('rubricas_migrado');
-      if (yaMigrado === 'true') {
-        return { migradas: 0, errores: 0 };
-      }
 
-      const rubricasAntiguasStr = localStorage.getItem('rubricas');
-
-      if (!rubricasAntiguasStr) {
-        localStorage.setItem('rubricas_migrado', 'true');
-        return { migradas: 0, errores: 0 };
-      }
-
-      const rubricasAntiguas = JSON.parse(rubricasAntiguasStr);
-
-      for (const [viejoId, rubricaVieja] of Object.entries(rubricasAntiguas)) {
-        try {
-          const vieja = rubricaVieja as any;
-          const nueva: RubricaDefinicion = {
-            id: this.generarIdRubrica(vieja.titulo || vieja.nombre || 'Rúbrica sin nombre'),
-            nombre: vieja.titulo || vieja.nombre || 'Rúbrica sin nombre',
-            descripcion: vieja.curso || vieja.descripcion || '',
-            criterios: (vieja.criterios || []).map((c: any) => ({
-              titulo: c.nombre || c.titulo || 'Sin título',
-              descripcion: c.descripcion,
-              pesoMaximo: c.peso,
-              peso: c.peso,
-              nivelesDetalle: c.nivelesDetalle || []
-            })),
-            puntuacionTotal: vieja.puntuacionTotal,
-            escalaCalificacion: vieja.escalaCalificacion || [],
-            cursosCodigos: vieja.curso ? [vieja.curso] : [],
-            fechaCreacion: vieja.fechaCreacion ? new Date(vieja.fechaCreacion) : new Date(),
-            fechaModificacion: vieja.fechaModificacion ? new Date(vieja.fechaModificacion) : new Date()
-          };
-
-          await this.guardarRubrica(nueva);
-          migradas++;
-        } catch (error) {
-          Logger.error(`❌ [DataService] Error migrando rúbrica ${viejoId}:`, error);
-          errores++;
-        }
-      }
-
-      localStorage.setItem('rubricas_migrado', 'true');
-      localStorage.removeItem('rubricas');
-
-    } catch (error) {
-      Logger.error('❌ [DataService] Error en migración de rúbricas:', error);
-      errores++;
-    }
 
     return { migradas, errores };
   }
@@ -1992,7 +1934,7 @@ export class DataService {
       const evaluacionesOriginales = this.evaluacionesSubject.value;
       const uiStateActual = this.uiStateSubject.value;
       const comentariosOriginales = this.comentariosGrupoSubject.value;
-      const rubricasOriginales = this.rubricasSubject.value;
+      const rubricasOriginales = this.rubricService.rubricasValue;
 
       // Verificar que el curso existe
       if (!cursosOriginales[nombreCurso]) {
@@ -2047,7 +1989,7 @@ export class DataService {
       this.evaluacionesSubject.next(evaluacionesActuales);
       this.uiStateSubject.next(nuevoUIState);
       this.comentariosGrupoSubject.next(comentariosActuales);
-      this.rubricasSubject.next(rubricasActualizadas);
+      this.rubricService.updateRubricasState(rubricasActualizadas);
 
       const rubricasDesvinculadas = Object.values(rubricasActualizadas).filter(
         (r: RubricaDefinicion) => Object.values(rubricasOriginales).some((orig: RubricaDefinicion) =>
@@ -2437,7 +2379,7 @@ export class DataService {
 
       // LOG: Estado ANTES de limpiar
       const cursosAntes = this.cursosSubject.value;
-      const rubricasAntes = this.rubricasSubject.value;
+      const rubricasAntes = this.rubricService.rubricasValue;
 
       // 1. Limpiar TODOS los cursos y estudiantes
       const cursosVacios: CursoData = {};
@@ -2461,11 +2403,11 @@ export class DataService {
       // 4. Eliminar TODAS las rúbricas
       const rubricasVacias: { [key: string]: RubricaDefinicion } = {};
       await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricasVacias);
-      this.rubricasSubject.next(rubricasVacias);
+      this.rubricService.updateRubricasState(rubricasVacias);
 
       // LOG: Estado DESPUÉS de limpiar
       const cursosDespues = this.cursosSubject.value;
-      const rubricasDespues = this.rubricasSubject.value;
+      const rubricasDespues = this.rubricService.rubricasValue;
 
       // 5. Limpiar comentarios de grupo
       const comentariosVacios: ComentariosGrupoData = {};
@@ -2514,7 +2456,7 @@ export class DataService {
     await this.ensureInitialized();
 
     const cursos = this.cursosSubject.value;
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     const evaluaciones = this.evaluacionesSubject.value;
     const uiState = this.uiStateSubject.value;
 
@@ -2582,7 +2524,7 @@ export class DataService {
     console.groupEnd();
 
     // 3. RÚBRICAS
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     console.group('\n📋 3. RÚBRICAS (rubricDefinitionsData)');
 
     Object.entries(rubricas).forEach(([id, rubrica]) => {
@@ -2698,7 +2640,7 @@ export class DataService {
         criterios.reduce((sum, c) => sum + (c.peso || 0), 0);
 
       return {
-        id: this.generarIdRubrica(json.rubrica_id),
+        id: this.rubricService.generarIdRubrica(json.rubrica_id),
         nombre,
         descripcion: json.curso,
         criterios,
@@ -2947,7 +2889,7 @@ export class DataService {
       }
 
       return {
-        id: this.generarIdRubrica(codigo),
+        id: this.rubricService.generarIdRubrica(codigo),
         nombre: nombre,
         descripcion: curso || `Rúbrica con ${criterios.length} criterios`,
         criterios,
@@ -3145,21 +3087,7 @@ export class DataService {
     };
   }
 
-  /**
-   * Genera un ID único para una rúbrica basado en su título
-   */
-  generarIdRubrica(titulo: string): string {
-    const base = titulo
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
 
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substr(2, 5);
-
-    return `${base}-${timestamp}-${random}`;
-  }
 
   /**
    * Genera el nombre completo de una rúbrica basado en su código
@@ -3604,7 +3532,7 @@ export class DataService {
    * @throws Si la rúbrica no existe o tiene código inválido
    */
   async activarVersionRubrica(rubricaId: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     const rubricaActivar = rubricas[rubricaId];
 
     if (!this.esRubricaValida(rubricaActivar)) {
@@ -3621,7 +3549,7 @@ export class DataService {
     const versionesActualizadas = this.actualizarEstadoVersiones(rubricas, codigoBase, rubricaId);
 
     await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-    this.rubricasSubject.next(rubricas);
+    this.rubricService.updateRubricasState(rubricas);
 
     Logger.log(`✅ Versión ${rubricaActivar.codigo} activada. ${versionesActualizadas - 1} versiones desactivadas.`);
   }
@@ -3715,7 +3643,7 @@ export class DataService {
    * Obtiene todas las rúbricas como array
    */
   obtenerRubricasArray(): RubricaDefinicion[] {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     return Object.values(rubricas);
   }
 
@@ -3723,7 +3651,7 @@ export class DataService {
    * Obtiene los IDs de todas las rúbricas disponibles
    */
   obtenerIdsRubricas(): string[] {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     return Object.keys(rubricas);
   }
 
@@ -3731,7 +3659,7 @@ export class DataService {
    * Obtiene una rúbrica por ID
    */
   obtenerRubricaPorId(id: string): RubricaDefinicion | undefined {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     return rubricas[id];
   }
 
@@ -3739,7 +3667,7 @@ export class DataService {
    * Elimina una rúbrica
    */
   async eliminarRubrica(id: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
 
     // LOG: Verificar antes de eliminar
     const rubricaExistente = rubricas[id];
@@ -3747,7 +3675,7 @@ export class DataService {
     delete rubricas[id];
 
     await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-    this.rubricasSubject.next(rubricas);
+    this.rubricService.updateRubricasState(rubricas);
 
   }
 
@@ -3756,7 +3684,7 @@ export class DataService {
    * Actualiza tanto la rúbrica como el CourseState de cada curso
    */
   async asociarRubricaConCursos(rubricaId: string, cursosCodigos: string[], tipoEntrega?: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this.rubricService.rubricasValue;
     const rubrica = rubricas[rubricaId];
 
     if (!rubrica) {
@@ -3773,7 +3701,7 @@ export class DataService {
 
     // Guardar rúbrica actualizada
     await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-    this.rubricasSubject.next(rubricas);
+    this.rubricService.updateRubricasState(rubricas);
 
     // Actualizar CourseState para cada curso asociado
     if (rubrica.tipoEntrega && rubrica.tipoRubrica) {

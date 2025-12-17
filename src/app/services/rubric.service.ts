@@ -13,7 +13,7 @@ import {
 })
 export class RubricService {
   private storage = inject(UnifiedStorageService);
-  
+
   private readonly STORAGE_KEY = 'rubricDefinitionsData';
 
   private rubricasSubject = new BehaviorSubject<{ [key: string]: RubricaDefinicion }>({});
@@ -176,8 +176,8 @@ export class RubricService {
 
     Object.values(rubricas).forEach(rubrica => {
       // Verificar si es el código base exacto O si empieza con los patrones de versión
-      const esVersion = rubrica.codigo === codigoBase || 
-                        rubrica.codigo?.startsWith(patronNuevo) || 
+      const esVersion = rubrica.codigo === codigoBase ||
+                        rubrica.codigo?.startsWith(patronNuevo) ||
                         rubrica.codigo?.startsWith(patronAnterior);
 
       if (esVersion) {
@@ -277,7 +277,7 @@ export class RubricService {
     if (matchOld) {
       return matchOld[1];
     }
-    
+
     // Si no tiene formato de versión, asumir que es el código base
     return codigo;
   }
@@ -417,9 +417,80 @@ export class RubricService {
     return {
       sonIdenticas: diferencias.length === 0,
       diferencias,
-      resumen: diferencias.length === 0 
-        ? 'Las rúbricas son idénticas' 
+      resumen: diferencias.length === 0
+        ? 'Las rúbricas son idénticas'
         : `Se encontraron ${diferencias.length} diferencias`
     };
+  }
+
+  generarIdRubrica(titulo: string): string {
+    const base = titulo
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substr(2, 5);
+
+    return `${base}-${timestamp}-${random}`;
+  }
+
+  async migrarRubricasAntiguas(): Promise<{ migradas: number; errores: number }> {
+    let migradas = 0;
+    let errores = 0;
+
+    try {
+      const yaMigrado = localStorage.getItem('rubricas_migrado');
+      if (yaMigrado === 'true') {
+        return { migradas: 0, errores: 0 };
+      }
+
+      const rubricasAntiguasStr = localStorage.getItem('rubricas');
+
+      if (!rubricasAntiguasStr) {
+        localStorage.setItem('rubricas_migrado', 'true');
+        return { migradas: 0, errores: 0 };
+      }
+
+      const rubricasAntiguas = JSON.parse(rubricasAntiguasStr);
+
+      for (const [viejoId, rubricaVieja] of Object.entries(rubricasAntiguas)) {
+        try {
+          const vieja = rubricaVieja as any;
+          const nueva: RubricaDefinicion = {
+            id: this.generarIdRubrica(vieja.titulo || vieja.nombre || 'Rúbrica sin nombre'),
+            nombre: vieja.titulo || vieja.nombre || 'Rúbrica sin nombre',
+            descripcion: vieja.curso || vieja.descripcion || '',
+            criterios: (vieja.criterios || []).map((c: any) => ({
+              titulo: c.nombre || c.titulo || 'Sin título',
+              descripcion: c.descripcion,
+              pesoMaximo: c.peso,
+              peso: c.peso,
+              nivelesDetalle: c.nivelesDetalle || []
+            })),
+            puntuacionTotal: vieja.puntuacionTotal,
+            escalaCalificacion: vieja.escalaCalificacion || [],
+            cursosCodigos: vieja.curso ? [vieja.curso] : [],
+            fechaCreacion: vieja.fechaCreacion ? new Date(vieja.fechaCreacion) : new Date(),
+            fechaModificacion: vieja.fechaModificacion ? new Date(vieja.fechaModificacion) : new Date()
+          };
+
+          await this.guardarRubrica(nueva);
+          migradas++;
+        } catch (error) {
+          Logger.error(`❌ [RubricService] Error migrando rúbrica ${viejoId}:`, error);
+          errores++;
+        }
+      }
+
+      localStorage.setItem('rubricas_migrado', 'true');
+      Logger.log(`✅ Migración completada: ${migradas} rúbricas migradas, ${errores} errores`);
+      return { migradas, errores };
+
+    } catch (error) {
+      Logger.error('❌ [RubricService] Error general en migración:', error);
+      return { migradas, errores };
+    }
   }
 }
