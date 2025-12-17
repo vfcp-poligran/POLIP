@@ -8,8 +8,8 @@
         <h2>Calificaciones Canvas</h2>
       </div>
 
-      <!-- Selector de cursos como cards (Desktop) -->
-      <div class="cursos-selector-desktop desktop-only">
+      <!-- Selector de cursos como botones (unificado desktop y móvil) -->
+      <div class="cursos-selector">
         @if (cursosConCalificaciones.length > 0) {
           @for (curso of cursosConCalificaciones; track curso.codigo) {
             <button
@@ -19,33 +19,6 @@
               (click)="seleccionarCursoCalificaciones(curso.codigo)">
               {{ curso.codigo }}
             </button>
-          }
-        } @else {
-          <div class="no-cursos-msg">
-            <ion-icon name="folder"></ion-icon>
-            <span>No hay archivos de calificaciones cargados</span>
-          </div>
-        }
-      </div>
-
-      <!-- Selector de cursos como cards (Mobile/Tablet) -->
-      <div class="cursos-cards-mobile mobile-only">
-        @if (cursosConCalificaciones.length > 0) {
-          @for (curso of cursosConCalificaciones; track curso.codigo) {
-            <div
-              class="curso-card-mobile"
-              [class.activo]="cursoCalificacionesSeleccionado === curso.codigo"
-              [style.--curso-color]="getCursoColor(curso.codigo)"
-              (click)="seleccionarCursoCalificaciones(curso.codigo)">
-              <div class="curso-card-color-bar"></div>
-              <div class="curso-card-content">
-                <span class="curso-codigo">{{ curso.codigo }}</span>
-                <span class="curso-nombre">{{ getCursoNombre(curso.codigo) }}</span>
-              </div>
-              @if (cursoCalificacionesSeleccionado === curso.codigo) {
-                <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
-              }
-            </div>
           }
         } @else {
           <div class="no-cursos-msg">

@@ -14,7 +14,7 @@
         <div class="title-wrapper">
           <h2>Cursos</h2>
         </div>
-        <div class="header-actions desktop-only">
+        <div class="header-actions ion-hide-md-down">
           @if (!modoEdicion) {
             <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
               <ion-icon name="add-circle-outline" slot="start"></ion-icon>
@@ -31,7 +31,7 @@
           }
         </div>
         <!-- Botones de acción en móvil cuando está en modo edición -->
-        <div class="header-actions mobile-only">
+        <div class="header-actions ion-hide-md-up">
           @if (modoEdicion) {
             <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
               <ion-icon name="save-outline" slot="icon-only"></ion-icon>

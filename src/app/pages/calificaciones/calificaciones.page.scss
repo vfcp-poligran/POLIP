@@ -222,30 +222,14 @@ ion-content {
 }
 
 // ============================================
-// RESPONSIVE: Mostrar/Ocultar vistas
+// RESPONSIVE: Usar clases Ionic ion-hide-md-*
+// Se usan las clases Ionic: ion-hide-md-down (oculta < 768px), ion-hide-md-up (oculta >= 768px)
 // ============================================
-.desktop-only {
-  display: flex;
-}
-
-.mobile-only {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none !important;
-  }
-
-  .mobile-only {
-    display: flex !important;
-  }
-}
 
 // ============================================
-// SELECTOR DE CURSOS DESKTOP (Botones)
+// SELECTOR DE CURSOS UNIFICADO (Botones)
 // ============================================
-.cursos-selector-desktop {
+.cursos-selector {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -254,9 +238,20 @@ ion-content {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: visible;
   flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    padding: 6px 8px;
+    gap: 4px;
+    border-radius: 6px;
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 4px 6px;
+    gap: 3px;
+  }
 
   .curso-btn {
     --curso-color: #ff2719;
@@ -267,7 +262,7 @@ ion-content {
     border-radius: 10px;
     background: transparent;
     color: var(--azul-oscuro, #0f385a);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.3px;
     cursor: pointer;
@@ -277,6 +272,22 @@ ion-content {
     flex-shrink: 0;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border-bottom: 3px solid transparent;
+
+    @media (max-width: 768px) {
+      min-width: 32px;
+      height: 32px;
+      padding: 0 10px;
+      font-size: 0.72rem;
+      border-radius: 8px;
+      border-bottom-width: 2px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      font-size: 0.65rem;
+    }
 
     &:hover {
       transform: translateY(-2px) scale(1.02);
@@ -292,6 +303,10 @@ ion-content {
       transform: scale(1.03);
       font-weight: 700;
       border-bottom-color: transparent;
+
+      @media (max-width: 768px) {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 
@@ -303,164 +318,19 @@ ion-content {
     font-size: 0.85rem;
     padding: 8px 16px;
 
+    @media (max-width: 768px) {
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      gap: 6px;
+    }
+
     ion-icon {
       font-size: 1.2rem;
       opacity: 0.6;
-    }
-  }
-}
 
-// ============================================
-// SELECTOR DE CURSOS MÓVIL (Cards)
-// ============================================
-.cursos-cards-mobile {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 4px;
-  background: transparent;
-
-  // Tablet - 2 columnas
-  @media (min-width: 600px) and (max-width: 768px) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-
-  // Landscape - horizontal scroll
-  @media (max-height: 500px) and (orientation: landscape) {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 6px;
-    padding: 2px 4px;
-
-    &::-webkit-scrollbar {
-      height: 4px;
-    }
-  }
-
-  .curso-card-mobile {
-    --curso-color: #ff2719;
-    display: flex;
-    align-items: center;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-
-    @media (max-height: 500px) and (orientation: landscape) {
-      flex-shrink: 0;
-      min-width: 160px;
-    }
-
-    .curso-card-color-bar {
-      width: 5px;
-      height: 100%;
-      min-height: 48px;
-      background: var(--curso-color);
-      flex-shrink: 0;
-
-      @media (max-height: 500px) and (orientation: landscape) {
-        width: 4px;
-        min-height: 36px;
-      }
-    }
-
-    .curso-card-content {
-      flex: 1;
-      padding: 8px 10px;
-      min-width: 0;
-
-      @media (max-height: 500px) and (orientation: landscape) {
-        padding: 5px 8px;
-      }
-
-      .curso-codigo {
-        display: block;
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: var(--curso-color);
-        text-transform: uppercase;
-        margin-bottom: 2px;
-
-        @media (max-height: 500px) and (orientation: landscape) {
-          font-size: 0.62rem;
-          margin-bottom: 1px;
-        }
-      }
-
-      .curso-nombre {
-        font-size: 0.68rem;
-        color: var(--azul-oscuro, #0f385a);
-        line-height: 1.25;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-
-        @media (max-height: 500px) and (orientation: landscape) {
-          font-size: 0.58rem;
-          -webkit-line-clamp: 1;
-        }
-      }
-    }
-
-    .check-icon {
-      font-size: 1.2rem;
-      color: var(--ion-color-success);
-      margin-right: 8px;
-      flex-shrink: 0;
-
-      @media (max-height: 500px) and (orientation: landscape) {
+      @media (max-width: 768px) {
         font-size: 1rem;
-        margin-right: 6px;
       }
-    }
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    }
-
-    &.activo {
-      background: linear-gradient(135deg, rgba(var(--curso-color-rgb, 255, 39, 25), 0.08) 0%, rgba(var(--curso-color-rgb, 255, 39, 25), 0.02) 100%);
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
-      border: 1px solid var(--curso-color);
-
-      .curso-card-color-bar {
-        width: 6px;
-
-        @media (max-height: 500px) and (orientation: landscape) {
-          width: 5px;
-        }
-      }
-    }
-  }
-
-  .no-cursos-msg {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: #6c757d;
-    font-size: 0.78rem;
-    padding: 16px;
-    background: white;
-    border-radius: 8px;
-
-    ion-icon {
-      font-size: 1.2rem;
-      opacity: 0.6;
-    }
-
-    @media (max-height: 500px) and (orientation: landscape) {
-      font-size: 0.68rem;
-      padding: 10px;
     }
   }
 }
@@ -469,7 +339,7 @@ ion-content {
 // BARRA DE BOTONES DE CURSOS (Legacy - mantener por compatibilidad)
 // ============================================
 .cursos-botones-bar {
-  display: none; // Reemplazado por cursos-selector-desktop y cursos-cards-mobile
+  display: none; // Reemplazado por cursos-selector
 }
 
 // ============================================
