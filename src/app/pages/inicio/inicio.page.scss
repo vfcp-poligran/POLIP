@@ -70,15 +70,110 @@ ion-content {
    ======================================== */
 .page-title-header {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   justify-content: flex-start;
   padding: 4px 8px;
   margin-bottom: 0.5rem;
   background: transparent;
   border-radius: 0;
   box-shadow: none;
-  overflow: hidden;
-  min-height: 40px;
+  overflow: visible;
+  min-height: auto;
+  gap: 6px;
+
+  // Barra de navegación de grupos en la parte superior
+  .grupos-nav-bar-top {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--rad-sm, 8px);
+    padding: 4px 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+    .grupos-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
+
+    // Ícono de grupos en línea
+    .grupos-icon {
+      display: flex !important;
+      font-size: 1.1rem;
+      color: var(--azul-oscuro, #0f385a);
+      margin: 0 4px;
+      opacity: 0.7;
+    }
+
+    .grupo-nav-btn {
+      min-width: 28px;
+      height: 26px;
+      padding: 0 8px;
+      border-radius: var(--rad-sm, 8px);
+      border: none;
+      background: var(--azul-oscuro, #0f385a);
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.65;
+
+      &:hover {
+        opacity: 0.85;
+      }
+
+      &.activo {
+        opacity: 1;
+        box-shadow: 0 2px 6px rgba(15, 56, 90, 0.4);
+        transform: scale(1.05);
+      }
+
+      // Botón Dashboard (Todos)
+      &.grupo-nav-btn-dashboard {
+        ion-icon {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    // Botón Vista General en la barra de navegación
+    .vista-general-toggle-btn {
+      min-width: 28px;
+      height: 26px;
+      padding: 0 6px;
+      border-radius: var(--rad-sm, 8px);
+      border: none;
+      background: var(--verde-menta, #28a745);
+      color: #ffffff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+      margin-right: 4px;
+
+      &:hover {
+        opacity: 0.9;
+      }
+
+      &.activo {
+        opacity: 1;
+        box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
+      }
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
 
   // Selector de cursos integrado en el header
   .header-course-selector {

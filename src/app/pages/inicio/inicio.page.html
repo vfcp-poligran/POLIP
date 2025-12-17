@@ -22,11 +22,47 @@
 
   <div class="layout" [ngStyle]="layoutStyles">
     <div class="page-container">
-      <!-- Barra de navegación común: Botón Vista General + Selectores de curso -->
+      <!-- Barra de navegación común: Navegación de grupos + Selectores de curso -->
       @if (cursosDisponibles.length > 0) {
       <div class="page-title-header">
+        <!-- Barra de navegación de grupos - Arriba de los cursos -->
+        @if (!vistaGeneralActiva && cursoActivo && gruposDisponibles.length > 0) {
+        <div class="grupos-nav-bar grupos-nav-bar-top">
+          <div class="grupos-buttons">
+            <!-- Botón Vista General -->
+            <button type="button"
+                    class="vista-general-toggle-btn"
+                    [class.activo]="vistaGeneralActiva"
+                    (click)="irAVistaGeneral()"
+                    title="Vista General">
+              <ion-icon name="apps"></ion-icon>
+            </button>
+            <!-- Botón Dashboard (todos los grupos) -->
+            <button type="button"
+                    class="grupo-nav-btn grupo-nav-btn-dashboard"
+                    [class.activo]="filtroGrupo === 'todos'"
+                    (click)="volverAMatriz()"
+                    title="Vista general - Todos los grupos">
+              <ion-icon name="grid"></ion-icon>
+            </button>
+            <!-- Ícono de grupos -->
+            <ion-icon name="people-circle-outline" class="grupos-icon"></ion-icon>
+            <!-- Números de grupos -->
+            @for (grupo of gruposDisponibles; track grupo) {
+              <button type="button"
+                      class="grupo-nav-btn"
+                      [class.activo]="filtroGrupo === grupo"
+                      (click)="navegarAGrupo(grupo)"
+                      [title]="'Ver detalle del Grupo ' + grupo">
+                {{ grupo }}
+              </button>
+            }
+          </div>
+        </div>
+        }
         <div class="header-course-selector">
-          <!-- Botón Vista General -->
+          <!-- Botón Vista General (solo visible cuando está en Vista General) -->
+          @if (vistaGeneralActiva) {
           <button type="button"
                   class="vista-general-toggle-btn"
                   [class.activo]="vistaGeneralActiva"
@@ -34,6 +70,7 @@
                   title="Vista General">
             <ion-icon name="apps"></ion-icon>
           </button>
+          }
           <ion-segment
             [scrollable]="true"
             [value]="cursoActivo"
@@ -173,32 +210,6 @@
             </div>
           </ion-card-header>
           <ion-card-content>
-
-            <!-- Barra de navegación de grupos - ÚNICA -->
-            <div class="grupos-nav-bar">
-              <div class="grupos-buttons">
-                <!-- Botón Vista General (todos) -->
-                <button type="button"
-                        class="grupo-nav-btn grupo-nav-btn-dashboard"
-                        [class.activo]="filtroGrupo === 'todos'"
-                        (click)="volverAMatriz()"
-                        title="Vista general - Todos los grupos">
-                  <ion-icon name="grid"></ion-icon>
-                </button>
-                <!-- Ícono de grupos - siempre visible -->
-                <ion-icon name="people-circle-outline" class="grupos-icon"></ion-icon>
-                <!-- Números de grupos -->
-                @for (grupo of gruposDisponibles; track grupo) {
-                  <button type="button"
-                          class="grupo-nav-btn"
-                          [class.activo]="filtroGrupo === grupo"
-                          (click)="navegarAGrupo(grupo)"
-                          [title]="'Ver detalle del Grupo ' + grupo">
-                    {{ grupo }}
-                  </button>
-                }
-              </div>
-            </div>
 
             <!-- Vista: Todos los grupos -->
             @if (filtroGrupo === 'todos') {
