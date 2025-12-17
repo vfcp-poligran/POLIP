@@ -81,7 +81,7 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums, globeOutline, constructOutline, apps } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums, globeOutline, constructOutline, apps, appsOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { ToastService } from '../../services/toast.service';
@@ -139,6 +139,28 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   // Vista General - Multi-curso
   vistaGeneralActiva: boolean = true; // Vista General activa por defecto al entrar a Inicio
 
+  // Placeholders para la vista general (multi-curso)
+  vistaGeneralSecciones = [
+    {
+      id: 'panel',
+      titulo: 'Panel multi-curso',
+      descripcion: 'Aquí verás un resumen con los indicadores clave de todos tus cursos.',
+      icono: 'apps-outline'
+    },
+    {
+      id: 'comparativo',
+      titulo: 'Comparativo de desempeño',
+      descripcion: 'Comparaciones entre cursos, entregas y calificaciones agrupadas.',
+      icono: 'analytics-outline'
+    },
+    {
+      id: 'alertas',
+      titulo: 'Alertas y seguimiento',
+      descripcion: 'Próximamente se mostrarán alertas tempranas y recordatorios automáticos.',
+      icono: 'time-outline'
+    }
+  ];
+
   // Propiedades para drag and drop de cursos
   cursosOrdenados: string[] = []; // Array ordenado de cursos para mantener el orden personalizado
   elementoArrastrado: string | null = null; // Curso que se está arrastrando
@@ -168,6 +190,9 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   menuColorVisible: boolean = false;
   cursoParaCambiarColor: string | null = null;
   colorSeleccionado: string | null = null;
+
+  // Propiedades para vista de grupos con tabs
+  vistaGrupoActiva: 'general' | string = 'general';
   colorPopoverEvent: Event | null = null;
   isApplyingColor: boolean = false; // Estado de loading al aplicar color
 
@@ -320,7 +345,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,apps,ellipsisVertical,closeOutline,checkmarkCircle,library,speedometer,constructOutline,homeOutline,chevronForwardOutline,grid,peopleCircleOutline,checkmarkDoneCircle,hourglassOutline,warning,people,albums,alertCircle,informationCircleOutline,globeOutline,home,schoolOutline,gridOutline,analyticsOutline,rocket,saveOutline,documentTextOutline,createOutline,peopleOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,informationCircle,peopleCircle,book,clipboardOutline,documentText,checkmarkOutline,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,alertCircleOutline,listOutline,copyOutline,personOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,apps,ellipsisVertical,closeOutline,checkmarkCircle,library,speedometer,constructOutline,chevronForwardOutline,gridOutline,peopleOutline,appsOutline,listOutline,people,person,cloudUploadOutline,informationCircleOutline,alertCircle,homeOutline,grid,peopleCircleOutline,checkmarkDoneCircle,hourglassOutline,warning,albums,globeOutline,home,schoolOutline,analyticsOutline,rocket,saveOutline,documentTextOutline,createOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,informationCircle,peopleCircle,book,clipboardOutline,documentText,checkmarkOutline,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,alertCircleOutline,copyOutline,personOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -610,6 +635,16 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       this.filtroGrupo = 'todos';
       this.seguimientoService.setGrupoSeleccionado(0);
     }
+
+    // Inicializar vista de grupo a 'general' cuando se selecciona el curso
+    this.vistaGrupoActiva = 'general';
+    console.log('[DEBUG] Curso seleccionado:', {
+      nombreCurso,
+      filtroGrupo: this.filtroGrupo,
+      vistaGrupoActiva: this.vistaGrupoActiva,
+      estudiantesCount: this.estudiantesActuales.length,
+      gruposCount: this.gruposDisponibles.length
+    });
 
     this.aplicarFiltros();
 
@@ -3490,6 +3525,9 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     this.entregaEvaluando = null;
     this.tipoEvaluando = null;
 
+    // Resetear vista de grupo a general
+    this.vistaGrupoActiva = 'general';
+
     // Actualizar el servicio de seguimiento
     this.seguimientoService.setGrupoSeleccionado(0);
 
@@ -4774,5 +4812,31 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       Logger.error('Error en actualización Canvas:', error);
       await this.toastService.error('Error actualizando Canvas: ' + (error as Error).message, undefined, 4000);
     }
+  }
+
+  /**
+   * Selecciona la vista de grupo (general o grupo específico)
+   */
+  seleccionarVistaGrupo(vista: 'general' | string) {
+    console.log('[DEBUG] seleccionarVistaGrupo:', vista);
+    this.vistaGrupoActiva = vista;
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Cuenta los integrantes de un grupo específico
+   */
+  contarIntegrantesGrupo(grupo: string): number {
+    return this.estudiantesActuales.filter(e => e.grupo === grupo).length;
+  }
+
+  /**
+   * Obtiene los integrantes de la vista actualmente seleccionada
+   */
+  obtenerIntegrantesVistaActual(): Estudiante[] {
+    if (this.vistaGrupoActiva === 'general') {
+      return this.estudiantesActuales;
+    }
+    return this.estudiantesActuales.filter(e => e.grupo === this.vistaGrupoActiva);
   }
 }

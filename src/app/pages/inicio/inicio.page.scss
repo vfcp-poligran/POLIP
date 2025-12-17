@@ -1038,11 +1038,18 @@ ion-card {
   padding: 0 8px;
   animation: fadeIn 0.3s ease;
 
+  .vista-general-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
   .vista-general-card {
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     overflow: hidden;
+    height: 100%;
   }
 
   .vista-general-header {
@@ -1159,9 +1166,10 @@ ion-card {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 20px;
+    padding: 40px 20px;
     text-align: center;
     color: #999;
+    min-height: 220px;
 
     .placeholder-icon {
       font-size: 3rem;
@@ -1169,16 +1177,41 @@ ion-card {
       opacity: 0.5;
     }
 
-    p {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin: 0 0 8px 0;
-      color: #666;
+    .placeholder-icon-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(15, 56, 90, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+
+      ion-icon {
+        font-size: 1.6rem;
+        color: var(--azul-oscuro, #0f385a);
+      }
+    }
+
+    .placeholder-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--azul-oscuro, #0f385a);
+    }
+
+    .placeholder-description {
+      font-size: 0.85rem;
+      color: rgba(15, 56, 90, 0.7);
+      margin: 0 0 10px 0;
     }
 
     .hint {
-      font-size: 0.85rem;
-      color: #999;
+      font-size: 0.75rem;
+      color: rgba(15, 56, 90, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
     }
   }
 }
@@ -5729,5 +5762,391 @@ ion-chip {
 
   ion-card-content {
     padding: 0;
+  }
+}
+
+// ==================================================
+// CARD DE GRUPOS DEL CURSO - Sección independiente
+// ==================================================
+.grupos-curso-card {
+  margin-bottom: 16px;
+
+  ion-card-header {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  ion-card-content {
+    padding: 0;
+  }
+}
+
+// ==================================================
+// GRUPOS TABS SECTION - Vista de tabs de grupos
+// ==================================================
+.grupos-tabs-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(15, 56, 90, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  .grupos-tabs-header {
+    margin-bottom: 12px;
+
+    h4 {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--azul-oscuro, #0f385a);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  // Barra de tabs de grupos
+  .grupos-tabs-bar {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    background: rgba(15, 56, 90, 0.04);
+    border-radius: 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-bottom: 16px;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(15, 56, 90, 0.2);
+      border-radius: 2px;
+    }
+
+    .grupo-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(15, 56, 90, 0.7);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      min-height: 40px;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+
+      .grupo-numero {
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .badge {
+        font-size: 0.68rem;
+        background: rgba(15, 56, 90, 0.12);
+        color: rgba(15, 56, 90, 0.8);
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 700;
+      }
+
+      &:hover {
+        background: rgba(15, 56, 90, 0.08);
+        color: var(--azul-oscuro, #0f385a);
+      }
+
+      &.active {
+        background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(15, 56, 90, 0.3);
+
+        ion-icon {
+          color: #fff;
+        }
+
+        .badge {
+          background: rgba(255, 255, 255, 0.25);
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  // Contenido del tab
+  .grupo-tab-content {
+    .tab-content-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(15, 56, 90, 0.04);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--azul-oscuro, #0f385a);
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+
+    .curso-general-placeholder {
+      border: 1px dashed rgba(15, 56, 90, 0.25);
+      border-radius: 12px;
+      padding: 32px 24px;
+      text-align: center;
+      background: rgba(15, 56, 90, 0.03);
+      color: rgba(15, 56, 90, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      ion-icon {
+        font-size: 2.2rem;
+        color: var(--azul-oscuro, #0f385a);
+      }
+
+      h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--azul-oscuro, #0f385a);
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+      }
+
+      small {
+        font-size: 0.75rem;
+        color: rgba(15, 56, 90, 0.6);
+      }
+    }
+
+    // Grid de integrantes
+    .integrantes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 4px;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(15, 56, 90, 0.2);
+        border-radius: 2px;
+      }
+
+      .integrante-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid rgba(15, 56, 90, 0.1);
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: rgba(15, 56, 90, 0.2);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+          transform: translateY(-1px);
+        }
+
+        .integrante-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          ion-icon {
+            font-size: 1.2rem;
+            color: #fff;
+          }
+        }
+
+        .integrante-data {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          flex: 1;
+          min-width: 0;
+
+          .nombre {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--azul-oscuro, #0f385a);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .correo {
+            font-size: 0.72rem;
+            color: rgba(15, 56, 90, 0.55);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        .grupo-badge {
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #fff;
+          background: var(--ion-color-tertiary, #5260ff);
+          padding: 4px 10px;
+          border-radius: 12px;
+          flex-shrink: 0;
+        }
+      }
+    }
+
+    // Estado vacío
+    .empty-tab-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: rgba(15, 56, 90, 0.4);
+
+      ion-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+      }
+
+      .hint {
+        font-size: 0.75rem;
+        margin-top: 8px;
+      }
+    }
+  }
+}
+
+// Responsive para grupos tabs
+@media (max-width: 768px) {
+  .grupos-tabs-section {
+    padding: 12px;
+
+    .grupos-tabs-header h4 {
+      font-size: 0.82rem;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+
+    .grupos-tabs-bar {
+      gap: 4px;
+      padding: 3px;
+
+      .grupo-tab {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        min-height: 36px;
+
+        .grupo-numero {
+          font-size: 0.82rem;
+        }
+
+        .badge {
+          font-size: 0.62rem;
+          padding: 2px 6px;
+        }
+      }
+    }
+
+    .grupo-tab-content {
+      .tab-content-header {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+      }
+
+      .integrantes-grid {
+        grid-template-columns: 1fr;
+        max-height: 300px;
+
+        .integrante-card {
+          padding: 10px 12px;
+
+          .integrante-avatar {
+            width: 34px;
+            height: 34px;
+
+            ion-icon {
+              font-size: 1rem;
+            }
+          }
+
+          .integrante-data {
+            .nombre {
+              font-size: 0.8rem;
+            }
+
+            .correo {
+              font-size: 0.68rem;
+            }
+          }
+
+          .grupo-badge {
+            font-size: 0.68rem;
+            padding: 3px 8px;
+          }
+        }
+      }
+    }
   }
 }

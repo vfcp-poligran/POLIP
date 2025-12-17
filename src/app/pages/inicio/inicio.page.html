@@ -135,16 +135,22 @@
       <!-- ==================== -->
       @if (vistaGeneralActiva && cursosDisponibles.length > 0) {
       <div class="vista-general-section">
-        <ion-card class="vista-general-card">
-          <ion-card-content class="vista-general-content">
-            <!-- Contenido de Vista General - Se irá agregando -->
-            <div class="vista-general-placeholder">
-              <ion-icon name="construct-outline" class="placeholder-icon"></ion-icon>
-              <p>Sección en construcción</p>
-              <span class="hint">Aquí se mostrarán las herramientas de gestión multi-curso</span>
-            </div>
-          </ion-card-content>
-        </ion-card>
+        <div class="vista-general-grid">
+          @for (seccion of vistaGeneralSecciones; track seccion.id) {
+          <ion-card class="vista-general-card">
+            <ion-card-content class="vista-general-content">
+              <div class="vista-general-placeholder">
+                <div class="placeholder-icon-badge">
+                  <ion-icon [name]="seccion.icono"></ion-icon>
+                </div>
+                <p class="placeholder-title">{{ seccion.titulo }}</p>
+                <p class="placeholder-description">{{ seccion.descripcion }}</p>
+                <span class="hint">Sección en construcción</span>
+              </div>
+            </ion-card-content>
+          </ion-card>
+          }
+        </div>
       </div>
       }
 
@@ -194,17 +200,94 @@
 
           <ion-card-content>
 
-            <!-- Vista: Todos los grupos -->
+            <!-- Vista: Todos los grupos (Vista General del Curso) -->
             @if (filtroGrupo === 'todos') {
 
-            <!-- Sección en construcción -->
-            <div class="seccion-construccion">
-              <ion-icon name="construct-outline"></ion-icon>
-              <h3>Sección en construcción</h3>
-              <p>El panel de estadísticas y resumen de evaluaciones estará disponible próximamente.</p>
-              <ion-text color="medium">
-                <small>Seleccione un grupo para comenzar a evaluar</small>
-              </ion-text>
+            <!-- Vista de Grupos del Curso con Tabs -->
+            <div class="grupos-tabs-section">
+              <div class="grupos-tabs-header">
+                <h4>
+                  <ion-icon name="people-outline"></ion-icon>
+                  {{ estudiantesActuales.length }} estudiantes en {{ gruposDisponibles.length }} grupos
+                </h4>
+              </div>
+
+              @if (estudiantesActuales.length > 0) {
+              <!-- Tabs de grupos -->
+              <div class="grupos-tabs-bar">
+                <button
+                  type="button"
+                  class="grupo-tab"
+                  [class.active]="vistaGrupoActiva === 'general'"
+                  (click)="seleccionarVistaGrupo('general')">
+                  <ion-icon name="apps-outline"></ion-icon>
+                  <span>Vista General</span>
+                  <span class="badge">{{ estudiantesActuales.length }}</span>
+                </button>
+                @for (grupo of gruposDisponibles; track grupo) {
+                <button
+                  type="button"
+                  class="grupo-tab"
+                  [class.active]="vistaGrupoActiva === grupo"
+                  (click)="seleccionarVistaGrupo(grupo)">
+                  <span class="grupo-numero">{{ grupo }}</span>
+                  <span class="badge">{{ contarIntegrantesGrupo(grupo) }}</span>
+                </button>
+                }
+              </div>
+
+              <!-- Contenido del tab seleccionado -->
+              <div class="grupo-tab-content">
+                <div class="tab-content-header">
+                  @if (vistaGrupoActiva === 'general') {
+                    <ion-icon name="list-outline"></ion-icon>
+                    <span>Vista general del curso - {{ estudiantesActuales.length }} estudiantes</span>
+                  } @else {
+                    <ion-icon name="people"></ion-icon>
+                    <span>Grupo {{ vistaGrupoActiva }} - {{ obtenerIntegrantesVistaActual().length }} integrantes</span>
+                  }
+                </div>
+
+                <!-- Lista de integrantes -->
+                @if (vistaGrupoActiva === 'general') {
+                <div class="curso-general-placeholder">
+                  <ion-icon name="construct-outline"></ion-icon>
+                  <h5>Vista general en construcción</h5>
+                  <p>
+                    Aquí se mostrarán los indicadores y resúmenes del curso
+                    {{ cursoActivo ? getCodigoCorto(cursoActivo) : '' }}.
+                  </p>
+                  <small>Utiliza los botones numerados para revisar cada grupo.</small>
+                </div>
+                } @else if (obtenerIntegrantesVistaActual().length > 0) {
+                <div class="integrantes-grid">
+                  @for (estudiante of obtenerIntegrantesVistaActual(); track estudiante.correo) {
+                  <div class="integrante-card">
+                    <div class="integrante-avatar">
+                      <ion-icon name="person"></ion-icon>
+                    </div>
+                    <div class="integrante-data">
+                      <span class="nombre">{{ estudiante.nombres }} {{ estudiante.apellidos }}</span>
+                      <span class="correo">{{ estudiante.correo }}</span>
+                    </div>
+                    <div class="grupo-badge">G{{ estudiante.grupo }}</div>
+                  </div>
+                  }
+                </div>
+                } @else {
+                <div class="empty-tab-content">
+                  <ion-icon name="people-outline"></ion-icon>
+                  <p>No hay estudiantes en este grupo</p>
+                </div>
+                }
+              </div>
+              } @else {
+              <div class="empty-tab-content">
+                <ion-icon name="cloud-upload-outline"></ion-icon>
+                <p>Este curso no tiene estudiantes cargados</p>
+                <p class="hint">Cargue un archivo de calificaciones para ver los integrantes</p>
+              </div>
+              }
             </div>
 
             } @else {
