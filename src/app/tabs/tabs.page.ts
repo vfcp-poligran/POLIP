@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone } from '@angular/core';
+import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
@@ -33,7 +33,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { Logger } from '@app/core/utils/logger';
 import { addIcons } from 'ionicons';
 import {
@@ -219,6 +219,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Set de integrantes seleccionados (por correo)
   selectedIntegrantes: Set<string> = new Set();
 
+  private uiStateInitialized = false;
+  private lastCursoActivo: string | null = null;
+
   // Control del panel de seguimiento móvil
   mobileSeguimientoVisible: boolean = false;
 
@@ -252,96 +255,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       })
     );
 
-    // Suscribirse al seguimiento actual con cleanup
-    this.subscriptions.push(
-      this.seguimientoService.seguimientoActual$.pipe(
-        distinctUntilChanged((prev: SeguimientoGrupo | null, curr: SeguimientoGrupo | null) => JSON.stringify(prev) === JSON.stringify(curr))
-      ).subscribe((seguimiento: SeguimientoGrupo | null) => {
-        this.seguimientoActual = seguimiento;
-      })
-    );
-
-    // Suscribirse al grupo seleccionado (para UI de botones)
-    this.subscriptions.push(
-      this.seguimientoService.grupoSeleccionado$.subscribe((grupo: number) => {
-        this.selectedGrupo = grupo;
-        // Marcar para revisión en el próximo ciclo de detección
-        this.cdr.markForCheck();
-      })
-    );
-
-    // Suscribirse al grupo visualizado (para mostrar integrantes)
-    this.subscriptions.push(
-      this.seguimientoService.grupoVisualizado$.subscribe((grupo: number) => {
-        this.grupoVisualizado = grupo;
-        // Actualizar integrantes cuando cambia el grupo visualizado
-        this.actualizarIntegrantesGrupo();
-        // Marcar para revisión en el próximo ciclo de detección
-        this.cdr.markForCheck();
-      })
-    );
-
-    // Suscribirse al curso activo para mostrar/ocultar grupos con debounce
-    this.subscriptions.push(
-      this.dataService.uiState$.pipe(
-        debounceTime(50),
-        distinctUntilChanged((prev: any, curr: any) => prev.cursoActivo === curr.cursoActivo)
-      ).subscribe((uiState: any) => {
-        this.cursoActivo = uiState.cursoActivo;
-
-        // Actualizar grupos disponibles cuando cambia el curso activo
-        if (this.cursoActivo) {
-          this.actualizarGruposDisponibles();
-
-          // Restaurar grupo seleccionado desde CourseState
-          const courseState = this.dataService.getCourseState(this.cursoActivo);
-          if (courseState?.filtroGrupo && courseState.filtroGrupo !== 'todos') {
-            // Extraer número del grupo (G1 -> 1, G2 -> 2, etc.)
-            const grupoNum = parseInt(courseState.filtroGrupo.replace(/\D/g, ''));
-
-            // 🛡️ GUARDIA: Solo restaurar si es diferente al actual
-            if (grupoNum > 0 && this.selectedGrupo !== grupoNum) {
-              this.selectedGrupo = grupoNum;
-              this.seguimientoService.setGrupoSeleccionado(grupoNum);
-            }
-          } else {
-            // Resetear a "Todos" si no hay grupo guardado
-            if (this.selectedGrupo !== 0) {
-              this.selectedGrupo = 0;
-              this.seguimientoService.setGrupoSeleccionado(0);
-            }
-          }
-
-          // Actualizar integrantes del grupo
-          this.actualizarIntegrantesGrupo();
-        } else {
-          this.grupos = [];
-          this.selectedGrupo = 0;
-          this.integrantesGrupoActual = [];
-        }
-      })
-    );
-
-    // Suscribirse a cambios en cursos para actualizar grupos con debounce
-    this.subscriptions.push(
-      this.dataService.cursos$.pipe(
-        debounceTime(100),
-        distinctUntilChanged((prev: any, curr: any) => Object.keys(prev).length === Object.keys(curr).length)
-      ).subscribe(() => {
-        if (this.cursoActivo) {
-          this.actualizarGruposDisponibles();
-        }
-      })
-    );
-
-    // Suscribirse a resultados de búsqueda global
-    this.subscriptions.push(
-      this.dataService.searchResults$.subscribe(results => {
-        this.searchResults = results.results;
-        this.searchTerm = results.term;
-        Logger.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
-      })
-    );
 
     // Monitorear cambios de ruta para mantener estado
     this.subscriptions.push(
@@ -351,6 +264,78 @@ export class TabsPage implements OnDestroy, AfterViewInit {
         // Navegación completada silenciosamente
       })
     );
+
+    effect(() => {
+      const seguimiento = this.seguimientoService.seguimientoActual();
+      this.seguimientoActual = seguimiento;
+    });
+
+    effect(() => {
+      const grupoSeleccionado = this.seguimientoService.grupoSeleccionado();
+      if (this.selectedGrupo !== grupoSeleccionado) {
+        this.selectedGrupo = grupoSeleccionado;
+        this.cdr.markForCheck();
+      }
+    });
+
+    effect(() => {
+      const grupoVisualizado = this.seguimientoService.grupoVisualizado();
+      if (this.grupoVisualizado !== grupoVisualizado) {
+        this.grupoVisualizado = grupoVisualizado;
+        this.actualizarIntegrantesGrupo();
+        this.cdr.markForCheck();
+      }
+    });
+
+    effect(() => {
+      const uiState = this.dataService.uiState();
+      const cursoActivo = uiState?.cursoActivo ?? null;
+
+      if (this.uiStateInitialized && cursoActivo === this.lastCursoActivo) {
+        return;
+      }
+
+      this.uiStateInitialized = true;
+      this.lastCursoActivo = cursoActivo;
+      this.cursoActivo = cursoActivo;
+
+      if (cursoActivo) {
+        this.actualizarGruposDisponibles();
+        const courseState = this.dataService.getCourseState(cursoActivo);
+        if (courseState?.filtroGrupo && courseState.filtroGrupo !== 'todos') {
+          const grupoNum = parseInt(courseState.filtroGrupo.replace(/\D/g, ''), 10);
+          if (grupoNum > 0 && this.selectedGrupo !== grupoNum) {
+            this.selectedGrupo = grupoNum;
+            this.seguimientoService.setGrupoSeleccionado(grupoNum);
+          }
+        } else if (this.selectedGrupo !== 0) {
+          this.selectedGrupo = 0;
+          this.seguimientoService.setGrupoSeleccionado(0);
+        }
+        this.actualizarIntegrantesGrupo();
+      } else {
+        this.grupos = [];
+        this.selectedGrupo = 0;
+        this.integrantesGrupoActual = [];
+      }
+
+      this.cdr.markForCheck();
+    });
+
+    effect(() => {
+      const cursos = this.dataService.cursos();
+      if (this.cursoActivo && Object.keys(cursos || {}).length >= 0) {
+        this.actualizarGruposDisponibles();
+      }
+    });
+
+    effect(() => {
+      const results = this.dataService.searchResults();
+      this.searchResults = results.results;
+      this.searchTerm = results.term;
+      Logger.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
+      this.cdr.markForCheck();
+    });
   }
 
   ngAfterViewInit(): void {

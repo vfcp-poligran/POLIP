@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { StateService } from './state.service';
 import { EvaluationService } from './evaluation.service';
 import { CsvUtils } from '../utils/csv.utils';
@@ -13,8 +13,9 @@ export class CanvasService {
   private stateService = inject(StateService);
   private evaluationService = inject(EvaluationService);
 
-  private calificacionesCanvasActualizadasSubject = new BehaviorSubject<{ curso: string, timestamp: number } | null>(null);
-  public calificacionesCanvasActualizadas$ = this.calificacionesCanvasActualizadasSubject.asObservable();
+  private _calificacionesCanvasActualizadas = signal<{ curso: string, timestamp: number } | null>(null);
+  public calificacionesCanvasActualizadas = this._calificacionesCanvasActualizadas.asReadonly();
+  public calificacionesCanvasActualizadas$ = toObservable(this._calificacionesCanvasActualizadas);
 
   /**
    * Parsea CSV de Canvas y extrae solo los campos necesarios
@@ -104,7 +105,7 @@ export class CanvasService {
     await this.stateService.updateCourseState(codigoCurso, nuevoCourseState);
 
     // Notificar actualización
-    this.calificacionesCanvasActualizadasSubject.next({
+    this._calificacionesCanvasActualizadas.set({
       curso: codigoCurso,
       timestamp: Date.now()
     });

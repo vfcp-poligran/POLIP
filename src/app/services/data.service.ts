@@ -1,5 +1,6 @@
-import { Injectable, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UnifiedStorageService } from './unified-storage.service';
 import { BackupService } from './backup.service';
@@ -54,10 +55,10 @@ export class DataService implements OnDestroy {
   };
 
   // Global search term
-  private globalSearchSubject = new BehaviorSubject<string>('');
+  private _globalSearch = signal<string>('');
 
   // Global search results (cross-course)
-  private searchResultsSubject = new BehaviorSubject<{
+  private _searchResults = signal<{
     term: string;
     results: Array<{
       estudiante: Estudiante;
@@ -68,13 +69,21 @@ export class DataService implements OnDestroy {
   }>({ term: '', results: [] });
 
   // Observables públicos
+  public cursos = this.courseService.cursos;
   public cursos$ = this.courseService.cursos$;
+  public evaluaciones = this.evaluationService.evaluaciones;
   public evaluaciones$ = this.evaluationService.evaluaciones$;
+  public uiState = this.stateService.uiState;
   public uiState$ = this.stateService.uiState$;
+  public rubricas = this.rubricService.rubricas;
   public rubricas$ = this.rubricService.rubricas$;
+  public comentariosGrupo = this.commentService.comentariosGrupo;
   public comentariosGrupo$ = this.commentService.comentariosGrupo$;
-  public globalSearch$ = this.globalSearchSubject.asObservable();
-  public searchResults$ = this.searchResultsSubject.asObservable();
+  public globalSearch = this._globalSearch.asReadonly();
+  public searchResults = this._searchResults.asReadonly();
+  public globalSearch$ = toObservable(this._globalSearch);
+  public searchResults$ = toObservable(this._searchResults);
+  public calificacionesCanvasActualizadas = this.canvasService.calificacionesCanvasActualizadas;
   public calificacionesCanvasActualizadas$ = this.canvasService.calificacionesCanvasActualizadas$;
 
   // Sistema de caché centralizado y eficiente
@@ -1703,12 +1712,12 @@ export class DataService implements OnDestroy {
 
   // Método para establecer el término de búsqueda global
   setGlobalSearchTerm(term: string): void {
-    this.globalSearchSubject.next(term);
+    this._globalSearch.set(term);
   }
 
   // Método para obtener el término de búsqueda actual
   getGlobalSearchTerm(): string {
-    return this.globalSearchSubject.value;
+    return this._globalSearch();
   }
 
   /**
@@ -1720,7 +1729,7 @@ export class DataService implements OnDestroy {
 
     // Si el término está vacío, limpiar resultados
     if (!termLower) {
-      this.searchResultsSubject.next({ term: '', results: [] });
+      this._searchResults.set({ term: '', results: [] });
       return;
     }
 
@@ -1772,7 +1781,7 @@ export class DataService implements OnDestroy {
     });
 
     // Emitir resultados
-    this.searchResultsSubject.next({ term: termLower, results: allResults });
+    this._searchResults.set({ term: termLower, results: allResults });
 
     Logger.log(`🔍 [searchAcrossAllCourses] Búsqueda "${term}" encontró ${allResults.length} resultados`);
   }
@@ -3378,7 +3387,3 @@ export class DataService implements OnDestroy {
     Logger.log(`✅ Rúbrica exportada como JSON: ${nombreArchivo}`);
   }
 }
-
-
-
-

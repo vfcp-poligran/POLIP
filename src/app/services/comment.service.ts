@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { UnifiedStorageService } from './unified-storage.service';
 import { ComentariosGrupoData, ComentarioGrupo } from '../models/comentario-grupo.model';
 import { Logger } from '@app/core/utils/logger';
@@ -14,8 +14,9 @@ export class CommentService {
     COMENTARIOS_GRUPO: 'comentariosGrupoData'
   };
 
-  private comentariosGrupoSubject = new BehaviorSubject<ComentariosGrupoData>({});
-  public comentariosGrupo$ = this.comentariosGrupoSubject.asObservable();
+  private _comentariosGrupo = signal<ComentariosGrupoData>({});
+  public comentariosGrupo = this._comentariosGrupo.asReadonly();
+  public comentariosGrupo$ = toObservable(this._comentariosGrupo);
 
   constructor() {
     this.loadComentariosGrupo();
@@ -23,7 +24,7 @@ export class CommentService {
 
   async loadComentariosGrupo(): Promise<void> {
     const comentarios = await this.storage.get<ComentariosGrupoData>(this.STORAGE_KEYS.COMENTARIOS_GRUPO) || {} as ComentariosGrupoData;
-    this.comentariosGrupoSubject.next(comentarios);
+    this._comentariosGrupo.set({ ...comentarios });
   }
 
   /**
@@ -32,21 +33,21 @@ export class CommentService {
    */
   async saveComentariosGrupo(comentarios?: ComentariosGrupoData): Promise<void> {
     if (comentarios) {
-      this.comentariosGrupoSubject.next(comentarios);
+      this._comentariosGrupo.set({ ...comentarios });
     }
-    await this.storage.set(this.STORAGE_KEYS.COMENTARIOS_GRUPO, this.comentariosGrupoSubject.value);
+    await this.storage.set(this.STORAGE_KEYS.COMENTARIOS_GRUPO, this._comentariosGrupo());
   }
 
   getComentariosValue(): ComentariosGrupoData {
-    return this.comentariosGrupoSubject.value;
+    return this._comentariosGrupo();
   }
 
   updateComentariosState(newState: ComentariosGrupoData): void {
-    this.comentariosGrupoSubject.next(newState);
+    this._comentariosGrupo.set({ ...newState });
   }
 
   getComentariosGrupo(cursoId: string, grupo: string): ComentarioGrupo[] {
-    const comentarios = this.comentariosGrupoSubject.value;
+    const comentarios = this._comentariosGrupo();
     if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
       return [];
     }
@@ -54,17 +55,10 @@ export class CommentService {
   }
 
   async addComentarioGrupo(cursoId: string, grupo: string, comentarioTexto: string, autor?: string, etiquetas?: string[]): Promise<void> {
-    const comentarios = { ...this.comentariosGrupoSubject.value };
+    const comentarios = { ...this._comentariosGrupo() };
+    const cursoComentarios = { ...(comentarios[cursoId] || {}) };
+    const grupoComentarios = [...(cursoComentarios[grupo] || [])];
 
-    // Inicializar estructura si no existe
-    if (!comentarios[cursoId]) {
-      comentarios[cursoId] = {};
-    }
-    if (!comentarios[cursoId][grupo]) {
-      comentarios[cursoId][grupo] = [];
-    }
-
-    // Crear nuevo comentario
     const nuevoComentario: ComentarioGrupo = {
       id: crypto.randomUUID(),
       cursoId,
@@ -75,44 +69,44 @@ export class CommentService {
       etiquetas
     };
 
-    // Añadir al array
-    comentarios[cursoId][grupo] = [...comentarios[cursoId][grupo], nuevoComentario];
+    grupoComentarios.push(nuevoComentario);
+    cursoComentarios[grupo] = grupoComentarios;
+    comentarios[cursoId] = cursoComentarios;
 
-    // Actualizar subject y guardar
     await this.saveComentariosGrupo(comentarios);
   }
 
   async deleteComentarioGrupo(cursoId: string, grupo: string, comentarioId: string): Promise<void> {
-    const comentarios = { ...this.comentariosGrupoSubject.value };
-
+    const comentarios = { ...this._comentariosGrupo() };
     if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
       Logger.warn(`⚠️ [CommentService] No existen comentarios para ${cursoId} - ${grupo}`);
       return;
     }
 
-    // Filtrar el comentario a eliminar
-    comentarios[cursoId][grupo] = comentarios[cursoId][grupo].filter(c => c.id !== comentarioId);
+    const cursoComentarios = { ...comentarios[cursoId] };
+    const grupoComentarios = (cursoComentarios[grupo] || []).filter(c => c.id !== comentarioId);
+    cursoComentarios[grupo] = grupoComentarios;
+    comentarios[cursoId] = cursoComentarios;
 
-    // Actualizar subject y guardar
     await this.saveComentariosGrupo(comentarios);
   }
 
   async updateComentarioGrupo(cursoId: string, grupo: string, comentarioId: string, nuevoTexto: string): Promise<void> {
-    const comentarios = { ...this.comentariosGrupoSubject.value };
-
+    const comentarios = { ...this._comentariosGrupo() };
     if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
       Logger.warn(`⚠️ [CommentService] No existen comentarios para ${cursoId} - ${grupo}`);
       return;
     }
 
-    // Encontrar y actualizar el comentario
-    comentarios[cursoId][grupo] = comentarios[cursoId][grupo].map(c =>
+    const cursoComentarios = { ...comentarios[cursoId] };
+    const grupoComentarios = (cursoComentarios[grupo] || []).map(c =>
       c.id === comentarioId
         ? { ...c, comentario: nuevoTexto, fecha: new Date() }
         : c
     );
+    cursoComentarios[grupo] = grupoComentarios;
+    comentarios[cursoId] = cursoComentarios;
 
-    // Actualizar subject y guardar
     await this.saveComentariosGrupo(comentarios);
   }
 }

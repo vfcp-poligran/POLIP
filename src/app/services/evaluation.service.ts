@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { UnifiedStorageService } from './unified-storage.service';
-import { Logger } from '@app/core/utils/logger';
 import { Evaluacion } from '../models';
 
 @Injectable({
@@ -14,8 +13,9 @@ export class EvaluationService {
     EVALUACIONES: 'evaluacionesData'
   };
 
-  private evaluacionesSubject = new BehaviorSubject<{ [key: string]: Evaluacion }>({});
-  public evaluaciones$ = this.evaluacionesSubject.asObservable();
+  private _evaluaciones = signal<{ [key: string]: Evaluacion }>({});
+  public evaluaciones = this._evaluaciones.asReadonly();
+  public evaluaciones$ = toObservable(this._evaluaciones);
 
   constructor() {
     this.loadEvaluaciones();
@@ -23,24 +23,24 @@ export class EvaluationService {
 
   async loadEvaluaciones(): Promise<void> {
     const evaluaciones = await this.storage.get<{ [key: string]: Evaluacion }>(this.STORAGE_KEYS.EVALUACIONES) || {} as { [key: string]: Evaluacion };
-    this.evaluacionesSubject.next(evaluaciones);
+    this._evaluaciones.set({ ...evaluaciones });
   }
 
   async saveEvaluaciones(evaluaciones: { [key: string]: Evaluacion }): Promise<void> {
     await this.storage.set(this.STORAGE_KEYS.EVALUACIONES, evaluaciones);
-    this.evaluacionesSubject.next(evaluaciones);
+    this._evaluaciones.set({ ...evaluaciones });
   }
 
   getEvaluacionesValue(): { [key: string]: Evaluacion } {
-    return this.evaluacionesSubject.value;
+    return this._evaluaciones();
   }
 
   getEvaluacion(key: string): Evaluacion | undefined {
-    return this.evaluacionesSubject.value[key];
+    return this._evaluaciones()[key];
   }
 
   async guardarEvaluacion(evaluacion: Evaluacion, key: string): Promise<void> {
-    const evaluacionesOriginales = this.evaluacionesSubject.value;
+    const evaluacionesOriginales = this._evaluaciones();
 
     const evaluaciones = {
       ...evaluacionesOriginales,
@@ -51,7 +51,7 @@ export class EvaluationService {
   }
 
   async borrarEvaluacion(key: string): Promise<void> {
-    const evaluacionesOriginales = this.evaluacionesSubject.value;
+    const evaluacionesOriginales = this._evaluaciones();
 
     // Crear nueva copia sin la evaluación a borrar
     const evaluaciones = { ...evaluacionesOriginales };
@@ -61,7 +61,7 @@ export class EvaluationService {
   }
 
   async borrarEvaluacionesPorCurso(codigoCurso: string): Promise<number> {
-    const evaluacionesOriginales = this.evaluacionesSubject.value;
+    const evaluacionesOriginales = this._evaluaciones();
     const evaluacionesRestantes: { [key: string]: Evaluacion } = {};
 
     // Filtrar evaluaciones que NO pertenecen al curso eliminado

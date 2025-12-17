@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Logger } from '@app/core/utils/logger';
 import {
   IonContent,
@@ -112,7 +111,7 @@ interface ArchivoCalificacionesVisualizacion {
     IonBadge
   ]
 })
-export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
+export class CalificacionesPage implements OnDestroy, ViewWillEnter {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
@@ -164,7 +163,6 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
   }> = [];
 
   // Suscripciones para limpiar en ngOnDestroy
-  private subscriptions: Subscription[] = [];
   private isInitialized = false;
 
   constructor() {
@@ -178,16 +176,11 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       mailOutline, trophyOutline, ribbonOutline, fingerPrintOutline, starOutline,
       gridOutline, eyeOffOutline, keyOutline, documentAttachOutline, micOutline
     });
-  }
 
-  ngOnInit() {
-    // Inicialización única (suscripciones, etc.)
-    // Suscribirse a cambios en UIState
-    const sub = this.dataService.uiState$.subscribe(() => {
+    effect(() => {
+      this.dataService.uiState();
       this.actualizarCursosConCalificaciones();
     });
-
-    this.subscriptions.push(sub);
   }
 
   ionViewWillEnter() {
@@ -196,9 +189,6 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   ngOnDestroy() {
-    // Limpiar todas las suscripciones
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.subscriptions = [];
     this.isInitialized = false;
   }
 
@@ -1098,4 +1088,3 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
     return num > 0 && num <= 50;
   }
 }
-

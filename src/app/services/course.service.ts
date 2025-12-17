@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { UnifiedStorageService } from './unified-storage.service';
 import { Logger } from '@app/core/utils/logger';
-import { CursoData, CourseState, UIState, Estudiante } from '../models';
+import { CursoData, Estudiante } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +15,9 @@ export class CourseService {
     UI_STATE: 'appUIState'
   };
 
-  private cursosSubject = new BehaviorSubject<CursoData>({});
-  public cursos$ = this.cursosSubject.asObservable();
+  private _cursos = signal<CursoData>({});
+  public cursos = this._cursos.asReadonly();
+  public cursos$ = toObservable(this._cursos);
 
   // Necesitamos acceso al UIState para gestionar metadatos de cursos
   // Idealmente esto debería estar desacoplado, pero por ahora lo inyectaremos o gestionaremos aquí
@@ -29,20 +30,20 @@ export class CourseService {
 
   async loadCursos(): Promise<void> {
     const cursos = await this.storage.get<CursoData>(this.STORAGE_KEYS.CURSOS) || {} as CursoData;
-    this.cursosSubject.next(cursos);
+    this._cursos.set({ ...cursos });
   }
 
   async saveCursos(cursos: CursoData): Promise<void> {
     await this.storage.set(this.STORAGE_KEYS.CURSOS, cursos);
-    this.cursosSubject.next(cursos);
+    this._cursos.set({ ...cursos });
   }
 
   getCursosValue(): CursoData {
-    return this.cursosSubject.value;
+    return this._cursos();
   }
 
   getCurso(nombre: string): Estudiante[] | undefined {
-    return this.cursosSubject.value[nombre];
+    return this._cursos()[nombre];
   }
 
   /**
@@ -66,7 +67,7 @@ export class CourseService {
   }
 
   async actualizarEstudiantesCurso(codigoCurso: string, estudiantes: any[]): Promise<void> {
-    const cursosOriginales = this.cursosSubject.value;
+    const cursosOriginales = this._cursos();
 
     if (!cursosOriginales[codigoCurso]) {
       throw new Error(`No se encontró el curso con código: ${codigoCurso}`);
@@ -82,7 +83,7 @@ export class CourseService {
   }
 
   async eliminarCursoData(codigoUnico: string): Promise<void> {
-    const cursosOriginales = this.cursosSubject.value;
+    const cursosOriginales = this._cursos();
     const { [codigoUnico]: cursoEliminado, ...cursosRestantes } = cursosOriginales;
 
     if (!cursoEliminado) {

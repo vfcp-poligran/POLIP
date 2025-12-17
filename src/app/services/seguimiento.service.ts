@@ -109,111 +109,114 @@ export class SeguimientoService {
    * Útil para previsualizar integrantes de un grupo manteniendo la vista "Todos".
    */
   setGrupoVisualizado(grupo: number): void {
-    this.grupoVisualizadoSubject.next(grupo);
+    if (this._grupoVisualizado() === grupo) {
+      return;
+    }
+    this._grupoVisualizado.set(grupo);
   }
 
   getGrupoSeleccionado(): number {
-    return this.grupoSeleccionadoSubject.value;
+    return this._grupoSeleccionado();
   }
 
   getGrupoVisualizado(): number {
-    return this.grupoVisualizadoSubject.value;
+    return this._grupoVisualizado();
   }
 
   setSeguimiento(seguimiento: SeguimientoGrupo | null): void {
-    this.seguimientoActualSubject.next(seguimiento);
+    this._seguimientoActual.set(seguimiento ? { ...seguimiento } : null);
   }
 
   getSeguimiento(): SeguimientoGrupo | null {
-    return this.seguimientoActualSubject.value;
+    return this._seguimientoActual();
   }
 
   actualizarTextoRubrica(tipo: 'PG' | 'PI', textos: string[], timestamps?: string[]): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       if (tipo === 'PG') {
-        seguimientoActual.textoRubricaGrupal = textos;
+        seguimientoActual.textoRubricaGrupal = [...textos];
         if (timestamps) {
-          seguimientoActual.timestampsGrupal = timestamps;
+          seguimientoActual.timestampsGrupal = [...timestamps];
         }
       } else {
-        seguimientoActual.textoRubricaIndividual = textos;
+        seguimientoActual.textoRubricaIndividual = [...textos];
         if (timestamps) {
-          seguimientoActual.timestampsIndividual = timestamps;
+          seguimientoActual.timestampsIndividual = [...timestamps];
         }
       }
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   actualizarEvaluacionRubrica(tipo: 'PG' | 'PI', evaluacion: EvaluacionRubrica): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       if (tipo === 'PG') {
-        seguimientoActual.evaluacionGrupal = evaluacion;
+        seguimientoActual.evaluacionGrupal = { ...evaluacion };
       } else {
-        seguimientoActual.evaluacionIndividual = evaluacion;
+        seguimientoActual.evaluacionIndividual = { ...evaluacion };
       }
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   agregarComentario(comentario: ComentarioGrupo): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
-      seguimientoActual.comentarios.push(comentario);
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      seguimientoActual.comentarios = [...seguimientoActual.comentarios, comentario];
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   agregarComentarios(comentarios: ComentarioGrupo[]): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
-      seguimientoActual.comentarios.push(...comentarios);
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      seguimientoActual.comentarios = [...seguimientoActual.comentarios, ...comentarios];
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   actualizarComentario(id: string, nuevoTexto: string): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       const comentario = seguimientoActual.comentarios.find(c => c.id === id);
       if (comentario) {
         comentario.comentario = nuevoTexto;
-        this.seguimientoActualSubject.next({ ...seguimientoActual });
+        this._seguimientoActual.set({ ...seguimientoActual });
       }
     }
   }
 
   eliminarComentario(id: string): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       seguimientoActual.comentarios = seguimientoActual.comentarios.filter(c => c.id !== id);
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   actualizarIntegranteSeleccionado(integrante: IntegranteInfo | null): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       seguimientoActual.integranteSeleccionado = integrante || undefined;
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   actualizarEntregaActual(entrega: 'E1' | 'E2' | 'EF' | null): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       seguimientoActual.entregaActual = entrega || undefined;
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
   actualizarTipoEvaluacionActiva(tipo: 'PG' | 'PI' | null): void {
-    const seguimientoActual = this.seguimientoActualSubject.value;
+    const seguimientoActual = this._seguimientoActual();
     if (seguimientoActual) {
       seguimientoActual.tipoEvaluacionActiva = tipo;
-      this.seguimientoActualSubject.next({ ...seguimientoActual });
+      this._seguimientoActual.set({ ...seguimientoActual });
     }
   }
 
@@ -221,7 +224,7 @@ export class SeguimientoService {
    * Limpia completamente el seguimiento actual
    */
   limpiarSeguimiento(): void {
-    this.seguimientoActualSubject.next(null);
+    this._seguimientoActual.set(null);
   }
 
   // === MÉTODOS PARA ESTADOS DE ESTUDIANTES ===
@@ -230,10 +233,10 @@ export class SeguimientoService {
    * Obtiene los estados de un grupo y entrega específicos
    */
   getEstadosGrupoEntrega(grupo: string, entrega: string): EstadosEntrega {
-    if (!this.estadosEstudiantes.has(grupo)) {
-      this.estadosEstudiantes.set(grupo, new Map());
+    if (!this.estadosEstudiantesMap.has(grupo)) {
+      this.estadosEstudiantesMap.set(grupo, new Map());
     }
-    const grupoMap = this.estadosEstudiantes.get(grupo)!;
+    const grupoMap = this.estadosEstudiantesMap.get(grupo)!;
 
     if (!grupoMap.has(entrega)) {
       grupoMap.set(entrega, { ok: new Set(), solos: new Set(), ausentes: new Set() });
@@ -262,14 +265,14 @@ export class SeguimientoService {
     }
 
     // Notificar cambio
-    this.estadosEstudiantesSubject.next(new Map(this.estadosEstudiantes));
+    this._estadosEstudiantes.set(new Map(this.estadosEstudiantesMap));
   }
 
   /**
    * Obtiene el estado de un estudiante
    */
   getEstadoEstudiante(grupo: string, entrega: string, correo: string): EstadoEstudiante {
-    const grupoMap = this.estadosEstudiantes.get(grupo);
+    const grupoMap = this.estadosEstudiantesMap.get(grupo);
     if (!grupoMap) return null;
 
     const estados = grupoMap.get(entrega);
@@ -285,10 +288,10 @@ export class SeguimientoService {
    * Limpia los estados de un grupo y entrega
    */
   limpiarEstadosGrupoEntrega(grupo: string, entrega: string): void {
-    const grupoMap = this.estadosEstudiantes.get(grupo);
+    const grupoMap = this.estadosEstudiantesMap.get(grupo);
     if (grupoMap) {
       grupoMap.delete(entrega);
-      this.estadosEstudiantesSubject.next(new Map(this.estadosEstudiantes));
+      this._estadosEstudiantes.set(new Map(this.estadosEstudiantesMap));
     }
   }
 }

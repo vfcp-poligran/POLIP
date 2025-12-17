@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { UnifiedStorageService } from './unified-storage.service';
 import { Logger } from '@app/core/utils/logger';
 import {
@@ -16,15 +16,16 @@ export class RubricService {
 
   private readonly STORAGE_KEY = 'rubricDefinitionsData';
 
-  private rubricasSubject = new BehaviorSubject<{ [key: string]: RubricaDefinicion }>({});
-  public rubricas$ = this.rubricasSubject.asObservable();
+  private _rubricas = signal<{ [key: string]: RubricaDefinicion }>({});
+  public rubricas = this._rubricas.asReadonly();
+  public rubricas$ = toObservable(this._rubricas);
 
   get rubricasValue(): { [key: string]: RubricaDefinicion } {
-    return this.rubricasSubject.value;
+    return this._rubricas();
   }
 
   updateRubricasState(rubricas: { [key: string]: RubricaDefinicion }): void {
-    this.rubricasSubject.next(rubricas);
+    this._rubricas.set({ ...rubricas });
   }
 
   constructor() {
@@ -59,11 +60,11 @@ export class RubricService {
       }
     }
 
-    this.rubricasSubject.next(rubricas);
+    this._rubricas.set({ ...rubricas });
   }
 
   getRubrica(id: string): RubricaDefinicion | undefined {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = this._rubricas();
     const rubrica = rubricas[id];
 
     if (!rubrica) {
@@ -74,49 +75,50 @@ export class RubricService {
   }
 
   obtenerRubricasArray(): RubricaDefinicion[] {
-    return Object.values(this.rubricasSubject.value);
+    return Object.values(this._rubricas());
   }
 
   async guardarRubrica(rubrica: RubricaDefinicion): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = { ...this._rubricas() };
+    const rubricaTrabajo = { ...rubrica };
 
-    if (!rubrica.fechaCreacion) {
-      rubrica.fechaCreacion = new Date();
+    if (!rubricaTrabajo.fechaCreacion) {
+      rubricaTrabajo.fechaCreacion = new Date();
     }
-    rubrica.fechaModificacion = new Date();
+    rubricaTrabajo.fechaModificacion = new Date();
 
     // Generar código estructurado y versión si no existe
-    if (!rubrica.codigo) {
-      const codigoInfo = this.generarCodigoRubrica(rubrica);
-      rubrica.codigo = codigoInfo.codigo;
-      rubrica.version = codigoInfo.version;
-      rubrica.timestamp = Date.now();
-      rubrica.activa = rubrica.activa ?? true; // Por defecto nueva rúbrica está activa
+    if (!rubricaTrabajo.codigo) {
+      const codigoInfo = this.generarCodigoRubrica(rubricaTrabajo);
+      rubricaTrabajo.codigo = codigoInfo.codigo;
+      rubricaTrabajo.version = codigoInfo.version;
+      rubricaTrabajo.timestamp = Date.now();
+      rubricaTrabajo.activa = rubricaTrabajo.activa ?? true; // Por defecto nueva rúbrica está activa
     }
 
     // Si la rúbrica se está activando, desactivar otras del mismo tipo/entrega/curso
-    if (rubrica.activa) {
-      this.desactivarRubricasMismaCategoria(rubricas, rubrica);
+    if (rubricaTrabajo.activa) {
+      this.desactivarRubricasMismaCategoria(rubricas, rubricaTrabajo);
     }
 
-    rubricas[rubrica.id] = rubrica;
+    rubricas[rubricaTrabajo.id] = rubricaTrabajo;
 
     await this.storage.set(this.STORAGE_KEY, rubricas);
-    this.rubricasSubject.next(rubricas);
+    this._rubricas.set({ ...rubricas });
   }
 
   async eliminarRubrica(id: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = { ...this._rubricas() };
     if (rubricas[id]) {
       delete rubricas[id];
       await this.storage.set(this.STORAGE_KEY, rubricas);
-      this.rubricasSubject.next(rubricas);
+      this._rubricas.set({ ...rubricas });
       Logger.log(`🗑️ Rúbrica eliminada: ${id}`);
     }
   }
 
   async activarRubrica(rubricaId: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = { ...this._rubricas() };
     const rubrica = rubricas[rubricaId];
 
     if (!rubrica) {
@@ -131,13 +133,13 @@ export class RubricService {
     rubrica.fechaModificacion = new Date();
 
     await this.storage.set(this.STORAGE_KEY, rubricas);
-    this.rubricasSubject.next(rubricas);
+    this._rubricas.set({ ...rubricas });
 
     Logger.log(`✅ Rúbrica "${rubrica.nombre}" (v${rubrica.version}) activada`);
   }
 
   async activarVersionRubrica(rubricaId: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
+    const rubricas = { ...this._rubricas() };
     const rubricaActivar = rubricas[rubricaId];
 
     if (!this.esRubricaValida(rubricaActivar)) {
@@ -154,7 +156,7 @@ export class RubricService {
     const versionesActualizadas = this.actualizarEstadoVersiones(rubricas, codigoBase, rubricaId);
 
     await this.storage.set(this.STORAGE_KEY, rubricas);
-    this.rubricasSubject.next(rubricas);
+    this._rubricas.set({ ...rubricas });
 
     Logger.log(`✅ Versión ${rubricaActivar.codigo} activada. ${versionesActualizadas - 1} versiones desactivadas.`);
   }

@@ -1,9 +1,7 @@
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { Logger } from '@app/core/utils/logger';
-import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import {
   IonContent,
   IonCard,
@@ -311,8 +309,6 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   // Caché para calificaciones del panel
   private _calificacionesPanelCache = new Map<string, number | null>();
 
-  private subscriptions: Subscription[] = [];
-
   private dataService = inject(DataService);
   private menuController = inject(MenuController);
   private alertController = inject(AlertController);
@@ -328,6 +324,106 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
+
+    effect(() => {
+      const cursos = this.dataService.cursos();
+      this.cursosData = cursos;
+
+      const totalCursos = Object.keys(cursos).length;
+      const totalEstudiantes = Object.values(cursos).reduce((sum: number, estudiantes: any) =>
+        sum + (Array.isArray(estudiantes) ? estudiantes.length : 0), 0);
+
+      Logger.log(`📚[cursos$.subscribe] ${new Date().toISOString().substr(11, 12)} `, {
+        totalCursos,
+        totalEstudiantes,
+        cursos: Object.keys(cursos)
+      });
+
+      const cursosActuales = Object.keys(cursos);
+      if (this.cursosOrdenados.length !== cursosActuales.length) {
+        Logger.log(`🔄 Actualizando cursosOrdenados: ${this.cursosOrdenados.length} -> ${cursosActuales.length}`);
+        this.cursosOrdenados = [...cursosActuales].sort();
+      }
+
+      if (this.cursoActivo && !cursos[this.cursoActivo]) {
+        Logger.log('⚠️ [InicioPage] Curso activo eliminado:', this.cursoActivo);
+        this.cursoActivo = null;
+        this.estudiantesActuales = [];
+        this.gruposDisponibles = [];
+        this.aplicarFiltros();
+      }
+
+      this.cdr.detectChanges();
+    });
+
+    effect(() => {
+      const uiState = this.dataService.uiState();
+      if (uiState.cursoActivo && uiState.cursoActivo !== this.cursoActivo) {
+        Logger.log(`🔄[uiState$.subscribe] Curso activo cambió a:`, uiState.cursoActivo);
+
+        const cursosActuales = this.dataService.getCursos();
+        if (Object.keys(cursosActuales).length > Object.keys(this.cursosData).length) {
+          Logger.log(`📥 Actualizando cursosData desde DataService`);
+          this.cursosData = cursosActuales;
+        }
+
+        this.seleccionarCurso(uiState.cursoActivo);
+      }
+    });
+
+    effect(() => {
+      const searchTerm = this.dataService.globalSearch();
+      if (this.busquedaGeneral === searchTerm) {
+        return;
+      }
+
+      this.busquedaGeneral = searchTerm;
+      this.aplicarFiltros();
+      this.cdr.detectChanges();
+    });
+
+    effect(() => {
+      const grupoNum = this.seguimientoService.grupoSeleccionado();
+      if (this.actualizandoGrupoDesdeSuscripcion) {
+        return;
+      }
+
+      this.actualizandoGrupoDesdeSuscripcion = true;
+
+      if (grupoNum === 0) {
+        this.filtroGrupo = 'todos';
+        this.grupoSeguimientoActivo = null;
+      } else {
+        const grupoNumStr = grupoNum.toString();
+        if (this.gruposDisponibles.length === 0 || this.gruposDisponibles.includes(grupoNumStr)) {
+          this.filtroGrupo = grupoNumStr;
+          this.grupoSeguimientoActivo = grupoNumStr;
+        } else {
+          Logger.warn('⚠️ Grupo no encontrado en gruposDisponibles:', grupoNum, 'disponibles:', this.gruposDisponibles);
+        }
+      }
+
+      this.aplicarFiltros();
+      this.cdr.detectChanges();
+      this.actualizandoGrupoDesdeSuscripcion = false;
+    });
+
+    effect(() => {
+      const evento = this.dataService.calificacionesCanvasActualizadas();
+      if (evento && evento.curso) {
+        Logger.log('📢 [cursos.page] Recibida notificación: calificaciones actualizadas para', evento.curso);
+
+        this._calificacionesCargadasPorCurso.delete(evento.curso);
+
+        if (this.cursoActivo === evento.curso) {
+          Logger.log('🔄 [cursos.page] Recargando calificaciones del curso activo');
+          this.limpiarCacheCalificaciones();
+          this.precargarCalificacionesCurso();
+          this._calificacionesCargadasPorCurso.set(evento.curso, true);
+          this.cdr.detectChanges();
+        }
+      }
+    });
   }
 
   async ngOnInit() {
@@ -339,148 +435,6 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
     // Los atajos de teclado ahora se manejan automáticamente con @HostListener
 
-    this.subscriptions.push(
-      this.dataService.cursos$.pipe(
-        distinctUntilChanged((prev, curr) => {
-          const prevKeys = Object.keys(prev).sort();
-          const currKeys = Object.keys(curr).sort();
-
-          // Comparar claves
-          if (prevKeys.length !== currKeys.length) return false;
-          if (prevKeys.join() !== currKeys.join()) return false;
-
-          // Comparar longitud de arrays de estudiantes
-          for (const key of prevKeys) {
-            const prevLength = Array.isArray(prev[key]) ? prev[key].length : 0;
-            const currLength = Array.isArray(curr[key]) ? curr[key].length : 0;
-            if (prevLength !== currLength) return false;
-          }
-
-          return true; // Son iguales, NO emitir
-        })
-      ).subscribe(cursos => {
-        const totalCursos = Object.keys(cursos).length;
-        const totalEstudiantes = Object.values(cursos).reduce((sum: number, estudiantes: any) =>
-          sum + (Array.isArray(estudiantes) ? estudiantes.length : 0), 0);
-
-        Logger.log(`📚[cursos$.subscribe] ${new Date().toISOString().substr(11, 12)} `, {
-          totalCursos,
-          totalEstudiantes,
-          cursos: Object.keys(cursos)
-        });
-
-        this.cursosData = cursos;
-
-        // Actualizar cursosOrdenados cuando cambian los cursos disponibles
-        const cursosActuales = Object.keys(cursos);
-        if (this.cursosOrdenados.length !== cursosActuales.length) {
-          Logger.log(`🔄 Actualizando cursosOrdenados: ${this.cursosOrdenados.length} -> ${cursosActuales.length}`);
-          this.cursosOrdenados = [...cursosActuales].sort();
-        }
-
-        // Si el curso activo fue eliminado, limpiar estado
-        if (this.cursoActivo && !cursos[this.cursoActivo]) {
-          Logger.log('⚠️ [InicioPage] Curso activo eliminado:', this.cursoActivo);
-          this.cursoActivo = null;
-          this.estudiantesActuales = [];
-          this.gruposDisponibles = [];
-          this.aplicarFiltros();
-        }
-
-        this.cdr.detectChanges();
-      })
-    );
-
-    // Suscribirse a cambios en el estado de UI (incluyendo cursoActivo)
-    this.subscriptions.push(
-      this.dataService.uiState$.pipe(
-        distinctUntilChanged((prev, curr) => {
-          // Solo emitir si cambió el curso activo
-          return prev.cursoActivo === curr.cursoActivo;
-        })
-      ).subscribe(uiState => {
-        // Si cambió el curso activo, cargar sus estudiantes
-        if (uiState.cursoActivo && uiState.cursoActivo !== this.cursoActivo) {
-          Logger.log(`🔄[uiState$.subscribe] Curso activo cambió a:`, uiState.cursoActivo);
-
-          // Asegurar que cursosData esté actualizado antes de seleccionar
-          const cursosActuales = this.dataService.getCursos();
-          if (Object.keys(cursosActuales).length > Object.keys(this.cursosData).length) {
-            Logger.log(`📥 Actualizando cursosData desde DataService`);
-            this.cursosData = cursosActuales;
-          }
-
-          this.seleccionarCurso(uiState.cursoActivo);
-        }
-      })
-    );
-
-    // Suscribirse a búsqueda global
-    this.subscriptions.push(
-      this.dataService.globalSearch$.pipe(
-        distinctUntilChanged(), // Evita duplicados
-        debounceTime(50)        // Pequeño debounce adicional
-      ).subscribe(searchTerm => {
-        this.busquedaGeneral = searchTerm;
-        this.aplicarFiltros();
-        this.cdr.detectChanges();
-      })
-    );
-
-    // Suscribirse a cambios de grupo desde el panel de seguimiento
-    this.subscriptions.push(
-      this.seguimientoService.grupoSeleccionado$.pipe(
-        distinctUntilChanged(), // Solo emite si grupo cambió
-        debounceTime(100)       // Agrupa cambios rápidos
-      ).subscribe(grupoNum => {
-        // Evitar loop infinito
-        if (this.actualizandoGrupoDesdeSuscripcion) return;
-
-        this.actualizandoGrupoDesdeSuscripcion = true;
-
-        if (grupoNum === 0) {
-          this.filtroGrupo = 'todos';
-          this.grupoSeguimientoActivo = null;
-        } else {
-          // gruposDisponibles tiene formato "1", "2", "3" (sin prefijo "G")
-          const grupoNumStr = grupoNum.toString();
-          // Validar si el grupo existe antes de aplicar el filtro
-          if (this.gruposDisponibles.length === 0 || this.gruposDisponibles.includes(grupoNumStr)) {
-            // Usar solo el número para coincidir con est.grupo y gruposDisponibles
-            this.filtroGrupo = grupoNumStr;
-            this.grupoSeguimientoActivo = grupoNumStr;
-          } else {
-            Logger.warn('⚠️ Grupo no encontrado en gruposDisponibles:', grupoNum, 'disponibles:', this.gruposDisponibles);
-          }
-        }
-
-        this.aplicarFiltros();
-        this.cdr.detectChanges();
-        this.actualizandoGrupoDesdeSuscripcion = false;
-      })
-    );
-
-    // Suscribirse a actualizaciones de calificaciones Canvas
-    // Cuando se cargan nuevas calificaciones, invalidar el cache
-    this.subscriptions.push(
-      this.dataService.calificacionesCanvasActualizadas$.subscribe(evento => {
-        if (evento && evento.curso) {
-          Logger.log('📢 [cursos.page] Recibida notificación: calificaciones actualizadas para', evento.curso);
-
-          // Invalidar cache de calificaciones para este curso
-          this._calificacionesCargadasPorCurso.delete(evento.curso);
-
-          // Si es el curso activo, recargar calificaciones
-          if (this.cursoActivo === evento.curso) {
-            Logger.log('🔄 [cursos.page] Recargando calificaciones del curso activo');
-            this.limpiarCacheCalificaciones();
-            this.precargarCalificacionesCurso();
-            this._calificacionesCargadasPorCurso.set(evento.curso, true);
-            this.cdr.detectChanges();
-          }
-        }
-      })
-    );
 
     // Escuchar evento de apertura de rúbrica desde el sidebar
     window.addEventListener('abrirRubrica', ((event: CustomEvent) => {
@@ -547,9 +501,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     }
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
+  ngOnDestroy() {}
 
   /**
    * Estilos reactivos para el layout grid
@@ -4824,4 +4776,3 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     }
   }
 }
-
