@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UnifiedStorageService } from './unified-storage.service';
 import { BackupService } from './backup.service';
+import { RubricService } from './rubric.service';
 import { Logger } from '@app/core/utils/logger';
 import {
   Estudiante,
@@ -31,6 +32,7 @@ import {
 export class DataService {
   private storage = inject(UnifiedStorageService);
   private backupService = inject(BackupService);
+  private rubricService = inject(RubricService);
 
   private readonly STORAGE_KEYS = {
     CURSOS: 'gestorCursosData',
@@ -60,7 +62,7 @@ export class DataService {
     grupoSeguimientoActivo: null,
     courseStates: {}
   });
-  private rubricasSubject = new BehaviorSubject<{ [key: string]: RubricaDefinicion }>({});
+  // private rubricasSubject = new BehaviorSubject<{ [key: string]: RubricaDefinicion }>({});
   private comentariosGrupoSubject = new BehaviorSubject<ComentariosGrupoData>({});
 
   // Global search term
@@ -84,7 +86,7 @@ export class DataService {
   public cursos$ = this.cursosSubject.asObservable();
   public evaluaciones$ = this.evaluacionesSubject.asObservable();
   public uiState$ = this.uiStateSubject.asObservable();
-  public rubricas$ = this.rubricasSubject.asObservable();
+  public rubricas$ = this.rubricService.rubricas$;
   public comentariosGrupo$ = this.comentariosGrupoSubject.asObservable();
   public globalSearch$ = this.globalSearchSubject.asObservable();
   public searchResults$ = this.searchResultsSubject.asObservable();
@@ -1818,48 +1820,11 @@ export class DataService {
   // === GESTIÓN DE RÚBRICAS ===
 
   async loadRubricas(): Promise<void> {
-    let rubricas = await this.storage.get<{ [key: string]: RubricaDefinicion }>(this.STORAGE_KEYS.RUBRICAS);
-
-    if (!rubricas) {
-
-      rubricas = {} as { [key: string]: RubricaDefinicion };
-      await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-
-    } else {
-      // Migrar rúbricas existentes sin código estructurado
-      let huboCambios = false;
-      for (const id of Object.keys(rubricas)) {
-        const rubrica = rubricas[id];
-        if (!rubrica.codigo && rubrica.tipoRubrica && rubrica.tipoEntrega) {
-          const codigoInfo = this.generarCodigoRubrica(rubrica);
-          rubrica.codigo = codigoInfo.codigo;
-          rubrica.version = codigoInfo.version;
-          rubrica.timestamp = Date.now();
-          rubrica.activa = rubrica.activa ?? true; // Por defecto activa
-          huboCambios = true;
-          Logger.log(`📝 Migrada rúbrica ${id} -> código: ${rubrica.codigo}`);
-        }
-      }
-
-      if (huboCambios) {
-        await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-        Logger.log('✅ Rúbricas migradas con códigos estructurados');
-      }
-    }
-
-    this.rubricasSubject.next(rubricas);
+    await this.rubricService.loadRubricas();
   }
 
   getRubrica(id: string): RubricaDefinicion | undefined {
-    const rubricas = this.rubricasSubject.value;
-    const rubrica = rubricas[id];
-
-    if (!rubrica) {
-      Logger.warn(`⚠️ [DataService.getRubrica] Rúbrica no encontrada con ID: ${id}`);
-
-    }
-
-    return rubrica;
+    return this.rubricService.getRubrica(id);
   }
 
   // === IMPORTACIÓN/EXPORTACIÓN ===
@@ -1869,7 +1834,7 @@ export class DataService {
       cursos: this.cursosSubject.value,
       evaluaciones: this.evaluacionesSubject.value,
       ui: this.uiStateSubject.value,
-      rubricas: this.rubricasSubject.value
+      rubricas: this.rubricService.rubricasValue
     });
 
     this.backupService.downloadBackup(backup);
@@ -1886,7 +1851,7 @@ export class DataService {
     this.cursosSubject.next(backup.cursos);
     this.evaluacionesSubject.next(backup.evaluaciones);
     this.uiStateSubject.next(backup.ui);
-    this.rubricasSubject.next(backup.rubricas);
+    this.rubricService.updateRubricasState(backup.rubricas);
 
     // Guardar en storage
     await this.saveCursos();
@@ -1997,6 +1962,7 @@ export class DataService {
         grupoSeguimientoActivo: null,
         courseStates: {}
       });
+      this.rubricService.updateRubricasState({});
 
       // 8. Recargar rúbricas por defecto
 
@@ -3331,66 +3297,7 @@ export class DataService {
    * del mismo tipo, entrega y curso
    */
   async guardarRubrica(rubrica: RubricaDefinicion): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
-
-    if (!rubrica.fechaCreacion) {
-      rubrica.fechaCreacion = new Date();
-    }
-    rubrica.fechaModificacion = new Date();
-
-    // Generar código estructurado y versión si no existe
-    if (!rubrica.codigo) {
-      const codigoInfo = this.generarCodigoRubrica(rubrica);
-      rubrica.codigo = codigoInfo.codigo;
-      rubrica.version = codigoInfo.version;
-      rubrica.timestamp = Date.now();
-      rubrica.activa = rubrica.activa ?? true; // Por defecto nueva rúbrica está activa
-    }
-
-    // Si la rúbrica se está activando, desactivar otras del mismo tipo/entrega/curso
-    if (rubrica.activa) {
-      this.desactivarRubricasMismaCategoria(rubricas, rubrica);
-    }
-
-    rubricas[rubrica.id] = rubrica;
-
-    await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-    this.rubricasSubject.next(rubricas);
-
-  }
-
-  /**
-   * Desactiva todas las rúbricas de la misma categoría (mismo código base o mismo tipo + entrega + curso)
-   * excepto la rúbrica especificada
-   */
-  private desactivarRubricasMismaCategoria(
-    rubricas: Record<string, RubricaDefinicion>,
-    rubricaActiva: RubricaDefinicion
-  ): void {
-    const { tipoRubrica, tipoEntrega, cursosCodigos } = rubricaActiva;
-    const cursoPrincipal = cursosCodigos?.[0];
-
-    // Obtener código base si existe
-    const codigoBase = rubricaActiva.codigo ? this.extraerCodigoBase(rubricaActiva.codigo) : null;
-
-    if (!tipoRubrica || !tipoEntrega || !cursoPrincipal) return;
-
-    Object.values(rubricas).forEach(r => {
-      // No desactivar la misma rúbrica
-      if (r.id === rubricaActiva.id) return;
-
-      // Verificar si es de la misma categoría por código base O por tipo+entrega+curso
-      const mismoCodigoBase = codigoBase && r.codigo && this.extraerCodigoBase(r.codigo) === codigoBase;
-      const mismaCategoria =
-        r.tipoRubrica === tipoRubrica &&
-        r.tipoEntrega === tipoEntrega &&
-        r.cursosCodigos?.includes(cursoPrincipal);
-
-      if ((mismoCodigoBase || mismaCategoria) && r.activa) {
-        r.activa = false;
-        console.log(`📋 Rúbrica "${r.nombre}" (v${r.version}) desactivada - misma categoría que "${rubricaActiva.nombre}"`);
-      }
-    });
+    await this.rubricService.guardarRubrica(rubrica);
   }
 
   /**
@@ -3398,42 +3305,14 @@ export class DataService {
    * @param rubricaId ID de la rúbrica a activar
    */
   async activarRubrica(rubricaId: string): Promise<void> {
-    const rubricas = this.rubricasSubject.value;
-    const rubrica = rubricas[rubricaId];
-
-    if (!rubrica) {
-      throw new Error(`Rúbrica no encontrada: ${rubricaId}`);
-    }
-
-    // Desactivar otras de la misma categoría
-    this.desactivarRubricasMismaCategoria(rubricas, rubrica);
-
-    // Activar la rúbrica seleccionada
-    rubrica.activa = true;
-    rubrica.fechaModificacion = new Date();
-
-    await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricas);
-    this.rubricasSubject.next(rubricas);
-
-    console.log(`✅ Rúbrica "${rubrica.nombre}" (v${rubrica.version}) activada`);
+    await this.rubricService.activarRubrica(rubricaId);
   }
 
   /**
    * Obtiene las rúbricas de la misma categoría (tipo + entrega + curso)
    */
   obtenerRubricasMismaCategoria(rubrica: RubricaDefinicion): RubricaDefinicion[] {
-    const rubricas = this.obtenerRubricasArray();
-    const cursoPrincipal = rubrica.cursosCodigos?.[0];
-
-    if (!rubrica.tipoRubrica || !rubrica.tipoEntrega || !cursoPrincipal) {
-      return [];
-    }
-
-    return rubricas.filter(r =>
-      r.tipoRubrica === rubrica.tipoRubrica &&
-      r.tipoEntrega === rubrica.tipoEntrega &&
-      r.cursosCodigos?.includes(cursoPrincipal)
-    ).sort((a, b) => (b.version || 1) - (a.version || 1)); // Ordenar por versión descendente
+    return this.rubricService.obtenerRubricasMismaCategoria(rubrica);
   }
 
   // ============================================
@@ -3445,24 +3324,13 @@ export class DataService {
    * @example "Rúbrica Grupal E1 - Programación Móvil"
    */
   generarNombreAutomatico(rubrica: Partial<RubricaDefinicion>): string {
-    const tipoTexto = rubrica.tipoRubrica === 'PG' ? 'Grupal' :
-                      rubrica.tipoRubrica === 'PI' ? 'Individual' : '';
-    const entrega = rubrica.tipoEntrega || 'E1';
-
-    // Obtener nombre del curso si hay uno asociado
     let nombreCurso = '';
     if (rubrica.cursosCodigos?.length) {
       const uiState = this.uiStateSubject.value;
       const metadata = uiState.courseStates?.[rubrica.cursosCodigos[0]]?.metadata;
       nombreCurso = metadata?.nombre || rubrica.cursosCodigos[0];
     }
-
-    const partes = ['Rúbrica', tipoTexto, entrega].filter(Boolean);
-    if (nombreCurso) {
-      partes.push('-', nombreCurso);
-    }
-
-    return partes.join(' ').replace(/\s+/g, ' ').trim();
+    return this.rubricService.generarNombreAutomatico(rubrica, nombreCurso);
   }
 
   /**
@@ -3475,61 +3343,10 @@ export class DataService {
     siguienteVersion: number;
     nombreSugerido: string;
   } {
-    const rubricas = this.obtenerRubricasArray();
-    const nombreNormalizado = this.normalizarNombreParaComparacion(nombre);
-
-    // Buscar rúbricas con nombre similar
-    const coincidentes = rubricas.filter(r => {
-      if (idExcluir && r.id === idExcluir) return false;
-      const nombreRubricaNorm = this.normalizarNombreParaComparacion(r.nombre);
-      return nombreRubricaNorm === nombreNormalizado;
-    });
-
-    if (coincidentes.length === 0) {
-      return {
-        existeDuplicado: false,
-        rubricasCoincidentes: [],
-        siguienteVersion: 1,
-        nombreSugerido: nombre
-      };
-    }
-
-    // Calcular siguiente versión basada en los duplicados encontrados
-    const versionesExistentes = coincidentes.map(r => r.version || 1);
-    const maxVersion = Math.max(...versionesExistentes);
-    const siguienteVersion = maxVersion + 1;
-
-    // Generar nombre sugerido con indicador de versión
-    const nombreSugerido = this.generarNombreConVersion(nombre, siguienteVersion);
-
-    return {
-      existeDuplicado: true,
-      rubricasCoincidentes: coincidentes,
-      siguienteVersion,
-      nombreSugerido
-    };
+    return this.rubricService.detectarRubricaDuplicada(nombre, idExcluir);
   }
 
-  /**
-   * Normaliza un nombre para comparación (sin tildes, minúsculas, sin espacios extra)
-   */
-  private normalizarNombreParaComparacion(nombre: string): string {
-    return nombre
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]/g, '')
-      .trim();
-  }
 
-  /**
-   * Genera un nombre con indicador de versión
-   */
-  private generarNombreConVersion(nombreBase: string, version: number): string {
-    // Remover versión existente si la hay (ej: "Rúbrica (v2)" → "Rúbrica")
-    const nombreSinVersion = nombreBase.replace(/\s*\(v\d+\)\s*$/i, '').trim();
-    return version > 1 ? `${nombreSinVersion} (v${version})` : nombreSinVersion;
-  }
 
   /**
    * Compara el contenido de dos rúbricas para determinar si son idénticas
@@ -3541,79 +3358,7 @@ export class DataService {
     diferencias: string[];
     resumen: string;
   } {
-    const diferencias: string[] = [];
-
-    // Comparar propiedades básicas
-    if (rubrica1.puntuacionTotal !== rubrica2.puntuacionTotal) {
-      diferencias.push(`Puntuación total: ${rubrica2.puntuacionTotal} → ${rubrica1.puntuacionTotal}`);
-    }
-
-    if (rubrica1.tipoRubrica !== rubrica2.tipoRubrica) {
-      diferencias.push(`Tipo: ${rubrica2.tipoRubrica || 'N/A'} → ${rubrica1.tipoRubrica || 'N/A'}`);
-    }
-
-    if (rubrica1.tipoEntrega !== rubrica2.tipoEntrega) {
-      diferencias.push(`Entrega: ${rubrica2.tipoEntrega || 'N/A'} → ${rubrica1.tipoEntrega || 'N/A'}`);
-    }
-
-    // Comparar criterios
-    const criterios1 = rubrica1.criterios || [];
-    const criterios2 = rubrica2.criterios || [];
-
-    if (criterios1.length !== criterios2.length) {
-      diferencias.push(`Cantidad de criterios: ${criterios2.length} → ${criterios1.length}`);
-    } else {
-      // Comparar cada criterio
-      for (let i = 0; i < criterios1.length; i++) {
-        const c1 = criterios1[i];
-        const c2 = criterios2[i];
-
-        if (c1.titulo !== c2.titulo) {
-          diferencias.push(`Criterio ${i + 1} título: "${c2.titulo}" → "${c1.titulo}"`);
-        }
-
-        if (c1.peso !== c2.peso) {
-          diferencias.push(`Criterio "${c1.titulo}" peso: ${c2.peso} → ${c1.peso}`);
-        }
-
-        // Comparar niveles del criterio
-        const niveles1 = c1.nivelesDetalle || [];
-        const niveles2 = c2.nivelesDetalle || [];
-
-        if (niveles1.length !== niveles2.length) {
-          diferencias.push(`Criterio "${c1.titulo}" niveles: ${niveles2.length} → ${niveles1.length}`);
-        } else {
-          for (let j = 0; j < niveles1.length; j++) {
-            const n1 = niveles1[j];
-            const n2 = niveles2[j];
-
-            if (n1.descripcion !== n2.descripcion) {
-              diferencias.push(`Criterio "${c1.titulo}" nivel ${j + 1} descripción modificada`);
-            }
-
-            if (n1.puntosMin !== n2.puntosMin || n1.puntosMax !== n2.puntosMax) {
-              diferencias.push(`Criterio "${c1.titulo}" nivel ${j + 1} puntos: ${n2.puntosMin}-${n2.puntosMax} → ${n1.puntosMin}-${n1.puntosMax}`);
-            }
-          }
-        }
-      }
-    }
-
-    // Generar resumen
-    let resumen: string;
-    if (diferencias.length === 0) {
-      resumen = 'Las rúbricas son idénticas en contenido';
-    } else if (diferencias.length <= 3) {
-      resumen = diferencias.join('. ');
-    } else {
-      resumen = `${diferencias.length} diferencias encontradas: ${diferencias.slice(0, 2).join(', ')} y ${diferencias.length - 2} más`;
-    }
-
-    return {
-      sonIdenticas: diferencias.length === 0,
-      diferencias,
-      resumen
-    };
+    return this.rubricService.compararContenidoRubricas(rubrica1, rubrica2);
   }
 
   /**
@@ -3741,7 +3486,7 @@ export class DataService {
   }
 
   /** Código por defecto cuando no hay curso asociado */
-  private readonly CODIGO_CURSO_DEFAULT = 'GEN';
+
 
   /**
    * Genera código estructurado para una rúbrica
@@ -3753,71 +3498,12 @@ export class DataService {
    * generarCodigoRubrica(rubricaGrupalEntrega1)
    */
   generarCodigoRubrica(rubrica: RubricaDefinicion): { codigo: string; version: number } {
-    const prefijo = this.construirPrefijoRubrica(rubrica);
-    const cursoCodigo = this.obtenerCodigoCurso(rubrica);
-    const version = this.obtenerSiguienteVersion(prefijo, cursoCodigo);
-
-    return {
-      codigo: `${prefijo}-${cursoCodigo}V${version}`,
-      version
-    };
+    return this.rubricService.generarCodigoRubrica(rubrica);
   }
 
-  /**
-   * Construye el prefijo del código: R + tipo (G/I) + entrega
-   */
-  private construirPrefijoRubrica(rubrica: RubricaDefinicion): string {
-    const tipoMap: Record<string, string> = { 'PG': 'G', 'PI': 'I' };
-    const tipo = tipoMap[rubrica.tipoRubrica || ''] || 'X';
-    const entrega = rubrica.tipoEntrega || 'E1';
-    return `R${tipo}${entrega}`;
-  }
 
-  /**
-   * Obtiene el código corto del curso asociado a la rúbrica
-   */
-  private obtenerCodigoCurso(rubrica: RubricaDefinicion): string {
-    if (!rubrica.cursosCodigos?.length) {
-      return this.CODIGO_CURSO_DEFAULT;
-    }
 
-    const primerCursoCodigo = rubrica.cursosCodigos[0];
-    const uiState = this.uiStateSubject.value;
-    const metadata = uiState.courseStates?.[primerCursoCodigo]?.metadata;
 
-    if (metadata?.nombre) {
-      return this.generarCodigoCortoCurso(metadata.nombre);
-    }
-
-    // Fallback: usar el código del curso como nombre si no hay metadata
-    return this.generarCodigoCortoCurso(primerCursoCodigo);
-  }
-
-  /** Palabras comunes a ignorar al generar código corto de curso */
-  private readonly PALABRAS_IGNORAR_CODIGO = new Set(['EN', 'DE', 'LA', 'EL', 'LOS', 'LAS', 'Y', 'A', 'CON', 'POR', 'PARA']);
-  /** Cantidad máxima de palabras para generar iniciales */
-  private readonly MAX_PALABRAS_INICIALES = 4;
-  /** Longitud mínima requerida para el código generado */
-  private readonly MIN_LONGITUD_CODIGO = 2;
-
-  /**
-   * Genera código corto de un curso basado en su nombre
-   * @param nombreCurso - Nombre completo del curso
-   * @returns Código de 2-4 caracteres en mayúsculas
-   * @example
-   * generarCodigoCortoCurso("ÉNFASIS EN PROGRAMACIÓN MÓVIL") // "EPM"
-   */
-  private generarCodigoCortoCurso(nombreCurso: string): string {
-    if (!nombreCurso) return this.CODIGO_CURSO_DEFAULT;
-
-    const textoNormalizado = this.normalizarTexto(nombreCurso);
-    const palabrasSignificativas = this.extraerPalabrasSignificativas(textoNormalizado);
-    const iniciales = this.generarIniciales(palabrasSignificativas);
-
-    return iniciales.length >= this.MIN_LONGITUD_CODIGO
-      ? iniciales
-      : nombreCurso.slice(0, 3).toUpperCase();
-  }
 
   /** Normaliza texto removiendo tildes y caracteres especiales */
   private normalizarTexto(texto: string): string {
@@ -3828,41 +3514,7 @@ export class DataService {
       .replace(/[^A-Z\s]/g, '');
   }
 
-  /** Extrae palabras significativas (no comunes) del texto */
-  private extraerPalabrasSignificativas(texto: string): string[] {
-    return texto
-      .split(/\s+/)
-      .filter(p => p.length > 0 && !this.PALABRAS_IGNORAR_CODIGO.has(p));
-  }
 
-  /** Genera iniciales de las primeras N palabras */
-  private generarIniciales(palabras: string[]): string {
-    return palabras
-      .slice(0, this.MAX_PALABRAS_INICIALES)
-      .map(p => p[0])
-      .join('');
-  }
-
-  /**
-   * Obtiene la siguiente versión disponible para un código de rúbrica.
-   * Busca rúbricas con el patrón RGE1-EPMV[N] y retorna el siguiente número.
-   */
-  private obtenerSiguienteVersion(prefijo: string, cursoCodigo: string): number {
-    const rubricas = this.obtenerRubricasArray();
-    // Nuevo patrón: RGE1-EPMV (sin separador antes de V)
-    const patronBase = `${prefijo}-${cursoCodigo}V`;
-
-    // Buscar versiones existentes con mismo patrón
-    const versionesExistentes = rubricas
-      .filter(r => r.codigo?.startsWith(patronBase))
-      .map(r => r.version || 0);
-
-    if (versionesExistentes.length === 0) {
-      return 1;
-    }
-
-    return Math.max(...versionesExistentes) + 1;
-  }
 
   /**
    * Obtiene todas las versiones de una rúbrica dado su código base (sin versión).
@@ -3990,8 +3642,13 @@ export class DataService {
       return match[1]; // Retorna todo antes de V[N]
     }
     // Compatibilidad con formato anterior: RGE1-EPM-001
-    const partes = codigo.split('-');
-    return partes.length >= 2 ? `${partes[0]}-${partes[1]}` : null;
+    const matchOld = codigo.match(/^(.+)-\d+$/);
+    if (matchOld) {
+      return matchOld[1];
+    }
+
+    // Si no tiene formato de versión, asumir que es el código base
+    return codigo;
   }
 
   /** Actualiza el estado activo de todas las versiones de una rúbrica */
@@ -4007,7 +3664,12 @@ export class DataService {
     let contador = 0;
 
     Object.values(rubricas).forEach(rubrica => {
-      if (rubrica.codigo?.startsWith(patronNuevo) || rubrica.codigo?.startsWith(patronAnterior)) {
+      // Verificar si es el código base exacto O si empieza con los patrones de versión
+      const esVersion = rubrica.codigo === codigoBase ||
+                        rubrica.codigo?.startsWith(patronNuevo) ||
+                        rubrica.codigo?.startsWith(patronAnterior);
+
+      if (esVersion) {
         rubrica.activa = rubrica.id === rubricaIdActiva;
         rubrica.fechaModificacion = new Date();
         contador++;

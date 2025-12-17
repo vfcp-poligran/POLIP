@@ -95,6 +95,14 @@ import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
 import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo, EstadoEstudiante } from '../services/seguimiento.service';
 
+export interface NavigationItem {
+  path: string;
+  icon: string;
+  iconOutline: string;
+  label: string;
+  shortLabel?: string;
+}
+
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
@@ -143,6 +151,16 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
 })
 export class TabsPage implements OnDestroy, AfterViewInit {
   public environmentInjector = inject(EnvironmentInjector);
+
+  // Configuración centralizada del menú
+  public navigationItems: NavigationItem[] = [
+    { path: '/tabs/inicio', icon: 'home', iconOutline: 'home-outline', label: 'Inicio' },
+    { path: '/tabs/cursos', icon: 'library', iconOutline: 'library-outline', label: 'Cursos' },
+    { path: '/tabs/rubricas', icon: 'speedometer', iconOutline: 'speedometer-outline', label: 'Rúbricas' },
+    { path: '/tabs/calificaciones', icon: 'ribbon', iconOutline: 'ribbon-outline', label: 'Calificaciones', shortLabel: 'Notas' },
+    { path: '/tabs/sistema', icon: 'settings', iconOutline: 'settings-outline', label: 'Sistema', shortLabel: 'Config' }
+  ];
+
   public router = inject(Router);
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);

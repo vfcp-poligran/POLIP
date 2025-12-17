@@ -77,56 +77,11 @@ app-sistema {
 /* ============================================================
    FIX CRÍTICO: Asegurar que ion-tabs sea interactivo
    ============================================================ */
+/* Bloque eliminado por refactorización de UI */
 
-/* ion-tabs debe permitir interacción */
-ion-tabs {
-  pointer-events: auto;
+/* FIX: Asegurar que ion-router-outlet funcione correctamente - Eliminado por refactorización */
 
-  /* Todos los elementos internos de ion-tabs deben ser interactivos */
-  .tabs-inner,
-  ion-router-outlet,
-  .ion-page,
-  ion-content,
-  ion-header,
-  ion-toolbar,
-  ion-card,
-  ion-button,
-  ion-item,
-  ion-fab,
-  ion-fab-button {
-    pointer-events: auto;
-  }
-}
 
-/* FIX: Asegurar que ion-router-outlet funcione correctamente */
-ion-router-outlet {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  contain: layout size style;
-  pointer-events: auto;
-}
-
-ion-router-outlet .ion-page {
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  position: absolute;
-  flex-direction: column;
-  justify-content: space-between;
-  contain: layout size style;
-  z-index: 1;
-  pointer-events: auto;
-  overflow: hidden;
-}
-
-ion-router-outlet .ion-page.ion-page-invisible {
-  opacity: 0;
-}
 
 ion-router-outlet .ion-page.ion-page-hidden {
   display: none;

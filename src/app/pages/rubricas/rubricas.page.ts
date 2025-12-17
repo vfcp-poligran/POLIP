@@ -21,6 +21,7 @@ import {
   IonSegmentButton,
   IonFab,
   IonFabButton,
+  IonFabList,
   AlertController,
   LoadingController,
   ModalController,
@@ -89,7 +90,7 @@ import {
   templateUrl: './rubricas.page.html',
   styleUrls: ['./rubricas.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonFabList,
     IonContent,
     IonCard,
     IonCardHeader,
@@ -251,7 +252,11 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     const codigoBase = rubrica.codigo.replace(/V\d+$/, '');
 
     return this.rubricas
-      .filter(r => r.codigo?.startsWith(codigoBase + 'V'))
+      .filter(r => {
+        if (!r.codigo) return false;
+        // Incluir si es el código base exacto O si empieza con codigoBase + 'V'
+        return r.codigo === codigoBase || r.codigo.startsWith(codigoBase + 'V');
+      })
       .sort((a, b) => (b.version || 0) - (a.version || 0)); // Orden descendente por versión
   }
 
@@ -810,7 +815,8 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
 
     texto += 'ESCALA_CALIFICACION:\n';
     rubrica.escalaCalificacion?.forEach(escala => {
-      texto += `${escala.rango}|${escala.descripcion}\n`;
+      const rango = escala.rango || `${escala.min}-${escala.max}`;
+      texto += `${rango}|${escala.descripcion}\n`;
     });
 
     texto += '\n---\n\n';

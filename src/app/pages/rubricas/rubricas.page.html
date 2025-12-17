@@ -69,7 +69,7 @@
 
       @if (modoSeleccionCrear) {
       <!-- Panel de selección de tipo de creación (Desktop) -->
-      <div class="crear-panel-wrapper desktop-only">
+      <div class="crear-panel-wrapper ion-hide-md-down">
         <!-- Barra de título -->
         <div class="crear-panel-header">
           <span class="crear-panel-title">Opciones de Creación</span>
@@ -104,7 +104,7 @@
 
       @if (modoCreacion) {
       <!-- Editor de rúbricas inline (Desktop) -->
-      <div class="editor-inline-container desktop-only">
+      <div class="editor-inline-container ion-hide-md-down">
         <app-rubrica-editor [rubricaExistente]="rubricaEnEdicion" [cursosDisponiblesInput]="cursosDisponibles"
           [modoInline]="true" (guardado)="onRubricaGuardada($event)"
           (cancelado)="cancelarModoCreacion()"></app-rubrica-editor>
@@ -165,7 +165,7 @@
             <!-- Tabla de rúbricas con altura expandible -->
             <div class="tabla-rubricas-container" [class.contraido]="tieneContenidoActivo">
               <!-- Vista Desktop: Tabla tradicional -->
-              <div class="tabla-wrapper desktop-only">
+              <div class="tabla-wrapper ion-hide-md-down">
                 <table class="tabla-rubricas">
                   <thead>
                     <tr>
@@ -246,7 +246,7 @@
               </div>
 
               <!-- Vista Móvil: Cards con componentes Ionic -->
-              <ion-list class="mobile-only rubrica-cards">
+              <ion-list class="ion-hide-md-up rubrica-cards">
                 @for (rubrica of rubricasOrdenadas; track rubrica.id) {
                 <ion-item [id]="'rubrica-card-' + rubrica.id" lines="none" class="rubrica-card"
                   [class.card-inactiva]="rubrica.activa === false"

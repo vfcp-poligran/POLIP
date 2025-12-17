@@ -18,8 +18,7 @@ import {
   IonRow,
   IonCol,
   AlertController,
-  ViewWillEnter
-} from '@ionic/angular/standalone';
+  ViewWillEnter, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   listOutline,
@@ -63,7 +62,7 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
   templateUrl: './cursos.page.html',
   styleUrls: ['./cursos.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonFabList,
     CommonModule,
     FormsModule,
     IonContent,

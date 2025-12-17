@@ -35,11 +35,11 @@
             <span class="selector-label">{{ obtenerNombreCursoSeleccionado() }}</span>
           </div>
           <div class="selector-right">
-            <span class="archivo-nombre desktop-only">
+            <span class="archivo-nombre ion-hide-md-down">
               <ion-icon name="document-text"></ion-icon>
               {{ archivoCalificacionesVisualizacion?.nombre }}
             </span>
-            <span class="archivo-fecha desktop-only">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
+            <span class="archivo-fecha ion-hide-md-down">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
             <ion-button size="small" fill="solid" color="success"
               (click)="exportarCalificaciones(cursoCalificacionesSeleccionado)">
               <ion-icon name="download" slot="start"></ion-icon>

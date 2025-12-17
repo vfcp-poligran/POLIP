@@ -37,29 +37,14 @@
 
   <ion-card-content class="desktop-sidebar-content">
     <ion-list lines="none" class="desktop-nav-list">
-      <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
-        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/inicio') ? 'home' : 'home-outline'"></ion-icon>
-        <ion-label>Inicio</ion-label>
-      </ion-item>
-
-      <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
-        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/cursos') ? 'library' : 'library-outline'"></ion-icon>
-        <ion-label>Cursos</ion-label>
-      </ion-item>
-
-      <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
-        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/rubricas') ? 'speedometer' : 'speedometer-outline'"></ion-icon>
-        <ion-label>Rúbricas</ion-label>
-      </ion-item>
-
-      <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
-        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/calificaciones') ? 'ribbon' : 'ribbon-outline'"></ion-icon>
-        <ion-label>Calificaciones</ion-label>
-      </ion-item>
-
-      <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false" class="nav-item">
-        <ion-icon slot="start" [name]="currentUrl.includes('/tabs/sistema') ? 'settings' : 'settings-outline'"></ion-icon>
-        <ion-label>Sistema</ion-label>
+      <ion-item *ngFor="let item of navigationItems"
+                button
+                [routerLink]="[item.path]"
+                routerLinkActive="active-menu-item"
+                detail="false"
+                class="nav-item">
+        <ion-icon slot="start" [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
+        <ion-label>{{ item.label }}</ion-label>
       </ion-item>
     </ion-list>
   </ion-card-content>
@@ -79,29 +64,9 @@
 <!-- Bottom Tab Bar para móvil/tablet -->
 @if (!isDesktop) {
 <ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
-  <ion-tab-button [routerLink]="['/tabs/inicio']" routerLinkActive="tab-selected">
-    <ion-icon [name]="currentUrl.includes('/tabs/inicio') ? 'home' : 'home-outline'"></ion-icon>
-    <ion-label>Inicio</ion-label>
-  </ion-tab-button>
-
-  <ion-tab-button [routerLink]="['/tabs/cursos']" routerLinkActive="tab-selected">
-    <ion-icon [name]="currentUrl.includes('/tabs/cursos') ? 'library' : 'library-outline'"></ion-icon>
-    <ion-label>Cursos</ion-label>
-  </ion-tab-button>
-
-  <ion-tab-button [routerLink]="['/tabs/rubricas']" routerLinkActive="tab-selected">
-    <ion-icon [name]="currentUrl.includes('/tabs/rubricas') ? 'speedometer' : 'speedometer-outline'"></ion-icon>
-    <ion-label>Rúbricas</ion-label>
-  </ion-tab-button>
-
-  <ion-tab-button [routerLink]="['/tabs/calificaciones']" routerLinkActive="tab-selected">
-    <ion-icon [name]="currentUrl.includes('/tabs/calificaciones') ? 'ribbon' : 'ribbon-outline'"></ion-icon>
-    <ion-label>Notas</ion-label>
-  </ion-tab-button>
-
-  <ion-tab-button [routerLink]="['/tabs/sistema']" routerLinkActive="tab-selected">
-    <ion-icon [name]="currentUrl.includes('/tabs/sistema') ? 'settings' : 'settings-outline'"></ion-icon>
-    <ion-label>Config</ion-label>
+  <ion-tab-button *ngFor="let item of navigationItems" [routerLink]="[item.path]" routerLinkActive="tab-selected">
+    <ion-icon [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
+    <ion-label>{{ item.shortLabel || item.label }}</ion-label>
   </ion-tab-button>
 </ion-tab-bar>
 }
