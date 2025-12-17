@@ -5,6 +5,7 @@ import {
   IonIcon,
   IonSearchbar,
   IonButton,
+  IonButtons,
   IonCard,
   IonCardHeader,
   IonCardTitle,
@@ -19,16 +20,11 @@ import {
   IonRouterLink,
   IonTabBar,
   IonTabButton,
-  IonMenu,
-  IonMenuToggle,
   IonHeader,
   IonToolbar,
   IonFooter,
   IonAvatar,
-  IonContent,
   IonCheckbox,
-  IonFab,
-  IonFabButton,
   IonTitle,
   IonTextarea,
   MenuController
@@ -110,6 +106,7 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonIcon,
     IonSearchbar,
     IonButton,
+    IonButtons,
     IonCard,
     IonCardHeader,
     IonCardTitle,
@@ -124,16 +121,11 @@ import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubric
     IonRouterLink,
     IonTabBar,
     IonTabButton,
-    IonMenu,
-    IonMenuToggle,
     IonHeader,
     IonToolbar,
     IonFooter,
     IonAvatar,
-    IonContent,
     IonCheckbox,
-    IonFab,
-    IonFabButton,
     IonTitle,
     IonTextarea
   ],
@@ -255,8 +247,8 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     this.subscriptions.push(
       this.seguimientoService.grupoSeleccionado$.subscribe((grupo: number) => {
         this.selectedGrupo = grupo;
-        // Forzar detección de cambios para actualizar la UI de botones
-        this.cdr.detectChanges();
+        // Marcar para revisión en el próximo ciclo de detección
+        this.cdr.markForCheck();
       })
     );
 
@@ -266,8 +258,8 @@ export class TabsPage implements OnDestroy, AfterViewInit {
         this.grupoVisualizado = grupo;
         // Actualizar integrantes cuando cambia el grupo visualizado
         this.actualizarIntegrantesGrupo();
-        // Forzar detección de cambios para actualizar la UI
-        this.cdr.detectChanges();
+        // Marcar para revisión en el próximo ciclo de detección
+        this.cdr.markForCheck();
       })
     );
 
@@ -499,14 +491,14 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   private actualizarIntegrantesGrupo(): void {
     if (!this.cursoActivo || this.grupoVisualizado === 0) {
       this.integrantesGrupoActual = [];
-      this.cdr.detectChanges();
+      this.cdr.markForCheck();
       return;
     }
 
     const estudiantes = this.dataService.getCurso(this.cursoActivo);
     if (!estudiantes || estudiantes.length === 0) {
       this.integrantesGrupoActual = [];
-      this.cdr.detectChanges();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -522,7 +514,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       return estudianteGrupoNum === grupoNumStr;
     });
 
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   /**

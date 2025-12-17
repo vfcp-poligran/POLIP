@@ -22,47 +22,25 @@
 
   <div class="layout" [ngStyle]="layoutStyles">
     <div class="page-container">
-      <!-- Barra de navegación común: Navegación de grupos + Selectores de curso -->
+      <!-- 1. Barra de búsqueda global - SIEMPRE ARRIBA -->
+      @if (cursosDisponibles.length > 0) {
+      <div class="search-bar-container search-bar-top">
+        <ion-searchbar
+          [(ngModel)]="busquedaGeneral"
+          (ionInput)="onBusquedaChange($event)"
+          placeholder="Buscar estudiante..."
+          debounce="300"
+          mode="ios"
+          class="main-searchbar">
+        </ion-searchbar>
+      </div>
+      }
+
+      <!-- 2. Barra con Vista General + Selectores de curso -->
       @if (cursosDisponibles.length > 0) {
       <div class="page-title-header">
-        <!-- Barra de navegación de grupos - Arriba de los cursos -->
-        @if (!vistaGeneralActiva && cursoActivo && gruposDisponibles.length > 0) {
-        <div class="grupos-nav-bar grupos-nav-bar-top">
-          <div class="grupos-buttons">
-            <!-- Botón Vista General -->
-            <button type="button"
-                    class="vista-general-toggle-btn"
-                    [class.activo]="vistaGeneralActiva"
-                    (click)="irAVistaGeneral()"
-                    title="Vista General">
-              <ion-icon name="apps"></ion-icon>
-            </button>
-            <!-- Botón Dashboard (todos los grupos) -->
-            <button type="button"
-                    class="grupo-nav-btn grupo-nav-btn-dashboard"
-                    [class.activo]="filtroGrupo === 'todos'"
-                    (click)="volverAMatriz()"
-                    title="Vista general - Todos los grupos">
-              <ion-icon name="grid"></ion-icon>
-            </button>
-            <!-- Ícono de grupos -->
-            <ion-icon name="people-circle-outline" class="grupos-icon"></ion-icon>
-            <!-- Números de grupos -->
-            @for (grupo of gruposDisponibles; track grupo) {
-              <button type="button"
-                      class="grupo-nav-btn"
-                      [class.activo]="filtroGrupo === grupo"
-                      (click)="navegarAGrupo(grupo)"
-                      [title]="'Ver detalle del Grupo ' + grupo">
-                {{ grupo }}
-              </button>
-            }
-          </div>
-        </div>
-        }
         <div class="header-course-selector">
-          <!-- Botón Vista General (solo visible cuando está en Vista General) -->
-          @if (vistaGeneralActiva) {
+          <!-- Botón Vista General -->
           <button type="button"
                   class="vista-general-toggle-btn"
                   [class.activo]="vistaGeneralActiva"
@@ -70,7 +48,6 @@
                   title="Vista General">
             <ion-icon name="apps"></ion-icon>
           </button>
-          }
           <ion-segment
             [scrollable]="true"
             [value]="cursoActivo"
@@ -95,20 +72,6 @@
             }
           </ion-segment>
         </div>
-      </div>
-      }
-
-      <!-- Barra de búsqueda global -->
-      @if (cursosDisponibles.length > 0) {
-      <div class="search-bar-container">
-        <ion-searchbar
-          [(ngModel)]="busquedaGeneral"
-          (ionInput)="onBusquedaChange($event)"
-          placeholder="Buscar estudiante..."
-          debounce="300"
-          mode="ios"
-          class="main-searchbar">
-        </ion-searchbar>
       </div>
       }
 
@@ -190,10 +153,9 @@
 
         <!-- Panel General -->
         <ion-card class="dashboard-options">
+          <!-- Barra de título del curso -->
           <ion-card-header class="header-con-toggle">
-            <!-- Breadcrumb de navegación -->
             <div class="breadcrumb-navigation">
-              <ion-icon name="home-outline" class="breadcrumb-icon"></ion-icon>
               @if (cursoActivo) {
                 <span class="breadcrumb-item curso-name" [title]="cursoActivo">
                   {{ getNombreCompletoConGrupo(cursoActivo) }}
@@ -209,98 +171,39 @@
               }
             </div>
           </ion-card-header>
+
+          <!-- Botones de filtro de grupo - DEBAJO del título - Usando ion-segment scrollable -->
+          @if (gruposDisponibles.length > 0) {
+          <ion-segment
+            [scrollable]="true"
+            [value]="filtroGrupo"
+            (ionChange)="onGrupoSegmentChange($event)"
+            class="grupos-segment-bar">
+            <ion-segment-button value="todos" class="grupo-segment-btn grupo-segment-all">
+              <ion-icon name="grid-outline"></ion-icon>
+              <ion-label>Todos</ion-label>
+            </ion-segment-button>
+            @for (grupo of gruposDisponibles; track grupo) {
+              <ion-segment-button [value]="grupo" class="grupo-segment-btn">
+                <ion-label>{{ grupo }}</ion-label>
+              </ion-segment-button>
+            }
+          </ion-segment>
+          }
+
           <ion-card-content>
 
             <!-- Vista: Todos los grupos -->
             @if (filtroGrupo === 'todos') {
 
-            <!-- Panel de Resumen Grupal -->
-            <div class="entregas-resumen-panel">
-
-              <!-- Tabla de Entregas -->
-              <table class="entregas-tabla">
-                <thead>
-                  <tr>
-                    <th class="col-entrega">Entrega</th>
-                    <th class="col-evaluados">
-                      <ion-icon name="checkmark-done-circle"></ion-icon>
-                      Evaluados
-                    </th>
-                    <th class="col-pendientes">
-                      <ion-icon name="hourglass-outline"></ion-icon>
-                      Por calificar
-                    </th>
-                    <th class="col-atencion">
-                      <ion-icon name="warning"></ion-icon>
-                      Atención
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @let statsE1 = getEstadisticasEntrega('E1');
-                  @let statsE2 = getEstadisticasEntrega('E2');
-                  @let statsEF = getEstadisticasEntrega('EF');
-                  <tr class="fila-entrega" (click)="filtroEntregaDinamica = 'E1'" [class.activa]="filtroEntregaDinamica === 'E1'">
-                    <td class="col-entrega">
-                      <span class="entrega-nombre">Primera</span>
-                    </td>
-                    <td class="col-evaluados">{{ statsE1.evaluados }}</td>
-                    <td class="col-pendientes">{{ statsE1.porCalificar }}</td>
-                    <td class="col-atencion" [class.con-atencion]="statsE1.atencionEspecial > 0">
-                      @if (statsE1.atencionEspecial > 0) {
-                        <ion-icon name="warning"></ion-icon>
-                      }
-                      {{ statsE1.atencionEspecial }}
-                    </td>
-                  </tr>
-                  <tr class="fila-entrega" (click)="filtroEntregaDinamica = 'E2'" [class.activa]="filtroEntregaDinamica === 'E2'">
-                    <td class="col-entrega">
-                      <span class="entrega-nombre">Segunda</span>
-                    </td>
-                    <td class="col-evaluados">{{ statsE2.evaluados }}</td>
-                    <td class="col-pendientes">{{ statsE2.porCalificar }}</td>
-                    <td class="col-atencion" [class.con-atencion]="statsE2.atencionEspecial > 0">
-                      @if (statsE2.atencionEspecial > 0) {
-                        <ion-icon name="warning"></ion-icon>
-                      }
-                      {{ statsE2.atencionEspecial }}
-                    </td>
-                  </tr>
-                  <tr class="fila-entrega" (click)="filtroEntregaDinamica = 'EF'" [class.activa]="filtroEntregaDinamica === 'EF'">
-                    <td class="col-entrega">
-                      <span class="entrega-nombre">Final</span>
-                    </td>
-                    <td class="col-evaluados">{{ statsEF.evaluados }}</td>
-                    <td class="col-pendientes">{{ statsEF.porCalificar }}</td>
-                    <td class="col-atencion" [class.con-atencion]="statsEF.atencionEspecial > 0">
-                      @if (statsEF.atencionEspecial > 0) {
-                        <ion-icon name="warning"></ion-icon>
-                      }
-                      {{ statsEF.atencionEspecial }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <!-- Resumen total -->
-              <div class="resumen-total">
-                @let resumenTotal = getResumenTotalCurso();
-                <div class="total-item">
-                  <ion-icon name="people"></ion-icon>
-                  <span class="total-valor">{{ resumenTotal.totalEstudiantes }}</span>
-                  <span class="total-label">Estudiantes</span>
-                </div>
-                <div class="total-item">
-                  <ion-icon name="albums"></ion-icon>
-                  <span class="total-valor">{{ resumenTotal.totalGrupos }}</span>
-                  <span class="total-label">Grupos</span>
-                </div>
-                <div class="total-item atencion" [class.visible]="resumenTotal.gruposAtencion > 0">
-                  <ion-icon name="alert-circle"></ion-icon>
-                  <span class="total-valor">{{ resumenTotal.gruposAtencion }}</span>
-                  <span class="total-label">Requieren atención</span>
-                </div>
-              </div>
+            <!-- Sección en construcción -->
+            <div class="seccion-construccion">
+              <ion-icon name="construct-outline"></ion-icon>
+              <h3>Sección en construcción</h3>
+              <p>El panel de estadísticas y resumen de evaluaciones estará disponible próximamente.</p>
+              <ion-text color="medium">
+                <small>Seleccione un grupo para comenzar a evaluar</small>
+              </ion-text>
             </div>
 
             } @else {

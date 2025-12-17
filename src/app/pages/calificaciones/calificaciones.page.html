@@ -8,16 +8,44 @@
         <h2>Calificaciones Canvas</h2>
       </div>
 
-      <!-- Barra de botones de cursos -->
-      <div class="cursos-botones-bar">
+      <!-- Selector de cursos como cards (Desktop) -->
+      <div class="cursos-selector-desktop desktop-only">
         @if (cursosConCalificaciones.length > 0) {
           @for (curso of cursosConCalificaciones; track curso.codigo) {
             <button
               class="curso-btn"
               [class.activo]="cursoCalificacionesSeleccionado === curso.codigo"
+              [style.--curso-color]="getCursoColor(curso.codigo)"
               (click)="seleccionarCursoCalificaciones(curso.codigo)">
               {{ curso.codigo }}
             </button>
+          }
+        } @else {
+          <div class="no-cursos-msg">
+            <ion-icon name="folder"></ion-icon>
+            <span>No hay archivos de calificaciones cargados</span>
+          </div>
+        }
+      </div>
+
+      <!-- Selector de cursos como cards (Mobile/Tablet) -->
+      <div class="cursos-cards-mobile mobile-only">
+        @if (cursosConCalificaciones.length > 0) {
+          @for (curso of cursosConCalificaciones; track curso.codigo) {
+            <div
+              class="curso-card-mobile"
+              [class.activo]="cursoCalificacionesSeleccionado === curso.codigo"
+              [style.--curso-color]="getCursoColor(curso.codigo)"
+              (click)="seleccionarCursoCalificaciones(curso.codigo)">
+              <div class="curso-card-color-bar"></div>
+              <div class="curso-card-content">
+                <span class="curso-codigo">{{ curso.codigo }}</span>
+                <span class="curso-nombre">{{ getCursoNombre(curso.codigo) }}</span>
+              </div>
+              @if (cursoCalificacionesSeleccionado === curso.codigo) {
+                <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+              }
+            </div>
           }
         } @else {
           <div class="no-cursos-msg">
@@ -34,20 +62,19 @@
             <span class="selector-label">{{ obtenerNombreCursoSeleccionado() }}</span>
           </div>
           <div class="selector-right">
-            <span class="archivo-nombre">
+            <span class="archivo-nombre desktop-only">
               <ion-icon name="document-text"></ion-icon>
               {{ archivoCalificacionesVisualizacion?.nombre }}
             </span>
-            <span class="archivo-fecha">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
+            <span class="archivo-fecha desktop-only">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
             <ion-button size="small" fill="solid" color="success"
               (click)="exportarCalificaciones(cursoCalificacionesSeleccionado)">
               <ion-icon name="download" slot="start"></ion-icon>
-              Exportar
+              <span class="btn-text">Exportar</span>
             </ion-button>
             <ion-button size="small" fill="outline" color="danger"
               (click)="eliminarArchivoCalificacionesCurso(cursoCalificacionesSeleccionado)">
-              <ion-icon name="trash" slot="start"></ion-icon>
-              Eliminar
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
             </ion-button>
           </div>
         </div>

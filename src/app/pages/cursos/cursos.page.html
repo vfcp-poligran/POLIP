@@ -1,4 +1,11 @@
 <ion-content [fullscreen]="true">
+  <!-- FAB flotante para crear curso (móvil/tablet) -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso mobile-only">
+    <ion-fab-button color="success" (click)="iniciarCreacionCurso()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <div class="page-container">
     <div class="tab-content cursos-tab-content">
 
@@ -7,7 +14,7 @@
         <div class="title-wrapper">
           <h2>Cursos</h2>
         </div>
-        <div class="header-actions">
+        <div class="header-actions desktop-only">
           @if (!modoEdicion) {
             <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
               <ion-icon name="add-circle-outline" slot="start"></ion-icon>
@@ -23,9 +30,41 @@
             </ion-button>
           }
         </div>
+        <!-- Botones de acción en móvil cuando está en modo edición -->
+        <div class="header-actions mobile-only">
+          @if (modoEdicion) {
+            <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
+              <ion-icon name="save-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          }
+        </div>
       </div>
 
       @if (modoEdicion) {
+        <!-- Selector de color del curso -->
+        <div class="color-selector-section">
+          <div class="color-selector-header">
+            <ion-icon name="color-palette-outline"></ion-icon>
+            <span>Color del curso</span>
+          </div>
+          <div class="color-picker-grid">
+            @for (color of coloresDisponibles; track color) {
+              <div
+                class="color-option"
+                [style.background-color]="color"
+                [class.selected]="colorCursoSeleccionado === color"
+                (click)="seleccionarColorCurso(color)">
+                @if (colorCursoSeleccionado === color) {
+                  <ion-icon name="checkmark"></ion-icon>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
         <!-- Contenedor principal que agrupa info + uploads -->
         <div class="upload-wrapper" [class.expanded]="infoExpanded">
           <!-- Mensaje instructivo con icono -->
@@ -93,8 +132,8 @@
       <div class="tabla-area">
         @if (cursosDisponibles.length > 0) {
 
-          <!-- Vista Desktop: Tabla tradicional -->
-          <div class="tabla-wrapper tabla-completa desktop-only">
+          <!-- Vista Desktop: Tabla tradicional (oculta en < 768px) -->
+          <div class="tabla-wrapper tabla-completa ion-hide-md-down">
             <table class="tabla-cursos">
               <thead>
                 <tr>
@@ -142,63 +181,41 @@
             </table>
           </div>
 
-          <!-- Vista Móvil: Cards con componentes Ionic -->
-          <ion-list class="mobile-only curso-cards">
+          <!-- Vista Móvil: Cards estilo Rúbricas (oculta en >= 768px) -->
+          <ion-list class="ion-hide-md-up curso-cards">
             @for (curso of cursosDisponibles; track curso.codigo) {
               <ion-item lines="none" class="curso-card">
-                <ion-card>
+                <ion-card [style.--curso-color]="getCursoColor(curso.codigo)">
                   <ion-card-header>
-                    <ion-card-title>
-                      <span class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</span>
-                      <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
-                    </ion-card-title>
+                    <div class="card-header-wrapper">
+                      <ion-card-title>
+                        <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
+                      </ion-card-title>
+                      <div class="codigo-estado-wrapper">
+                        <span class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</span>
+                        @if (curso.bloque) {
+                          <span class="bloque-badge-mobile">{{ curso.bloque }}</span>
+                        }
+                        <span
+                          class="estado-indicador-mobile"
+                          [class.estado-activo]="curso.tieneCalificaciones"
+                          [class.estado-pendiente]="!curso.tieneCalificaciones">
+                          {{ curso.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
+                        </span>
+                      </div>
+                    </div>
                   </ion-card-header>
 
                   <ion-card-content>
-                    <ion-grid>
-                      <ion-row>
-                        <ion-col size="6">
-                          <div class="info-item">
-                            <ion-icon name="calendar-outline"></ion-icon>
-                            <span class="info-label">Bloque:</span>
-                            <span class="info-value">{{ curso.bloque || '—' }}</span>
-                          </div>
-                        </ion-col>
-                        <ion-col size="6">
-                          <div class="info-item">
-                            <ion-icon name="time-outline"></ion-icon>
-                            <span class="info-label">Creación:</span>
-                            <span class="info-value">{{ curso.fechaCreacion || '—' }}</span>
-                          </div>
-                        </ion-col>
-                      </ion-row>
-                      <ion-row>
-                        <ion-col size="12">
-                          <div class="estado-wrapper">
-                            @if (curso.tieneCalificaciones) {
-                              <ion-chip color="success">
-                                <ion-icon name="checkmark-circle"></ion-icon>
-                                <ion-label>Activo</ion-label>
-                              </ion-chip>
-                            } @else {
-                              <ion-chip color="warning">
-                                <ion-icon name="ellipse-outline"></ion-icon>
-                                <ion-label>Sin datos</ion-label>
-                              </ion-chip>
-                            }
-                          </div>
-                        </ion-col>
-                      </ion-row>
+                    <ion-grid class="ion-no-padding">
                       <ion-row>
                         <ion-col size="12">
                           <div class="acciones-mobile">
-                            <ion-button expand="block" fill="outline" color="primary" (click)="editarCurso(curso)">
-                              <ion-icon name="create-outline" slot="start"></ion-icon>
-                              Editar
+                            <ion-button fill="outline" color="primary" (click)="editarCurso(curso)">
+                              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                             </ion-button>
-                            <ion-button expand="block" fill="outline" color="danger" (click)="confirmarEliminarCurso(curso)">
-                              <ion-icon name="trash-outline" slot="start"></ion-icon>
-                              Eliminar
+                            <ion-button fill="outline" color="danger" (click)="confirmarEliminarCurso(curso)">
+                              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                             </ion-button>
                           </div>
                         </ion-col>

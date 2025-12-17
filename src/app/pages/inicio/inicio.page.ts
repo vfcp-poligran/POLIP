@@ -588,23 +588,26 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
   onCursoChange(event: any) {
     const valor = event.detail.value;
-    // Solo seleccionar si realmente cambió el valor
-    if (valor && valor !== this.cursoActivo) {
+    // Siempre procesar si hay valor seleccionado
+    if (valor) {
       // Desactivar Vista General al seleccionar un curso
       if (this.vistaGeneralActiva) {
         this.vistaGeneralActiva = false;
         Logger.log('🌐 [onCursoChange] Saliendo de Vista General');
       }
+      // Forzar selección aunque sea el mismo curso (para salir de Vista General)
       this.seleccionarCurso(valor);
     }
   }
 
   async seleccionarCurso(nombreCurso: string) {
     const timestamp = new Date().toISOString().substr(11, 12);
-    // OPTIMIZACIÓN CRÍTICA: Si el curso ya está activo, no hacer nada
+    // OPTIMIZACIÓN CRÍTICA: Si el curso ya está activo Y NO estamos en Vista General, no hacer nada
+    // Permitir reselección si vistaGeneralActiva estaba true (para forzar salida)
     if (this.cursoActivo === nombreCurso &&
       this._estudiantesCargadosPorCurso.has(nombreCurso) &&
-      this.estudiantesActuales.length > 0) {
+      this.estudiantesActuales.length > 0 &&
+      !this.vistaGeneralActiva) {
       return;
     }
 
@@ -983,6 +986,18 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     // Aplicar filtros para mostrar solo ese grupo
     this.aplicarFiltros();
     this.cdr.detectChanges();
+  }
+
+  /**
+   * Manejador del cambio de grupo desde el ion-segment
+   */
+  onGrupoSegmentChange(event: any) {
+    const valor = event.detail.value;
+    if (valor === 'todos') {
+      this.volverAMatriz();
+    } else {
+      this.navegarAGrupo(valor);
+    }
   }
 
   /**

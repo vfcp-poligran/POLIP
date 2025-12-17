@@ -215,6 +215,32 @@ export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {
       }));
   }
 
+  /**
+   * Obtiene el color asignado a un curso
+   */
+  getCursoColor(codigo: string): string {
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
+
+    // Buscar por código en metadata
+    const cursoEntry = Object.entries(courseStates).find(
+      ([_, state]) => state.metadata?.codigo === codigo
+    );
+
+    if (cursoEntry && cursoEntry[1].color) {
+      return cursoEntry[1].color;
+    }
+    return '#ff2719'; // Color por defecto
+  }
+
+  /**
+   * Obtiene el nombre completo de un curso por su código
+   */
+  getCursoNombre(codigo: string): string {
+    const curso = this.cursosConCalificaciones.find(c => c.codigo === codigo);
+    return curso?.nombre || codigo;
+  }
+
   async seleccionarCursoCalificaciones(codigo: string) {
     this.cursoCalificacionesSeleccionado = codigo;
     await this.cargarCalificacionesVisualizacion(codigo);

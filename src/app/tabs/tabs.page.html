@@ -1,72 +1,28 @@
-<!-- Layout sin ion-split-pane - Usando ion-menu estándar de Ionic -->
+<!-- Layout con Bottom Tab Bar para móvil/tablet -->
 
-<!-- Sidebar usando ion-menu - SOLO en móvil -->
-<ion-menu *ngIf="!isDesktop" contentId="main-content" type="overlay" side="start" menuId="mainMenu" class="sidebar-menu">
-  <ion-header>
-    <ion-toolbar color="primary">
-      <ion-avatar slot="start" class="sidebar-logo-avatar">
-        <img
-          src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
-          alt="Logo Politécnico Grancolombiano" />
+<!-- Header móvil con logo y botones de acción -->
+@if (!isDesktop) {
+<ion-header class="mobile-header">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="toggleMobileSeguimiento()">
+        <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="mobile-app-title">
+      <ion-avatar class="header-logo-avatar">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg" alt="Logo" />
       </ion-avatar>
-      <ion-title class="sidebar-app-title">POLIProject</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content>
-    <ion-list lines="none" class="sidebar-nav-list">
-      <ion-menu-toggle auto-hide="true">
-        <ion-item button [routerLink]="['/tabs/inicio']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="home" color="tertiary"></ion-icon>
-          <ion-label>Inicio</ion-label>
-        </ion-item>
-      </ion-menu-toggle>
-
-      <ion-menu-toggle auto-hide="true">
-        <ion-item button [routerLink]="['/tabs/cursos']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="school" color="primary"></ion-icon>
-          <ion-label>Cursos</ion-label>
-        </ion-item>
-      </ion-menu-toggle>
-
-      <ion-menu-toggle auto-hide="true">
-        <ion-item button [routerLink]="['/tabs/rubricas']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="document-text" color="warning"></ion-icon>
-          <ion-label>Rúbricas de Evaluación</ion-label>
-        </ion-item>
-      </ion-menu-toggle>
-
-      <ion-menu-toggle auto-hide="true">
-        <ion-item button [routerLink]="['/tabs/calificaciones']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="star" color="success"></ion-icon>
-          <ion-label>Calificaciones</ion-label>
-        </ion-item>
-      </ion-menu-toggle>
-
-      <ion-menu-toggle auto-hide="true">
-        <ion-item button [routerLink]="['/tabs/sistema']" routerLinkActive="active-menu-item" detail="false">
-          <ion-icon slot="start" name="cog" color="medium"></ion-icon>
-          <ion-label>Sistema</ion-label>
-        </ion-item>
-      </ion-menu-toggle>
-    </ion-list>
-  </ion-content>
-
-  <ion-footer class="sidebar-footer">
-    <ion-toolbar>
-      <div class="footer-actions">
-        <ion-button fill="clear" expand="block" (click)="toggleFullscreen()" class="footer-btn">
-          <ion-icon slot="start" name="expand-outline"></ion-icon>
-          <ion-label>Pantalla completa</ion-label>
-        </ion-button>
-        <ion-button fill="clear" expand="block" (click)="toggleSearch()" class="footer-btn">
-          <ion-icon slot="start" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-          <ion-label>{{ searchExpanded ? 'Cerrar' : 'Buscar' }}</ion-label>
-        </ion-button>
-      </div>
-    </ion-toolbar>
-  </ion-footer>
-</ion-menu>
+      <span>POLIProject</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleSearch()">
+        <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+}
 
 <!-- Sidebar permanente para desktop - sin ion-split-pane -->
 <ion-card class="desktop-sidebar" [class.collapsed]="!sidebarExpanded" *ngIf="isDesktop">
@@ -116,39 +72,39 @@
 </ion-card>
 
 <!-- Contenido principal - SOLO ion-router-outlet sin ion-tabs -->
-<div id="main-content" class="main-content-area" [class.sidebar-collapsed]="!sidebarExpanded">
+<div id="main-content" class="main-content-area" [class.sidebar-collapsed]="!sidebarExpanded" [class.has-bottom-tabs]="!isDesktop">
   <ion-router-outlet></ion-router-outlet>
 </div>
 
-<!-- FAB para abrir menú y panel de seguimiento en móvil -->
+<!-- Bottom Tab Bar para móvil/tablet -->
 @if (!isDesktop) {
-<div class="mobile-fab-container">
-  <!-- FAB para abrir menú lateral -->
-  <ion-fab vertical="bottom" horizontal="start" slot="fixed" class="menu-fab">
-    <ion-fab-button size="small" color="primary" (click)="openMenu()">
-      <ion-icon name="menu-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+<ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
+  <ion-tab-button [routerLink]="['/tabs/inicio']" routerLinkActive="tab-selected">
+    <ion-icon [name]="currentUrl.includes('/tabs/inicio') ? 'home' : 'home-outline'"></ion-icon>
+    <ion-label>Inicio</ion-label>
+  </ion-tab-button>
 
-  <!-- FAB para abrir panel de seguimiento -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="seguimiento-fab">
-    <ion-fab-button size="small" color="secondary" (click)="toggleMobileSeguimiento()">
-      <ion-icon [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</div>
+  <ion-tab-button [routerLink]="['/tabs/cursos']" routerLinkActive="tab-selected">
+    <ion-icon [name]="currentUrl.includes('/tabs/cursos') ? 'library' : 'library-outline'"></ion-icon>
+    <ion-label>Cursos</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button [routerLink]="['/tabs/rubricas']" routerLinkActive="tab-selected">
+    <ion-icon [name]="currentUrl.includes('/tabs/rubricas') ? 'speedometer' : 'speedometer-outline'"></ion-icon>
+    <ion-label>Rúbricas</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button [routerLink]="['/tabs/calificaciones']" routerLinkActive="tab-selected">
+    <ion-icon [name]="currentUrl.includes('/tabs/calificaciones') ? 'ribbon' : 'ribbon-outline'"></ion-icon>
+    <ion-label>Notas</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button [routerLink]="['/tabs/sistema']" routerLinkActive="tab-selected">
+    <ion-icon [name]="currentUrl.includes('/tabs/sistema') ? 'settings' : 'settings-outline'"></ion-icon>
+    <ion-label>Config</ion-label>
+  </ion-tab-button>
+</ion-tab-bar>
 }
-
-<!-- Hidden navigation helper (para mantener compatibilidad con rutas) -->
-<div class="hidden-navigation-helper">
-  <ion-tab-bar class="hidden-tab-bar">
-    <ion-tab-button tab="inicio" href="/tabs/inicio"></ion-tab-button>
-    <ion-tab-button tab="cursos" href="/tabs/cursos"></ion-tab-button>
-    <ion-tab-button tab="rubricas" href="/tabs/rubricas"></ion-tab-button>
-    <ion-tab-button tab="calificaciones" href="/tabs/calificaciones"></ion-tab-button>
-    <ion-tab-button tab="sistema" href="/tabs/sistema"></ion-tab-button>
-  </ion-tab-bar>
-</div>
 
 <!-- Panel de Seguimiento - posición fija a la derecha (Desktop) -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">
@@ -198,54 +154,36 @@
           </div>
           }
 
-          <!-- Sección de Puntos/Rúbricas - Visible cuando hay grupo visualizado -->
+          <!-- Sección de Puntos/Rúbricas - Siempre visible cuando hay grupo -->
           @if (grupoVisualizado > 0) {
           <div class="seguimiento-section puntos-section">
-            <!-- Barra unificada de selección de rúbrica -->
             <div class="rubrica-selector-bar">
-              <!-- Toggle tipo de rúbrica con íconos -->
-              <div class="tipo-rubrica-toggle">
-                <button type="button"
-                        class="tipo-btn"
-                        [class.activo]="tipoRubricaSeleccionado === 'PG'"
-                        (click)="tipoRubricaSeleccionado = 'PG'"
-                        title="Rúbrica Grupal">
-                  <ion-icon name="people"></ion-icon>
-                  <span>Grupal</span>
-                </button>
-                <button type="button"
-                        class="tipo-btn"
-                        [class.activo]="tipoRubricaSeleccionado === 'PI'"
-                        (click)="tipoRubricaSeleccionado = 'PI'"
-                        title="Rúbrica Individual">
-                  <ion-icon name="person"></ion-icon>
-                  <span>Individual</span>
-                </button>
+              <!-- Header con título -->
+              <div class="rubrica-header">
+                <span class="rubrica-title">Rúbrica</span>
               </div>
 
-              <!-- Separador visual -->
-              <div class="selector-divider"></div>
+              <!-- Segment Ionic para tipo de rúbrica (solo íconos) -->
+              <ion-segment [value]="tipoRubricaSeleccionado" (ionChange)="tipoRubricaSeleccionado = $any($event).detail.value" class="tipo-segment">
+                <ion-segment-button value="PG" title="Grupal">
+                  <ion-icon name="people"></ion-icon>
+                </ion-segment-button>
+                <ion-segment-button value="PI" title="Individual">
+                  <ion-icon name="person"></ion-icon>
+                </ion-segment-button>
+              </ion-segment>
 
-              <!-- Botones de entrega -->
+              <!-- Botones de entrega compactos -->
               <div class="entrega-buttons">
-                <button type="button"
-                        class="entrega-btn"
-                        (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)"
-                        title="Entrega 1">
+                <ion-button fill="outline" size="small" class="entrega-btn" (click)="abrirRubricaEntrega('E1', tipoRubricaSeleccionado)" title="Entrega 1">
                   E1
-                </button>
-                <button type="button"
-                        class="entrega-btn"
-                        (click)="abrirRubricaEntrega('E2', tipoRubricaSeleccionado)"
-                        title="Entrega 2">
+                </ion-button>
+                <ion-button fill="outline" size="small" class="entrega-btn" (click)="abrirRubricaEntrega('E2', tipoRubricaSeleccionado)" title="Entrega 2">
                   E2
-                </button>
-                <button type="button"
-                        class="entrega-btn"
-                        (click)="abrirRubricaEntrega('EF', tipoRubricaSeleccionado)"
-                        title="Entrega Final">
+                </ion-button>
+                <ion-button fill="outline" size="small" class="entrega-btn" (click)="abrirRubricaEntrega('EF', tipoRubricaSeleccionado)" title="Entrega Final">
                   EF
-                </button>
+                </ion-button>
               </div>
             </div>
           </div>
@@ -254,43 +192,6 @@
           <!-- Tabla de integrantes - Visible cuando hay grupo visualizado -->
           @if (grupoVisualizado > 0 && integrantesGrupoActual.length > 0) {
           <div class="seguimiento-section integrantes-section">
-            <!-- Toolbar de estados - Siempre visible cuando hay integrantes -->
-            <div class="estados-toolbar-panel">
-              <ion-button
-                [fill]="modoSeleccionEstado === 'ok' ? 'solid' : 'outline'"
-                size="small"
-                color="success"
-                (click)="toggleModoSeleccionEstado('ok')"
-                title="Marcar Ok">
-                <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
-              </ion-button>
-              <ion-button
-                [fill]="modoSeleccionEstado === 'solo' ? 'solid' : 'outline'"
-                size="small"
-                color="warning"
-                (click)="toggleModoSeleccionEstado('solo')"
-                title="Marcar Solo">
-                <ion-icon name="git-merge" slot="icon-only"></ion-icon>
-              </ion-button>
-              <ion-button
-                [fill]="modoSeleccionEstado === 'ausente' ? 'solid' : 'outline'"
-                size="small"
-                color="danger"
-                (click)="toggleModoSeleccionEstado('ausente')"
-                title="Marcar Ausente">
-                <ion-icon name="close-circle" slot="icon-only"></ion-icon>
-              </ion-button>
-              @if (modoSeleccionEstado) {
-              <ion-button
-                fill="clear"
-                size="small"
-                color="medium"
-                (click)="salirModoSeleccion()"
-                title="Salir del modo de selección">
-                <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-              </ion-button>
-              }
-            </div>
             <div class="integrantes-table-container">
               <table class="integrantes-calificaciones-table responsive-table">
                 <thead>

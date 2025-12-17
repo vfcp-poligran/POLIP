@@ -268,104 +268,174 @@ div.main-content-area {
     --color: white;
     padding: 6px 12px;
   }
+}
 
-  // Estilos para la lista de navegación móvil
-  .sidebar-nav-list {
-    background: transparent;
-    padding: 6px;
+/* ========================================
+   MOBILE HEADER - Top Bar
+   ======================================== */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 
-    ion-menu-toggle {
+  ion-toolbar {
+    --background: var(--azul-oscuro, #0f385a);
+    --color: white;
+    --min-height: 48px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+
+  .mobile-app-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    .header-logo-avatar {
+      width: 28px;
+      height: 28px;
+    }
+
+    span {
+      letter-spacing: 0.3px;
+    }
+  }
+
+  ion-button {
+    --color: white;
+
+    ion-icon {
+      font-size: 22px;
+    }
+  }
+
+  // Landscape móvil - más compacto
+  @media (max-height: 500px) and (orientation: landscape) {
+    ion-toolbar {
+      --min-height: 40px;
+    }
+
+    .mobile-app-title {
+      font-size: 0.85rem;
+
+      .header-logo-avatar {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    ion-button ion-icon {
+      font-size: 20px;
+    }
+  }
+}
+
+/* ========================================
+   MOBILE BOTTOM TAB BAR
+   ======================================== */
+.mobile-bottom-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  --background: var(--azul-oscuro, #0f385a);
+  --border: none;
+  height: 56px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+
+  ion-tab-button {
+    --color: rgba(255, 255, 255, 0.6);
+    --color-selected: #ffffff;
+    --background: transparent;
+    --background-focused: rgba(255, 255, 255, 0.1);
+    --padding-top: 6px;
+    --padding-bottom: 6px;
+    min-height: 56px;
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 22px;
       margin-bottom: 2px;
     }
 
-    ion-item {
-      --background: transparent;
-      --background-hover: rgba(255, 255, 255, 0.1);
-      --background-activated: rgba(255, 255, 255, 0.15);
-      --color: rgba(255, 255, 255, 0.85);
-      --padding-start: 12px;
-      --padding-end: 12px;
-      --min-height: 42px;
-      --border-radius: 10px;
-      margin: 2px 0;
+    ion-label {
+      font-size: 0.65rem;
       font-weight: 500;
-      transition: all 0.2s ease;
+      text-transform: none;
+      letter-spacing: 0.2px;
+    }
+
+    &.tab-selected {
+      --color: var(--azul-claro, #1fb2de);
+
+      ion-icon {
+        transform: scale(1.1);
+      }
+    }
+
+    &:hover:not(.tab-selected) {
+      --color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  // Landscape móvil - más compacto
+  @media (max-height: 500px) and (orientation: landscape) {
+    height: 48px;
+
+    ion-tab-button {
+      min-height: 48px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
 
       ion-icon {
         font-size: 20px;
-        margin-right: 12px;
-        // Preservar color del atributo HTML (tertiary, primary, warning, success, medium)
-        // No sobrescribir con color fijo
+        margin-bottom: 1px;
       }
 
       ion-label {
-        font-size: 0.8rem;
-        font-weight: 500;
-        letter-spacing: 0.2px;
-      }
-
-      &.active-menu-item {
-        --background: rgba(31, 178, 222, 0.2);
-        --color: #ffffff;
-
-        // En estado activo, usar color azul claro para destacar
-        ion-icon {
-          color: var(--azul-claro, #1fb2de) !important;
-        }
+        font-size: 0.58rem;
       }
     }
   }
 
-  // Estilos para el footer del menú móvil
-  .sidebar-footer {
-    ion-toolbar {
-      --background: rgba(0, 0, 0, 0.2);
-      --padding-start: 8px;
-      --padding-end: 8px;
-      padding: 6px 0;
-    }
+  // Tablet portrait - labels más pequeños
+  @media (min-width: 768px) and (max-width: 1024px) {
+    height: 52px;
 
-    .footer-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding: 0 6px;
-    }
-
-    .footer-btn {
-      --background: transparent;
-      --background-hover: rgba(255, 255, 255, 0.1);
-      --color: rgba(255, 255, 255, 0.85);
-      --padding-start: 10px;
-      --padding-end: 10px;
-      height: 38px;
-      margin: 0;
-      font-size: 0.75rem;
-      text-transform: none;
-      justify-content: flex-start;
-      border-radius: 8px;
+    ion-tab-button {
+      min-height: 52px;
 
       ion-icon {
-        font-size: 18px;
-        margin-right: 10px;
-        color: rgba(255, 255, 255, 0.7);
+        font-size: 20px;
       }
 
       ion-label {
-        font-weight: 500;
-      }
-
-      &:hover {
-        --background: rgba(255, 255, 255, 0.1);
+        font-size: 0.62rem;
       }
     }
   }
 }
 
-/* Ocultar helper de navegación */
-.hidden-navigation-helper,
-.hidden-tab-bar {
-  display: none;
+/* Ajuste del contenido principal cuando hay bottom tabs */
+.main-content-area.has-bottom-tabs {
+  padding-top: 48px; // Espacio para header
+  padding-bottom: 56px; // Espacio para bottom tabs
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding-top: 40px;
+    padding-bottom: 48px;
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    padding-bottom: 52px;
+  }
 }
 
 // ========================================
@@ -4527,7 +4597,7 @@ ion-tab-button[tab="inicio"].circular-tab {
 }
 
 // ========================================
-// SECCIÓN DE PUNTOS - BARRA UNIFICADA
+// SECCIÓN DE PUNTOS - BARRA UNIFICADA RESPONSIVE
 // ========================================
 .puntos-section {
   padding: 0 !important;
@@ -4535,96 +4605,120 @@ ion-tab-button[tab="inicio"].circular-tab {
   .rubrica-selector-bar {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    background: linear-gradient(135deg, rgba(15, 56, 90, 0.08) 0%, rgba(15, 56, 90, 0.04) 100%);
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, rgba(15, 56, 90, 0.06) 0%, rgba(15, 56, 90, 0.02) 100%);
     border-radius: var(--rad-sm, 8px);
-    border: 1px solid rgba(15, 56, 90, 0.1);
-  }
+    border: 1px solid rgba(15, 56, 90, 0.12);
+    flex-wrap: wrap;
+    justify-content: center;
 
-  // Toggle tipo de rúbrica (Grupal/Individual)
-  .tipo-rubrica-toggle {
-    display: flex;
-    gap: 2px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 6px;
-    padding: 2px;
-
-    .tipo-btn {
+    // Header con título estilo destacado
+    .rubrica-header {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 5px 8px;
-      border: none;
-      border-radius: 5px;
-      background: transparent;
-      color: var(--azul-oscuro);
-      font-size: 0.65rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
+      padding-right: 8px;
+      border-right: 2px solid var(--azul-oscuro);
+      margin-right: 4px;
 
-      ion-icon {
+      .rubrica-title {
         font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--azul-oscuro);
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
+    }
 
-      &:hover {
-        background: rgba(15, 56, 90, 0.08);
-      }
+    // Segment Ionic (best practice) - Íconos visibles
+    .tipo-segment {
+      --background: rgba(255, 255, 255, 0.95);
+      min-width: 90px;
+      max-width: 110px;
+      border-radius: 8px;
+      border: 1px solid rgba(15, 56, 90, 0.2);
 
-      &.activo {
-        background: var(--azul-oscuro);
-        color: #ffffff;
-        box-shadow: 0 2px 6px rgba(15, 56, 90, 0.3);
+      ion-segment-button {
+        --indicator-color: var(--azul-oscuro);
+        --color: var(--azul-oscuro);
+        --color-checked: #ffffff;
+        --background: transparent;
+        --background-checked: var(--azul-oscuro);
+        --padding-start: 10px;
+        --padding-end: 10px;
+        min-width: 40px;
+        min-height: 34px;
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
 
         ion-icon {
+          font-size: 1.15rem;
+          color: var(--azul-oscuro);
+          opacity: 0.85;
+        }
+
+        &.segment-button-checked ion-icon {
           color: #ffffff;
+          opacity: 1;
+        }
+
+        &:hover:not(.segment-button-checked) {
+          --background: rgba(15, 56, 90, 0.08);
+
+          ion-icon {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    // Botones de entrega usando ion-button
+    .entrega-buttons {
+      display: flex;
+      gap: 4px;
+
+      .entrega-btn {
+        --padding-start: 10px;
+        --padding-end: 10px;
+        --border-radius: 6px;
+        --border-color: var(--azul-claro);
+        --color: var(--azul-oscuro);
+        --background-hover: var(--azul-claro);
+        --color-hover: #ffffff;
+        min-width: 36px;
+        height: 32px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin: 0;
+
+        &:hover {
+          --background: var(--azul-claro);
+          --color: #ffffff;
         }
       }
     }
   }
+}
 
-  // Separador visual
-  .selector-divider {
-    width: 1px;
-    height: 24px;
-    background: rgba(15, 56, 90, 0.2);
-    margin: 0 4px;
-  }
+// Responsive para pantallas pequeñas
+@media (max-width: 320px) {
+  .puntos-section .rubrica-selector-bar {
+    flex-direction: column;
+    gap: 6px;
 
-  // Botones de entrega
-  .entrega-buttons {
-    display: flex;
-    gap: 4px;
-
-    .entrega-btn {
-      display: flex;
-      align-items: center;
+    .rubrica-header {
+      width: 100%;
       justify-content: center;
-      min-width: 36px;
-      height: 28px;
-      padding: 4px 10px;
-      border: 1px solid var(--azul-claro);
-      border-radius: 6px;
-      background: #ffffff;
-      color: var(--azul-oscuro);
-      font-size: 0.7rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
+    }
 
-      &:hover {
-        background: var(--azul-claro);
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(15, 56, 90, 0.25);
-      }
+    .tipo-segment {
+      width: 100%;
+      max-width: none;
+    }
 
-      &:active {
-        transform: translateY(0);
-        box-shadow: 0 1px 4px rgba(15, 56, 90, 0.2);
-      }
+    .entrega-buttons {
+      width: 100%;
+      justify-content: center;
     }
   }
 }
@@ -4632,34 +4726,6 @@ ion-tab-button[tab="inicio"].circular-tab {
 // Sección de integrantes con responsive
 .integrantes-section {
   padding: 0;
-
-  // Toolbar de estados
-  .estados-toolbar-panel {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 8px;
-    background: rgba(15, 56, 90, 0.03);
-    border-bottom: 1px solid rgba(15, 56, 90, 0.1);
-
-    ion-button {
-      --padding-start: 6px;
-      --padding-end: 6px;
-      height: 28px;
-      min-width: 32px;
-      margin: 0;
-
-      ion-icon {
-        font-size: 1rem;
-      }
-    }
-
-    .entrega-badge {
-      margin-left: auto;
-      font-size: 0.65rem;
-      font-weight: 600;
-    }
-  }
 }
 
 // Columna de checkbox en la tabla

@@ -52,9 +52,11 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline } from 'ionicons/icons';
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, checkmark, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
+import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
+import { IonFab, IonFabButton } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-cursos',
@@ -73,12 +75,12 @@ import { ToastService } from '../../services/toast.service';
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
+    IonFab,
+    IonFabButton,
     IonGrid,
     IonRow,
-    IonCol,
-    IonChip,
-    IonLabel
-  ]
+    IonCol
+]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -106,14 +108,28 @@ export class CursosPage implements OnInit, ViewWillEnter {
   codigoCursoEnEdicion = '';
   infoExpanded = false;
 
+  // Estado de card expandida (para mobile)
+  cursoExpandido: string | null = null;
+
+  // Colores disponibles para cursos
+  coloresDisponibles: string[] = COLORES_CURSOS;
+  colorCursoSeleccionado: string | null = null;
+
   constructor() {
-    addIcons({school,addCircleOutline,saveOutline,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,add,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,closeOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person});
+    addIcons({add,addCircleOutline,saveOutline,closeOutline,colorPaletteOutline,checkmark,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,school,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person,chevronDownOutline,chevronUpOutline});
   }
 
   private cd = inject(ChangeDetectorRef);
 
   ngOnInit() {
     // Setup inicial que NO depende de recarga de datos
+  }
+
+  /**
+   * Toggle para expandir/colapsar card de curso en móvil
+   */
+  toggleCursoCard(codigo: string): void {
+    this.cursoExpandido = this.cursoExpandido === codigo ? null : codigo;
   }
 
   /**
@@ -200,6 +216,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
       this.modoEdicion = true;
       this.cursoSeleccionado = null;
       this.limpiarFormulario();
+      // Generar color aleatorio diferente a los cursos existentes
+      const coloresUsados = this.obtenerColoresUsados();
+      this.colorCursoSeleccionado = generarColorAleatorio(coloresUsados);
       this.cd.detectChanges(); // Forzar actualización de vista
       // Persistir estado en UIState
       this.dataService.updateUIState({ cursosModoEdicion: true });
@@ -209,8 +228,46 @@ export class CursosPage implements OnInit, ViewWillEnter {
     }
   }
 
+  /**
+   * Obtiene los colores ya usados por los cursos existentes
+   */
+  obtenerColoresUsados(): string[] {
+    const uiState = this.dataService.getUIState();
+    const colores: string[] = [];
+    if (uiState?.courseStates) {
+      Object.values(uiState.courseStates).forEach((state: any) => {
+        if (state?.color) {
+          colores.push(state.color);
+        }
+      });
+    }
+    return colores;
+  }
+
+  /**
+   * Obtiene el color de un curso específico
+   */
+  getCursoColor(codigoCurso: string): string {
+    const uiState = this.dataService.getUIState();
+    // Buscar por nombre del curso (que es la key en courseStates)
+    const curso = this.cursosDisponibles.find(c => c.codigo === codigoCurso);
+    if (curso && uiState?.courseStates?.[curso.nombre]) {
+      return uiState.courseStates[curso.nombre].color || '#ff2719';
+    }
+    return '#ff2719'; // Color por defecto
+  }
+
+  /**
+   * Selecciona un color para el curso en creación/edición
+   */
+  seleccionarColorCurso(color: string): void {
+    this.colorCursoSeleccionado = color;
+    Logger.log(`[CursosPage] Color seleccionado: ${color}`);
+  }
+
   async cancelarCreacionCurso() {
     this.modoEdicion = false;
+    this.colorCursoSeleccionado = null;
     this.limpiarFormulario();
     // Limpiar estado en UIState
     this.dataService.updateUIState({ cursosModoEdicion: false });
@@ -990,6 +1047,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
           profesor: '',
           estudiantes: estudiantesTransformados
         });
+
+        // Guardar el color seleccionado para el nuevo curso
+        if (this.colorCursoSeleccionado) {
+          await this.dataService.updateCourseState(codigoCurso, {
+            color: this.colorCursoSeleccionado
+          });
+        }
       }
 
       // Si hay archivo de calificaciones, actualizarlo

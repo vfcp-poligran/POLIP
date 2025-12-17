@@ -23,24 +23,69 @@ ion-content {
 .page-title-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  background: transparent;
-  border-radius: 10px;
-  box-shadow: none;
+  gap: 6px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 
   ion-icon {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     color: #ffffff;
   }
 
   h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.88rem;
     font-weight: 700;
     color: #ffffff;
     letter-spacing: 0.3px;
+  }
+
+  // Tablet (768px - 1024px)
+  @media (max-width: 1024px) and (min-width: 769px) {
+    padding: 6px 10px;
+    gap: 5px;
+    border-radius: 5px;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+
+    h2 {
+      font-size: 0.8rem;
+    }
+  }
+
+  // Mobile (< 768px)
+  @media (max-width: 768px) {
+    padding: 5px 8px;
+    gap: 4px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+
+    h2 {
+      font-size: 0.72rem;
+    }
+  }
+
+  // Landscape móvil
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 4px 8px;
+    margin-bottom: 1px;
+
+    ion-icon {
+      font-size: 0.85rem;
+    }
+
+    h2 {
+      font-size: 0.68rem;
+    }
   }
 }
 
@@ -120,34 +165,87 @@ ion-content {
       ion-icon {
         font-size: 1rem;
       }
+
+      .btn-text {
+        @media (max-width: 480px) {
+          display: none;
+        }
+      }
     }
   }
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 10px;
 
     .selector-left {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
+
+      .selector-label {
+        font-size: 0.72rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     .selector-right {
-      width: 100%;
-      justify-content: flex-end;
-      flex-wrap: wrap;
+      flex-shrink: 0;
+      gap: 4px;
 
-      .archivo-nombre {
-        max-width: 150px;
+      ion-button {
+        height: 28px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+        font-size: 0.65rem;
       }
+    }
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 4px 8px;
+    gap: 4px;
+
+    .selector-left .selector-label {
+      font-size: 0.62rem;
+    }
+
+    .selector-right ion-button {
+      height: 24px;
+      --padding-start: 6px;
+      --padding-end: 6px;
     }
   }
 }
 
 // ============================================
-// BARRA DE BOTONES DE CURSOS
+// RESPONSIVE: Mostrar/Ocultar vistas
 // ============================================
-.cursos-botones-bar {
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+// ============================================
+// SELECTOR DE CURSOS DESKTOP (Botones)
+// ============================================
+.cursos-selector-desktop {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -160,8 +258,8 @@ ion-content {
   overflow-y: visible;
   flex-shrink: 0;
 
-  // Estilo estándar de botones tipo grupo-btn
   .curso-btn {
+    --curso-color: #ff2719;
     min-width: 38px;
     height: 38px;
     padding: 0 14px;
@@ -178,44 +276,22 @@ ion-content {
     overflow: hidden;
     flex-shrink: 0;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(15, 56, 90, 0.08), transparent);
-      transition: left 0.4s ease;
-    }
+    border-bottom: 3px solid transparent;
 
     &:hover {
       transform: translateY(-2px) scale(1.02);
       box-shadow: 0 2px 8px rgba(15, 56, 90, 0.12);
       background: rgba(15, 56, 90, 0.06);
-
-      &::before {
-        left: 100%;
-      }
+      border-bottom-color: var(--curso-color);
     }
 
-    &:active {
-      transform: scale(0.98);
-      box-shadow: 0 1px 4px rgba(15, 56, 90, 0.1);
-    }
-
-    // Estado activo/seleccionado - azul oscuro
     &.activo {
-      background: var(--azul-oscuro, #0f385a);
+      background: var(--curso-color);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(15, 56, 90, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       transform: scale(1.03);
       font-weight: 700;
-
-      &:hover {
-        background: #0d2e47;
-      }
+      border-bottom-color: transparent;
     }
   }
 
@@ -232,6 +308,168 @@ ion-content {
       opacity: 0.6;
     }
   }
+}
+
+// ============================================
+// SELECTOR DE CURSOS MÓVIL (Cards)
+// ============================================
+.cursos-cards-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px;
+  background: transparent;
+
+  // Tablet - 2 columnas
+  @media (min-width: 600px) and (max-width: 768px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  // Landscape - horizontal scroll
+  @media (max-height: 500px) and (orientation: landscape) {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 2px 4px;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+  }
+
+  .curso-card-mobile {
+    --curso-color: #ff2719;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      flex-shrink: 0;
+      min-width: 160px;
+    }
+
+    .curso-card-color-bar {
+      width: 5px;
+      height: 100%;
+      min-height: 48px;
+      background: var(--curso-color);
+      flex-shrink: 0;
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        width: 4px;
+        min-height: 36px;
+      }
+    }
+
+    .curso-card-content {
+      flex: 1;
+      padding: 8px 10px;
+      min-width: 0;
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        padding: 5px 8px;
+      }
+
+      .curso-codigo {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--curso-color);
+        text-transform: uppercase;
+        margin-bottom: 2px;
+
+        @media (max-height: 500px) and (orientation: landscape) {
+          font-size: 0.62rem;
+          margin-bottom: 1px;
+        }
+      }
+
+      .curso-nombre {
+        font-size: 0.68rem;
+        color: var(--azul-oscuro, #0f385a);
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+
+        @media (max-height: 500px) and (orientation: landscape) {
+          font-size: 0.58rem;
+          -webkit-line-clamp: 1;
+        }
+      }
+    }
+
+    .check-icon {
+      font-size: 1.2rem;
+      color: var(--ion-color-success);
+      margin-right: 8px;
+      flex-shrink: 0;
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 1rem;
+        margin-right: 6px;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    &.activo {
+      background: linear-gradient(135deg, rgba(var(--curso-color-rgb, 255, 39, 25), 0.08) 0%, rgba(var(--curso-color-rgb, 255, 39, 25), 0.02) 100%);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--curso-color);
+
+      .curso-card-color-bar {
+        width: 6px;
+
+        @media (max-height: 500px) and (orientation: landscape) {
+          width: 5px;
+        }
+      }
+    }
+  }
+
+  .no-cursos-msg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 0.78rem;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+
+    ion-icon {
+      font-size: 1.2rem;
+      opacity: 0.6;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      font-size: 0.68rem;
+      padding: 10px;
+    }
+  }
+}
+
+// ============================================
+// BARRA DE BOTONES DE CURSOS (Legacy - mantener por compatibilidad)
+// ============================================
+.cursos-botones-bar {
+  display: none; // Reemplazado por cursos-selector-desktop y cursos-cards-mobile
 }
 
 // ============================================
@@ -307,7 +545,7 @@ ion-content {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 
   thead {
     position: sticky;
@@ -324,12 +562,12 @@ ion-content {
   }
 
   .tabla-header {
-    padding: 8px 6px;
+    padding: 7px 5px;
     text-align: left;
     color: white;
     font-weight: 600;
-    font-size: 0.58rem; // Reducido 20% de 0.72rem
-    white-space: normal; // Permitir wrap del texto
+    font-size: 0.56rem;
+    white-space: normal;
     word-wrap: break-word;
     line-height: 1.2;
     border-right: 1px solid rgba(255, 255, 255, 0.15);
@@ -362,7 +600,7 @@ ion-content {
       min-width: 35px;
       max-width: 45px;
       text-align: center;
-      padding: 6px 3px;
+      padding: 5px 3px;
     }
 
     &.col-sticky {
@@ -378,10 +616,31 @@ ion-content {
 
       &::after {
         content: '✎';
-        font-size: 0.55rem;
-        margin-left: 3px;
+        font-size: 0.5rem;
+        margin-left: 2px;
         opacity: 0.6;
       }
+    }
+  }
+
+  // Responsive tablet
+  @media (max-width: 1024px) and (min-width: 769px) {
+    font-size: 0.72rem;
+
+    .tabla-header {
+      padding: 6px 4px;
+      font-size: 0.52rem;
+    }
+  }
+
+  // Responsive mobile
+  @media (max-width: 768px) {
+    font-size: 0.68rem;
+
+    .tabla-header {
+      padding: 5px 3px;
+      font-size: 0.5rem;
+      min-width: 50px;
     }
   }
 
@@ -409,13 +668,13 @@ ion-content {
   }
 
   .tabla-cell {
-    padding: 8px 10px;
+    padding: 7px 8px;
     text-align: left;
     color: #333;
     border-right: 1px solid #e9ecef;
     vertical-align: middle;
     white-space: nowrap;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -434,7 +693,7 @@ ion-content {
       max-width: 80px;
       text-align: center;
       font-family: 'Segoe UI', 'Roboto Mono', monospace;
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: #6c757d;
     }
 
@@ -442,14 +701,32 @@ ion-content {
       text-align: center;
       min-width: 40px;
       max-width: 50px;
-      padding: 8px 4px;
+      padding: 7px 4px;
 
       .grupo-badge {
         display: inline-block;
         color: var(--azul-oscuro, #0f385a);
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 700;
       }
+    }
+
+    // Responsive tablet
+    @media (max-width: 1024px) and (min-width: 769px) {
+      padding: 6px 6px;
+      font-size: 0.7rem;
+
+      &.col-id { font-size: 0.65rem; }
+      &.col-grupo .grupo-badge { font-size: 0.7rem; }
+    }
+
+    // Responsive mobile
+    @media (max-width: 768px) {
+      padding: 5px 5px;
+      font-size: 0.65rem;
+
+      &.col-id { font-size: 0.6rem; }
+      &.col-grupo .grupo-badge { font-size: 0.65rem; }
     }
 
     &.col-sticky {
