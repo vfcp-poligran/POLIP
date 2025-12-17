@@ -82,8 +82,11 @@ ion-content {
 
   // Selector de cursos integrado en el header
   .header-course-selector {
+    display: flex;
+    align-items: center;
     flex: 1;
     min-width: 0;
+    gap: 4px;
 
     .course-segment {
       --background: transparent;
@@ -331,6 +334,242 @@ ion-card {
       --padding-end: 2px;
       --padding-top: 2px;
       --padding-bottom: 2px;
+    }
+  }
+}
+
+/* ========================================
+   BOTÓN TOGGLE VISTA GENERAL
+   Botón de mundo a la izquierda del selector de cursos
+   ======================================== */
+.vista-general-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #666;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 1);
+    color: var(--ion-color-primary);
+    transform: scale(1.05);
+  }
+
+  &.activo {
+    background: var(--ion-color-primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.3);
+
+    &:hover {
+      background: var(--ion-color-primary-shade);
+      color: white;
+    }
+  }
+}
+
+/* ========================================
+   SECCIÓN VISTA GENERAL (Multi-curso)
+   Panel principal cuando está activa la vista general
+   ======================================== */
+.vista-general-section {
+  padding: 0 8px;
+  animation: fadeIn 0.3s ease;
+
+  .vista-general-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .vista-general-header {
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+    padding: 10px 12px;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-start;
+
+      // Botón toggle dentro del header de Vista General
+      .vista-general-toggle-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        &.activo {
+          background: rgba(255, 255, 255, 0.25);
+        }
+      }
+
+      // Selector de cursos dentro del header - alineado a la izquierda
+      .header-course-selector-vg {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        .course-segment-vg {
+          --background: transparent;
+          background: transparent !important;
+          border-radius: 8px;
+          min-height: 36px;
+          justify-content: flex-start;
+
+          .course-segment-button-vg {
+            --background: var(--course-color, #1976d2);
+            --background-checked: var(--course-color, #1976d2);
+            --color: #ffffff;
+            --color-checked: #ffffff;
+            --indicator-height: 0;
+            --padding-start: 10px;
+            --padding-end: 10px;
+            min-height: 32px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin: 2px;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+            flex: 0 0 auto;
+
+            &.segment-button-checked {
+              opacity: 1;
+              transform: scale(1.02);
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            }
+
+            .segment-button-content {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+
+              .segment-label {
+                .course-name {
+                  font-size: 0.8rem;
+                }
+              }
+
+              .segment-menu-icon {
+                font-size: 0.85rem;
+                opacity: 0.7;
+                cursor: pointer;
+                padding: 2px;
+
+                &:hover {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .vista-general-content {
+    padding: 20px;
+    min-height: 300px;
+  }
+
+  .vista-general-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #999;
+
+    .placeholder-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    p {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin: 0 0 8px 0;
+      color: #666;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: #999;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   BARRA DE BÚSQUEDA GLOBAL
+   Debajo del selector de cursos
+   ======================================== */
+.search-bar-container {
+  padding: 0 8px 8px 8px;
+
+  .main-searchbar {
+    --background: white;
+    --border-radius: 10px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --placeholder-color: #999;
+    --icon-color: #666;
+    --color: #333;
+    padding: 0;
+
+    &::part(native) {
+      border: 1px solid #e0e0e0;
+    }
+
+    &.searchbar-has-focus {
+      --box-shadow: 0 2px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+
+      &::part(native) {
+        border-color: var(--ion-color-primary);
+      }
     }
   }
 }

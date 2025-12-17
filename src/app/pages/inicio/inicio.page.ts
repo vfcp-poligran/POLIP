@@ -19,6 +19,7 @@ import {
   IonFabList,
   IonItem,
   IonText,
+  IonSearchbar,
   MenuController,
   AlertController,
   LoadingController,
@@ -82,7 +83,7 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums, globeOutline, constructOutline, apps } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { ToastService } from '../../services/toast.service';
@@ -110,7 +111,8 @@ import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriteri
     IonFabButton,
     IonFabList,
     IonItem,
-    IonText
+    IonText,
+    IonSearchbar
   ]
 })
 export class InicioPage implements OnInit, OnDestroy {
@@ -136,6 +138,9 @@ export class InicioPage implements OnInit, OnDestroy {
   mostrarComentarios: boolean = false; // Controla visibilidad de la sección de comentarios (colapsada por defecto)
   menuAccionesAbierto: boolean = false; // Controla si el menú lateral de acciones está abierto (móvil)
   menuFabAbierto: boolean = false; // Controla el menú FAB flotante en móvil portrait
+
+  // Vista General - Multi-curso
+  vistaGeneralActiva: boolean = true; // Vista General activa por defecto al entrar a Inicio
 
   // Propiedades para drag and drop de cursos
   cursosOrdenados: string[] = []; // Array ordenado de cursos para mantener el orden personalizado
@@ -320,7 +325,7 @@ export class InicioPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,home,schoolOutline,ellipsisVertical,closeOutline,checkmarkCircle,library,speedometer,homeOutline,chevronForwardOutline,gridOutline,peopleCircleOutline,analyticsOutline,checkmarkDoneCircle,hourglassOutline,warning,people,albums,alertCircle,informationCircleOutline,rocket,saveOutline,documentTextOutline,createOutline,peopleOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,informationCircle,peopleCircle,book,grid,clipboardOutline,documentText,checkmarkOutline,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,alertCircleOutline,listOutline,copyOutline,personOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,apps,ellipsisVertical,closeOutline,checkmarkCircle,library,speedometer,constructOutline,homeOutline,chevronForwardOutline,grid,peopleCircleOutline,checkmarkDoneCircle,hourglassOutline,warning,people,albums,alertCircle,informationCircleOutline,globeOutline,home,schoolOutline,gridOutline,analyticsOutline,rocket,saveOutline,documentTextOutline,createOutline,peopleOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,informationCircle,peopleCircle,book,clipboardOutline,documentText,checkmarkOutline,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,alertCircleOutline,listOutline,copyOutline,personOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,cloudUploadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,person,layersOutline,menuOutline,save,chatboxOutline,add});
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -586,6 +591,11 @@ export class InicioPage implements OnInit, OnDestroy {
     const valor = event.detail.value;
     // Solo seleccionar si realmente cambió el valor
     if (valor && valor !== this.cursoActivo) {
+      // Desactivar Vista General al seleccionar un curso
+      if (this.vistaGeneralActiva) {
+        this.vistaGeneralActiva = false;
+        Logger.log('🌐 [onCursoChange] Saliendo de Vista General');
+      }
       this.seleccionarCurso(valor);
     }
   }
@@ -3456,6 +3466,45 @@ export class InicioPage implements OnInit, OnDestroy {
       this.limpiarPanelSeguimiento();
       this.cdr.markForCheck();
     }
+  }
+
+  // ==========================================
+  // MÉTODOS DE VISTA GENERAL (MULTI-CURSO)
+  // ==========================================
+
+  /**
+   * Navega a la Vista General (multi-curso)
+   * No es toggle - solo activa la vista general
+   */
+  irAVistaGeneral(): void {
+    if (this.vistaGeneralActiva) {
+      return; // Ya está en Vista General
+    }
+
+    this.vistaGeneralActiva = true;
+    Logger.log('🌐 [irAVistaGeneral] Navegando a Vista General');
+
+    // Limpiar estado de navegación
+    this.filtroGrupo = 'todos';
+    this.entregaEvaluando = null;
+    this.tipoEvaluando = null;
+
+    // Cerrar rúbrica si está abierta
+    if (this.mostrarRubrica) {
+      this.cerrarRubrica();
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Maneja el cambio en la barra de búsqueda
+   */
+  onBusquedaChange(event: any): void {
+    const valor = event.detail?.value || event.target?.value || '';
+    this.busquedaGeneral = valor;
+    this.aplicarFiltros();
+    this.cdr.markForCheck();
   }
 
   /**

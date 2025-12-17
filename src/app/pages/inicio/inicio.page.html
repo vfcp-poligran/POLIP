@@ -22,11 +22,18 @@
 
   <div class="layout" [ngStyle]="layoutStyles">
     <div class="page-container">
-      <!-- Barra de selector de cursos -->
+      <!-- Barra de navegación común: Botón Vista General + Selectores de curso -->
+      @if (cursosDisponibles.length > 0) {
       <div class="page-title-header">
-        <!-- Selector de cursos -->
-        @if (cursosDisponibles.length > 0) {
         <div class="header-course-selector">
+          <!-- Botón Vista General -->
+          <button type="button"
+                  class="vista-general-toggle-btn"
+                  [class.activo]="vistaGeneralActiva"
+                  (click)="irAVistaGeneral()"
+                  title="Vista General">
+            <ion-icon name="apps"></ion-icon>
+          </button>
           <ion-segment
             [scrollable]="true"
             [value]="cursoActivo"
@@ -51,8 +58,22 @@
             }
           </ion-segment>
         </div>
-        }
       </div>
+      }
+
+      <!-- Barra de búsqueda global -->
+      @if (cursosDisponibles.length > 0) {
+      <div class="search-bar-container">
+        <ion-searchbar
+          [(ngModel)]="busquedaGeneral"
+          (ionInput)="onBusquedaChange($event)"
+          placeholder="Buscar estudiante..."
+          debounce="300"
+          mode="ios"
+          class="main-searchbar">
+        </ion-searchbar>
+      </div>
+      }
 
       <!-- Popover para cambiar color (Ionic nativo) - Botón 3 puntos -->
       <ion-popover
@@ -108,8 +129,26 @@
       </div>
       }
 
-      <!-- Lista de Estudiantes -->
-      @if (cursoActivo && estudiantesActuales.length > 0) {
+      <!-- ==================== -->
+      <!-- VISTA GENERAL (Multi-curso) -->
+      <!-- ==================== -->
+      @if (vistaGeneralActiva && cursosDisponibles.length > 0) {
+      <div class="vista-general-section">
+        <ion-card class="vista-general-card">
+          <ion-card-content class="vista-general-content">
+            <!-- Contenido de Vista General - Se irá agregando -->
+            <div class="vista-general-placeholder">
+              <ion-icon name="construct-outline" class="placeholder-icon"></ion-icon>
+              <p>Sección en construcción</p>
+              <span class="hint">Aquí se mostrarán las herramientas de gestión multi-curso</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+      }
+
+      <!-- Lista de Estudiantes (Vista de curso específico) -->
+      @if (!vistaGeneralActiva && cursoActivo && estudiantesActuales.length > 0) {
       <div class="estudiantes-section">
 
         <!-- Panel General -->
