@@ -1095,18 +1095,21 @@ ion-tab-button.circular-tab {
     flex-shrink: 0;
     margin-right: 12px;
 
+    // Variable para tamaño dinámico
+    --tab-size: 56px;
+
     // DIMENSIONES BASE: CUADRADO PERFECTO MÁS GRANDE
-    width: 56px !important; // Aumentado significativamente (+40%)
-    height: 56px !important; // Forzar alto igual al ancho
-    min-width: 56px !important;
-    min-height: 56px !important;
-    max-width: 56px !important;
-    max-height: 56px !important;
+    width: var(--tab-size);
+    height: var(--tab-size);
+    min-width: var(--tab-size);
+    min-height: var(--tab-size);
+    max-width: var(--tab-size);
+    max-height: var(--tab-size);
 
     padding: 6px; // Más espacio para el círculo
     border-radius: 12px; // Esquinas redondeadas proporcionales
     gap: 0;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
 
     // NUEVO: Borde cuadrado visible alrededor del círculo
     border: 2px solid rgba(255, 255, 255, 0.5);
@@ -1114,12 +1117,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Desktop base - Cuadrado perfecto MÁS GRANDE
     @media (min-width: 769px) {
-      width: 60px !important; // +36% más grande
-      height: 60px !important;
-      min-width: 60px !important;
-      min-height: 60px !important;
-      max-width: 60px !important;
-      max-height: 60px !important;
+      --tab-size: 60px;
       padding: 6px;
       margin-left: 6px;
       margin-right: 12px;
@@ -1128,12 +1126,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Desktop medio (1024-1199px)
     @media (min-width: 1024px) and (max-width: 1199px) {
-      width: 64px !important; // +39% más grande
-      height: 64px !important;
-      min-width: 64px !important;
-      min-height: 64px !important;
-      max-width: 64px !important;
-      max-height: 64px !important;
+      --tab-size: 64px;
       padding: 7px;
       margin-left: 6px;
       margin-right: 14px;
@@ -1141,12 +1134,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Desktop grande (1200-1399px)
     @media (min-width: 1200px) and (max-width: 1399px) {
-      width: 68px !important; // +42% más grande
-      height: 68px !important;
-      min-width: 68px !important;
-      min-height: 68px !important;
-      max-width: 68px !important;
-      max-height: 68px !important;
+      --tab-size: 68px;
       padding: 8px;
       margin-left: 8px;
       margin-right: 16px;
@@ -1154,12 +1142,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Desktop extra grande (1400-1919px)
     @media (min-width: 1400px) and (max-width: 1919px) {
-      width: 72px !important; // +44% más grande
-      height: 72px !important;
-      min-width: 72px !important;
-      min-height: 72px !important;
-      max-width: 72px !important;
-      max-height: 72px !important;
+      --tab-size: 72px;
       padding: 8px;
       margin-left: 8px;
       margin-right: 18px;
@@ -1167,12 +1150,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Desktop ultra grande (1920px+)
     @media (min-width: 1920px) {
-      width: 76px !important; // +46% más grande
-      height: 76px !important;
-      min-width: 76px !important;
-      min-height: 76px !important;
-      max-width: 76px !important;
-      max-height: 76px !important;
+      --tab-size: 76px;
       padding: 9px;
       margin-left: 10px;
       margin-right: 20px;
@@ -1180,12 +1158,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Tabletas (481-768px)
     @media (max-width: 768px) and (min-width: 481px) {
-      width: 52px !important; // +37% más grande
-      height: 52px !important;
-      min-width: 52px !important;
-      min-height: 52px !important;
-      max-width: 52px !important;
-      max-height: 52px !important;
+      --tab-size: 52px;
       padding: 6px;
       margin-left: 4px;
       margin-right: 4px;
@@ -1194,12 +1167,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Móviles (max-width: 480px)
     @media (max-width: 480px) {
-      width: 48px !important; // +33% más grande
-      height: 48px !important;
-      min-width: 48px !important;
-      min-height: 48px !important;
-      max-width: 48px !important;
-      max-height: 48px !important;
+      --tab-size: 48px;
       padding: 5px;
       margin-left: 3px;
       margin-right: 3px;
@@ -1208,12 +1176,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Móviles pequeños (max-width: 360px)
     @media (max-width: 360px) {
-      width: 44px !important; // +29% más grande
-      height: 44px !important;
-      min-width: 44px !important;
-      min-height: 44px !important;
-      max-width: 44px !important;
-      max-height: 44px !important;
+      --tab-size: 44px;
       padding: 5px;
       margin-left: 2px;
       margin-right: 2px;
@@ -1222,12 +1185,7 @@ ion-tab-button.circular-tab {
 
     // RESPONSIVE: Landscape móvil - Ultra compacto
     @media (max-width: 960px) and (orientation: landscape) {
-      width: 46px !important; // +35% más grande
-      height: 46px !important;
-      min-width: 46px !important;
-      min-height: 46px !important;
-      max-width: 46px !important;
-      max-height: 46px !important;
+      --tab-size: 46px;
       padding: 5px;
       margin-left: 3px;
       margin-right: 3px;
@@ -1674,7 +1632,7 @@ ion-tab-button[tab="inicio"].circular-tab {
       --padding-start: 20px;
       --padding-end: 20px;
       font-weight: 500;
-      text-align: left !important;
+      text-align: left;
       letter-spacing: 0.2px;
 
       // RESPONSIVE: Tipografía escalada
@@ -1708,19 +1666,17 @@ ion-tab-button[tab="inicio"].circular-tab {
 
       /* Asegurar alineación izquierda al recibir foco */
       &:focus {
-        text-align: left !important;
+        text-align: left;
       }
     }
 
     /* Estilo directo para el input nativo */
     input {
-      text-align: left !important;
-      direction: ltr !important;
+      text-align: left;
+      direction: ltr;
     }
 
-    .searchbar-search-icon {
-      color: var(--azul-claro) !important;
-    }
+
 
     &:hover {
       --background: rgba(255, 255, 255, 1);
@@ -1802,7 +1758,7 @@ ion-tab-button[tab="inicio"].circular-tab {
 
       ion-icon {
         transform: rotate(90deg);
-        color: var(--azul-oscuro) !important;
+        color: var(--azul-oscuro);
         filter: drop-shadow(0 1px 2px rgba(31, 178, 222, 0.3));
       }
     }
@@ -2076,7 +2032,7 @@ ion-tab-button[tab="inicio"].circular-tab {
 
     // RESPONSIVE: Móvil - Ocultar con transiciones suaves
     @media (max-width: 768px) {
-      display: none !important;
+      display: none;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -2084,7 +2040,7 @@ ion-tab-button[tab="inicio"].circular-tab {
 
     // RESPONSIVE: Landscape móvil - también ocultar
     @media (max-width: 960px) and (orientation: landscape) {
-      display: none !important;
+      display: none;
     }
 
     // RESPONSIVE: Mostrar con transición en desktop
@@ -2096,8 +2052,8 @@ ion-tab-button[tab="inicio"].circular-tab {
 
     // RESPONSIVE: Optimización para dispositivos con movimiento reducido
     @media (prefers-reduced-motion: reduce) {
-      transition: none !important;
-      animation: none !important;
+      transition: none;
+      animation: none;
     }
 
     // RESPONSIVE: Mejor rendimiento en dispositivos de gama media
@@ -2117,115 +2073,106 @@ ion-tab-button[tab="inicio"].circular-tab {
     --padding-bottom: 0;
     --indicator-height: 0;
     background: transparent;
-    padding: 0 !important;
-    margin: 0 !important;
+    padding: 0;
+    margin: 0;
     position: relative;
-    display: flex !important;
-    align-items: center !important;
+    display: flex;
+    align-items: center;
     gap: 6px;
     overflow: visible;
     flex-shrink: 0;
     border-radius: 8px;
     transition: all 0.3s ease;
 
+    // Variables por defecto
+    --config-btn-width: auto;
+    --config-btn-height: auto;
+    --config-btn-padding: 0;
+    --config-btn-radius: 8px;
+
     // RESPONSIVE: Desktop - RECTÁNGULOS REDUCIDOS 20% (era 135px)
     @media (min-width: 769px) {
-      flex-direction: column !important;
-      justify-content: center !important;
-      align-items: center !important;
-      width: 108px !important; // Reducido 20% de 135px
-      height: 90px !important; // Altura se mantiene
-      min-width: 108px !important;
-      min-height: 90px !important;
-      max-width: 108px !important;
-      max-height: 90px !important;
-      padding: 9px 10px !important; // Padding ajustado
-      border-radius: 18px !important;
-      border: 2px solid rgba(255, 255, 255, 0.5) !important;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-      box-sizing: border-box !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      --config-btn-width: 108px;
+      --config-btn-height: 90px;
+      --config-btn-padding: 9px 10px;
+      --config-btn-radius: 18px;
+
+      width: var(--config-btn-width);
+      height: var(--config-btn-height);
+      min-width: var(--config-btn-width);
+      min-height: var(--config-btn-height);
+      max-width: var(--config-btn-width);
+      max-height: var(--config-btn-height);
+      padding: var(--config-btn-padding);
+      border-radius: var(--config-btn-radius);
+
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-sizing: border-box;
     }
 
     // RESPONSIVE: Desktop medio (1024-1199px) - REDUCIDO 20%
     @media (min-width: 1024px) and (max-width: 1199px) {
-      width: 115px !important; // Reducido 20% de 144px
-      height: 96px !important; // Altura se mantiene
-      min-width: 115px !important;
-      min-height: 96px !important;
-      max-width: 115px !important;
-      max-height: 96px !important;
-      padding: 10px 12px !important; // Padding ajustado
-      border-radius: 19px !important;
+      --config-btn-width: 115px;
+      --config-btn-height: 96px;
+      --config-btn-padding: 10px 12px;
+      --config-btn-radius: 19px;
     }
 
     // RESPONSIVE: Desktop grande (1200-1399px) - REDUCIDO 20%
     @media (min-width: 1200px) and (max-width: 1399px) {
-      width: 122px !important; // Reducido 20% de 153px
-      height: 102px !important; // Altura se mantiene
-      min-width: 122px !important;
-      min-height: 102px !important;
-      max-width: 122px !important;
-      max-height: 102px !important;
-      padding: 12px 14px !important; // Padding ajustado
-      border-radius: 20px !important;
+      --config-btn-width: 122px;
+      --config-btn-height: 102px;
+      --config-btn-padding: 12px 14px;
+      --config-btn-radius: 20px;
     }
 
     // RESPONSIVE: Desktop extra grande (1400-1919px) - REDUCIDO 20%
     @media (min-width: 1400px) and (max-width: 1919px) {
-      width: 130px !important; // Reducido 20% de 162px
-      height: 108px !important; // Altura se mantiene
-      min-width: 130px !important;
-      min-height: 108px !important;
-      max-width: 130px !important;
-      max-height: 108px !important;
-      padding: 12px 16px !important; // Padding ajustado
-      border-radius: 22px !important;
+      --config-btn-width: 130px;
+      --config-btn-height: 108px;
+      --config-btn-padding: 12px 16px;
+      --config-btn-radius: 22px;
     }
 
     // RESPONSIVE: Desktop ultra grande (1920px+) - REDUCIDO 20%
     @media (min-width: 1920px) {
-      width: 137px !important; // Reducido 20% de 171px
-      height: 114px !important; // Altura se mantiene
-      min-width: 137px !important;
-      min-height: 114px !important;
-      max-width: 137px !important;
-      max-height: 114px !important;
-      padding: 14px 18px !important; // Padding ajustado
-      border-radius: 24px !important;
+      --config-btn-width: 137px;
+      --config-btn-height: 114px;
+      --config-btn-padding: 14px 18px;
+      --config-btn-radius: 24px;
     }
 
     // RESPONSIVE: Móvil - 50% MÁS ANCHO
     @media (max-width: 768px) and (min-width: 481px) {
-      width: 117px !important; // 50% más ancho que 78px
-      height: 78px !important; // Altura se mantiene
-      min-width: 117px !important;
-      min-height: 78px !important;
-      max-width: 117px !important;
-      max-height: 78px !important;
-      padding: 8px 12px !important; // Más padding horizontal
-      flex-direction: column !important;
-      justify-content: center !important;
-      align-items: center !important;
-      border-radius: 15px !important;
-      border: 2px solid rgba(255, 255, 255, 0.4) !important;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+      --config-btn-width: 117px;
+      --config-btn-height: 78px;
+      --config-btn-padding: 8px 12px;
+      --config-btn-radius: 15px;
+
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.15);
     }
 
     // RESPONSIVE: Móvil pequeño (≤480px) - 50% más ancho
     @media (max-width: 480px) {
-      width: 108px !important; // 50% más ancho que 72px
-      height: 72px !important; // Altura se mantiene
-      min-width: 108px !important;
-      min-height: 72px !important;
-      max-width: 108px !important;
-      max-height: 72px !important;
-      padding: 6px 10px !important; // Más padding horizontal
-      flex-direction: column !important;
-      justify-content: center !important;
-      align-items: center !important;
-      border-radius: 12px !important;
-      border: 2px solid rgba(255, 255, 255, 0.4) !important;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+      --config-btn-width: 108px;
+      --config-btn-height: 72px;
+      --config-btn-padding: 6px 10px;
+      --config-btn-radius: 12px;
+
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     // Íconos con círculos aumentados 30%

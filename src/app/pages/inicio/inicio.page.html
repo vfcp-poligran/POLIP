@@ -1,20 +1,20 @@
 <ion-content class="mobile-optimized" [fullscreen]="true">
   <!-- FAB nativo de Ionic para móvil portrait -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-menu-container ion-hide-md-up">
-    <ion-fab-button color="primary">
+    <ion-fab-button color="primary" aria-label="Menú de navegación">
       <ion-icon name="ellipsis-vertical-outline"></ion-icon>
     </ion-fab-button>
 
     <ion-fab-list side="top">
       <!-- Navegación de grupo anterior -->
       <ion-fab-button color="primary" [disabled]="!grupoAnteriorDisponible" (click)="retrocederGrupo()"
-        data-desc="Grupo anterior">
+        data-desc="Grupo anterior" aria-label="Grupo anterior">
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-fab-button>
 
       <!-- Navegación de grupo siguiente -->
       <ion-fab-button color="primary" [disabled]="!grupoSiguienteDisponible" (click)="avanzarGrupo()"
-        data-desc="Grupo siguiente">
+        data-desc="Grupo siguiente" aria-label="Grupo siguiente">
         <ion-icon name="arrow-forward-outline"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
@@ -45,7 +45,8 @@
                   class="vista-general-toggle-btn"
                   [class.activo]="vistaGeneralActiva"
                   (click)="irAVistaGeneral()"
-                  title="Vista General">
+                  title="Vista General"
+                  aria-label="Vista General">
             <ion-icon name="apps"></ion-icon>
           </button>
           <ion-segment

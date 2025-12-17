@@ -9,6 +9,7 @@ import {
   IonIcon,
   IonChip,
   IonLabel,
+  IonBadge,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -107,7 +108,8 @@ interface ArchivoCalificacionesVisualizacion {
     IonButton,
     IonIcon,
     IonChip,
-    IonLabel
+    IonLabel,
+    IonBadge
   ]
 })
 export class CalificacionesPage implements OnInit, OnDestroy, ViewWillEnter {

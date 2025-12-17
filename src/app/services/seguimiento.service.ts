@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 export interface CriterioEvaluado {
   nombreCriterio: string;
@@ -61,30 +61,38 @@ export interface EstadosEntrega {
   providedIn: 'root'
 })
 export class SeguimientoService {
-  private grupoSeleccionadoSubject = new BehaviorSubject<number>(0); // 0 = todos los grupos
-  private grupoVisualizadoSubject = new BehaviorSubject<number>(0); // Grupo para mostrar integrantes (sin cambiar filtro)
-  private seguimientoActualSubject = new BehaviorSubject<SeguimientoGrupo | null>(null);
+  // Signals
+  private _grupoSeleccionado = signal<number>(0);
+  private _grupoVisualizado = signal<number>(0);
+  private _seguimientoActual = signal<SeguimientoGrupo | null>(null);
 
   // Estados de estudiantes: Map<grupo, Map<entrega, EstadosEntrega>>
-  private estadosEstudiantes: Map<string, Map<string, EstadosEntrega>> = new Map();
-  private estadosEstudiantesSubject = new BehaviorSubject<Map<string, Map<string, EstadosEntrega>>>(this.estadosEstudiantes);
+  private estadosEstudiantesMap: Map<string, Map<string, EstadosEntrega>> = new Map();
+  private _estadosEstudiantes = signal<Map<string, Map<string, EstadosEntrega>>>(this.estadosEstudiantesMap);
 
-  grupoSeleccionado$ = this.grupoSeleccionadoSubject.asObservable();
-  grupoVisualizado$ = this.grupoVisualizadoSubject.asObservable();
-  seguimientoActual$ = this.seguimientoActualSubject.asObservable();
-  estadosEstudiantes$ = this.estadosEstudiantesSubject.asObservable();
+  // Readonly Signals
+  public grupoSeleccionado = this._grupoSeleccionado.asReadonly();
+  public grupoVisualizado = this._grupoVisualizado.asReadonly();
+  public seguimientoActual = this._seguimientoActual.asReadonly();
+  public estadosEstudiantes = this._estadosEstudiantes.asReadonly();
+
+  // Legacy Observables
+  public grupoSeleccionado$ = toObservable(this._grupoSeleccionado);
+  public grupoVisualizado$ = toObservable(this._grupoVisualizado);
+  public seguimientoActual$ = toObservable(this._seguimientoActual);
+  public estadosEstudiantes$ = toObservable(this._estadosEstudiantes);
 
   constructor() { }
 
   setGrupoSeleccionado(grupo: number): void {
     // 🛡️ GUARDIA: No emitir si es el mismo valor
-    if (this.grupoSeleccionadoSubject.value === grupo) {
+    if (this._grupoSeleccionado() === grupo) {
       return;
     }
 
-    this.grupoSeleccionadoSubject.next(grupo);
+    this._grupoSeleccionado.set(grupo);
     // Al cambiar el grupo seleccionado, también actualizamos el visualizado
-    this.grupoVisualizadoSubject.next(grupo);
+    this._grupoVisualizado.set(grupo);
   }
 
   /**
@@ -92,8 +100,8 @@ export class SeguimientoService {
    * Útil para refrescar la vista sin cambiar el grupo.
    */
   forceSetGrupoSeleccionado(grupo: number): void {
-    this.grupoSeleccionadoSubject.next(grupo);
-    this.grupoVisualizadoSubject.next(grupo);
+    this._grupoSeleccionado.set(grupo);
+    this._grupoVisualizado.set(grupo);
   }
 
   /**

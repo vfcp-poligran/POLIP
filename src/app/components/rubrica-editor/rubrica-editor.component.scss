@@ -8,7 +8,7 @@
   background: #f8f9fa;
   border-radius: 12px;
   margin-bottom: 16px;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 200px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
   overflow-y: auto;
 }
 

@@ -46,7 +46,8 @@
               <span class="btn-text">Exportar</span>
             </ion-button>
             <ion-button size="small" fill="outline" color="danger"
-              (click)="eliminarArchivoCalificacionesCurso(cursoCalificacionesSeleccionado)">
+              (click)="eliminarArchivoCalificacionesCurso(cursoCalificacionesSeleccionado)"
+              aria-label="Eliminar archivo de calificaciones">
               <ion-icon name="trash" slot="icon-only"></ion-icon>
             </ion-button>
           </div>
@@ -88,7 +89,7 @@
                   <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
                     <!-- Columna fija: Grupo -->
                     <td class="tabla-cell col-grupo col-sticky">
-                      <span class="grupo-badge">{{ fila.grupo }}</span>
+                      <ion-badge color="light" class="grupo-badge">{{ fila.grupo }}</ion-badge>
                     </td>
                     <!-- Columnas del CSV -->
                     @for (col of getHeadersVisibles(); track col.indice) {

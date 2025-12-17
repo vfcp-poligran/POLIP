@@ -2,7 +2,7 @@
   <!-- FAB flotante para crear rúbrica (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-rubrica ion-hide-md-up">
     @if (!modoEdicion && !modoCreacion && !modoSeleccionCrear) {
-    <ion-fab-button color="success" (click)="mostrarOpcionesCrearMobile()">
+    <ion-fab-button color="success" (click)="mostrarOpcionesCrearMobile()" aria-label="Crear nueva rúbrica">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
     }
@@ -11,7 +11,7 @@
   <!-- FAB list para acciones de guardar/cancelar (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-rubrica ion-hide-md-up">
     @if (modoEdicion || modoCreacion || modoSeleccionCrear) {
-    <ion-fab-button color="primary">
+    <ion-fab-button color="primary" aria-label="Acciones de rúbrica">
       <ion-icon name="ellipsis-vertical"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
@@ -195,14 +195,14 @@
                       [class.fila-seleccionada]="rubricaSeleccionada?.id === rubrica.id"
                       (click)="seleccionarRubrica(rubrica)" class="fila-clickable">
                       <td class="tabla-cell col-codigo">
-                        <span class="codigo-badge">{{ obtenerCodigoBase(rubrica) }}</span>
+                        <ion-badge color="light" class="codigo-badge">{{ obtenerCodigoBase(rubrica) }}</ion-badge>
                         @if (rubrica.estado === 'borrador') {
-                        <span class="estado-badge estado-borrador">Borrador</span>
+                        <ion-badge color="warning" class="estado-badge">Borrador</ion-badge>
                         }
                       </td>
                       <td class="tabla-cell col-version">
-                        <span class="version-badge" [class.version-activa]="rubrica.activa !== false">v{{
-                          rubrica.version || 1 }}</span>
+                        <ion-badge [color]="rubrica.activa !== false ? 'success' : 'medium'" class="version-badge">v{{
+                          rubrica.version || 1 }}</ion-badge>
                       </td>
                       <td class="tabla-cell col-nombre">{{ rubrica.nombre }}</td>
                       <td class="tabla-cell col-criterios">{{ rubrica.criterios.length || 0 }}</td>
@@ -259,9 +259,9 @@
                           <span class="rubrica-nombre-mobile">{{ rubrica.nombre }}</span>
                         </ion-card-title>
                         <div class="codigo-activa-wrapper">
-                          <span class="codigo-badge-mobile">{{ rubrica.codigo || rubrica.id }}</span>
+                          <ion-badge color="light" class="codigo-badge-mobile">{{ rubrica.codigo || rubrica.id }}</ion-badge>
                           @if (rubrica.version && rubrica.version > 1) {
-                          <span class="version-badge-mobile">v{{ rubrica.version }}</span>
+                          <ion-badge color="secondary" class="version-badge-mobile">v{{ rubrica.version }}</ion-badge>
                           }
                           <span class="estado-indicador-mobile"
                             [class.estado-activo]="rubrica.activa !== false && rubrica.estado !== 'borrador'"

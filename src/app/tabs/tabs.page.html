@@ -5,7 +5,7 @@
 <ion-header class="mobile-header">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-button (click)="toggleMobileSeguimiento()">
+      <ion-button (click)="toggleMobileSeguimiento()" aria-label="Alternar panel de seguimiento">
         <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -16,7 +16,7 @@
       <span>POLIProject</span>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="toggleSearch()">
+      <ion-button (click)="toggleSearch()" aria-label="Buscar">
         <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
       </ion-button>
     </ion-buttons>

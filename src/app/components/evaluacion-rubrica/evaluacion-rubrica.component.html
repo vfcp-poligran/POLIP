@@ -24,11 +24,17 @@
       </div>
       @for (nivel of criterio.nivelesDetalle; track nivel.titulo; let j = $index) {
       <div class="rubrica-cell nivel-card"
+        role="button"
+        tabindex="0"
+        [attr.aria-label]="'Seleccionar nivel ' + nivel.titulo + ' (' + nivel.puntos + ' puntos)'"
+        [attr.aria-pressed]="estaEnRangoNivel(criterio.titulo, nivel.puntos)"
         [class.selected]="estaEnRangoNivel(criterio.titulo, nivel.puntos)"
         [class.nivel-insuficiente]="j === 0"
         [class.nivel-aceptable]="j === 1"
         [class.nivel-excelente]="j >= 2"
-        (click)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))">
+        (click)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))"
+        (keydown.enter)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))"
+        (keydown.space)="onCalificacionChange(criterio.titulo, obtenerPuntosNivel(nivel.puntos))">
         <div class="nivel-header">
           <ion-badge mode="ios">{{ nivel.puntos }} pts</ion-badge>
           @if (estaEnRangoNivel(criterio.titulo, nivel.puntos)) {

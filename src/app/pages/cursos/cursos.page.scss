@@ -707,11 +707,10 @@ ion-content {
             gap: 4px;
           }
 
-          .codigo-badge-mobile {
+          ion-badge.codigo-badge-mobile {
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.72rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
             letter-spacing: 0.2px;
 
             // Landscape móvil
@@ -720,32 +719,22 @@ ion-content {
             }
           }
 
-          .bloque-badge-mobile {
-            display: inline-block;
-            padding: 2px 5px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            border-radius: 3px;
+          ion-badge.bloque-badge-mobile {
             font-size: 0.6rem;
             font-weight: 500;
 
             // Landscape móvil
             @media (max-height: 500px) and (orientation: landscape) {
-              padding: 1px 4px;
               font-size: 0.52rem;
             }
           }
 
-          .estado-indicador-mobile {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 8px;
+          ion-badge.estado-indicador-mobile {
             font-size: 0.62rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
             margin-left: auto;
-            transition: all 0.2s ease;
 
             // Landscape móvil
             @media (max-height: 500px) and (orientation: landscape) {
@@ -923,12 +912,13 @@ ion-content {
     &.col-codigo {
       text-align: center;
 
-      .codigo-badge {
+      ion-badge.codigo-badge {
         font-family: 'Courier New', Courier, monospace;
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6c757d;
         letter-spacing: 0.3px;
+        --padding-start: 8px;
+        --padding-end: 8px;
       }
     }
 
@@ -954,27 +944,16 @@ ion-content {
     &.col-estado {
       text-align: center;
 
-      .estado-badge {
+      ion-badge.estado-badge {
         display: inline-flex;
         align-items: center;
         gap: 5px;
         padding: 6px 12px;
-        border-radius: 12px;
         font-size: 0.78rem;
         font-weight: 600;
 
         ion-icon {
           font-size: 0.95rem;
-        }
-
-        &.estado-activo {
-          background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-          color: #155724;
-        }
-
-        &.estado-pendiente {
-          background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
-          color: #856404;
         }
       }
     }

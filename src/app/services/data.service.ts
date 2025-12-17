@@ -5,6 +5,11 @@ import { UnifiedStorageService } from './unified-storage.service';
 import { BackupService } from './backup.service';
 import { RubricService } from './rubric.service';
 import { CourseService } from './course.service';
+import { EvaluationService } from './evaluation.service';
+import { CommentService } from './comment.service';
+import { StateService } from './state.service';
+import { CanvasService } from './canvas.service';
+import { CsvUtils } from '../utils/csv.utils';
 import { Logger } from '@app/core/utils/logger';
 import {
   Estudiante,
@@ -30,11 +35,15 @@ import {
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class DataService implements OnDestroy {
   private storage = inject(UnifiedStorageService);
   private backupService = inject(BackupService);
   private rubricService = inject(RubricService);
   private courseService = inject(CourseService);
+  private evaluationService = inject(EvaluationService);
+  private commentService = inject(CommentService);
+  private stateService = inject(StateService);
+  private canvasService = inject(CanvasService);
 
   private readonly STORAGE_KEYS = {
     CURSOS: 'gestorCursosData',
@@ -43,29 +52,6 @@ export class DataService {
     RUBRICAS: 'rubricDefinitionsData',
     COMENTARIOS_GRUPO: 'comentariosGrupoData'
   };
-
-  // Constante para estado de curso por defecto (evita crear objeto en cada llamada)
-  private readonly DEFAULT_COURSE_STATE: CourseState = {
-    activeStudent: null,
-    activeGroup: null,
-    activeDelivery: null,
-    activeType: null,
-    filtroGrupo: '',
-    emailsVisible: false,
-    isScrollingTable: false,
-    archivoCalificaciones: undefined
-  };
-
-  // BehaviorSubjects para estado reactivo
-  // private cursosSubject = new BehaviorSubject<CursoData>({});
-  private evaluacionesSubject = new BehaviorSubject<{ [key: string]: Evaluacion }>({});
-  private uiStateSubject = new BehaviorSubject<UIState>({
-    cursoActivo: null,
-    grupoSeguimientoActivo: null,
-    courseStates: {}
-  });
-  // private rubricasSubject = new BehaviorSubject<{ [key: string]: RubricaDefinicion }>({});
-  private comentariosGrupoSubject = new BehaviorSubject<ComentariosGrupoData>({});
 
   // Global search term
   private globalSearchSubject = new BehaviorSubject<string>('');
@@ -81,18 +67,15 @@ export class DataService {
     }>;
   }>({ term: '', results: [] });
 
-  // Subject para notificar cambios en calificaciones Canvas
-  private calificacionesCanvasActualizadasSubject = new BehaviorSubject<{ curso: string, timestamp: number } | null>(null);
-
   // Observables públicos
   public cursos$ = this.courseService.cursos$;
-  public evaluaciones$ = this.evaluacionesSubject.asObservable();
-  public uiState$ = this.uiStateSubject.asObservable();
+  public evaluaciones$ = this.evaluationService.evaluaciones$;
+  public uiState$ = this.stateService.uiState$;
   public rubricas$ = this.rubricService.rubricas$;
-  public comentariosGrupo$ = this.comentariosGrupoSubject.asObservable();
+  public comentariosGrupo$ = this.commentService.comentariosGrupo$;
   public globalSearch$ = this.globalSearchSubject.asObservable();
   public searchResults$ = this.searchResultsSubject.asObservable();
-  public calificacionesCanvasActualizadas$ = this.calificacionesCanvasActualizadasSubject.asObservable();
+  public calificacionesCanvasActualizadas$ = this.canvasService.calificacionesCanvasActualizadas$;
 
   // Sistema de caché centralizado y eficiente
   private cache = {
@@ -212,14 +195,22 @@ export class DataService {
     try {
       await this.storage.init();
       await this.courseService.loadCursos();
-      await this.loadEvaluaciones();
-      await this.loadUIState();
-      await this.loadRubricas();
-      await this.loadComentariosGrupo();
+      await this.evaluationService.loadEvaluaciones();
+      await this.stateService.loadUIState();
+
+      // Migración de archivos Canvas antiguos
+      const uiState = this.stateService.getUIState();
+      const migratedState = this.canvasService.migrarArchivosCanvas(uiState);
+      if (migratedState !== uiState) {
+        await this.stateService.updateUIState(migratedState);
+      }
+
+      await this.rubricService.loadRubricas();
+      await this.commentService.loadComentariosGrupo();
 
       const resultadoMigracion = await this.rubricService.migrarRubricasAntiguas();
       if (resultadoMigracion.migradas > 0) {
-        await this.loadRubricas();
+        await this.rubricService.loadRubricas();
       }
 
       this.isInitialized = true;
@@ -256,12 +247,6 @@ export class DataService {
     await this.courseService.loadCursos();
   }
 
-  async saveCursos(): Promise<void> {
-    // Delegado a CourseService, pero mantenemos el método por compatibilidad si es necesario
-    // aunque idealmente deberíamos usar courseService directamente
-    // Por ahora no hacemos nada aquí ya que CourseService maneja su propio guardado
-  }
-
   /**
    * Crea un nuevo curso con validación de código único
    * @param cursoData Datos del curso a crear
@@ -275,7 +260,7 @@ export class DataService {
     try {
       // INMUTABILIDAD: Crear copia del objeto cursos actual
       const cursosOriginales = this.courseService.getCursosValue();
-      const uiStateOriginal = this.uiStateSubject.value;
+      const uiStateOriginal = this.stateService.getUIStateValue();
       const courseStates = uiStateOriginal.courseStates || {};
 
       // === GENERACIÓN DE CÓDIGO ÚNICO ===
@@ -406,7 +391,7 @@ export class DataService {
 
       // Actualizar estado con las nuevas copias inmutables
       await this.courseService.saveCursos(cursosActuales);
-      this.uiStateSubject.next(uiState);
+      this.stateService.updateUIStateState(uiState);
 
       Logger.log('✅ [crearCurso] Curso establecido como activo:', nombreClave);
 
@@ -453,7 +438,7 @@ export class DataService {
   async actualizarNombreCurso(codigoUnico: string, nombreNuevo: string): Promise<void> {
     await this.ensureInitialized();
 
-    const uiStateOriginal = this.uiStateSubject.value;
+    const uiStateOriginal = this.stateService.getUIStateValue();
     const courseState = uiStateOriginal.courseStates?.[codigoUnico];
 
     if (!courseState) {
@@ -484,7 +469,7 @@ export class DataService {
       }
     };
 
-    this.uiStateSubject.next(uiState);
+    this.stateService.updateUIStateState(uiState);
     await this.saveUIState();
 
     Logger.log(`✅ Nombre del curso actualizado: "${nombreNuevo}" (${codigoUnico})`);
@@ -504,7 +489,7 @@ export class DataService {
 
     // 2. ELIMINAR COURSE STATE Y METADATA
     try {
-      const uiStateOriginal = this.uiStateSubject.value;
+      const uiStateOriginal = this.stateService.getUIStateValue();
       const { [codigoUnico]: courseStateEliminado, ...courseStatesRestantes } = uiStateOriginal.courseStates || {};
 
       const uiState: UIState = {
@@ -513,7 +498,7 @@ export class DataService {
         courseStates: courseStatesRestantes
       };
 
-      this.uiStateSubject.next(uiState);
+      this.stateService.updateUIStateState(uiState);
       await this.saveUIState();
       Logger.log(`✅ Course state eliminado`);
     } catch (error) {
@@ -522,21 +507,7 @@ export class DataService {
 
     // 3. ELIMINAR EVALUACIONES DEL CURSO
     try {
-      const evaluacionesOriginales = this.evaluacionesSubject.value;
-      const evaluacionesRestantes: { [key: string]: Evaluacion } = {};
-
-      // Filtrar evaluaciones que NO pertenecen al curso eliminado
-      Object.keys(evaluacionesOriginales).forEach(key => {
-        const evaluacion = evaluacionesOriginales[key];
-        if (evaluacion.cursoNombre !== codigoUnico) {
-          evaluacionesRestantes[key] = evaluacion;
-        }
-      });
-
-      const evaluacionesEliminadas = Object.keys(evaluacionesOriginales).length - Object.keys(evaluacionesRestantes).length;
-
-      this.evaluacionesSubject.next(evaluacionesRestantes);
-      await this.saveEvaluaciones();
+      const evaluacionesEliminadas = await this.evaluationService.borrarEvaluacionesPorCurso(codigoUnico);
       Logger.log(`✅ Evaluaciones eliminadas (${evaluacionesEliminadas})`);
     } catch (error) {
       Logger.error('❌ [DataService] Error eliminando evaluaciones:', error);
@@ -566,7 +537,7 @@ export class DataService {
     }
 
     // 2. Buscar en courseStates por diferentes campos de metadata
-    const currentState = this.uiStateSubject.value;
+    const currentState = this.stateService.getUIStateValue();
     const courseStates = currentState.courseStates || {};
 
     for (const [codigoUnico, state] of Object.entries(courseStates)) {
@@ -592,26 +563,16 @@ export class DataService {
   // === GESTIÓN DE EVALUACIONES ===
 
   async loadEvaluaciones(): Promise<void> {
-    const evaluaciones = await this.storage.get<{ [key: string]: Evaluacion }>(this.STORAGE_KEYS.EVALUACIONES) || {} as { [key: string]: Evaluacion };
-    this.evaluacionesSubject.next(evaluaciones);
+    await this.evaluationService.loadEvaluaciones();
   }
 
   async saveEvaluaciones(): Promise<void> {
-    await this.storage.set(this.STORAGE_KEYS.EVALUACIONES, this.evaluacionesSubject.value);
+    // Delegado a EvaluationService
   }
 
   async guardarEvaluacion(evaluacion: Evaluacion): Promise<void> {
-    // INMUTABILIDAD: Crear copia del objeto evaluaciones actual
-    const evaluacionesOriginales = this.evaluacionesSubject.value;
     const key = this.generateEvaluationKey(evaluacion);
-
-    const evaluaciones = {
-      ...evaluacionesOriginales,
-      [key]: evaluacion
-    };
-
-    this.evaluacionesSubject.next(evaluaciones);
-    await this.saveEvaluaciones();
+    await this.evaluationService.guardarEvaluacion(evaluacion, key);
 
     // 🔧 FIX: Actualizar archivo de calificaciones con código normalizado
     const codigoCurso = this.getCourseCodeFromNameOrCode(evaluacion.cursoNombre);
@@ -621,8 +582,6 @@ export class DataService {
   async borrarEvaluacion(cursoNombre: string, entrega: string, tipo: string, identificador: string): Promise<void> {
     // 🔧 FIX: Normalizar a código del curso
     const codigoCurso = this.getCourseCodeFromNameOrCode(cursoNombre);
-
-    const evaluacionesOriginales = this.evaluacionesSubject.value;
     const key = `${codigoCurso}_${entrega}_${tipo}_${identificador}`;
 
     Logger.log(`🗑️ [borrarEvaluacion] Eliminando evaluación:`, {
@@ -631,12 +590,7 @@ export class DataService {
       key
     });
 
-    // Crear nueva copia sin la evaluación a borrar
-    const evaluaciones = { ...evaluacionesOriginales };
-    delete evaluaciones[key];
-
-    this.evaluacionesSubject.next(evaluaciones);
-    await this.saveEvaluaciones();
+    await this.evaluationService.borrarEvaluacion(key);
 
     // Actualizar archivo de calificaciones si existe
     await this.actualizarArchivoCalificaciones(cursoNombre, entrega as 'E1' | 'E2' | 'EF');
@@ -647,11 +601,11 @@ export class DataService {
     const codigoCurso = this.getCourseCodeFromNameOrCode(cursoNombre);
     const key = `${codigoCurso}_${entrega}_${tipo}_${identificador}`;
     Logger.log(`🔍 [getEvaluacion] Buscando con key: ${key}`);
-    return this.evaluacionesSubject.value[key];
+    return this.evaluationService.getEvaluacion(key);
   }
 
   getAllEvaluaciones(): { [key: string]: Evaluacion } {
-    return this.evaluacionesSubject.value;
+    return this.evaluationService.getEvaluacionesValue();
   }
 
   private generateEvaluationKey(evaluacion: Evaluacion): string {
@@ -682,134 +636,28 @@ export class DataService {
   // === GESTIÓN DE UI STATE ===
 
   async loadUIState(): Promise<void> {
-
-    const uiState = await this.storage.get<UIState>(this.STORAGE_KEYS.UI_STATE) || { cursoActivo: null, grupoSeguimientoActivo: null, courseStates: {} } as UIState;
-
-    // Migrar/limpiar archivos Canvas antiguos
-    const uiStateMigrado = this.migrarArchivosCanvas(uiState);
-
-    this.uiStateSubject.next(uiStateMigrado);
-  }
-
-  /**
-   * Migra estructuras antiguas de archivos Canvas a la nueva estructura
-   * Elimina propiedades obsoletas y consolida en archivoCalificaciones
-   */
-  private migrarArchivosCanvas(uiState: UIState): UIState {
-    if (!uiState.courseStates) {
-      return uiState;
-    }
-
-    let cambiosRealizados = false;
-    const courseStatesMigrados: { [cursoNombre: string]: CourseState } = {};
-
-    Object.keys(uiState.courseStates).forEach(cursoNombre => {
-      const courseState = uiState.courseStates[cursoNombre];
-      let courseStateMigrado = { ...courseState };
-
-      // Detectar y migrar archivoCanvas antiguo a archivoCalificaciones
-      if ((courseState as any).archivoCanvas && !courseState.archivoCalificaciones) {
-        const archivoCanvas = (courseState as any).archivoCanvas;
-
-        Logger.log(`🔄 [Migración] Detectado archivoCanvas antiguo en curso: ${cursoNombre}`);
-
-        const contenidoCSV = archivoCanvas.contenidoCSV || '';
-        courseStateMigrado.archivoCalificaciones = {
-          nombre: archivoCanvas.nombreArchivo || 'calificaciones_canvas.csv',
-          fechaCarga: archivoCanvas.fechaVinculacion || new Date().toISOString(),
-          contenidoOriginal: contenidoCSV,
-          calificaciones: this.parsearCalificacionesCanvas(contenidoCSV)
-        };
-
-        cambiosRealizados = true;
-      }
-
-      // Eliminar propiedad archivoCanvas obsoleta
-      if ((courseStateMigrado as any).archivoCanvas) {
-        Logger.log(`🧹 [Limpieza] Eliminando archivoCanvas obsoleto en curso: ${cursoNombre}`);
-        delete (courseStateMigrado as any).archivoCanvas;
-        cambiosRealizados = true;
-      }
-
-      // Validar y limpiar archivoCalificaciones corrupto
-      if (courseStateMigrado.archivoCalificaciones) {
-        const archivo = courseStateMigrado.archivoCalificaciones;
-
-        // Validar estructura
-        if (!archivo.nombre || !archivo.contenidoOriginal || typeof archivo.contenidoOriginal !== 'string') {
-          Logger.warn(`⚠️ [Limpieza] Archivo de calificaciones corrupto en curso: ${cursoNombre}, eliminando...`);
-          delete courseStateMigrado.archivoCalificaciones;
-          cambiosRealizados = true;
-        }
-        // Validar que el contenido sea CSV válido
-        else if (archivo.contenidoOriginal.trim().length > 0) {
-          const lineas = archivo.contenidoOriginal.split('\n');
-          if (lineas.length < 2) {
-            Logger.warn(`⚠️ [Limpieza] Archivo CSV inválido (menos de 2 líneas) en curso: ${cursoNombre}, eliminando...`);
-            delete courseStateMigrado.archivoCalificaciones;
-            cambiosRealizados = true;
-          }
-        }
-      }
-
-      courseStatesMigrados[cursoNombre] = courseStateMigrado;
-    });
-
-    if (cambiosRealizados) {
-      Logger.log('✅ [Migración] Archivos Canvas migrados y limpiados exitosamente');
-      // Guardar cambios inmediatamente
-      setTimeout(() => {
-        this.saveUIState().catch(err =>
-          Logger.error('Error guardando UIState migrado:', err)
-        );
-      }, 100);
-    }
-
-    return {
-      ...uiState,
-      courseStates: courseStatesMigrados
-    };
+    await this.stateService.loadUIState();
   }
 
   async saveUIState(): Promise<void> {
-
-    await this.storage.set(this.STORAGE_KEYS.UI_STATE, this.uiStateSubject.value);
-
+    await this.stateService.saveUIState();
   }
 
   async updateUIState(updates: Partial<UIState>): Promise<void> {
-    const currentState = this.uiStateSubject.value;
+    const currentState = this.stateService.getUIState();
     const newState = { ...currentState, ...updates };
-
-    this.uiStateSubject.next(newState);
-    await this.saveUIState();
+    await this.stateService.updateUIState(newState);
   }
 
-  /**
-   * Actualiza el CourseState específico de un curso
-   * Optimizado: Usa constante DEFAULT_COURSE_STATE, elimina spread operators anidados y logging excesivo
-   */
   async updateCourseState(courseCode: string, updates: Partial<CourseState>): Promise<void> {
-    const currentState = this.uiStateSubject.value;
-    const courseStates = currentState.courseStates || {};
-    const currentCourseState = courseStates[courseCode] || this.DEFAULT_COURSE_STATE;
-
-    // Single spread operation - archivoCalificaciones se preserva automáticamente
-    const updatedCourseState = { ...currentCourseState, ...updates };
-
-    this.uiStateSubject.next({
-      ...currentState,
-      courseStates: { ...courseStates, [courseCode]: updatedCourseState }
-    });
-
-    await this.saveUIState();
+    await this.stateService.updateCourseState(courseCode, updates);
   }
 
   /**
    * Obtiene el CourseState específico de un curso
    */
   getCourseState(courseCode: string): CourseState | null {
-    const currentState = this.uiStateSubject.value;
+    const currentState = this.stateService.getUIStateValue();
     return currentState.courseStates?.[courseCode] || null;
   }
 
@@ -821,131 +669,10 @@ export class DataService {
    * - Campo 6 (EF): Entrega final
    * Nota: Campo 0 (Student) NO se almacena, se obtiene del archivo de estudiantes
    */
-  private parsearCalificacionesCanvas(contenido: string): Array<{
-    id: string;
-    e1: string;
-    e2: string;
-    ef: string;
-  }> {
-    const lineas = contenido.split('\n').filter(l => l.trim());
-    if (lineas.length < 3) {
-      return [];
-    }
 
-    // Saltar header (línea 0) y "Points Possible" (línea 1)
-    const calificaciones = [];
-    for (let i = 2; i < lineas.length; i++) {
-      const campos = this.parseCSVRow(lineas[i]);
-
-      if (campos.length >= 7) {
-        calificaciones.push({
-          id: campos[1] || '',   // Campo 1: ID de Canvas (canvasUserId)
-          e1: campos[4] || '',   // Campo 4: Entrega proyecto 1 - Escenario 3
-          e2: campos[5] || '',   // Campo 5: Entrega proyecto 2 - Escenario 5
-          ef: campos[6] || ''    // Campo 6: Entrega final y sustentacion - Escenario 7 y 8
-        });
-      }
-    }
-
-    return calificaciones;
-  } async guardarArchivoCalificaciones(codigoCurso: string, nombreArchivo: string, contenido: string): Promise<void> {
-    Logger.log('💾 [DataService.guardarArchivoCalificaciones] Iniciando guardado:', {
-      codigoCurso,
-      nombreArchivo,
-      longitudContenido: contenido.length,
-      primerasLineas: contenido.split('\n').slice(0, 2),
-      cursoExiste: !!this.getCurso(codigoCurso)
-    });
-
-    // Validación: verificar que el curso existe
-    if (!this.getCurso(codigoCurso)) {
-      Logger.error('❌ [guardarArchivoCalificaciones] El curso no existe:', codigoCurso);
-      throw new Error(`No se puede guardar archivo Canvas: el curso "${codigoCurso}" no existe`);
-    }
-
-    const currentState = this.uiStateSubject.value;
-
-    // Buscar el curso en courseStates
-    const courseState = currentState.courseStates?.[codigoCurso];
-
-    if (!courseState) {
-      Logger.warn(`No se encontró courseState para ${codigoCurso}, creando uno nuevo`);
-    } else {
-      Logger.log('📊 [DataService] CourseState existente encontrado para:', codigoCurso);
-
-      // Si ya existe un archivo, mostrar info
-      if (courseState.archivoCalificaciones) {
-        Logger.log('⚠️ [DataService] Se sobrescribirá archivo existente:', {
-          nombreAnterior: courseState.archivoCalificaciones.nombre,
-          nombreNuevo: nombreArchivo
-        });
-      }
-    }
-
-    // Parsear CSV y extraer campos procesados (ID, E1, E2, EF)
-    const calificaciones = this.parsearCalificacionesCanvas(contenido);
-
-    const archivoCalificaciones = {
-      nombre: nombreArchivo,
-      fechaCarga: new Date().toISOString(),
-      contenidoOriginal: contenido,  // CSV completo sin modificar para exportar a Canvas
-      calificaciones: calificaciones  // Campos procesados para búsquedas rápidas
-    };
-
-    Logger.log('📋 [DataService] Archivo Canvas guardado:', {
-      totalRegistros: calificaciones.length,
-      longitudCSV: contenido.length,
-      primerRegistro: calificaciones[0]
-    });
-
-    const updatedCourseState: CourseState = {
-      ...(courseState || this.DEFAULT_COURSE_STATE),
-      archivoCalificaciones: archivoCalificaciones
-    };
-
-    const newState: UIState = {
-      ...currentState,
-      courseStates: {
-        ...currentState.courseStates,
-        [codigoCurso]: updatedCourseState
-      }
-    };
-
-    Logger.log('📦 [DataService] Actualizando UIState con nuevo archivo...');
-    Logger.log('🔑 [DataService] Clave del curso:', codigoCurso);
-    this.uiStateSubject.next(newState);
-
-    try {
-      await this.saveUIState();
-      Logger.log('✅ [DataService] UIState guardado exitosamente');
-
-      // IMPORTANTE: Notificar que las calificaciones Canvas fueron actualizadas
-      // Esto invalidará el cache en cursos.page.ts
-      this.calificacionesCanvasActualizadasSubject.next({
-        curso: codigoCurso,
-        timestamp: Date.now()
-      });
-      Logger.log('📢 [DataService] Notificación emitida: calificaciones Canvas actualizadas para', codigoCurso);
-
-      // Verificación inmediata
-      const verificacion = this.obtenerArchivoCalificaciones(codigoCurso);
-      if (verificacion && verificacion.calificaciones.length > 0) {
-        Logger.log('✅ [DataService] Verificación exitosa: archivo guardado correctamente en clave:', codigoCurso);
-        Logger.log('📊 [DataService] Registros procesados:', verificacion.calificaciones.length);
-        Logger.log('📊 [DataService] CSV original:', verificacion.contenidoOriginal.length, 'caracteres');
-      } else {
-        Logger.error('❌ [DataService] Error en verificación: sin calificaciones procesadas');
-        Logger.log('🔍 Verificación detallada:', {
-          existeArchivo: !!verificacion,
-          calificacionesEncontradas: verificacion?.calificaciones.length || 0,
-          tieneCSVOriginal: !!verificacion?.contenidoOriginal,
-          fechaCargaReal: verificacion?.fechaCarga
-        });
-      }
-    } catch (error) {
-      Logger.error('❌ [DataService] Error guardando UIState:', error);
-      throw error;
-    }
+  async guardarArchivoCalificaciones(codigoCurso: string, nombreArchivo: string, contenido: string): Promise<void> {
+    await this.ensureInitialized();
+    await this.canvasService.guardarArchivoCalificaciones(codigoCurso, nombreArchivo, contenido);
   }
 
   obtenerArchivoCalificaciones(codigoCurso: string): {
@@ -959,206 +686,20 @@ export class DataService {
       ef: string;
     }>;
   } | null {
-    const now = Date.now();
-
-    // Verificar caché con TTL
-    const cached = this.cache.archivosCalificaciones.get(codigoCurso);
-    if (cached && (now - cached.timestamp) < this.cache.TTL.archivosCalificaciones) {
-      return cached.data;
-    }
-
-    // Cache miss o expirado - obtener datos frescos
-    const currentState = this.uiStateSubject.value;
-    const courseState = currentState.courseStates?.[codigoCurso];
-    const resultado = courseState?.archivoCalificaciones || null;
-
-    // Guardar en caché con timestamp
-    this.cache.archivosCalificaciones.set(codigoCurso, {
-      data: resultado,
-      timestamp: now
-    });
-
-    return resultado;
+    return this.canvasService.obtenerArchivoCalificaciones(codigoCurso);
   }
 
   async eliminarArchivoCalificaciones(codigoCurso: string): Promise<void> {
-    const currentState = this.uiStateSubject.value;
-    const courseState = currentState.courseStates?.[codigoCurso];
-
-    if (!courseState || !courseState.archivoCalificaciones) {
-      Logger.warn(`No hay archivo de calificaciones para eliminar en ${codigoCurso}`);
-      return;
-    }
-
-    const updatedCourseState: CourseState = {
-      ...courseState,
-      archivoCalificaciones: undefined
-    };
-
-    const newState: UIState = {
-      ...currentState,
-      courseStates: {
-        ...currentState.courseStates,
-        [codigoCurso]: updatedCourseState
-      }
-    };
-
-    this.uiStateSubject.next(newState);
-    await this.saveUIState();
-
+    await this.canvasService.eliminarArchivoCalificaciones(codigoCurso);
   }
 
   async actualizarArchivoCalificaciones(codigoCurso: string, entrega?: 'E1' | 'E2' | 'EF'): Promise<void> {
-    const archivo = this.obtenerArchivoCalificaciones(codigoCurso);
-    if (!archivo) {
-      Logger.warn('⚠️ [actualizarArchivoCalificaciones] No hay archivo Canvas asociado al curso:', codigoCurso);
-      return; // No hay archivo asociado
-    }
-
     const estudiantes = this.getCurso(codigoCurso);
-    if (!estudiantes || estudiantes.length === 0) {
+    if (!estudiantes) {
       Logger.warn('⚠️ [actualizarArchivoCalificaciones] No hay estudiantes en el curso:', codigoCurso);
       return;
     }
-
-    try {
-      Logger.log('📊 [actualizarArchivoCalificaciones] Iniciando actualización:', {
-        curso: codigoCurso,
-        archivo: archivo.nombre,
-        estudiantesTotal: estudiantes.length
-      });
-
-      // Parsear CSV Canvas correctamente (maneja commas dentro de comillas)
-      const lineas = archivo.contenidoOriginal.split('\n');
-      const headers = this.parseCSVRow(lineas[0]);
-
-      Logger.log('📋 [Canvas Headers]:', headers);
-
-      // Encontrar columnas Canvas específicas
-      const indiceEmail = headers.findIndex(h => h.toLowerCase() === 'sis login id');
-      const indiceE1 = headers.findIndex(h =>
-        h.toLowerCase().includes('entrega proyecto 1') ||
-        h.toLowerCase().includes('entrega 1') ||
-        h.toLowerCase().includes('escenario 3')
-      );
-      const indiceE2 = headers.findIndex(h =>
-        h.toLowerCase().includes('entrega proyecto 2') ||
-        h.toLowerCase().includes('entrega 2') ||
-        h.toLowerCase().includes('escenario 5')
-      );
-      const indiceEF = headers.findIndex(h =>
-        h.toLowerCase().includes('entrega final') ||
-        h.toLowerCase().includes('escenario 7') ||
-        h.toLowerCase().includes('sustentacion')
-      );
-
-      Logger.log('🔍 [Canvas Columnas]:', {
-        email: indiceEmail,
-        E1: indiceE1,
-        E2: indiceE2,
-        EF: indiceEF
-      });
-
-      // Validar estructura Canvas
-      if (indiceEmail === -1) {
-        Logger.error('❌ No se encontró la columna "SIS Login ID" en el archivo Canvas');
-        throw new Error('Archivo no parece ser un CSV de Canvas válido. Falta columna "SIS Login ID"');
-      }
-
-      if (indiceE1 === -1 && indiceE2 === -1 && indiceEF === -1) {
-        Logger.error('❌ No se encontraron columnas de entregas en el archivo Canvas');
-        throw new Error('No se encontraron columnas de entregas (proyecto 1, proyecto 2, final) en el archivo Canvas');
-      }
-
-      let estudiantesActualizados = 0;
-      let estudiantesNoEncontrados = 0;
-      let estudiantesSinCorreo = 0;
-
-      // Actualizar filas de estudiantes
-      const filasActualizadas = lineas.map((linea: string, index: number) => {
-        if (index <= 1) return linea; // Mantener headers y puntos posibles
-
-        const campos = this.parseCSVRow(linea);
-        if (campos.length <= indiceEmail) return linea; // Fila inválida
-
-        // Obtener email desde la columna Canvas específica
-        const emailCanvas = campos[indiceEmail]?.trim().toLowerCase() || '';
-
-        // Buscar estudiante por correo (case-insensitive, sin espacios)
-        const estudiante = estudiantes.find(est => {
-          if (!est.correo) return false;
-          const correoLista = est.correo.trim().toLowerCase();
-          return correoLista === emailCanvas;
-        });
-
-        // 🔧 FIX: Validar que el estudiante tenga correo
-        if (estudiante && (!estudiante.correo || estudiante.correo.trim() === '')) {
-          Logger.warn(`⚠️ [Canvas] Estudiante sin correo:`, estudiante);
-          estudiantesSinCorreo++;
-          return linea; // No actualizar esta fila
-        }
-
-        if (!estudiante) {
-          Logger.warn(`👤 Estudiante NO encontrado en lista:`, {
-            emailCanvas,
-            correosDisponibles: estudiantes.slice(0, 3).map(e => e.correo)
-          });
-          estudiantesNoEncontrados++;
-          return linea;
-        }
-
-        // Actualizar calificaciones según la entrega especificada o todas
-        const entregas: ('E1' | 'E2' | 'EF')[] = entrega ? [entrega] : ['E1', 'E2', 'EF'];
-        let actualizado = false;
-
-        entregas.forEach(ent => {
-          const sumatoria = this.calcularSumatoriaEstudiante(codigoCurso, estudiante, ent);
-
-          if (ent === 'E1' && indiceE1 !== -1 && indiceE1 < campos.length) {
-            const valorAnterior = campos[indiceE1];
-            campos[indiceE1] = sumatoria > 0 ? sumatoria.toString() : '';
-            Logger.log(`📝 E1 ${estudiante.correo}: ${valorAnterior} → ${campos[indiceE1]}`);
-            actualizado = true;
-          } else if (ent === 'E2' && indiceE2 !== -1 && indiceE2 < campos.length) {
-            const valorAnterior = campos[indiceE2];
-            campos[indiceE2] = sumatoria > 0 ? sumatoria.toString() : '';
-            Logger.log(`📝 E2 ${estudiante.correo}: ${valorAnterior} → ${campos[indiceE2]}`);
-            actualizado = true;
-          } else if (ent === 'EF' && indiceEF !== -1 && indiceEF < campos.length) {
-            const valorAnterior = campos[indiceEF];
-            campos[indiceEF] = sumatoria > 0 ? sumatoria.toString() : '';
-            Logger.log(`📝 EF ${estudiante.correo}: ${valorAnterior} → ${campos[indiceEF]}`);
-            actualizado = true;
-          }
-        });
-
-        if (actualizado) {
-          estudiantesActualizados++;
-        }
-
-        return this.buildCSVRow(campos);
-      });
-
-      // Guardar archivo actualizado
-      const contenidoActualizado = filasActualizadas.join('\n');
-      await this.guardarArchivoCalificaciones(codigoCurso, archivo.nombre, contenidoActualizado);
-
-      Logger.log(`✅ [Canvas] Actualización completada:`, {
-        curso: codigoCurso,
-        estudiantesActualizados,
-        estudiantesNoEncontrados,
-        estudiantesSinCorreo,
-        totalFilas: filasActualizadas.length
-      });
-
-      if (estudiantesSinCorreo > 0) {
-        Logger.warn(`⚠️ [Canvas] ${estudiantesSinCorreo} estudiante(s) no tienen correo electrónico y no se actualizaron`);
-      }
-
-    } catch (error) {
-      Logger.error('❌ [Canvas] Error actualizando archivo:', error);
-      throw error;
-    }
+    await this.canvasService.actualizarArchivoCalificaciones(codigoCurso, estudiantes);
   }
 
   /**
@@ -1336,7 +877,7 @@ export class DataService {
   }
 
   private calcularSumatoriaEstudiante(cursoNombreOCodigo: string, estudiante: Estudiante, entrega: 'E1' | 'E2' | 'EF'): number {
-    const evaluaciones = this.evaluacionesSubject.value;
+    const evaluaciones = this.evaluationService.getEvaluacionesValue();
 
     // 🔧 FIX: Normalizar clave para garantizar búsqueda correcta
     const codigoCurso = this.getCourseCodeFromNameOrCode(cursoNombreOCodigo);
@@ -1367,7 +908,7 @@ export class DataService {
   }
 
   getUIState(): UIState {
-    return this.uiStateSubject.value;
+    return this.stateService.getUIStateValue();
   }
 
   /**
@@ -1375,7 +916,7 @@ export class DataService {
    * @returns true si están habilitados (por defecto), false si están deshabilitados
    */
   isMensajesEmergentesEnabled(): boolean {
-    return this.uiStateSubject.value.mostrarMensajesEmergentes !== false;
+    return this.stateService.getUIStateValue().mostrarMensajesEmergentes !== false;
   }
 
   async sincronizarArchivoCalificaciones(codigoCurso: string): Promise<void> {
@@ -1390,7 +931,7 @@ export class DataService {
   async resincronizarTodosLosArchivosCanvas(): Promise<void> {
     Logger.log('🔄 [DataService] Iniciando re-sincronización de todos los archivos Canvas...');
 
-    const uiState = this.uiStateSubject.value;
+    const uiState = this.stateService.getUIStateValue();
     const courseStates = uiState.courseStates || {};
     const cursosConArchivos: string[] = [];
 
@@ -1428,7 +969,7 @@ export class DataService {
   async limpiarArchivosCanvasCorruptos(): Promise<number> {
     Logger.log('🧹 [DataService] Iniciando limpieza de archivos Canvas corruptos...');
 
-    const uiState = this.uiStateSubject.value;
+    const uiState = this.stateService.getUIStateValue();
     const courseStates = uiState.courseStates || {};
     const courseStatesMigrados: { [cursoNombre: string]: CourseState } = {};
     let archivosEliminados = 0;
@@ -1474,7 +1015,7 @@ export class DataService {
         courseStates: courseStatesMigrados
       };
 
-      this.uiStateSubject.next(newState);
+      this.stateService.updateUIStateState(newState);
       await this.saveUIState();
       Logger.log(`✅ Limpieza completada: ${archivosEliminados} archivos eliminados`);
     } else {
@@ -1500,7 +1041,7 @@ export class DataService {
       tamanoContenido: number;
     }>;
   } {
-    const currentState = this.uiStateSubject.value;
+    const currentState = this.stateService.getUIStateValue();
     const courseStates = currentState.courseStates || {};
 
     const detalles: Array<{
@@ -1584,9 +1125,9 @@ export class DataService {
     }> = [];
 
     try {
-      const currentState = this.uiStateSubject.value;
+      const currentState = this.stateService.getUIStateValue();
       const courseStates = currentState.courseStates ? { ...currentState.courseStates } : {};
-      const cursosData = { ...this.cursosSubject.value };
+      const cursosData = { ...this.courseService.getCursosValue() };
 
       let cambiosRealizados = false;
 
@@ -1686,12 +1227,11 @@ export class DataService {
           cursoActivo: nuevoCursoActivo
         };
 
-        this.uiStateSubject.next(nuevoUIState);
+        this.stateService.updateUIStateState(nuevoUIState);
         await this.storage.set(this.STORAGE_KEYS.UI_STATE, nuevoUIState);
 
         // Actualizar cursosData
-        this.cursosSubject.next(nuevoCursosData);
-        await this.storage.set(this.STORAGE_KEYS.CURSOS, nuevoCursosData);
+        await this.courseService.saveCursos(nuevoCursosData);
 
         Logger.log('✅ Normalización completada exitosamente');
       } else {
@@ -1732,9 +1272,9 @@ export class DataService {
 
   async exportarDatos(): Promise<void> {
     const backup = this.backupService.createBackup({
-      cursos: this.cursosSubject.value,
-      evaluaciones: this.evaluacionesSubject.value,
-      ui: this.uiStateSubject.value,
+      cursos: this.courseService.getCursosValue(),
+      evaluaciones: this.evaluationService.getEvaluacionesValue(),
+      ui: this.stateService.getUIStateValue(),
       rubricas: this.rubricService.rubricasValue
     });
 
@@ -1749,14 +1289,12 @@ export class DataService {
     }
 
     // Importar datos
-    this.cursosSubject.next(backup.cursos);
-    this.evaluacionesSubject.next(backup.evaluaciones);
-    this.uiStateSubject.next(backup.ui);
+    await this.courseService.saveCursos(backup.cursos);
+    await this.evaluationService.saveEvaluaciones(backup.evaluaciones);
+    this.stateService.updateUIStateState(backup.ui);
     this.rubricService.updateRubricasState(backup.rubricas);
 
     // Guardar en storage
-    await this.saveCursos();
-    await this.saveEvaluaciones();
     await this.saveUIState();
     await this.storage.set(this.STORAGE_KEYS.RUBRICAS, backup.rubricas);
   }
@@ -1856,9 +1394,9 @@ export class DataService {
 
       // 7. Resetear subjects con datos limpios
 
-      this.cursosSubject.next({});
-      this.evaluacionesSubject.next({});
-      this.uiStateSubject.next({
+      await this.courseService.saveCursos({});
+      await this.evaluationService.saveEvaluaciones({});
+      this.stateService.updateUIStateState({
         cursoActivo: null,
         grupoSeguimientoActivo: null,
         courseStates: {}
@@ -1890,9 +1428,9 @@ export class DataService {
 
       // INMUTABILIDAD: Obtener datos actuales (sin mutar)
       const cursosOriginales = this.getCursos();
-      const evaluacionesOriginales = this.evaluacionesSubject.value;
-      const uiStateActual = this.uiStateSubject.value;
-      const comentariosOriginales = this.comentariosGrupoSubject.value;
+      const evaluacionesOriginales = this.evaluationService.getEvaluacionesValue();
+      const uiStateActual = this.stateService.getUIStateValue();
+      const comentariosOriginales = this.commentService.getComentariosValue();
       const rubricasOriginales = this.rubricService.rubricasValue;
 
       // Verificar que el curso existe
@@ -1937,17 +1475,15 @@ export class DataService {
       };
 
       // Guardar los datos actualizados
-      await this.storage.set(this.STORAGE_KEYS.CURSOS, cursosActuales);
-      await this.storage.set(this.STORAGE_KEYS.EVALUACIONES, evaluacionesActuales);
+      await this.courseService.saveCursos(cursosActuales);
+      await this.evaluationService.saveEvaluaciones(evaluacionesActuales);
       await this.storage.set(this.STORAGE_KEYS.UI_STATE, nuevoUIState);
-      await this.storage.set(this.STORAGE_KEYS.COMENTARIOS_GRUPO, comentariosActuales);
+      await this.commentService.saveComentariosGrupo(comentariosActuales);
       await this.storage.set(this.STORAGE_KEYS.RUBRICAS, rubricasActualizadas);
 
       // Actualizar subjects con las copias inmutables
-      this.cursosSubject.next(cursosActuales);
-      this.evaluacionesSubject.next(evaluacionesActuales);
-      this.uiStateSubject.next(nuevoUIState);
-      this.comentariosGrupoSubject.next(comentariosActuales);
+      this.stateService.updateUIStateState(nuevoUIState);
+      this.commentService.updateComentariosState(comentariosActuales);
       this.rubricService.updateRubricasState(rubricasActualizadas);
 
       const rubricasDesvinculadas = Object.values(rubricasActualizadas).filter(
@@ -1969,7 +1505,7 @@ export class DataService {
     const estudiantes = this.getCurso(cursoNombre);
     if (!estudiantes) return;
 
-    const evaluaciones = this.evaluacionesSubject.value;
+    const evaluaciones = this.evaluationService.getEvaluacionesValue();
     const notasData = estudiantes.map(est => {
       const pgKey = `${cursoNombre}_${entrega}_PG_${est.grupo}`;
       const piKey = `${cursoNombre}_${entrega}_PI_${est.correo}`;
@@ -2015,98 +1551,30 @@ export class DataService {
   // === GESTIÓN DE COMENTARIOS DE GRUPO ===
 
   async loadComentariosGrupo(): Promise<void> {
-
-    const comentarios = await this.storage.get<ComentariosGrupoData>(this.STORAGE_KEYS.COMENTARIOS_GRUPO) || {} as ComentariosGrupoData;
-
-    this.comentariosGrupoSubject.next(comentarios);
+    await this.commentService.loadComentariosGrupo();
   }
 
   async saveComentariosGrupo(): Promise<void> {
-
-    await this.storage.set(this.STORAGE_KEYS.COMENTARIOS_GRUPO, this.comentariosGrupoSubject.value);
+    await this.commentService.saveComentariosGrupo();
   }
 
   getComentariosGrupo(cursoId: string, grupo: string): ComentarioGrupo[] {
-    const comentarios = this.comentariosGrupoSubject.value;
-    if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
-      return [];
-    }
-    return comentarios[cursoId][grupo];
+    return this.commentService.getComentariosGrupo(cursoId, grupo);
   }
 
   async addComentarioGrupo(cursoId: string, grupo: string, comentarioTexto: string, autor?: string, etiquetas?: string[]): Promise<void> {
     await this.ensureInitialized();
-
-    const comentarios = { ...this.comentariosGrupoSubject.value };
-
-    // Inicializar estructura si no existe
-    if (!comentarios[cursoId]) {
-      comentarios[cursoId] = {};
-    }
-    if (!comentarios[cursoId][grupo]) {
-      comentarios[cursoId][grupo] = [];
-    }
-
-    // Crear nuevo comentario
-    const nuevoComentario: ComentarioGrupo = {
-      id: crypto.randomUUID(),
-      cursoId,
-      grupo,
-      comentario: comentarioTexto,
-      fecha: new Date(),
-      autor,
-      etiquetas
-    };
-
-    // Añadir al array
-    comentarios[cursoId][grupo] = [...comentarios[cursoId][grupo], nuevoComentario];
-
-    // Actualizar subject y guardar
-    this.comentariosGrupoSubject.next(comentarios);
-    await this.saveComentariosGrupo();
-
+    await this.commentService.addComentarioGrupo(cursoId, grupo, comentarioTexto, autor, etiquetas);
   }
 
   async deleteComentarioGrupo(cursoId: string, grupo: string, comentarioId: string): Promise<void> {
     await this.ensureInitialized();
-
-    const comentarios = { ...this.comentariosGrupoSubject.value };
-
-    if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
-      Logger.warn(`⚠️ [DataService] No existen comentarios para ${cursoId} - ${grupo}`);
-      return;
-    }
-
-    // Filtrar el comentario a eliminar
-    comentarios[cursoId][grupo] = comentarios[cursoId][grupo].filter(c => c.id !== comentarioId);
-
-    // Actualizar subject y guardar
-    this.comentariosGrupoSubject.next(comentarios);
-    await this.saveComentariosGrupo();
-
+    await this.commentService.deleteComentarioGrupo(cursoId, grupo, comentarioId);
   }
 
   async updateComentarioGrupo(cursoId: string, grupo: string, comentarioId: string, nuevoTexto: string): Promise<void> {
     await this.ensureInitialized();
-
-    const comentarios = { ...this.comentariosGrupoSubject.value };
-
-    if (!comentarios[cursoId] || !comentarios[cursoId][grupo]) {
-      Logger.warn(`⚠️ [DataService] No existen comentarios para ${cursoId} - ${grupo}`);
-      return;
-    }
-
-    // Encontrar y actualizar el comentario
-    comentarios[cursoId][grupo] = comentarios[cursoId][grupo].map(c =>
-      c.id === comentarioId
-        ? { ...c, comentario: nuevoTexto, fecha: new Date() }
-        : c
-    );
-
-    // Actualizar subject y guardar
-    this.comentariosGrupoSubject.next(comentarios);
-    await this.saveComentariosGrupo();
-
+    await this.commentService.updateComentarioGrupo(cursoId, grupo, comentarioId, nuevoTexto);
   }
 
   // ============================================================================
@@ -2171,7 +1639,7 @@ export class DataService {
 
       // Guardar el estado actualizado
       await this.storage.set(this.STORAGE_KEYS.UI_STATE, uiState);
-      this.uiStateSubject.next(uiState);
+      this.stateService.updateUIStateState(uiState);
 
     } catch (error) {
       Logger.error('❌ [DataService] Error guardando rúbricas asociadas:', error);
@@ -2337,18 +1805,16 @@ export class DataService {
     try {
 
       // LOG: Estado ANTES de limpiar
-      const cursosAntes = this.cursosSubject.value;
+      const cursosAntes = this.courseService.getCursosValue();
       const rubricasAntes = this.rubricService.rubricasValue;
 
       // 1. Limpiar TODOS los cursos y estudiantes
       const cursosVacios: CursoData = {};
-      await this.storage.set(this.STORAGE_KEYS.CURSOS, cursosVacios);
-      this.cursosSubject.next(cursosVacios);
+      await this.courseService.saveCursos(cursosVacios);
 
       // 2. Limpiar todas las evaluaciones
       const evaluacionesVacias: { [key: string]: any } = {};
-      await this.storage.set(this.STORAGE_KEYS.EVALUACIONES, evaluacionesVacias);
-      this.evaluacionesSubject.next(evaluacionesVacias);
+      await this.evaluationService.saveEvaluaciones(evaluacionesVacias);
 
       // 3. Limpiar estados de UI completamente
       const uiStateLimpio: UIState = {
@@ -2357,7 +1823,7 @@ export class DataService {
         courseStates: {}
       };
       await this.storage.set(this.STORAGE_KEYS.UI_STATE, uiStateLimpio);
-      this.uiStateSubject.next(uiStateLimpio);
+      this.stateService.updateUIStateState(uiStateLimpio);
 
       // 4. Eliminar TODAS las rúbricas
       const rubricasVacias: { [key: string]: RubricaDefinicion } = {};
@@ -2365,13 +1831,13 @@ export class DataService {
       this.rubricService.updateRubricasState(rubricasVacias);
 
       // LOG: Estado DESPUÉS de limpiar
-      const cursosDespues = this.cursosSubject.value;
+      const cursosDespues = this.courseService.getCursosValue();
       const rubricasDespues = this.rubricService.rubricasValue;
 
       // 5. Limpiar comentarios de grupo
       const comentariosVacios: ComentariosGrupoData = {};
-      await this.storage.set(this.STORAGE_KEYS.COMENTARIOS_GRUPO, comentariosVacios);
-      this.comentariosGrupoSubject.next(comentariosVacios);
+      await this.commentService.saveComentariosGrupo(comentariosVacios);
+      this.commentService.updateComentariosState(comentariosVacios);
 
       // 6. Limpiar datos LEGACY (sistema antiguo)
       try {
@@ -2414,10 +1880,10 @@ export class DataService {
   }> {
     await this.ensureInitialized();
 
-    const cursos = this.cursosSubject.value;
+    const cursos = this.courseService.getCursosValue();
     const rubricas = this.rubricService.rubricasValue;
-    const evaluaciones = this.evaluacionesSubject.value;
-    const uiState = this.uiStateSubject.value;
+    const evaluaciones = this.evaluationService.getEvaluacionesValue();
+    const uiState = this.stateService.getUIStateValue();
 
     let totalEstudiantes = 0;
     Object.values(cursos).forEach(curso => {
@@ -2453,7 +1919,7 @@ export class DataService {
 
 
     // 1. CURSOS
-    const cursos = this.cursosSubject.value;
+    const cursos = this.courseService.getCursosValue();
     console.group('📚 1. CURSOS (gestorCursosData)');
 
     Object.entries(cursos).forEach(([nombreCurso, estudiantes]) => {
@@ -2466,7 +1932,7 @@ export class DataService {
     console.groupEnd();
 
     // 2. UI_STATE
-    const uiState = this.uiStateSubject.value;
+    const uiState = this.stateService.getUIStateValue();
     console.group('\n🎨 2. UI STATE (appUIState)');
 
 
@@ -2495,7 +1961,7 @@ export class DataService {
     console.groupEnd();
 
     // 4. EVALUACIONES
-    const evaluaciones = this.evaluacionesSubject.value;
+    const evaluaciones = this.evaluationService.getEvaluacionesValue();
     console.group('\n📊 4. EVALUACIONES (evaluacionesData)');
 
     let totalEvals = 0;
@@ -2518,7 +1984,7 @@ export class DataService {
     });
 
     console.groupEnd();    // 5. COMENTARIOS GRUPO
-    const comentariosGrupo = this.comentariosGrupoSubject.value;
+    const comentariosGrupo = this.commentService.getComentariosValue();
     console.group('\n💬 5. COMENTARIOS GRUPO (comentariosGrupoData)');
     let totalComentarios = 0;
     Object.entries(comentariosGrupo).forEach(([curso, cursoData]) => {
@@ -3213,7 +2679,7 @@ export class DataService {
   generarNombreAutomatico(rubrica: Partial<RubricaDefinicion>): string {
     let nombreCurso = '';
     if (rubrica.cursosCodigos?.length) {
-      const uiState = this.uiStateSubject.value;
+      const uiState = this.stateService.getUIStateValue();
       const metadata = uiState.courseStates?.[rubrica.cursosCodigos[0]]?.metadata;
       nombreCurso = metadata?.nombre || rubrica.cursosCodigos[0];
     }

@@ -2,7 +2,7 @@
   <!-- FAB flotante para crear curso (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso ion-hide-md-up">
     @if (!modoEdicion) {
-    <ion-fab-button color="success" (click)="iniciarCreacionCurso()">
+    <ion-fab-button color="success" (click)="iniciarCreacionCurso()" aria-label="Crear nuevo curso">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
     }
@@ -11,7 +11,7 @@
   <!-- FAB list para acciones de guardar/cancelar (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-curso ion-hide-md-up">
     @if (modoEdicion) {
-    <ion-fab-button color="primary" [activated]="true">
+    <ion-fab-button color="primary" [activated]="true" aria-label="Acciones de curso">
       <ion-icon name="ellipsis-vertical"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
@@ -143,22 +143,22 @@
               @for (curso of cursosDisponibles; track curso.codigo; let i = $index; let isOdd = $odd) {
               <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
                 <td class="tabla-cell col-codigo">
-                  <span class="codigo-badge">{{ curso.nombreAbreviado || curso.codigoBase || '—' }}</span>
+                  <ion-badge color="light" class="codigo-badge">{{ curso.nombreAbreviado || curso.codigoBase || '—' }}</ion-badge>
                 </td>
                 <td class="tabla-cell col-nombre">{{ curso.nombre }}</td>
                 <td class="tabla-cell col-bloque">{{ curso.bloque || '—' }}</td>
                 <td class="tabla-cell col-fecha">{{ curso.fechaCreacion || '—' }}</td>
                 <td class="tabla-cell col-estado">
                   @if (curso.tieneCalificaciones) {
-                  <span class="estado-badge estado-activo">
+                  <ion-badge color="success" class="estado-badge">
                     <ion-icon name="checkmark-circle"></ion-icon>
                     Activo
-                  </span>
+                  </ion-badge>
                   } @else {
-                  <span class="estado-badge estado-pendiente">
+                  <ion-badge color="warning" class="estado-badge">
                     <ion-icon name="ellipse-outline"></ion-icon>
                     Sin datos
-                  </span>
+                  </ion-badge>
                   }
                 </td>
                 <td class="tabla-cell col-acciones">
@@ -186,14 +186,13 @@
                     <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
                   </ion-card-title>
                   <div class="codigo-estado-wrapper">
-                    <span class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</span>
+                    <ion-badge color="light" class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</ion-badge>
                     @if (curso.bloque) {
-                    <span class="bloque-badge-mobile">{{ curso.bloque }}</span>
+                    <ion-badge color="medium" class="bloque-badge-mobile">{{ curso.bloque }}</ion-badge>
                     }
-                    <span class="estado-indicador-mobile" [class.estado-activo]="curso.tieneCalificaciones"
-                      [class.estado-pendiente]="!curso.tieneCalificaciones">
+                    <ion-badge [color]="curso.tieneCalificaciones ? 'success' : 'warning'" class="estado-indicador-mobile">
                       {{ curso.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
-                    </span>
+                    </ion-badge>
                   </div>
                 </div>
               </ion-card-header>

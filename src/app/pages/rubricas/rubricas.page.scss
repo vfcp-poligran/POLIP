@@ -59,7 +59,7 @@ ion-content {
   flex-shrink: 0;
   width: 100%;
   max-width: 100%;
-  max-height: calc(100vh - 350px);
+  max-height: calc(100vh - 350px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
   min-height: 120px;
   background: #ffffff;
   border-radius: 8px;
@@ -81,7 +81,7 @@ ion-content {
   }
 
   @media (max-width: 768px) {
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 300px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
     min-height: 120px;
     margin-bottom: 8px;
     margin-top: 4px; // Top margin móvil
@@ -94,7 +94,7 @@ ion-content {
 
   // Landscape móvil - maximizar espacio vertical
   @media (max-height: 500px) and (orientation: landscape) {
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 120px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
     min-height: 100px;
     margin-bottom: 4px;
     margin-top: 2px;
@@ -1069,40 +1069,24 @@ ion-content {
       color: #666;
       background: #f8f9fa;
 
-      .codigo-badge {
+      ion-badge.codigo-badge {
         font-family: 'Courier New', Courier, monospace;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
-        color: #6c757d;
         letter-spacing: 0.3px;
+        --padding-start: 6px;
+        --padding-end: 6px;
       }
 
-      .version-badge {
-        display: inline-block;
+      ion-badge.version-badge {
         margin-left: 4px;
-        padding: 2px 5px;
-        background: #fff3e0;
-        color: #e65100;
-        border-radius: 3px;
-        font-size: 0.62rem;
-        font-weight: 600;
+        font-size: 0.65rem;
       }
 
-      .estado-badge {
-        display: inline-block;
+      ion-badge.estado-badge {
         margin-left: 4px;
-        padding: 2px 6px;
-        border-radius: 8px;
         font-size: 0.6rem;
-        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.3px;
-
-        &.estado-borrador {
-          background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-          color: #f57f17;
-          border: 1px solid #ffb74d;
-        }
 
         &.estado-publicada {
           background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
@@ -2053,12 +2037,13 @@ ion-card {
             gap: 4px;
           }
 
-          .codigo-badge-mobile {
+          ion-badge.codigo-badge-mobile {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
             letter-spacing: 0.2px;
+            --padding-start: 6px;
+            --padding-end: 6px;
 
             // Landscape móvil
             @media (max-height: 500px) and (orientation: landscape) {
@@ -2066,18 +2051,13 @@ ion-card {
             }
           }
 
-          .version-badge-mobile {
-            display: inline-block;
-            padding: 2px 5px;
-            background: #fff3e0;
-            color: #e65100;
-            border-radius: 3px;
+          ion-badge.version-badge-mobile {
             font-size: 0.6rem;
-            font-weight: 600;
+            --padding-start: 5px;
+            --padding-end: 5px;
 
             // Landscape móvil
             @media (max-height: 500px) and (orientation: landscape) {
-              padding: 1px 4px;
               font-size: 0.52rem;
             }
           }

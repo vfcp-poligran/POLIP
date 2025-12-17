@@ -17,6 +17,7 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonBadge,
   AlertController,
   ViewWillEnter, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -51,7 +52,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, checkmark, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
@@ -78,10 +79,11 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonFabButton,
     IonGrid,
     IonRow,
-    IonCol
+    IonCol,
+    IonBadge
 ]
 })
-export class CursosPage implements OnInit, ViewWillEnter {
+export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
@@ -115,14 +117,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
   colorCursoSeleccionado: string | null = null;
 
   constructor() {
-    addIcons({add,addCircleOutline,saveOutline,closeOutline,colorPaletteOutline,checkmark,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,school,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person,chevronDownOutline,chevronUpOutline});
+    addIcons({add,ellipsisVertical,saveOutline,closeOutline,addCircleOutline,colorPaletteOutline,checkmark,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,school,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person,chevronDownOutline,chevronUpOutline});
   }
 
   private cd = inject(ChangeDetectorRef);
-
-  ngOnInit() {
-    // Setup inicial que NO depende de recarga de datos
-  }
 
   /**
    * Toggle para expandir/colapsar card de curso en móvil

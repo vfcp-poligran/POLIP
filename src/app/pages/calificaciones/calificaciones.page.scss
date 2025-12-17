@@ -95,7 +95,7 @@ ion-content {
 .calificaciones-tab-content {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 120px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
   gap: 8px;
 }
 
@@ -573,11 +573,12 @@ ion-content {
       max-width: 50px;
       padding: 7px 4px;
 
-      .grupo-badge {
-        display: inline-block;
+      ion-badge.grupo-badge {
         color: var(--azul-oscuro, #0f385a);
         font-size: 0.75rem;
         font-weight: 700;
+        --padding-start: 6px;
+        --padding-end: 6px;
       }
     }
 
@@ -587,7 +588,7 @@ ion-content {
       font-size: 0.7rem;
 
       &.col-id { font-size: 0.65rem; }
-      &.col-grupo .grupo-badge { font-size: 0.7rem; }
+      &.col-grupo ion-badge.grupo-badge { font-size: 0.7rem; }
     }
 
     // Responsive mobile
@@ -596,7 +597,7 @@ ion-content {
       font-size: 0.65rem;
 
       &.col-id { font-size: 0.6rem; }
-      &.col-grupo .grupo-badge { font-size: 0.65rem; }
+      &.col-grupo ion-badge.grupo-badge { font-size: 0.65rem; }
     }
 
     &.col-sticky {
