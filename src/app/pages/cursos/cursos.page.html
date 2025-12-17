@@ -122,103 +122,200 @@
       </div>
       }
 
-      <!-- Área principal: Tabla de cursos -->
-      <div class="tabla-area">
+      <!-- Área principal: Tarjetas de cursos -->
+      <div class="cards-area">
         @if (cursosDisponibles.length > 0) {
-
-        <!-- Vista Desktop: Tabla tradicional (oculta en < 768px) -->
-        <div class="tabla-wrapper tabla-completa ion-hide-md-down">
-          <table class="tabla-cursos">
-            <thead>
-              <tr>
-                <th class="tabla-header col-codigo">Código</th>
-                <th class="tabla-header col-nombre">Nombre del Curso</th>
-                <th class="tabla-header col-bloque">Bloque</th>
-                <th class="tabla-header col-fecha">Fecha Creación</th>
-                <th class="tabla-header col-estado">Estado</th>
-                <th class="tabla-header col-acciones">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (curso of cursosDisponibles; track curso.codigo; let i = $index; let isOdd = $odd) {
-              <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
-                <td class="tabla-cell col-codigo">
-                  <ion-badge color="light" class="codigo-badge">{{ curso.nombreAbreviado || curso.codigoBase || '—' }}</ion-badge>
-                </td>
-                <td class="tabla-cell col-nombre">{{ curso.nombre }}</td>
-                <td class="tabla-cell col-bloque">{{ curso.bloque || '—' }}</td>
-                <td class="tabla-cell col-fecha">{{ curso.fechaCreacion || '—' }}</td>
-                <td class="tabla-cell col-estado">
-                  @if (curso.tieneCalificaciones) {
-                  <ion-badge color="success" class="estado-badge">
-                    <ion-icon name="checkmark-circle"></ion-icon>
-                    Activo
-                  </ion-badge>
-                  } @else {
-                  <ion-badge color="warning" class="estado-badge">
-                    <ion-icon name="ellipse-outline"></ion-icon>
-                    Sin datos
-                  </ion-badge>
-                  }
-                </td>
-                <td class="tabla-cell col-acciones">
-                  <ion-button size="small" fill="clear" color="primary" (click)="editarCurso(curso)">
-                    <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-                  </ion-button>
-                  <ion-button size="small" fill="clear" color="danger" (click)="confirmarEliminarCurso(curso)">
-                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                  </ion-button>
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Vista Móvil: Cards estilo Rúbricas (oculta en >= 768px) -->
-        <ion-list class="ion-hide-md-up curso-cards">
-          @for (curso of cursosDisponibles; track curso.codigo) {
-          <ion-item lines="none" class="curso-card">
-            <ion-card [style.--curso-color]="getCursoColor(curso.codigo)">
-              <ion-card-header>
-                <div class="card-header-wrapper">
-                  <ion-card-title>
-                    <span class="curso-nombre-mobile">{{ curso.nombre }}</span>
-                  </ion-card-title>
-                  <div class="codigo-estado-wrapper">
-                    <ion-badge color="light" class="codigo-badge-mobile">{{ curso.nombreAbreviado || curso.codigoBase }}</ion-badge>
-                    @if (curso.bloque) {
-                    <ion-badge color="medium" class="bloque-badge-mobile">{{ curso.bloque }}</ion-badge>
-                    }
-                    <ion-badge [color]="curso.tieneCalificaciones ? 'success' : 'warning'" class="estado-indicador-mobile">
+        <ion-grid class="curso-card-grid">
+          <ion-row>
+            @for (curso of cursosDisponibles; track curso.codigo) {
+            <ion-col size="12" size-md="6" size-lg="4" class="curso-card-column">
+              <ion-card class="curso-card-item"
+                       [class.selected]="cursoSeleccionado === curso.codigo"
+                       (click)="seleccionarCurso(curso.codigo)">
+                <ion-card-header>
+                  <div class="curso-card-top">
+                    <ion-chip class="estado-chip"
+                              [color]="curso.tieneCalificaciones ? 'success' : 'warning'">
+                      <ion-icon [name]="curso.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
                       {{ curso.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
-                    </ion-badge>
+                    </ion-chip>
+                    @if (curso.bloque) {
+                    <ion-chip class="bloque-chip" color="medium">
+                      <ion-icon name="grid-outline"></ion-icon>
+                      {{ curso.bloque }}
+                    </ion-chip>
+                    }
                   </div>
-                </div>
-              </ion-card-header>
+                  <ion-card-title>{{ curso.nombre }}</ion-card-title>
+                  <p class="curso-codigo-label">{{ curso.nombreAbreviado || curso.codigoBase || curso.codigo }}</p>
+                </ion-card-header>
+                <ion-card-content>
+                  <div class="curso-meta-grid">
+                    <div class="meta-item">
+                      <span class="meta-label">Código único</span>
+                      <span class="meta-value">{{ curso.codigo }}</span>
+                    </div>
+                    <div class="meta-item">
+                      <span class="meta-label">Color</span>
+                      <span class="meta-value color-dot" [style.background]="getCursoColor(curso.codigo)"></span>
+                    </div>
+                  </div>
+                  <div class="curso-actions">
+                    <ion-button size="small" fill="clear" color="primary"
+                                (click)="editarCurso(curso); $event.stopPropagation()">
+                      <ion-icon slot="start" name="create-outline"></ion-icon>
+                      Editar
+                    </ion-button>
+                    <ion-button size="small" fill="clear" color="danger"
+                                (click)="confirmarEliminarCurso(curso); $event.stopPropagation()">
+                      <ion-icon slot="start" name="trash-outline"></ion-icon>
+                      Eliminar
+                    </ion-button>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
 
-              <ion-card-content>
-                <ion-grid class="ion-no-padding">
-                  <ion-row>
-                    <ion-col size="12">
-                      <div class="acciones-mobile">
-                        <ion-button fill="outline" color="primary" (click)="editarCurso(curso)"
-                          aria-label="Editar curso">
-                          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                        </ion-button>
-                        <ion-button fill="outline" color="danger" (click)="confirmarEliminarCurso(curso)"
-                          aria-label="Eliminar curso">
-                          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                        </ion-button>
-                      </div>
-                    </ion-col>
-                  </ion-row>
-                </ion-grid>
-              </ion-card-content>
-            </ion-card>
-          </ion-item>
-          }
-        </ion-list>
+        @if (cursoSeleccionadoInfo) {
+        <ion-card class="curso-detail-card">
+          <ion-card-header>
+            <ion-card-title>Detalle de {{ cursoSeleccionadoInfo!.nombre }}</ion-card-title>
+            <ion-chip class="estado-chip"
+                      [color]="cursoSeleccionadoInfo!.tieneCalificaciones ? 'success' : 'warning'">
+              <ion-icon [name]="cursoSeleccionadoInfo!.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
+              {{ cursoSeleccionadoInfo!.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
+            </ion-chip>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detalle-grid">
+              <div class="detalle-item">
+                <span class="detalle-label">Código base</span>
+                <span class="detalle-value">{{ cursoSeleccionadoInfo!.codigoBase || '—' }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="detalle-label">Bloque</span>
+                <span class="detalle-value">{{ cursoSeleccionadoInfo!.bloque || '—' }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="detalle-label">Color</span>
+                <span class="detalle-value color-dot" [style.background]="getCursoColor(cursoSeleccionadoInfo!.codigo)"></span>
+              </div>
+              <div class="detalle-item">
+                <span class="detalle-label">Estudiantes</span>
+                <span class="detalle-value">{{ estudiantesCurso.length }}</span>
+              </div>
+              <div class="detalle-item">
+                <span class="detalle-label">Grupos</span>
+                <span class="detalle-value">{{ gruposCurso.length }}</span>
+              </div>
+            </div>
+
+            <!-- Sección de Grupos como Tabs -->
+            <div class="grupos-tabs-section">
+              <div class="grupos-tabs-header">
+                <h4>
+                  <ion-icon name="people-outline"></ion-icon>
+                  Integrantes del Curso ({{ estudiantesCurso.length }} estudiantes, {{ gruposCurso.length }} grupos)
+                </h4>
+              </div>
+
+              @if (estudiantesCurso.length > 0) {
+              <!-- Tabs de grupos -->
+              <div class="grupos-tabs-bar">
+                <button
+                  type="button"
+                  class="grupo-tab"
+                  [class.active]="vistaActiva === 'general'"
+                  (click)="seleccionarVista('general')">
+                  <ion-icon name="apps-outline"></ion-icon>
+                  <span>Todos</span>
+                  <span class="badge">{{ estudiantesCurso.length }}</span>
+                </button>
+                @for (grupo of gruposCurso; track grupo) {
+                <button
+                  type="button"
+                  class="grupo-tab"
+                  [class.active]="vistaActiva === grupo"
+                  (click)="seleccionarVista(grupo)">
+                  <span class="grupo-numero">{{ grupo }}</span>
+                  <span class="badge">{{ contarIntegrantes(grupo) }}</span>
+                </button>
+                }
+              </div>
+
+              <!-- Contenido del tab seleccionado -->
+              <div class="grupo-tab-content">
+                <div class="tab-content-header">
+                  @if (vistaActiva === 'general') {
+                    <ion-icon name="list-outline"></ion-icon>
+                    <span>Todos los estudiantes ({{ estudiantesCurso.length }})</span>
+                  } @else {
+                    <ion-icon name="people"></ion-icon>
+                    <span>Grupo {{ vistaActiva }} - {{ integrantesGrupo.length }} integrantes</span>
+                  }
+                </div>
+
+                <!-- Lista de integrantes -->
+                @if (integrantesGrupo.length > 0) {
+                <div class="integrantes-grid">
+                  @for (estudiante of integrantesGrupo; track estudiante.correo) {
+                  <div class="integrante-card">
+                    <div class="integrante-avatar">
+                      <ion-icon name="person"></ion-icon>
+                    </div>
+                    <div class="integrante-data">
+                      <span class="nombre">{{ estudiante.nombres }} {{ estudiante.apellidos }}</span>
+                      <span class="correo">{{ estudiante.correo }}</span>
+                    </div>
+                    @if (vistaActiva === 'general') {
+                    <div class="grupo-badge">G{{ estudiante.grupo }}</div>
+                    }
+                  </div>
+                  }
+                </div>
+                } @else {
+                <div class="empty-tab-content">
+                  <ion-icon name="people-outline"></ion-icon>
+                  <p>No hay estudiantes en este grupo</p>
+                </div>
+                }
+              </div>
+              } @else {
+              <div class="empty-tab-content">
+                <ion-icon name="cloud-upload-outline"></ion-icon>
+                <p>Este curso no tiene estudiantes cargados</p>
+                <p class="hint">Cargue un archivo de calificaciones para ver los integrantes</p>
+              </div>
+              }
+            </div>
+
+            <div class="detalle-rubricas">
+              <div class="detalle-section-header">
+                <h4>Rúbricas asociadas</h4>
+                <ion-button fill="clear" size="small" color="medium" (click)="deseleccionarCurso()">
+                  <ion-icon slot="start" name="close-outline"></ion-icon>
+                  Cerrar detalle
+                </ion-button>
+              </div>
+              @if (rubricasAsociadas.length > 0) {
+              <div class="rubricas-chip-list">
+                @for (rubrica of rubricasAsociadas; track rubrica.id) {
+                <ion-chip>
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  <ion-label>{{ rubrica.nombre }}</ion-label>
+                </ion-chip>
+                }
+              </div>
+              } @else {
+              <p class="detalle-empty">No hay rúbricas asociadas a este curso.</p>
+              }
+            </div>
+          </ion-card-content>
+        </ion-card>
+        }
 
         } @else {
         <!-- Empty state -->

@@ -99,6 +99,16 @@ ion-content {
   z-index: 0;
 }
 
+:root {
+  --poli-color-primary: #0f385a;
+  --poli-color-accent: #1fb2de;
+  --poli-color-success: #10b981;
+  --poli-color-warning: #f59e0b;
+  --poli-color-danger: #ef4444;
+  --poli-color-neutral: rgba(15, 56, 90, 0.08);
+  --poli-chip-radius: 18px;
+}
+
 /* ============================================================
    COMPONENT NORMALIZATION (Tabs, Buttons, Chips, Toast)
    Basado en https://ionicframework.com/docs/theming/css-variables
@@ -155,6 +165,31 @@ ion-chip {
   }
 }
 
+ion-chip.estado-chip {
+  --border-radius: var(--poli-chip-radius, 18px);
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --background: rgba(16, 185, 129, 0.16);
+  --color: #047857;
+  text-transform: none;
+
+  &[color='success'] {
+    --background: rgba(16, 185, 129, 0.16);
+    --color: #047857;
+  }
+
+  &[color='warning'] {
+    --background: rgba(245, 158, 11, 0.18);
+    --color: #92400e;
+  }
+
+  &[color='medium'],
+  &[color='light'] {
+    --background: rgba(15, 56, 90, 0.12);
+    --color: var(--azul-oscuro, #0f385a);
+  }
+}
+
 ion-badge {
   border-radius: 999px;
   font-weight: 700;
@@ -163,6 +198,21 @@ ion-badge {
   padding: 4px 10px;
   background: rgba(15, 56, 90, 0.08);
   color: var(--azul-oscuro, #0f385a);
+}
+
+ion-badge.estado-badge {
+  --background: rgba(16, 185, 129, 0.16);
+  color: #047857;
+
+  &.estado-badge--warning {
+    --background: rgba(245, 158, 11, 0.18);
+    color: #92400e;
+  }
+
+  &.estado-badge--inactive {
+    --background: rgba(15, 56, 90, 0.08);
+    color: rgba(15, 56, 90, 0.8);
+  }
 }
 
 ion-card {
@@ -213,6 +263,30 @@ ion-toast {
   &.toast-danger::part(container) {
     border-left-color: var(--ion-color-danger);
   }
+}
+
+.ui-toast--success {
+  --background: #f0fdf4;
+  --color: #065f46;
+  border-left: 4px solid var(--poli-color-success);
+}
+
+.ui-toast--error {
+  --background: #fef2f2;
+  --color: #991b1b;
+  border-left: 4px solid var(--poli-color-danger);
+}
+
+.ui-toast--warning {
+  --background: #fffbeb;
+  --color: #92400e;
+  border-left: 4px solid var(--poli-color-warning);
+}
+
+.ui-toast--info {
+  --background: #eff6ff;
+  --color: #1e3a8a;
+  border-left: 4px solid var(--poli-color-accent);
 }
 
 @media (max-width: 480px) {

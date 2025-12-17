@@ -1,72 +1,65 @@
-<ion-split-pane when="lg" contentId="main-content">
-  <ion-menu menuId="mainMenu" contentId="main-content" type="overlay" class="nav-menu">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>
-          <ion-avatar class="sidebar-logo-avatar">
-            <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg"
-              alt="Logo Politécnico Grancolombiano" />
-          </ion-avatar>
-          <span>POLIProject</span>
-        </ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <ion-list lines="none" class="nav-list">
-        <ion-item *ngFor="let item of navigationItems"
-                  button
-                  [routerLink]="[item.path]"
-                  routerLinkActive="active-menu-item"
-                  detail="false">
-          <ion-icon slot="start" [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
-          <ion-label>{{ item.label }}</ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
-
-  <div class="shell-container" id="main-content">
-    <!-- Header móvil con logo y botones de acción -->
-    @if (!isDesktop) {
-    <ion-header class="mobile-header">
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-button (click)="menuCtrl.open('mainMenu')" aria-label="Abrir menú principal">
-            <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-          </ion-button>
-          <ion-button (click)="toggleMobileSeguimiento()" aria-label="Alternar panel de seguimiento">
-            <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-title class="mobile-app-title">
-          <ion-avatar class="header-logo-avatar">
-            <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg" alt="Logo" />
-          </ion-avatar>
-          <span>POLIProject</span>
-        </ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="toggleSearch()" aria-label="Buscar">
-            <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    }
-
-    <div class="main-content-area" [class.has-bottom-tabs]="!isDesktop">
-      <ion-router-outlet></ion-router-outlet>
+<div class="shell-container" id="main-content">
+  <!-- Header móvil con logo y botones de acción -->
+  @if (!isDesktop) {
+  <ion-header class="mobile-header">
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-button (click)="toggleMobileSeguimiento()" aria-label="Alternar panel de seguimiento">
+          <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title class="mobile-app-title">
+        <ion-avatar class="header-logo-avatar">
+          <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg" alt="Logo" />
+        </ion-avatar>
+        <span>POLIProject</span>
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="toggleSearch()" aria-label="Buscar">
+          <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  } @else {
+  <div class="desktop-nav-bar" role="navigation" aria-label="Navegación principal">
+    <div class="desktop-nav-brand">
+      <ion-avatar class="header-logo-avatar">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/06/80/92/068092b2-333a-a2b3-9348-5a2f9a12eaff/source/60x60bb.jpg" alt="Logo" />
+      </ion-avatar>
+      <span>POLIProject</span>
     </div>
-
-    @if (!isDesktop) {
-    <ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
-      <ion-tab-button *ngFor="let item of navigationItems" [routerLink]="[item.path]" routerLinkActive="tab-selected">
-        <ion-icon [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
-        <ion-label>{{ item.shortLabel || item.label }}</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
-    }
+    <ion-buttons>
+      <ion-button
+        *ngFor="let item of navigationItems"
+        [fill]="currentUrl.includes(item.path) ? 'solid' : 'clear'"
+        color="light"
+        (click)="navigateToTab(item.path)">
+        <ion-icon slot="start" [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
+        {{ item.label }}
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="light" (click)="toggleSearch()" aria-label="Buscar">
+        <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </div>
-</ion-split-pane>
+  }
+
+  <div class="main-content-area" [class.has-bottom-tabs]="!isDesktop">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+
+  @if (!isDesktop) {
+  <ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
+    <ion-tab-button *ngFor="let item of navigationItems" [routerLink]="[item.path]" routerLinkActive="tab-selected">
+      <ion-icon [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
+      <ion-label>{{ item.shortLabel || item.label }}</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+  }
+</div>
 
 <!-- Panel de Seguimiento - posición fija a la derecha (Desktop) -->
 <ion-card class="panel-seguimiento-global" *ngIf="isDesktop">

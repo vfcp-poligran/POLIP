@@ -13,8 +13,6 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonList,
-  IonItem,
   IonLabel,
   IonChip,
   IonSegment,
@@ -22,7 +20,6 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonBadge,
   AlertController,
   LoadingController,
   ModalController,
@@ -98,18 +95,16 @@ import {
     IonCardTitle,
     IonCardContent,
     IonButton,
-    IonBadge,
     IonIcon,
     IonGrid,
     IonRow,
     IonCol,
-    IonList,
-    IonItem,
     IonLabel,
     IonSegment,
     IonSegmentButton,
     IonFab,
     IonFabButton,
+    IonChip,
     CommonModule,
     FormsModule,
     RubricaEditorComponent,
@@ -2007,4 +2002,3 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     }
   }
 }
-

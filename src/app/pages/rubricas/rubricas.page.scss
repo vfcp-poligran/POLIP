@@ -53,64 +53,141 @@ ion-content {
 }
 
 // ============================================
-// CONTENEDOR DE TABLA - ALTURA EXPANDIBLE
+// CONTENEDOR DE TARJETAS - ALTURA RESPONSIVE
 // ============================================
-.tabla-rubricas-container {
+.rubrica-card-collection {
   flex-shrink: 0;
   width: 100%;
   max-width: 100%;
   max-height: calc(100vh - 350px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
-  min-height: 120px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  margin-bottom: 12px;
-  margin-top: 8px; // Separación del header
+  overflow-y: auto;
   box-sizing: border-box;
+  padding: 4px;
+  margin: 8px 0 12px 0;
   transition: max-height 0.3s ease-in-out;
 
   &.contraido {
-    max-height: 180px;
-  }
-
-  .tabla-wrapper {
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    max-height: 220px;
   }
 
   @media (max-width: 768px) {
-    max-height: calc(100vh - 300px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
-    min-height: 120px;
-    margin-bottom: 8px;
-    margin-top: 4px; // Top margin móvil
-    border-radius: 6px;
+    max-height: calc(100vh - 280px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
+    padding: 2px;
+    margin: 4px 0 8px 0;
 
     &.contraido {
       max-height: 180px;
     }
   }
 
-  // Landscape móvil - maximizar espacio vertical
   @media (max-height: 500px) and (orientation: landscape) {
-    max-height: calc(100vh - 120px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
-    min-height: 100px;
-    margin-bottom: 4px;
-    margin-top: 2px;
-    border-radius: 4px;
-
-    &.contraido {
-      max-height: 120px;
-    }
+    max-height: calc(100vh - 150px - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
+    padding: 0;
+    margin: 2px 0 4px 0;
   }
 
   @media (min-height: 900px) {
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 260px);
+  }
+}
 
-    &.contraido {
-      max-height: 220px;
+.rubrica-card-grid {
+  width: 100%;
+
+  ion-row {
+    row-gap: 16px;
+  }
+}
+
+.rubrica-card-item {
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(15, 56, 90, 0.08);
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(31, 178, 222, 0.4);
+  }
+
+  &.card-inactiva {
+    opacity: 0.75;
+  }
+
+  &.card-seleccionada {
+    border-color: var(--azul-claro, #1fb2de);
+    box-shadow: 0 10px 20px rgba(15, 56, 90, 0.12);
+  }
+
+  ion-card-header {
+    padding-bottom: 8px;
+  }
+}
+
+.rubrica-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+
+  ion-chip {
+    --background: rgba(15, 56, 90, 0.06);
+    --color: var(--azul-oscuro, #0f385a);
+    font-weight: 600;
+    height: 26px;
+  }
+}
+
+.rubrica-meta {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: rgba(15, 56, 90, 0.65);
+}
+
+.rubrica-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+
+  .meta-item {
+    background: rgba(15, 56, 90, 0.04);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    .meta-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: rgba(15, 56, 90, 0.6);
     }
+
+    .meta-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--azul-oscuro, #0f385a);
+    }
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.rubrica-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  ion-button {
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
   }
 }
 

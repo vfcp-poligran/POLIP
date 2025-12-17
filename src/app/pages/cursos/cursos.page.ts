@@ -8,8 +8,6 @@ import {
   IonButton,
   IonChip,
   IonLabel,
-  IonList,
-  IonItem,
   IonCard,
   IonCardHeader,
   IonCardTitle,
@@ -17,7 +15,6 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonBadge,
   AlertController,
   ViewWillEnter, IonFabList } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -69,8 +66,8 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonContent,
     IonIcon,
     IonButton,
-    IonList,
-    IonItem,
+    IonChip,
+    IonLabel,
     IonCard,
     IonCardHeader,
     IonCardTitle,
@@ -79,11 +76,10 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonFabButton,
     IonGrid,
     IonRow,
-    IonCol,
-    IonBadge
+    IonCol
 ]
 })
-export class CursosPage implements ViewWillEnter {
+export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
@@ -94,6 +90,7 @@ export class CursosPage implements ViewWillEnter {
 
   cursosDisponibles: any[] = [];
   cursoSeleccionado: string | null = null;
+  private cursoSeleccionadoClave: string | null = null;
   modoEdicion = false;
   rubricasAsociadas: any[] = [];
 
@@ -116,11 +113,93 @@ export class CursosPage implements ViewWillEnter {
   coloresDisponibles: string[] = COLORES_CURSOS;
   colorCursoSeleccionado: string | null = null;
 
+  // Vista activa para la sección de integrantes
+  vistaActiva: 'general' | string = 'general';
+
+  get cursoSeleccionadoInfo() {
+    if (!this.cursoSeleccionado) {
+      return null;
+    }
+    return this.cursosDisponibles.find(curso => curso.codigo === this.cursoSeleccionado) || null;
+  }
+
+  get estudiantesCurso(): any[] {
+    const claveCurso = this.resolverClaveCurso(this.cursoSeleccionado);
+    if (!claveCurso) return [];
+    const estudiantes = this.dataService.getCurso(claveCurso);
+    return Array.isArray(estudiantes) ? estudiantes : [];
+  }
+
+  get gruposCurso(): string[] {
+    const gruposSet = new Set(
+      this.estudiantesCurso
+        .map(est => (est?.grupo !== undefined && est?.grupo !== null ? String(est.grupo) : ''))
+        .filter(grupo => grupo !== '')
+    );
+
+    return Array.from(gruposSet).sort((a, b) => {
+      const numA = parseInt(a, 10);
+      const numB = parseInt(b, 10);
+      if (!isNaN(numA) && !isNaN(numB)) {
+        return numA - numB;
+      }
+      return a.localeCompare(b);
+    });
+  }
+
+  get integrantesGrupo(): any[] {
+    if (this.vistaActiva === 'general') {
+      return this.estudiantesCurso;
+    }
+    return this.estudiantesCurso.filter(est =>
+      String(est?.grupo ?? '') === String(this.vistaActiva)
+    );
+  }
+
+  private resolverClaveCurso(codigo: string | null): string | null {
+    if (!codigo) return null;
+
+    const curso = this.cursosDisponibles.find(c =>
+      c.codigo === codigo ||
+      c.claveCurso === codigo ||
+      c.nombreAbreviado === codigo ||
+      c.codigoBase === codigo
+    );
+    if (curso?.claveCurso) {
+      return curso.claveCurso;
+    }
+
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
+
+    if (courseStates[codigo]) {
+      return codigo;
+    }
+
+    for (const [key, state] of Object.entries(courseStates)) {
+      const meta: any = state.metadata || {};
+      if (
+        meta.codigoUnico === codigo ||
+        meta.codigo === codigo ||
+        meta.nombre === codigo ||
+        meta.nombreAbreviado === codigo
+      ) {
+        return key;
+      }
+    }
+
+    return codigo;
+  }
+
   constructor() {
     addIcons({add,ellipsisVertical,saveOutline,closeOutline,addCircleOutline,colorPaletteOutline,checkmark,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,school,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person,chevronDownOutline,chevronUpOutline});
   }
 
   private cd = inject(ChangeDetectorRef);
+
+  ngOnInit() {
+    // Setup inicial que NO depende de recarga de datos
+  }
 
   /**
    * Toggle para expandir/colapsar card de curso en móvil
@@ -135,6 +214,9 @@ export class CursosPage implements ViewWillEnter {
    */
   ionViewWillEnter() {
     this.cargarCursos();
+    if (this.cursoSeleccionado) {
+      this.cursoSeleccionadoClave = this.resolverClaveCurso(this.cursoSeleccionado);
+    }
     // Restaurar estado de modoEdicion desde UIState
     const uiState = this.dataService.getUIState();
     if (uiState.cursosModoEdicion) {
@@ -147,6 +229,7 @@ export class CursosPage implements ViewWillEnter {
    */
   editarCurso(curso: any) {
     this.cursoSeleccionado = curso.codigo;
+    this.cursoSeleccionadoClave = this.resolverClaveCurso(curso.codigo);
     this.editarCursoSeleccionado();
   }
 
@@ -183,6 +266,7 @@ export class CursosPage implements ViewWillEnter {
             const tieneArchivo = this.dataService.obtenerArchivoCalificaciones(nombreCurso) !== null;
 
             return {
+              claveCurso: nombreCurso,
               nombre: state.metadata?.nombre || nombreCurso,
               nombreAbreviado: state.metadata?.nombreAbreviado || '',
               codigo: codigoUnico,
@@ -212,6 +296,7 @@ export class CursosPage implements ViewWillEnter {
     try {
       this.modoEdicion = true;
       this.cursoSeleccionado = null;
+      this.cursoSeleccionadoClave = null;
       this.limpiarFormulario();
       // Generar color aleatorio diferente a los cursos existentes
       const coloresUsados = this.obtenerColoresUsados();
@@ -246,10 +331,9 @@ export class CursosPage implements ViewWillEnter {
    */
   getCursoColor(codigoCurso: string): string {
     const uiState = this.dataService.getUIState();
-    // Buscar por nombre del curso (que es la key en courseStates)
-    const curso = this.cursosDisponibles.find(c => c.codigo === codigoCurso);
-    if (curso && uiState?.courseStates?.[curso.nombre]) {
-      return uiState.courseStates[curso.nombre].color || '#ff2719';
+    const claveCurso = this.resolverClaveCurso(codigoCurso);
+    if (claveCurso && uiState?.courseStates?.[claveCurso]) {
+      return uiState.courseStates[claveCurso].color || '#ff2719';
     }
     return '#ff2719'; // Color por defecto
   }
@@ -275,16 +359,30 @@ export class CursosPage implements ViewWillEnter {
     this.infoExpanded = !this.infoExpanded;
   }
 
+  seleccionarVista(vista: 'general' | string) {
+    this.vistaActiva = vista;
+  }
+
+  contarIntegrantes(grupo: string): number {
+    return this.estudiantesCurso.filter(est =>
+      String(est?.grupo ?? '') === String(grupo)
+    ).length;
+  }
+
   seleccionarCurso(codigo: string) {
     this.cursoSeleccionado = codigo;
+    this.cursoSeleccionadoClave = this.resolverClaveCurso(codigo);
+    this.vistaActiva = 'general';
     this.modoEdicion = false;
-    this.cargarRubricasAsociadas(codigo);
+    this.cargarRubricasAsociadas(this.cursoSeleccionadoClave || codigo);
     // Limpiar estado en UIState
     this.dataService.updateUIState({ cursosModoEdicion: false });
   }
 
   deseleccionarCurso() {
     this.cursoSeleccionado = null;
+    this.cursoSeleccionadoClave = null;
+    this.vistaActiva = 'general';
     this.modoEdicion = false;
     this.limpiarFormulario();
     this.rubricasAsociadas = [];
@@ -293,9 +391,14 @@ export class CursosPage implements ViewWillEnter {
   }
 
   cargarRubricasAsociadas(codigoCurso: string) {
+    const claveCurso = this.resolverClaveCurso(codigoCurso);
+    if (!claveCurso) {
+      this.rubricasAsociadas = [];
+      return;
+    }
     const todasRubricas = this.dataService.obtenerRubricasArray();
     this.rubricasAsociadas = todasRubricas.filter(rubrica =>
-      rubrica.cursosCodigos?.includes(codigoCurso)
+      rubrica.cursosCodigos?.includes(claveCurso)
     ).sort((a, b) => {
       // Ordenar por tipo de entrega
       const ordenEntrega: any = { 'E1': 1, 'E2': 2, 'EF': 3 };
@@ -320,8 +423,10 @@ export class CursosPage implements ViewWillEnter {
     const curso = this.cursosDisponibles.find(c => c.codigo === this.cursoSeleccionado);
     if (!curso) return;
 
+    const claveCurso = this.cursoSeleccionadoClave || this.resolverClaveCurso(curso.codigo) || curso.codigo;
+
     this.modoEdicion = true;
-    this.codigoCursoEnEdicion = curso.codigo;
+    this.codigoCursoEnEdicion = claveCurso;
     this.cursoParseado = {
       nombre: curso.nombre,
       codigo: curso.codigo,
@@ -329,14 +434,14 @@ export class CursosPage implements ViewWillEnter {
     };
 
     // Cargar estudiantes del curso desde storage
-    const estudiantes = this.dataService.getCurso(curso.codigo);
+    const estudiantes = this.dataService.getCurso(claveCurso);
     if (estudiantes && estudiantes.length > 0) {
       this.estudiantesCargados = estudiantes;
       this.estudiantesFileName = `${curso.codigo}_estudiantes.csv`;
     }
 
     // Cargar archivo de calificaciones si existe
-    const archivo = this.dataService.obtenerArchivoCalificaciones(curso.codigo);
+    const archivo = this.dataService.obtenerArchivoCalificaciones(claveCurso);
     if (archivo) {
       this.calificacionesCargadas = archivo;
       this.calificacionesFileName = archivo.nombre;
@@ -1068,6 +1173,7 @@ export class CursosPage implements ViewWillEnter {
       this.limpiarFormulario();
       this.modoEdicion = false;
       this.cursoSeleccionado = null;
+      this.cursoSeleccionadoClave = null;
 
       const mensajeExito = this.codigoCursoEnEdicion ? 'Curso actualizado exitosamente' : 'Curso creado';
       await this.mostrarToastExito(mensajeExito);
@@ -1096,6 +1202,7 @@ export class CursosPage implements ViewWillEnter {
 
     this.modoEdicion = false;
     this.cursoSeleccionado = null;
+    this.cursoSeleccionadoClave = null;
     this.limpiarFormulario();
 
     await this.mostrarToastWarning(mensaje);
@@ -1169,11 +1276,11 @@ export class CursosPage implements ViewWillEnter {
           role: 'destructive',
           handler: async () => {
             try {
-              // USAR CÓDIGO ÚNICO (curso.codigo contiene el código único completo)
-              await this.dataService.eliminarCurso(curso.codigo);
+              const claveCurso = this.resolverClaveCurso(curso.codigo) || curso.codigo;
+              await this.dataService.eliminarCurso(claveCurso);
               this.cargarCursos();
 
-              if (this.cursoSeleccionado === curso.codigo) {
+              if (this.cursoSeleccionado === curso.codigo || this.cursoSeleccionadoClave === claveCurso) {
                 this.deseleccionarCurso();
               }
 
@@ -1203,50 +1310,27 @@ export class CursosPage implements ViewWillEnter {
   }
 
   tieneArchivoCalificaciones(codigo: string): boolean {
-    // Buscar el curso en courseStates usando el código
-    const uiState = this.dataService.getUIState();
-    const courseStates = uiState.courseStates || {};
-
-    // Buscar por nombreCurso (clave de courseStates)
-    const cursoEntry = Object.entries(courseStates).find(
-      ([nombreCurso, _]) => nombreCurso === codigo
-    );
-
-    if (!cursoEntry) return false;
-
-    const [nombreCurso, _] = cursoEntry;
-    return this.dataService.obtenerArchivoCalificaciones(nombreCurso) !== null;
+    const claveCurso = this.resolverClaveCurso(codigo);
+    if (!claveCurso) return false;
+    return this.dataService.obtenerArchivoCalificaciones(claveCurso) !== null;
   }
 
   obtenerNombreArchivoCalificaciones(codigo: string): string {
+    const claveCurso = this.resolverClaveCurso(codigo);
+    if (!claveCurso) return '';
     const uiState = this.dataService.getUIState();
-    const courseStates = uiState.courseStates || {};
-
-    const cursoEntry = Object.entries(courseStates).find(
-      ([_, state]) => state.metadata?.codigo === codigo
-    );
-
-    return cursoEntry?.[1].archivoCalificaciones?.nombre || '';
+    const archivo = uiState.courseStates?.[claveCurso]?.archivoCalificaciones;
+    return archivo?.nombre || '';
   }
 
   async eliminarArchivoCalificacionesGuardado() {
     if (!this.codigoCursoEnEdicion) return;
 
-    const uiState = this.dataService.getUIState();
-    const courseStates = uiState.courseStates || {};
+    await this.dataService.updateCourseState(this.codigoCursoEnEdicion, {
+      archivoCalificaciones: undefined
+    });
 
-    const cursoEntry = Object.entries(courseStates).find(
-      ([_, state]) => state.metadata?.codigo === this.codigoCursoEnEdicion
-    );
-
-    if (cursoEntry) {
-      const [nombreCurso, _] = cursoEntry;
-      await this.dataService.updateCourseState(nombreCurso, {
-        archivoCalificaciones: undefined
-      });
-
-      await this.mostrarToastExito('Archivo de calificaciones eliminado');
-    }
+    await this.mostrarToastExito('Archivo de calificaciones eliminado');
   }
 
   private leerArchivo(file: File): Promise<string> {
@@ -1353,15 +1437,13 @@ export class CursosPage implements ViewWillEnter {
   }
 
   async exportarCalificaciones(codigo: string) {
+    const claveCurso = this.resolverClaveCurso(codigo);
+    if (!claveCurso) return;
+
     const uiState = this.dataService.getUIState();
-    const courseStates = uiState.courseStates || {};
+    const archivo = uiState.courseStates?.[claveCurso]?.archivoCalificaciones;
 
-    const cursoEntry = Object.entries(courseStates).find(
-      ([_, state]) => state.metadata?.codigo === codigo
-    );
-
-    if (cursoEntry && cursoEntry[1].archivoCalificaciones) {
-      const archivo = cursoEntry[1].archivoCalificaciones;
+    if (archivo) {
       const blob = new Blob([archivo.contenidoOriginal], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1398,4 +1480,3 @@ export class CursosPage implements ViewWillEnter {
   }
 
 }
-

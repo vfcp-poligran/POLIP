@@ -22,12 +22,10 @@ import {
   IonTabButton,
   IonHeader,
   IonToolbar,
-  IonFooter,
   IonAvatar,
   IonCheckbox,
   IonTitle,
-  IonTextarea,
-  MenuController
+  IonTextarea
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
@@ -131,7 +129,6 @@ export interface NavigationItem {
     IonTabButton,
     IonHeader,
     IonToolbar,
-    IonFooter,
     IonAvatar,
     IonCheckbox,
     IonTitle,
@@ -165,7 +162,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);
   public fullscreenService = inject(FullscreenService);
-  private menuCtrl = inject(MenuController);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
 
@@ -224,9 +220,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   // Control del panel de seguimiento móvil
   mobileSeguimientoVisible: boolean = false;
-
-  // Control de expansión del sidebar
-  sidebarExpanded: boolean = false;
 
   constructor() {
     addIcons({
@@ -362,7 +355,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     const newIsDesktop = window.innerWidth >= 992;
     if (this.isDesktop !== newIsDesktop) {
       this.isDesktop = newIsDesktop;
-      this.handleMenuState();
       this.cdr.detectChanges();
     }
   }
@@ -382,22 +374,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
       window.addEventListener('resize', this.resizeHandler);
     });
-  }
-
-  /** Maneja el estado del menú según desktop/mobile */
-  private async handleMenuState(): Promise<void> {
-    if (!this.isDesktop) {
-      // En móvil: habilitar menú con swipe
-      await this.menuCtrl.enable(true, 'mainMenu');
-      await this.menuCtrl.swipeGesture(true, 'mainMenu');
-    } else {
-      // En desktop: deshabilitar menú (no existe en el DOM)
-      try {
-        await this.menuCtrl.enable(false, 'mainMenu');
-      } catch (e) {
-        // El menú puede no existir, ignorar
-      }
-    }
   }
 
   onGlobalSearch(event: any): void {
@@ -438,19 +414,15 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     }, 150);
   }
 
-  /** Abre el menú lateral en móvil */
-  async openMenu(): Promise<void> {
-    await this.menuCtrl.open('mainMenu');
-  }
-
   /** Toggle del panel de seguimiento móvil */
   toggleMobileSeguimiento(): void {
     this.mobileSeguimientoVisible = !this.mobileSeguimientoVisible;
   }
 
-  /** Toggle de expansión del sidebar */
-  toggleSidebar(): void {
-    this.sidebarExpanded = !this.sidebarExpanded;
+  /** Ruta activa para navegación desktop */
+  get activeNavPath(): string {
+    const active = this.navigationItems.find(item => this.currentUrl.includes(item.path));
+    return active?.path ?? this.navigationItems[0].path;
   }
 
   /** Helper para parseInt en template */
@@ -997,8 +969,11 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }
 
   // Método para navegación programática si es necesario
-  navigateToTab(tab: string) {
-    this.router.navigate(['/tabs', tab]);
+  navigateToTab(path: string) {
+    if (!path) {
+      return;
+    }
+    this.router.navigateByUrl(path);
   }
 
   // Funciones auxiliares para el formato de texto plano

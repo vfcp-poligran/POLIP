@@ -1,15 +1,39 @@
 import { isDevMode } from '@angular/core';
 
+let verboseOverride = false;
+
+function debugFlagEnabled(): boolean {
+  if (typeof window !== 'undefined') {
+    if ((window as any).__POLI_DEBUG__ === true) {
+      return true;
+    }
+  }
+
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem('POLI_DEBUG') === '1';
+  } catch {
+    return false;
+  }
+}
+
+function canLog(): boolean {
+  return isDevMode() && (verboseOverride || debugFlagEnabled());
+}
+
 /**
- * Utilidad de logging que solo funciona en modo desarrollo.
- * En producción, todos los logs son silenciosos.
+ * Utilidad de logging que solo funciona cuando se habilita el modo de depuración.
+ * En producción o cuando no se habilita la bandera, los logs informativos se silencian.
  */
 export const Logger = {
+  enableVerboseLogging(value: boolean): void {
+    verboseOverride = value;
+  },
+
   /**
    * Log informativo
    */
   log: (...args: unknown[]): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.log(...args);
     }
   },
@@ -18,7 +42,7 @@ export const Logger = {
    * Log de advertencia
    */
   warn: (...args: unknown[]): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.warn(...args);
     }
   },
@@ -31,10 +55,10 @@ export const Logger = {
   },
 
   /**
-   * Log de debug (solo desarrollo)
+   * Log de debug (solo cuando está habilitado)
    */
   debug: (...args: unknown[]): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.debug(...args);
     }
   },
@@ -43,7 +67,7 @@ export const Logger = {
    * Log de grupo (para agrupar logs relacionados)
    */
   group: (label: string): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.group(label);
     }
   },
@@ -52,7 +76,7 @@ export const Logger = {
    * Cerrar grupo de logs
    */
   groupEnd: (): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.groupEnd();
     }
   },
@@ -61,7 +85,7 @@ export const Logger = {
    * Log de tiempo (para medir rendimiento)
    */
   time: (label: string): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.time(label);
     }
   },
@@ -70,7 +94,7 @@ export const Logger = {
    * Finalizar medición de tiempo
    */
   timeEnd: (label: string): void => {
-    if (isDevMode()) {
+    if (canLog()) {
       console.timeEnd(label);
     }
   }
