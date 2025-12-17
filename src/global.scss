@@ -99,6 +99,130 @@ ion-content {
   z-index: 0;
 }
 
+/* ============================================================
+   COMPONENT NORMALIZATION (Tabs, Buttons, Chips, Toast)
+   Basado en https://ionicframework.com/docs/theming/css-variables
+   ============================================================ */
+
+ion-toolbar {
+  --background: var(--bg-card, #ffffff);
+  --color: var(--texto-principal, #1f1f1f);
+  --border-style: solid;
+  --border-color: rgba(15, 56, 90, 0.08);
+  --border-width: 0 0 1px 0;
+  font-weight: 600;
+}
+
+ion-button {
+  --border-radius: var(--rad-sm, 8px);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --box-shadow: none;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: none;
+
+  &.button-clear {
+    --padding-start: 10px;
+    --padding-end: 10px;
+  }
+
+  &.button-outline {
+    --border-width: 1.5px;
+    --border-color: currentColor;
+    --background: transparent;
+    color: var(--azul-oscuro, #0f385a);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px rgba(31, 178, 222, 0.25);
+  }
+}
+
+ion-chip {
+  --background: rgba(15, 56, 90, 0.08);
+  --color: var(--azul-oscuro, #0f385a);
+  --border-radius: 16px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-transform: none;
+
+  &.chip-outline {
+    --background: transparent;
+    border: 1px solid rgba(15, 56, 90, 0.2);
+  }
+}
+
+ion-badge {
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 4px 10px;
+  background: rgba(15, 56, 90, 0.08);
+  color: var(--azul-oscuro, #0f385a);
+}
+
+ion-card {
+  border-radius: var(--rad-sm, 8px);
+  box-shadow: var(--shadow-light, 0 8px 24px rgba(16, 35, 47, 0.08));
+  background: var(--bg-card, #ffffff);
+}
+
+ion-tab-bar {
+  --background: var(--bg-card, #ffffff);
+  --border-color: rgba(15, 56, 90, 0.08);
+  --border-style: solid;
+  --border-width: 1px 0 0 0;
+}
+
+ion-tab-button {
+  --color: rgba(15, 56, 90, 0.6);
+  --color-selected: var(--azul-oscuro, #0f385a);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.2px;
+
+  ion-icon {
+    font-size: 1.3rem;
+  }
+}
+
+ion-toast {
+  --background: var(--bg-card, #ffffff);
+  --color: var(--texto-principal, #1d1d1d);
+  --border-radius: 14px;
+  --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --button-color: var(--azul-claro, #1fb2de);
+  --start: 16px;
+  --end: 16px;
+  --max-width: 420px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  &::part(container) {
+    border-left: 4px solid var(--azul-claro, #1fb2de);
+  }
+
+  &.toast-success::part(container) {
+    border-left-color: var(--ion-color-success);
+  }
+
+  &.toast-danger::part(container) {
+    border-left-color: var(--ion-color-danger);
+  }
+}
+
+@media (max-width: 480px) {
+  ion-toast {
+    --start: 8px;
+    --end: 8px;
+    --max-width: calc(100vw - 16px);
+  }
+}
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
