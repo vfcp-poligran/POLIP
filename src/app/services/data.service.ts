@@ -4,6 +4,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UnifiedStorageService } from './unified-storage.service';
 import { BackupService } from './backup.service';
 import { RubricService } from './rubric.service';
+import { CourseService } from './course.service';
 import { Logger } from '@app/core/utils/logger';
 import {
   Estudiante,
@@ -33,6 +34,7 @@ export class DataService {
   private storage = inject(UnifiedStorageService);
   private backupService = inject(BackupService);
   private rubricService = inject(RubricService);
+  private courseService = inject(CourseService);
 
   private readonly STORAGE_KEYS = {
     CURSOS: 'gestorCursosData',
@@ -55,7 +57,7 @@ export class DataService {
   };
 
   // BehaviorSubjects para estado reactivo
-  private cursosSubject = new BehaviorSubject<CursoData>({});
+  // private cursosSubject = new BehaviorSubject<CursoData>({});
   private evaluacionesSubject = new BehaviorSubject<{ [key: string]: Evaluacion }>({});
   private uiStateSubject = new BehaviorSubject<UIState>({
     cursoActivo: null,
@@ -83,7 +85,7 @@ export class DataService {
   private calificacionesCanvasActualizadasSubject = new BehaviorSubject<{ curso: string, timestamp: number } | null>(null);
 
   // Observables públicos
-  public cursos$ = this.cursosSubject.asObservable();
+  public cursos$ = this.courseService.cursos$;
   public evaluaciones$ = this.evaluacionesSubject.asObservable();
   public uiState$ = this.uiStateSubject.asObservable();
   public rubricas$ = this.rubricService.rubricas$;
@@ -133,7 +135,7 @@ export class DataService {
     // Invalidar caché de cursos cuando cursos$ emite
     // Usar distinctUntilChanged para evitar actualizaciones redundantes
     this.subscriptions.push(
-      this.cursos$.pipe(
+      this.courseService.cursos$.pipe(
         distinctUntilChanged((prev, curr) =>
           Object.keys(prev).length === Object.keys(curr).length &&
           Object.keys(prev).every(key => prev[key] === curr[key])
@@ -209,7 +211,7 @@ export class DataService {
   private async initializeData() {
     try {
       await this.storage.init();
-      await this.loadCursos();
+      await this.courseService.loadCursos();
       await this.loadEvaluaciones();
       await this.loadUIState();
       await this.loadRubricas();
@@ -232,8 +234,7 @@ export class DataService {
 
 
 
-    return { migradas, errores };
-  }
+
 
   // === GESTIÓN DE CURSOS ===
 
@@ -3296,20 +3297,7 @@ export class DataService {
    * @returns Rúbrica con contenido idéntico si existe, undefined si no hay duplicados
    */
   buscarRubricaDuplicadaPorContenido(rubricaNueva: RubricaDefinicion, idExcluir?: string): RubricaDefinicion | undefined {
-    const rubricas = this.obtenerRubricasArray();
-
-    for (const rubrica of rubricas) {
-      // Excluir la rúbrica que estamos editando
-      if (idExcluir && rubrica.id === idExcluir) continue;
-
-      // Comparar contenido
-      const comparacion = this.compararContenidoRubricas(rubricaNueva, rubrica);
-      if (comparacion.sonIdenticas) {
-        return rubrica;
-      }
-    }
-
-    return undefined;
+    return this.rubricService.buscarRubricaDuplicadaPorContenido(rubricaNueva, idExcluir);
   }
 
   /**
@@ -3324,70 +3312,7 @@ export class DataService {
     siguienteVersion: number;
     mensajeUsuario: string;
   } {
-    const nombreNormalizado = this.normalizarNombreParaComparacion(rubricaNueva.nombre);
-    const rubricas = this.obtenerRubricasArray();
-
-    // PASO 1: Buscar duplicados por CONTENIDO (independiente del nombre)
-    const duplicadaPorContenido = this.buscarRubricaDuplicadaPorContenido(rubricaNueva, idExcluir);
-
-    if (duplicadaPorContenido) {
-      const mismoNombre = this.normalizarNombreParaComparacion(duplicadaPorContenido.nombre) === nombreNormalizado;
-
-      if (mismoNombre) {
-        // Mismo nombre y mismo contenido = duplicado idéntico
-        return {
-          tipo: 'duplicada_identica',
-          rubricaExistente: duplicadaPorContenido,
-          comparacion: { sonIdenticas: true, diferencias: [], resumen: 'Las rúbricas son idénticas en contenido' },
-          siguienteVersion: (duplicadaPorContenido.version || 1),
-          mensajeUsuario: `Ya existe una rúbrica idéntica: "${duplicadaPorContenido.nombre}" (${duplicadaPorContenido.codigo || 'sin código'})`
-        };
-      } else {
-        // Diferente nombre pero mismo contenido = duplicado de contenido
-        return {
-          tipo: 'duplicada_contenido',
-          rubricaExistente: duplicadaPorContenido,
-          comparacion: { sonIdenticas: true, diferencias: [], resumen: 'El contenido es idéntico a una rúbrica existente con diferente nombre' },
-          siguienteVersion: 1,
-          mensajeUsuario: `El contenido es idéntico a la rúbrica existente: "${duplicadaPorContenido.nombre}" (${duplicadaPorContenido.codigo || 'sin código'}). Solo difiere el nombre.`
-        };
-      }
-    }
-
-    // PASO 2: Buscar rúbricas con nombre similar para versionado
-    const coincidentesPorNombre = rubricas.filter(r => {
-      if (idExcluir && r.id === idExcluir) return false;
-      return this.normalizarNombreParaComparacion(r.nombre) === nombreNormalizado;
-    });
-
-    if (coincidentesPorNombre.length === 0) {
-      // No hay coincidencias por nombre ni por contenido = nueva rúbrica
-      return {
-        tipo: 'nueva',
-        siguienteVersion: 1,
-        mensajeUsuario: 'Se creará una nueva rúbrica'
-      };
-    }
-
-    // Encontrar la versión más reciente para comparar
-    const rubricaMasReciente = coincidentesPorNombre.sort((a, b) =>
-      (b.version || 1) - (a.version || 1)
-    )[0];
-
-    // Comparar contenido para mostrar diferencias
-    const comparacion = this.compararContenidoRubricas(rubricaNueva, rubricaMasReciente);
-
-    const versionesExistentes = coincidentesPorNombre.map(r => r.version || 1);
-    const siguienteVersion = Math.max(...versionesExistentes) + 1;
-
-    // Mismo nombre pero diferente contenido = nueva versión
-    return {
-      tipo: 'nueva_version',
-      rubricaExistente: rubricaMasReciente,
-      comparacion,
-      siguienteVersion,
-      mensajeUsuario: `Se guardará como versión ${siguienteVersion} de "${rubricaMasReciente.nombre}"`
-    };
+    return this.rubricService.analizarRubricaParaGuardado(rubricaNueva, idExcluir);
   }
 
   /**
@@ -3400,17 +3325,7 @@ export class DataService {
     codigoBase: string;
     inicialesCurso: string;
   } {
-    const prefijo = this.construirPrefijoRubrica(rubrica as RubricaDefinicion);
-    const inicialesCurso = this.obtenerCodigoCurso(rubrica as RubricaDefinicion);
-    const version = this.obtenerSiguienteVersion(prefijo, inicialesCurso);
-    const codigoBase = `${prefijo}-${inicialesCurso}`;
-
-    return {
-      codigo: `${codigoBase}V${version}`,
-      version,
-      codigoBase,
-      inicialesCurso
-    };
+    return this.rubricService.obtenerPreviewCodigo(rubrica);
   }
 
   /** Código por defecto cuando no hay curso asociado */

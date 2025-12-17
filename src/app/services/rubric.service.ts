@@ -235,6 +235,122 @@ export class RubricService {
     ).sort((a, b) => (b.version || 1) - (a.version || 1)); // Ordenar por versión descendente
   }
 
+
+
+  buscarRubricaDuplicadaPorContenido(rubricaNueva: RubricaDefinicion, idExcluir?: string): RubricaDefinicion | undefined {
+    const rubricas = this.obtenerRubricasArray();
+
+    for (const rubrica of rubricas) {
+      if (idExcluir && rubrica.id === idExcluir) continue;
+
+      const comparacion = this.compararContenidoRubricas(rubricaNueva, rubrica);
+      if (comparacion.sonIdenticas) {
+        return rubrica;
+      }
+    }
+
+    return undefined;
+  }
+
+  analizarRubricaParaGuardado(rubricaNueva: RubricaDefinicion, idExcluir?: string): {
+    tipo: 'nueva' | 'duplicada_identica' | 'nueva_version' | 'duplicada_contenido';
+    rubricaExistente?: RubricaDefinicion;
+    comparacion?: { sonIdenticas: boolean; diferencias: string[]; resumen: string };
+    siguienteVersion: number;
+    mensajeUsuario: string;
+  } {
+    const nombreNormalizado = this.normalizarNombreParaComparacion(rubricaNueva.nombre);
+    const rubricas = this.obtenerRubricasArray();
+
+    // PASO 1: Buscar duplicados por CONTENIDO (independiente del nombre)
+    const duplicadaPorContenido = this.buscarRubricaDuplicadaPorContenido(rubricaNueva, idExcluir);
+
+    if (duplicadaPorContenido) {
+      const mismoNombre = this.normalizarNombreParaComparacion(duplicadaPorContenido.nombre) === nombreNormalizado;
+
+      if (mismoNombre) {
+        return {
+          tipo: 'duplicada_identica',
+          rubricaExistente: duplicadaPorContenido,
+          comparacion: { sonIdenticas: true, diferencias: [], resumen: 'Las rúbricas son idénticas en contenido' },
+          siguienteVersion: (duplicadaPorContenido.version || 1),
+          mensajeUsuario: `Ya existe una rúbrica idéntica: "${duplicadaPorContenido.nombre}" (${duplicadaPorContenido.codigo || 'sin código'})`
+        };
+      } else {
+        return {
+          tipo: 'duplicada_contenido',
+          rubricaExistente: duplicadaPorContenido,
+          comparacion: { sonIdenticas: true, diferencias: [], resumen: 'El contenido es idéntico a una rúbrica existente con diferente nombre' },
+          siguienteVersion: 1,
+          mensajeUsuario: `El contenido es idéntico a la rúbrica existente: "${duplicadaPorContenido.nombre}" (${duplicadaPorContenido.codigo || 'sin código'}). Solo difiere el nombre.`
+        };
+      }
+    }
+
+    // PASO 2: Buscar rúbricas con nombre similar para versionado
+    const coincidentesPorNombre = rubricas.filter(r => {
+      if (idExcluir && r.id === idExcluir) return false;
+      return this.normalizarNombreParaComparacion(r.nombre) === nombreNormalizado;
+    });
+
+    if (coincidentesPorNombre.length === 0) {
+      return {
+        tipo: 'nueva',
+        siguienteVersion: 1,
+        mensajeUsuario: 'Se creará una nueva rúbrica'
+      };
+    }
+
+    const rubricaMasReciente = coincidentesPorNombre.sort((a, b) =>
+      (b.version || 1) - (a.version || 1)
+    )[0];
+
+    const comparacion = this.compararContenidoRubricas(rubricaNueva, rubricaMasReciente);
+
+    const versionesExistentes = coincidentesPorNombre.map(r => r.version || 1);
+    const siguienteVersion = Math.max(...versionesExistentes) + 1;
+
+    return {
+      tipo: 'nueva_version',
+      rubricaExistente: rubricaMasReciente,
+      comparacion,
+      siguienteVersion,
+      mensajeUsuario: `Se guardará como versión ${siguienteVersion} de "${rubricaMasReciente.nombre}"`
+    };
+  }
+
+  obtenerPreviewCodigo(rubrica: Partial<RubricaDefinicion>): {
+    codigo: string;
+    version: number;
+    codigoBase: string;
+    inicialesCurso: string;
+  } {
+    const tipo = rubrica.tipoRubrica || 'G';
+    const entrega = rubrica.tipoEntrega || 'E1';
+    const curso = rubrica.cursosCodigos?.[0] || 'GEN';
+    const inicialesCurso = curso.split('-')[0];
+    const codigoBase = `R${tipo}${entrega}-${inicialesCurso}`;
+
+    // Buscar versiones existentes
+    const rubricas = this.obtenerRubricasArray();
+    const versiones = rubricas
+      .filter(r => r.codigo && r.codigo.startsWith(codigoBase))
+      .map(r => {
+        const match = r.codigo!.match(/V(\d+)$/);
+        return match ? parseInt(match[1], 10) : 0;
+      });
+
+    const maxVersion = versiones.length > 0 ? Math.max(...versiones) : 0;
+    const version = maxVersion + 1;
+
+    return {
+      codigo: `${codigoBase}V${version}`,
+      version,
+      codigoBase,
+      inicialesCurso
+    };
+  }
+
   generarCodigoRubrica(rubrica: RubricaDefinicion): { codigo: string; version: number } {
     // Formato: R[TIPO][ENTREGA]-[CURSO]V[VERSION]
     // Ejemplo: RGE1-EPMV1 (Rúbrica Grupal Entrega 1 - Curso EPM Versión 1)
