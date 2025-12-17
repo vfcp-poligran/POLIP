@@ -249,27 +249,17 @@ export class DataService {
    * @returns Código base (ej: EPM, SO, BD)
    */
   private extraerCodigoBaseCurso(codigoCurso: string): string {
-    if (!codigoCurso) return '';
-
-    // Buscar el patrón: letras iniciales antes de "-B" o "-" seguido de número
-    // Ejemplos: EPM-B01 -> EPM, SO-B09 -> SO, PROG-B01 -> PROG
-    const match = codigoCurso.match(/^([A-Za-z]+)(?:-[Bb]\d|$|-\d)/);
-    if (match) {
-      return match[1].toUpperCase();
-    }
-
-    // Fallback: tomar todo hasta el primer guión
-    const primeraParteMatch = codigoCurso.match(/^([A-Za-z]+)/);
-    return primeraParteMatch ? primeraParteMatch[1].toUpperCase() : codigoCurso.toUpperCase();
+    return this.courseService.extraerCodigoBaseCurso(codigoCurso);
   }
 
   async loadCursos(): Promise<void> {
-    const cursos = await this.storage.get<CursoData>(this.STORAGE_KEYS.CURSOS) || {} as CursoData;
-    this.cursosSubject.next(cursos);
+    await this.courseService.loadCursos();
   }
 
   async saveCursos(): Promise<void> {
-    await this.storage.set(this.STORAGE_KEYS.CURSOS, this.cursosSubject.value);
+    // Delegado a CourseService, pero mantenemos el método por compatibilidad si es necesario
+    // aunque idealmente deberíamos usar courseService directamente
+    // Por ahora no hacemos nada aquí ya que CourseService maneja su propio guardado
   }
 
   /**
@@ -284,7 +274,7 @@ export class DataService {
 
     try {
       // INMUTABILIDAD: Crear copia del objeto cursos actual
-      const cursosOriginales = this.cursosSubject.value;
+      const cursosOriginales = this.courseService.getCursosValue();
       const uiStateOriginal = this.uiStateSubject.value;
       const courseStates = uiStateOriginal.courseStates || {};
 
@@ -415,13 +405,12 @@ export class DataService {
       };
 
       // Actualizar estado con las nuevas copias inmutables
-      this.cursosSubject.next(cursosActuales);
+      await this.courseService.saveCursos(cursosActuales);
       this.uiStateSubject.next(uiState);
 
       Logger.log('✅ [crearCurso] Curso establecido como activo:', nombreClave);
 
       // Guardar cambios en storage
-      await this.saveCursos();
       await this.saveUIState();
 
       // Log de éxito
@@ -448,29 +437,7 @@ export class DataService {
 
   async actualizarEstudiantesCurso(codigoCurso: string, estudiantes: any[]): Promise<void> {
     await this.ensureInitialized();
-
-    try {
-      const cursosOriginales = this.cursosSubject.value;
-
-      // Validar que el curso existe
-      if (!cursosOriginales[codigoCurso]) {
-        throw new Error(`No se encontró el curso con código: ${codigoCurso}`);
-      }
-
-      // Actualizar estudiantes del curso
-      const cursosActualizados = {
-        ...cursosOriginales,
-        [codigoCurso]: estudiantes
-      };
-
-      this.cursosSubject.next(cursosActualizados);
-      await this.saveCursos();
-
-      Logger.log(`✅ Estudiantes actualizados para curso: ${codigoCurso} (${estudiantes.length} estudiantes)`);
-    } catch (error) {
-      Logger.error('Error actualizando estudiantes:', error);
-      throw error;
-    }
+    await this.courseService.actualizarEstudiantesCurso(codigoCurso, estudiantes);
   }
 
 
@@ -533,16 +500,7 @@ export class DataService {
     Logger.log(`🗑️ Eliminando curso: ${codigoUnico}`);
 
     // 1. ELIMINAR ESTUDIANTES DEL CURSO
-    const cursosOriginales = this.cursosSubject.value;
-    const { [codigoUnico]: cursoEliminado, ...cursosRestantes } = cursosOriginales;
-
-    if (!cursoEliminado) {
-      Logger.warn(`⚠️ No se encontró el curso ${codigoUnico} en la lista de cursos`);
-    }
-
-    this.cursosSubject.next(cursosRestantes);
-    await this.saveCursos();
-    Logger.log(`✅ Estudiantes eliminados (${cursoEliminado?.length || 0})`);
+    await this.courseService.eliminarCursoData(codigoUnico);
 
     // 2. ELIMINAR COURSE STATE Y METADATA
     try {
@@ -588,11 +546,11 @@ export class DataService {
   }
 
   getCursos(): CursoData {
-    return this.cursosSubject.value;
+    return this.courseService.getCursosValue();
   }
 
   getCurso(nombre: string): Estudiante[] | undefined {
-    return this.cursosSubject.value[nombre];
+    return this.courseService.getCurso(nombre);
   }
 
   /**
@@ -603,7 +561,7 @@ export class DataService {
    */
   getCourseCodeFromNameOrCode(identificador: string): string {
     // 1. Verificar si ya es un código único válido (existe en cursos)
-    if (this.cursosSubject.value[identificador]) {
+    if (this.courseService.getCurso(identificador)) {
       return identificador;
     }
 
