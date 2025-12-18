@@ -18,73 +18,218 @@ ion-content {
 }
 
 // ============================================
-// TÍTULO DE PÁGINA
+// TÍTULO DE PÁGINA / SELECTOR DE CURSOS
 // ============================================
 .page-title-header {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  margin-bottom: 4px;
-  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  padding: 0;
+  margin-bottom: 6px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+
+  @media (max-width: 768px) {
+    margin-bottom: 4px;
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    margin-bottom: 2px;
+  }
+
+  // Contenedor del segment de cursos
+  .header-course-selector {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
+  }
+
+  // Segment de cursos scrollable
+  .course-segment {
+    --background: transparent;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+    margin: 0;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(15, 56, 90, 0.05);
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(15, 56, 90, 0.2);
+      border-radius: 2px;
+
+      &:hover {
+        background: rgba(15, 56, 90, 0.3);
+      }
+    }
+  }
+
+  // Botones de segment de curso
+  .course-segment-button {
+    --indicator-height: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 0;
+    --padding-bottom: 0;
+    min-width: auto;
+    max-width: none;
+    margin: 0;
+    flex-shrink: 0;
+
+    .segment-button-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+      @media (max-width: 768px) {
+        padding: 5px 10px;
+        gap: 4px;
+        border-radius: 6px;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        padding: 4px 8px;
+        gap: 3px;
+        border-radius: 5px;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--course-color, var(--azul-claro, #1fb2de));
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+
+      .segment-label {
+        margin: 0;
+        position: relative;
+
+        .course-name {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--azul-oscuro, #0f385a);
+          letter-spacing: 0.3px;
+          transition: all 0.25s ease;
+          white-space: nowrap;
+
+          @media (max-width: 768px) {
+            font-size: 0.72rem;
+          }
+
+          @media (max-height: 500px) and (orientation: landscape) {
+            font-size: 0.65rem;
+            letter-spacing: 0.2px;
+          }
+        }
+      }
+    }
+
+    // Estado activo
+    &.segment-button-checked .segment-button-content {
+      background: var(--course-color, var(--azul-claro, #1fb2de));
+      border-color: var(--course-color, var(--azul-claro, #1fb2de));
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(31, 178, 222, 0.1);
+      transform: translateY(-1px);
+
+      &::before {
+        opacity: 1;
+      }
+
+      .segment-label .course-name {
+        color: #ffffff;
+        font-weight: 700;
+      }
+    }
+
+    // Hover
+    &:not(.segment-button-checked):hover .segment-button-content {
+      background: linear-gradient(135deg, #ffffff 0%, rgba(248, 249, 250, 0.95) 100%);
+      border-color: rgba(15, 56, 90, 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
+// ============================================
+// NO CURSOS CONTAINER
+// ============================================
+.no-cursos-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  margin-bottom: 12px;
 
   ion-icon {
-    font-size: 1.1rem;
-    color: #ffffff;
+    font-size: 3.5rem;
+    color: rgba(15, 56, 90, 0.4);
   }
 
-  h2 {
-    margin: 0;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.3px;
+  span {
+    font-size: 0.9rem;
+    color: rgba(15, 56, 90, 0.7);
+    font-weight: 500;
   }
 
-  // Tablet (768px - 1024px)
-  @media (max-width: 1024px) and (min-width: 769px) {
-    padding: 6px 10px;
-    gap: 5px;
-    border-radius: 5px;
-
-    ion-icon {
-      font-size: 1rem;
-    }
-
-    h2 {
-      font-size: 0.8rem;
-    }
-  }
-
-  // Mobile (< 768px)
   @media (max-width: 768px) {
-    padding: 5px 8px;
-    gap: 4px;
-    margin-bottom: 2px;
-    border-radius: 4px;
+    padding: 24px 12px;
+    gap: 10px;
 
     ion-icon {
-      font-size: 0.9rem;
+      font-size: 2.8rem;
     }
 
-    h2 {
-      font-size: 0.72rem;
+    span {
+      font-size: 0.82rem;
     }
   }
 
-  // Landscape móvil
   @media (max-height: 500px) and (orientation: landscape) {
-    padding: 4px 8px;
-    margin-bottom: 1px;
+    padding: 16px 12px;
+    gap: 8px;
 
     ion-icon {
-      font-size: 0.85rem;
+      font-size: 2.2rem;
     }
 
-    h2 {
-      font-size: 0.68rem;
+    span {
+      font-size: 0.75rem;
     }
   }
 }
@@ -100,70 +245,150 @@ ion-content {
 }
 
 // ============================================
-// HEADER - Selector de cursos
+// BARRA DE ARCHIVO Y ACCIONES (Compacta)
 // ============================================
-.header-selector-cursos {
+.archivo-actions-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(15, 56, 90, 0.04) 0%, rgba(15, 56, 90, 0.01) 100%);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(15, 56, 90, 0.1);
+  margin-bottom: 8px;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 4;
 
-  .selector-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-
-    .selector-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #ffffff;
-      white-space: nowrap;
-    }
-
-    .no-cursos {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.7);
-      font-style: italic;
-    }
+  &:hover {
+    background: linear-gradient(135deg, rgba(15, 56, 90, 0.06) 0%, rgba(15, 56, 90, 0.02) 100%);
+    border-color: rgba(15, 56, 90, 0.15);
   }
 
-  .selector-right {
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    padding: 6px 10px;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 4px 8px;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .archivo-info {
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+
+    @media (max-width: 768px) {
+      gap: 6px;
+    }
+
+    ion-icon {
+      font-size: 1.1rem;
+      color: var(--azul-oscuro, #0f385a);
+      flex-shrink: 0;
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 0.9rem;
+      }
+    }
 
     .archivo-nombre {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.9);
-      max-width: 200px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--azul-oscuro, #0f385a);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+
+      @media (max-width: 768px) {
+        font-size: 0.72rem;
+        max-width: 150px;
+      }
+
+      @media (max-width: 480px) {
+        display: none;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 0.65rem;
+        max-width: 120px;
+      }
     }
 
     .archivo-fecha {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.6);
-      padding-left: 8px;
-      border-left: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 0.68rem;
+      color: rgba(15, 56, 90, 0.6);
+      white-space: nowrap;
+
+      @media (max-width: 768px) {
+        font-size: 0.62rem;
+      }
+
+      @media (max-width: 480px) {
+        display: none;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 0.58rem;
+      }
+    }
+  }
+
+  .actions-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      gap: 4px;
     }
 
     ion-button {
-      --padding-start: 12px;
-      --padding-end: 12px;
-      font-size: 0.75rem;
+      --padding-start: 10px;
+      --padding-end: 10px;
+      font-size: 0.72rem;
       font-weight: 600;
-      height: 32px;
+      height: 30px;
+      margin: 0;
+
+      @media (max-width: 768px) {
+        --padding-start: 8px;
+        --padding-end: 8px;
+        height: 28px;
+        font-size: 0.65rem;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        --padding-start: 6px;
+        --padding-end: 6px;
+        height: 24px;
+        font-size: 0.6rem;
+      }
 
       ion-icon {
         font-size: 1rem;
+
+        @media (max-width: 768px) {
+          font-size: 0.9rem;
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+          font-size: 0.85rem;
+        }
       }
 
       .btn-text {
@@ -172,80 +397,6 @@ ion-content {
         }
       }
     }
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 6px 10px;
-
-    .selector-left {
-      flex: 1;
-      min-width: 0;
-
-      .selector-label {
-        font-size: 0.72rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .selector-right {
-      flex-shrink: 0;
-      gap: 4px;
-
-      ion-button {
-        height: 28px;
-        --padding-start: 8px;
-        --padding-end: 8px;
-        font-size: 0.65rem;
-      }
-    }
-  }
-
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding: 4px 8px;
-    gap: 4px;
-
-    .selector-left .selector-label {
-      font-size: 0.62rem;
-    }
-
-    .selector-right ion-button {
-      height: 24px;
-      --padding-start: 6px;
-      --padding-end: 6px;
-    }
-  }
-}
-
-// ============================================
-// RESPONSIVE: Usar clases Ionic ion-hide-md-*
-// Se usan las clases Ionic: ion-hide-md-down (oculta < 768px), ion-hide-md-up (oculta >= 768px)
-// ============================================
-
-// ============================================
-// SELECTOR DE CURSOS UNIFICADO (Botones)
-// ============================================
-.cursos-selector {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 8px 12px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
-  overflow-y: visible;
-  flex-shrink: 0;
-
-  @media (max-width: 768px) {
-    padding: 6px 8px;
-    gap: 4px;
-    border-radius: 6px;
   }
 
   @media (max-height: 500px) and (orientation: landscape) {
@@ -364,15 +515,45 @@ ion-content {
   border-bottom: 1px solid #dee2e6;
   flex-shrink: 0;
 
+  @media (max-width: 768px) {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
   .chip-info {
     font-weight: 600;
     font-size: 0.75rem;
     height: 26px;
     margin: 0;
 
+    @media (max-width: 768px) {
+      font-size: 0.7rem;
+      height: 24px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      font-size: 0.65rem;
+      height: 22px;
+    }
+
     ion-icon {
       font-size: 0.9rem;
       margin-right: 4px;
+
+      @media (max-width: 768px) {
+        font-size: 0.85rem;
+        margin-right: 3px;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 0.8rem;
+        margin-right: 2px;
+      }
     }
   }
 }
@@ -511,6 +692,44 @@ ion-content {
       padding: 5px 3px;
       font-size: 0.5rem;
       min-width: 50px;
+
+      &.col-estudiante {
+        min-width: 110px;
+      }
+
+      &.col-numeric {
+        min-width: 45px;
+        max-width: 60px;
+      }
+    }
+  }
+
+  // Landscape móvil - Más compacto
+  @media (max-height: 500px) and (orientation: landscape) {
+    font-size: 0.62rem;
+
+    .tabla-header {
+      padding: 4px 2px;
+      font-size: 0.48rem;
+      min-width: 45px;
+
+      &.col-estudiante {
+        min-width: 100px;
+      }
+
+      &.col-grupo {
+        min-width: 30px;
+        max-width: 40px;
+      }
+
+      &.col-numeric {
+        min-width: 40px;
+        max-width: 55px;
+      }
+
+      &.col-editable::after {
+        font-size: 0.45rem;
+      }
     }
   }
 
@@ -597,7 +816,42 @@ ion-content {
       font-size: 0.65rem;
 
       &.col-id { font-size: 0.6rem; }
-      &.col-grupo ion-badge.grupo-badge { font-size: 0.65rem; }
+      &.col-grupo {
+        padding: 5px 3px;
+
+        ion-badge.grupo-badge {
+          font-size: 0.65rem;
+        }
+      }
+      &.col-estudiante {
+        font-size: 0.62rem;
+        max-width: 140px;
+      }
+    }
+
+    // Landscape móvil - Extra compacto
+    @media (max-height: 500px) and (orientation: landscape) {
+      padding: 4px 4px;
+      font-size: 0.6rem;
+
+      &.col-id {
+        font-size: 0.55rem;
+        min-width: 50px;
+      }
+      &.col-grupo {
+        padding: 4px 2px;
+        min-width: 35px;
+
+        ion-badge.grupo-badge {
+          font-size: 0.6rem;
+          --padding-start: 4px;
+          --padding-end: 4px;
+        }
+      }
+      &.col-estudiante {
+        font-size: 0.58rem;
+        max-width: 120px;
+      }
     }
 
     &.col-sticky {
@@ -712,16 +966,46 @@ ion-content {
   text-align: center;
   padding: 40px 20px;
 
+  @media (max-width: 768px) {
+    min-height: 200px;
+    padding: 30px 16px;
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    min-height: 150px;
+    padding: 20px 12px;
+  }
+
   ion-icon {
     font-size: 4rem;
     opacity: 0.3;
     margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
   }
 
   p {
     font-size: 1rem;
     margin: 0;
     max-width: 300px;
+
+    @media (max-width: 768px) {
+      font-size: 0.88rem;
+      max-width: 250px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      font-size: 0.78rem;
+      max-width: 200px;
+    }
   }
 }
 

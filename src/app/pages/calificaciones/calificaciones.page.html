@@ -2,44 +2,46 @@
   <div class="page-container">
     <div class="tab-content calificaciones-tab-content">
 
-      <!-- Título de la página -->
+      <!-- Selector de cursos como ion-segment scrollable (estilo Inicio) -->
+      @if (cursosConCalificaciones.length > 0) {
       <div class="page-title-header">
-        <ion-icon name="ribbon"></ion-icon>
-        <h2>Calificaciones Canvas</h2>
+        <div class="header-course-selector">
+          <ion-segment
+            [scrollable]="true"
+            [value]="cursoCalificacionesSeleccionado"
+            (ionChange)="seleccionarCursoCalificaciones($any($event).detail.value)"
+            class="course-segment">
+            @for (curso of cursosConCalificaciones; track curso.codigo) {
+            <ion-segment-button
+              [value]="curso.codigo"
+              [style.--course-color]="getCursoColor(curso.codigo)"
+              class="course-segment-button">
+              <div class="segment-button-content">
+                <ion-label class="segment-label">
+                  <span class="course-name">{{ curso.codigo }}</span>
+                </ion-label>
+              </div>
+            </ion-segment-button>
+            }
+          </ion-segment>
+        </div>
       </div>
-
-      <!-- Selector de cursos como botones (unificado desktop y móvil) -->
-      <div class="cursos-selector">
-        @if (cursosConCalificaciones.length > 0) {
-          @for (curso of cursosConCalificaciones; track curso.codigo) {
-            <button
-              class="curso-btn"
-              [class.activo]="cursoCalificacionesSeleccionado === curso.codigo"
-              [style.--curso-color]="getCursoColor(curso.codigo)"
-              (click)="seleccionarCursoCalificaciones(curso.codigo)">
-              {{ curso.codigo }}
-            </button>
-          }
-        } @else {
-          <div class="no-cursos-msg">
-            <ion-icon name="folder"></ion-icon>
-            <span>No hay archivos de calificaciones cargados</span>
-          </div>
-        }
+      } @else {
+      <div class="no-cursos-container">
+        <ion-icon name="folder-open"></ion-icon>
+        <span>No hay archivos de calificaciones cargados</span>
       </div>
+      }
 
-      <!-- Header con info del archivo y acciones -->
+      <!-- Info compacta del archivo y acciones -->
       @if (cursoCalificacionesSeleccionado && filasCalificaciones.length > 0) {
-        <div class="header-selector-cursos">
-          <div class="selector-left">
-            <span class="selector-label">{{ obtenerNombreCursoSeleccionado() }}</span>
+        <div class="archivo-actions-bar">
+          <div class="archivo-info">
+            <ion-icon name="document-text"></ion-icon>
+            <span class="archivo-nombre">{{ archivoCalificacionesVisualizacion?.nombre }}</span>
+            <span class="archivo-fecha">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
           </div>
-          <div class="selector-right">
-            <span class="archivo-nombre ion-hide-md-down">
-              <ion-icon name="document-text"></ion-icon>
-              {{ archivoCalificacionesVisualizacion?.nombre }}
-            </span>
-            <span class="archivo-fecha ion-hide-md-down">{{ formatearFecha(archivoCalificacionesVisualizacion?.fechaCarga) }}</span>
+          <div class="actions-buttons">
             <ion-button size="small" fill="solid" color="success"
               (click)="exportarCalificaciones(cursoCalificacionesSeleccionado)">
               <ion-icon name="download" slot="start"></ion-icon>

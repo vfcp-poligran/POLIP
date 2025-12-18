@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true">
   <!-- FAB flotante para crear curso (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso">
     @if (!modoEdicion) {
     <ion-fab-button color="success" (click)="iniciarCreacionCurso()" aria-label="Crear nuevo curso">
       <ion-icon name="add"></ion-icon>
@@ -8,20 +8,21 @@
     }
   </ion-fab>
 
-  <!-- FAB list para acciones de guardar/cancelar (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-curso ion-hide-md-up">
+  <!-- FAB Guardar (móvil/tablet) - Verde, inferior derecha -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-guardar-curso">
     @if (modoEdicion) {
-    <ion-fab-button color="primary" [activated]="true" aria-label="Acciones de curso">
-      <ion-icon name="ellipsis-vertical"></ion-icon>
+    <ion-fab-button color="success" (click)="guardarCurso()" aria-label="Guardar curso">
+      <ion-icon name="save-outline"></ion-icon>
     </ion-fab-button>
-    <ion-fab-list side="top">
-      <ion-fab-button color="success" (click)="guardarCurso()" aria-label="Guardar curso">
-        <ion-icon name="save-outline"></ion-icon>
-      </ion-fab-button>
-      <ion-fab-button color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab-list>
+    }
+  </ion-fab>
+
+  <!-- FAB Cancelar (móvil/tablet) - Amarillo con X, inferior derecha (más arriba) -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-cancelar-curso">
+    @if (modoEdicion) {
+    <ion-fab-button color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-fab-button>
     }
   </ion-fab>
 
@@ -125,59 +126,53 @@
       <!-- Área principal: Tarjetas de cursos -->
       <div class="cards-area">
         @if (cursosDisponibles.length > 0) {
-        <ion-grid class="curso-card-grid">
-          <ion-row>
-            @for (curso of cursosDisponibles; track curso.codigo) {
-            <ion-col size="12" size-md="6" size-lg="4" class="curso-card-column">
-              <ion-card class="curso-card-item"
-                       [class.selected]="cursoSeleccionado === curso.codigo"
-                       (click)="seleccionarCurso(curso.codigo)">
-                <ion-card-header>
+        <ion-list class="curso-list">
+          @for (curso of cursosDisponibles; track curso.codigo) {
+          <ion-item-sliding>
+            <ion-item class="curso-card-item" 
+                     [class.selected]="cursoSeleccionado === curso.codigo"
+                     (click)="seleccionarCurso(curso.codigo)"
+                     button>
+              <div class="curso-card-content" slot="start">
+                <div class="curso-card-header">
                   <div class="curso-card-top">
                     <ion-chip class="estado-chip"
                               [color]="curso.tieneCalificaciones ? 'success' : 'warning'">
                       <ion-icon [name]="curso.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
-                      {{ curso.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
                     </ion-chip>
-                    @if (curso.bloque) {
-                    <ion-chip class="bloque-chip" color="medium">
-                      <ion-icon name="grid-outline"></ion-icon>
-                      {{ curso.bloque }}
-                    </ion-chip>
-                    }
+                    <ion-chip class="color-indicator" [style.background]="getCursoColor(curso.codigo)"></ion-chip>
                   </div>
-                  <ion-card-title>{{ curso.nombre }}</ion-card-title>
-                  <p class="curso-codigo-label">{{ curso.nombreAbreviado || curso.codigoBase || curso.codigo }}</p>
-                </ion-card-header>
-                <ion-card-content>
-                  <div class="curso-meta-grid">
-                    <div class="meta-item">
-                      <span class="meta-label">Código único</span>
-                      <span class="meta-value">{{ curso.codigo }}</span>
-                    </div>
-                    <div class="meta-item">
-                      <span class="meta-label">Color</span>
-                      <span class="meta-value color-dot" [style.background]="getCursoColor(curso.codigo)"></span>
-                    </div>
+                  <div class="curso-info">
+                    <h3 class="curso-nombre">{{ curso.nombre }}</h3>
+                    <p class="curso-codigo-label">{{ curso.codigo }}</p>
                   </div>
-                  <div class="curso-actions">
-                    <ion-button size="small" fill="clear" color="primary"
-                                (click)="editarCurso(curso); $event.stopPropagation()">
-                      <ion-icon slot="start" name="create-outline"></ion-icon>
-                      Editar
-                    </ion-button>
-                    <ion-button size="small" fill="clear" color="danger"
-                                (click)="confirmarEliminarCurso(curso); $event.stopPropagation()">
-                      <ion-icon slot="start" name="trash-outline"></ion-icon>
-                      Eliminar
-                    </ion-button>
-                  </div>
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-            }
-          </ion-row>
-        </ion-grid>
+                </div>
+              </div>
+              <div class="curso-actions-right" slot="end">
+                <ion-button size="small" fill="clear" color="primary"
+                            (click)="editarCurso(curso); $event.stopPropagation()"
+                            title="Editar curso">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-button>
+                <ion-button size="small" fill="clear" color="danger"
+                            (click)="confirmarEliminarCurso(curso); $event.stopPropagation()"
+                            title="Eliminar curso">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
+
+            <ion-item-options side="end">
+              <ion-item-option color="primary" (click)="editarCurso(curso)">
+                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+              </ion-item-option>
+              <ion-item-option color="danger" (click)="confirmarEliminarCurso(curso)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+          }
+        </ion-list>
 
         @if (cursoSeleccionadoInfo()) {
         <ion-card class="curso-detail-card">

@@ -15,8 +15,13 @@ import {
   IonGrid,
   IonRow,
   IonCol,
+  IonList,
+  IonItem,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
   AlertController,
-  ViewWillEnter, IonFabList
+  ViewWillEnter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -27,6 +32,7 @@ import {
   save,
   saveOutline,
   closeOutline,
+  close,
   trashOutline,
   peopleOutline,
   statsChartOutline,
@@ -62,7 +68,7 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
   templateUrl: './cursos.page.html',
   styleUrls: ['./cursos.page.scss'],
   standalone: true,
-  imports: [IonFabList,
+  imports: [
     CommonModule,
     FormsModule,
     IonContent,
@@ -78,8 +84,12 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonFabButton,
     IonGrid,
     IonRow,
-    IonCol
-  ]
+    IonCol,
+    IonList,
+    IonItem,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -107,6 +117,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
   cursoParseado: any = null;
   codigoCursoEnEdicion = '';
   infoExpanded = false;
+
+  // Variables para detectar cambios
+  estadoOriginalCurso: {
+    color: string | null;
+    estudiantes: any[];
+    calificaciones: any;
+  } | null = null;
 
   // Estado de card expandida (para mobile)
   cursoExpandido: string | null = null;
@@ -197,7 +214,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   constructor() {
-    addIcons({ add, ellipsisVertical, saveOutline, closeOutline, addCircleOutline, colorPaletteOutline, checkmark, informationCircleOutline, cloudUpload, closeCircle, gridOutline, createOutline, trashOutline, peopleOutline, appsOutline, listOutline, people, person, cloudUploadOutline, documentTextOutline, checkmarkCircle, ellipseOutline, calendarOutline, timeOutline, school, documentText, library, statsChartOutline, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ add, close, ellipsisVertical, saveOutline, closeOutline, addCircleOutline, colorPaletteOutline, checkmark, informationCircleOutline, cloudUpload, closeCircle, gridOutline, createOutline, trashOutline, peopleOutline, appsOutline, listOutline, people, person, cloudUploadOutline, documentTextOutline, checkmarkCircle, ellipseOutline, calendarOutline, timeOutline, school, documentText, library, statsChartOutline, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -218,6 +235,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
    * Esto EVITA recrear el componente completo
    */
   ionViewWillEnter() {
+    console.log('='.repeat(80));
+    console.log('[CursosPage] 🔄 ionViewWillEnter - INICIANDO...');
+    console.log('='.repeat(80));
+    Logger.log('[CursosPage] 🔄 ionViewWillEnter - Iniciando carga de cursos...');
     this.cargarCursos();
     if (this.cursoSeleccionado) {
       this.cursoSeleccionadoClave = this.resolverClaveCurso(this.cursoSeleccionado);
@@ -227,6 +248,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
     if (uiState.cursosModoEdicion) {
       this.modoEdicion = true;
     }
+    console.log('[CursosPage] 🔄 ionViewWillEnter - FINALIZADO');
+    console.log('='.repeat(80));
+    Logger.log('[CursosPage] 🔄 ionViewWillEnter - Finalizado');
   }
 
   /**
@@ -251,6 +275,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
     try {
       const uiState = this.dataService.getUIState();
 
+      Logger.log('[CursosPage] 🔍 DEBUG - uiState:', uiState);
+
       if (!uiState || !uiState.courseStates) {
         Logger.warn('[CursosPage] No hay estados de curso disponibles');
         this.cursosDisponibles = [];
@@ -258,9 +284,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
       }
 
       const courseStates = uiState.courseStates;
+      Logger.log('[CursosPage] 🔍 DEBUG - courseStates:', courseStates);
+      Logger.log('[CursosPage] 🔍 DEBUG - Número de cursos en courseStates:', Object.keys(courseStates).length);
 
       this.cursosDisponibles = Object.entries(courseStates)
         .map(([nombreCurso, state]) => {
+          Logger.log(`[CursosPage] 🔍 DEBUG - Procesando curso: ${nombreCurso}, state:`, state);
+
           if (!state || typeof state !== 'object') {
             Logger.warn(`[CursosPage] Estado inválido para curso: ${nombreCurso}`);
             return null;
@@ -270,7 +300,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
             const codigoUnico = state.metadata?.codigoUnico || nombreCurso;
             const tieneArchivo = this.dataService.obtenerArchivoCalificaciones(nombreCurso) !== null;
 
-            return {
+            const cursoObj = {
               claveCurso: nombreCurso,
               nombre: state.metadata?.nombre || nombreCurso,
               nombreAbreviado: state.metadata?.nombreAbreviado || '',
@@ -280,6 +310,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
               fechaCreacion: state.metadata?.fechaCreacion || '',
               tieneCalificaciones: tieneArchivo
             };
+
+            Logger.log(`[CursosPage] 🔍 DEBUG - Curso mapeado:`, cursoObj);
+            return cursoObj;
           } catch (error) {
             Logger.error(`[CursosPage] Error procesando curso ${nombreCurso}:`, error);
             return null;
@@ -288,7 +321,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
         .filter((curso): curso is NonNullable<typeof curso> => curso !== null)
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
+      Logger.log(`[CursosPage] 🔍 DEBUG - cursosDisponibles FINAL:`, this.cursosDisponibles);
       Logger.log(`[CursosPage] ${this.cursosDisponibles.length} cursos cargados exitosamente`);
+
+      // Forzar detección de cambios
+      this.cd.detectChanges();
     } catch (error) {
       Logger.error('[CursosPage] Error crítico al cargar cursos:', error);
       this.cursosDisponibles = [];
@@ -438,6 +475,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
       bloque: curso.bloque
     };
 
+    // Cargar el color actual del curso
+    this.colorCursoSeleccionado = this.getCursoColor(curso.codigo);
+
     // Cargar estudiantes del curso desde storage
     const estudiantes = this.dataService.getCurso(claveCurso);
     if (estudiantes && estudiantes.length > 0) {
@@ -451,6 +491,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
       this.calificacionesCargadas = archivo;
       this.calificacionesFileName = archivo.nombre;
     }
+
+    // Guardar estado original para detectar cambios
+    this.estadoOriginalCurso = {
+      color: this.colorCursoSeleccionado,
+      estudiantes: JSON.parse(JSON.stringify(estudiantes || [])),
+      calificaciones: archivo ? JSON.parse(JSON.stringify(archivo)) : null
+    };
   }
 
   async onEstudiantesFileSelected(event: Event) {
@@ -1144,6 +1191,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
             codigoUnico: metadataExistente?.codigoUnico
           }
         });
+
+        // Actualizar el color si se cambió
+        if (this.colorCursoSeleccionado) {
+          await this.dataService.updateCourseState(codigoCurso, {
+            color: this.colorCursoSeleccionado
+          });
+        }
       } else {
         // MODO CREACIÓN: Crear nuevo curso
         codigoCurso = await this.dataService.crearCurso({
@@ -1174,14 +1228,33 @@ export class CursosPage implements OnInit, ViewWillEnter {
       this.cargarCursos();
       // Logger.log('📋 Cursos disponibles:', this.cursosDisponibles.length);
 
+      // Detectar si hubo cambios
+      let huboCambios = false;
+      if (this.codigoCursoEnEdicion && this.estadoOriginalCurso) {
+        // Verificar cambios en color
+        const cambioColor = this.estadoOriginalCurso.color !== this.colorCursoSeleccionado;
+        // Verificar cambios en estudiantes (comparando longitud o contenido)
+        const cambioEstudiantes = JSON.stringify(this.estadoOriginalCurso.estudiantes) !== JSON.stringify(estudiantesTransformados);
+        // Verificar cambios en calificaciones
+        const cambioCalificaciones = JSON.stringify(this.estadoOriginalCurso.calificaciones) !== JSON.stringify(this.calificacionesCargadas);
+
+        huboCambios = cambioColor || cambioEstudiantes || cambioCalificaciones;
+      }
+
       // Limpiar formulario sin mostrar toast de cancelación
       this.limpiarFormulario();
       this.modoEdicion = false;
       this.cursoSeleccionado = null;
       this.cursoSeleccionadoClave = null;
+      this.estadoOriginalCurso = null;
 
-      const mensajeExito = this.codigoCursoEnEdicion ? 'Curso actualizado exitosamente' : 'Curso creado';
-      await this.mostrarToastExito(mensajeExito);
+      // Mostrar mensaje apropiado según si hubo cambios
+      if (this.codigoCursoEnEdicion) {
+        const mensaje = huboCambios ? 'Cambios aplicados' : 'Sin cambios';
+        await this.mostrarToastExito(mensaje);
+      } else {
+        await this.mostrarToastExito('Curso creado');
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       Logger.error('[CursosPage] Error guardando curso:', {

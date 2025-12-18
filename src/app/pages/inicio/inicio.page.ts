@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, inject, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef, inject, effect, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -136,8 +136,8 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   menuAccionesAbierto: boolean = false; // Controla si el menú lateral de acciones está abierto (móvil)
   menuFabAbierto: boolean = false; // Controla el menú FAB flotante en móvil portrait
 
-  // Vista General - Multi-curso
-  vistaGeneralActiva: boolean = true; // Vista General activa por defecto al entrar a Inicio
+  // Vista General - Multi-curso (señal reactiva para Angular 20)
+  vistaGeneralActiva: WritableSignal<boolean> = signal(true);
 
   // Placeholders para la vista general (multi-curso)
   vistaGeneralSecciones = [
@@ -475,6 +475,12 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       this.mostrarNombreCorto = uiState.mostrarNombreCorto;
     }
 
+    // 🛠️ FIX: Si hay curso activo, desactivar vista general desde el inicio
+    if (uiState.cursoActivo) {
+      this.vistaGeneralActiva.set(false);
+      console.log('🎯 [ngOnInit] Curso activo detectado ->', uiState.cursoActivo, '- Vista General = false');
+    }
+
     // NOTA: NO cargar curso aquí - ionViewWillEnter() lo manejará
     // Esto evita cargas duplicadas en la primera inicialización
   }
@@ -491,11 +497,20 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   async ionViewWillEnter() {
+    console.log('🔵 ===== INICIO: ionViewWillEnter =====');
     // Sincronizar con el estado global
     const uiState = this.dataService.getUIState();
     const cursoActivo = uiState.cursoActivo;
     const tieneCursoActivo = !!cursoActivo;
     const existeEnData = cursoActivo ? !!this.cursosData[cursoActivo] : false;
+    console.log('📊 Estado inicial:', {
+      cursoActivo,
+      tieneCursoActivo,
+      existeEnData,
+      totalCursosEnData: Object.keys(this.cursosData).length,
+      vistaGeneralActiva: this.vistaGeneralActiva(),
+      estudiantesActuales: this.estudiantesActuales.length
+    });
 
     // 🧹 Limpiar seguimiento si no hay contexto activo (evita datos residuales)
     if (!tieneCursoActivo || !existeEnData) {
@@ -504,12 +519,36 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
     // CASO 1: Servicio vacío (F5 o primer inicio) -> Recargar todo
     if (Object.keys(this.cursosData).length === 0) {
+      console.log('📦 CASO 1: Servicio vacío - Cargando datos iniciales');
       this.cargarDatosIniciales();
+      return;
+    }
+
+    // ✨ CASO ESPECIAL: Solo 1 curso disponible -> Auto-seleccionar
+    const cursosDisponibles = Object.keys(this.cursosData);
+    console.log('🎯 Cursos disponibles:', cursosDisponibles.length, cursosDisponibles);
+    if (cursosDisponibles.length === 1 && !tieneCursoActivo) {
+      const unicoCurso = cursosDisponibles[0];
+      console.log('✨ AUTO-SELECCIÓN: Solo 1 curso ->', unicoCurso);
+      this.cursoActivo = unicoCurso;
+      this.vistaGeneralActiva.set(false);
+      console.log('🔄 Estado antes de seleccionarCurso():', {
+        cursoActivo: this.cursoActivo,
+        vistaGeneralActiva: this.vistaGeneralActiva(),
+        estudiantesActuales: this.estudiantesActuales.length
+      });
+      this.seleccionarCurso(unicoCurso);
+      console.log('✅ Estado después de seleccionarCurso():', {
+        cursoActivo: this.cursoActivo,
+        vistaGeneralActiva: this.vistaGeneralActiva(),
+        estudiantesActuales: this.estudiantesActuales.length
+      });
       return;
     }
 
     // CASO 2: Data existe, tenemos curso activo pero no está en memoria local -> Sincronizar
     if (tieneCursoActivo && !existeEnData) {
+      console.log('🔄 CASO 2: Curso activo no en memoria - Recargando');
       this.cargarDatosIniciales();
       return;
     }
@@ -517,13 +556,33 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     // CASO 3: Mismo curso pero sin estudiantes en vista -> Restaurar estado
     if (tieneCursoActivo && existeEnData) {
       if (this.estudiantesActuales.length === 0) {
+        console.log('👥 CASO 3: Sin estudiantes - Seleccionando curso nuevamente');
         this.seleccionarCurso(uiState.cursoActivo!);
         return;
       }
 
       // CASO 4: Mismo curso con datos - solo aplicar filtros (sin recargar)
+      console.log('🔁 CASO 4: Mismo curso con datos - Aplicando filtros');
+      console.log('⚠️ Estado completo:', {
+        vistaGeneralActiva: this.vistaGeneralActiva(),
+        cursoActivo: this.cursoActivo,
+        estudiantesActuales: this.estudiantesActuales.length,
+        condicionTemplate: (!this.vistaGeneralActiva() && this.cursoActivo && this.estudiantesActuales.length > 0)
+      });
+
+      // 🐛 FIX: Asegurar que vistaGeneralActiva esté en false si hay curso activo
+      if (this.vistaGeneralActiva() && cursosDisponibles.length === 1) {
+        console.log('🛠️ CORRIGIENDO: Estableciendo vistaGeneralActiva = false');
+        this.vistaGeneralActiva.set(false);
+      }
+
       this.aplicarFiltros();
+
+      // 🛠️ Forzar detección de cambios después de aplicar filtros
+      this.cdr.detectChanges();
+      console.log('✅ Change detection forzada');
     }
+    console.log('🔵 ===== FIN: ionViewWillEnter =====');
   }
 
   ngOnDestroy() {}
@@ -568,8 +627,8 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     // Siempre procesar si hay valor seleccionado
     if (valor) {
       // Desactivar Vista General al seleccionar un curso
-      if (this.vistaGeneralActiva) {
-        this.vistaGeneralActiva = false;
+      if (this.vistaGeneralActiva()) {
+        this.vistaGeneralActiva.set(false);
         Logger.log('🌐 [onCursoChange] Saliendo de Vista General');
       }
       // Forzar selección aunque sea el mismo curso (para salir de Vista General)
@@ -578,17 +637,31 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   }
 
   async seleccionarCurso(nombreCurso: string) {
+    console.log('\n🎯 ===== SELECCIONAR CURSO =====');
+    console.log('📌 Curso a seleccionar:', nombreCurso);
+    console.log('📊 Estado ANTES:', {
+      cursoActivo: this.cursoActivo,
+      vistaGeneralActiva: this.vistaGeneralActiva(),
+      estudiantesActuales: this.estudiantesActuales.length,
+      estudiantesEnData: this.cursosData[nombreCurso]?.length || 0
+    });
+
     const timestamp = new Date().toISOString().substr(11, 12);
     // OPTIMIZACIÓN CRÍTICA: Si el curso ya está activo Y NO estamos en Vista General, no hacer nada
     // Permitir reselección si vistaGeneralActiva estaba true (para forzar salida)
     if (this.cursoActivo === nombreCurso &&
       this._estudiantesCargadosPorCurso.has(nombreCurso) &&
       this.estudiantesActuales.length > 0 &&
-      !this.vistaGeneralActiva) {
+      !this.vistaGeneralActiva()) {
+      console.log('⚠️ EARLY RETURN: Curso ya activo, sin cambios');
       return;
     }
 
     this.cursoActivo = nombreCurso;
+
+    // 🛠️ FIX CRÍTICO: Al seleccionar un curso, SIEMPRE desactivar Vista General
+    this.vistaGeneralActiva.set(false);
+    console.log('✅ Vista General desactivada');
 
     // OPTIMIZACIÓN: Solo cargar estudiantes si no están en cache o si hay cambios
     const estudiantesNuevos = this.cursosData[nombreCurso] || [];
@@ -598,6 +671,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     if (!this._estudiantesCargadosPorCurso.has(nombreCurso) || cambiaronEstudiantes) {
       this.estudiantesActuales = estudiantesNuevos;
       this._estudiantesCargadosPorCurso.set(nombreCurso, true);
+      console.log('✅ Estudiantes cargados:', this.estudiantesActuales.length);
     }
 
     this.estudiantesSeleccionados.clear();
@@ -658,6 +732,14 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
     // OPTIMIZACIÓN: Solo forzar detección de cambios si realmente hubo un cambio de curso
     this.cdr.detectChanges();
+
+    console.log('📊 Estado DESPUÉS:', {
+      cursoActivo: this.cursoActivo,
+      vistaGeneralActiva: this.vistaGeneralActiva(),
+      estudiantesActuales: this.estudiantesActuales.length,
+      filtroGrupo: this.filtroGrupo
+    });
+    console.log('🎯 ===== FIN SELECCIONAR CURSO =====\n');
   }
 
   private actualizarGrupos() {
@@ -3478,14 +3560,15 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
    * No es toggle - solo activa la vista general
    */
   irAVistaGeneral(): void {
-    if (this.vistaGeneralActiva) {
+    if (this.vistaGeneralActiva()) {
       return; // Ya está en Vista General
     }
 
-    this.vistaGeneralActiva = true;
+    this.vistaGeneralActiva.set(true);
     Logger.log('🌐 [irAVistaGeneral] Navegando a Vista General');
 
-    // Limpiar estado de navegación
+    // Limpiar estado de navegación para permitir reselección
+    this.cursoActivo = null;
     this.filtroGrupo = 'todos';
     this.entregaEvaluando = null;
     this.tipoEvaluando = null;
@@ -3494,6 +3577,9 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     if (this.mostrarRubrica) {
       this.cerrarRubrica();
     }
+
+    // Actualizar UIState
+    this.dataService.updateUIState({ cursoActivo: null });
 
     this.cdr.markForCheck();
   }

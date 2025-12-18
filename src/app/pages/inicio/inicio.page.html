@@ -43,7 +43,7 @@
           <!-- Botón Vista General -->
           <button type="button"
                   class="vista-general-toggle-btn"
-                  [class.activo]="vistaGeneralActiva"
+                  [class.activo]="vistaGeneralActiva()"
                   (click)="irAVistaGeneral()"
                   title="Vista General"
                   aria-label="Vista General">
@@ -133,7 +133,7 @@
       <!-- ==================== -->
       <!-- VISTA GENERAL (Multi-curso) -->
       <!-- ==================== -->
-      @if (vistaGeneralActiva && cursosDisponibles.length > 0) {
+      @if (vistaGeneralActiva() && cursosDisponibles.length > 0) {
       <div class="vista-general-section">
         <div class="vista-general-grid">
           @for (seccion of vistaGeneralSecciones; track seccion.id) {
@@ -155,7 +155,7 @@
       }
 
       <!-- Lista de Estudiantes (Vista de curso específico) -->
-      @if (!vistaGeneralActiva && cursoActivo && estudiantesActuales.length > 0) {
+      @if (!vistaGeneralActiva() && cursoActivo && estudiantesActuales.length > 0) {
       <div class="estudiantes-section">
 
         <!-- Panel General -->

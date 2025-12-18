@@ -61,6 +61,12 @@ ion-content {
   --offset-bottom: 0;
   --offset-top: 0;
 
+  // Safe areas básicas para todos los tamaños
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+
   // Deshabilitar scroll cuando solo hay mensaje de no hay cursos
   &.ion-content-scroll-host {
     overflow: hidden;
@@ -76,6 +82,15 @@ ion-content {
 // Barra de búsqueda en la parte superior
 .search-bar-top {
   margin-bottom: 8px;
+  padding-top: max(8px, env(safe-area-inset-top));
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
   .main-searchbar {
     --background: rgba(255, 255, 255, 0.95);
@@ -315,6 +330,8 @@ ion-content {
     flex: 0 1 auto; // No expandir, solo el espacio necesario
     min-width: 0;
     gap: 4px;
+    padding-left: max(4px, env(safe-area-inset-left));
+    padding-right: max(4px, env(safe-area-inset-right));
 
     .course-segment {
       --background: transparent;
@@ -3000,13 +3017,14 @@ ion-chip {
 }
 
 // ================================================
-// SAFE AREAS PARA NOTCH Y NAVEGACIÓN (LANDSCAPE)
+// SAFE AREAS PARA NOTCH Y NAVEGACIÓN (MOBILE)
 // ================================================
 
 @media (max-width: 1023px) {
   ion-content {
-    --padding-top: max(5vh, env(safe-area-inset-top));
-    --padding-bottom: env(safe-area-inset-bottom);
+    // Asegurar espacio adicional para barra de estado y notch
+    --padding-top: max(8px, env(safe-area-inset-top));
+    --padding-bottom: max(8px, env(safe-area-inset-bottom));
 
     @supports (padding: env(safe-area-inset-left)) {
       --padding-start: max(8px, env(safe-area-inset-left));
@@ -3018,6 +3036,19 @@ ion-chip {
   .layout {
     padding-left: max(8px, env(safe-area-inset-left));
     padding-right: max(8px, env(safe-area-inset-right));
+    padding-bottom: max(8px, env(safe-area-inset-bottom)); // Para navegación Android/iOS
+  }
+
+  // Ajustar barra de título del curso
+  .page-title-header {
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+
+  // FAB menu con safe area inferior
+  .fab-menu-container {
+    --ion-safe-area-bottom: env(safe-area-inset-bottom);
+    margin-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
 

@@ -31,6 +31,8 @@ ion-content {
   background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 5;
 
   .title-wrapper {
     display: flex;
@@ -290,11 +292,21 @@ ion-content {
 
   .upload-section {
     display: grid;
-    grid-template-columns: 135px 1fr;
+    grid-template-columns: 120px 1fr;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     padding: 0;
     width: 100%;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 100px 1fr;
+      gap: 3px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      grid-template-columns: 90px 1fr;
+      gap: 2px;
+    }
   }
 
   .upload-btn-container {
@@ -302,31 +314,59 @@ ion-content {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 8px;
+    gap: 3px;
+    padding: 6px;
     background: transparent;
     border: none;
     cursor: pointer;
     transition: opacity 0.2s ease;
     width: 100%;
-    min-height: 60px;
+    min-height: 52px;
+
+    @media (max-width: 768px) {
+      padding: 5px;
+      min-height: 46px;
+      gap: 2px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+      padding: 4px;
+      min-height: 42px;
+      gap: 2px;
+    }
 
     &:hover {
       opacity: 0.7;
     }
 
     ion-icon {
-      font-size: 1.6rem;
+      font-size: 1.4rem;
       color: var(--ion-color-primary);
       flex-shrink: 0;
+
+      @media (max-width: 768px) {
+        font-size: 1.2rem;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 1.1rem;
+      }
     }
 
     .btn-label {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 600;
       color: var(--ion-color-dark);
       white-space: nowrap;
       text-align: center;
+
+      @media (max-width: 768px) {
+        font-size: 0.6rem;
+      }
+
+      @media (max-height: 500px) and (orientation: landscape) {
+        font-size: 0.58rem;
+      }
     }
   }
 
@@ -358,16 +398,27 @@ ion-content {
       }
 
       .file-full-name {
-        font-size: 0.7rem;
-        font-weight: normal;
+        font-size: 0.65rem;
+        font-weight: 500;
         font-style: italic;
         color: var(--ion-color-dark, #424242);
         white-space: normal;
         word-break: break-word;
         overflow-wrap: break-word;
-        line-height: 1.2;
+        line-height: 1.15;
         flex: 1;
         min-width: 0;
+        max-width: 100%;
+
+        @media (max-width: 768px) {
+          font-size: 0.6rem;
+          line-height: 1.1;
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+          font-size: 0.58rem;
+          line-height: 1.05;
+        }
       }
     }
   }
@@ -448,19 +499,27 @@ ion-content {
     border: 1px solid transparent;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    z-index: 2;
 
     &:hover {
       transform: translateY(-2px);
       border-color: rgba(31, 178, 222, 0.4);
+      z-index: 3;
     }
 
     &.selected {
       border-color: var(--azul-claro, #1fb2de);
       box-shadow: 0 10px 20px rgba(15, 56, 90, 0.12);
+      z-index: 3;
     }
 
     ion-card-header {
-      padding-bottom: 8px;
+      padding: 10px 12px 6px;
+    }
+
+    ion-card-content {
+      padding: 8px 12px 10px;
     }
   }
 }
@@ -468,23 +527,24 @@ ion-content {
 .curso-card-top {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 
   ion-chip {
     --background: rgba(15, 56, 90, 0.06);
     --color: var(--azul-oscuro, #0f385a);
     font-weight: 600;
-    height: 26px;
+    height: 22px;
+    font-size: 0.72rem;
   }
 }
 
 .curso-codigo-label {
-  margin: 4px 0 0;
-  font-size: 0.82rem;
+  margin: 2px 0 0;
+  font-size: 0.75rem;
   color: rgba(15, 56, 90, 0.65);
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .curso-meta-grid {
@@ -522,19 +582,29 @@ ion-content {
       border: 1px solid rgba(0, 0, 0, 0.1);
     }
   }
+
+  .color-indicator {
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    --background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .curso-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  justify-content: flex-start;
+  gap: 3px;
+  justify-content: center;
 
   ion-button {
-    --padding-start: 12px;
-    --padding-end: 12px;
-    font-size: 0.78rem;
-    font-weight: 600;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    font-size: 1rem;
+    min-width: 32px;
+    height: 32px;
   }
 }
 
@@ -1183,6 +1253,11 @@ ion-content {
   margin-bottom: calc(56px + var(--ion-safe-area-bottom));
   z-index: 1000;
 
+  // Ocultar en desktop (md y superior)
+  @media (min-width: 768px) {
+    display: none;
+  }
+
   ion-fab-button {
     --size: 52px;
     --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
@@ -1205,6 +1280,103 @@ ion-content {
 
   @media (max-height: 500px) and (orientation: landscape) {
     margin-bottom: calc(48px + var(--ion-safe-area-bottom));
+
+    ion-fab-button {
+      --size: 44px;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// ==================================================
+// FAB GUARDAR CURSO (Móvil/Tablet) - Verde inferior derecha
+// ==================================================
+.fab-guardar-curso {
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  margin-bottom: calc(56px + var(--ion-safe-area-bottom));
+  z-index: 1000;
+
+  // Ocultar en desktop (md y superior)
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  ion-fab-button {
+    --size: 52px;
+    --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --border-radius: 50%;
+
+    ion-icon {
+      font-size: 1.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    ion-fab-button {
+      --size: 48px;
+
+      ion-icon {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    margin-bottom: calc(48px + var(--ion-safe-area-bottom));
+
+    ion-fab-button {
+      --size: 44px;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// ==================================================
+// FAB CANCELAR CURSO (Móvil/Tablet) - Amarillo encima del Guardar
+// ==================================================
+.fab-cancelar-curso {
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  // Posición encima del botón Guardar (52px de tamaño + 16px de espacio)
+  margin-bottom: calc(124px + var(--ion-safe-area-bottom));
+  z-index: 1000;
+
+  // Ocultar en desktop (md y superior)
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  ion-fab-button {
+    --size: 52px;
+    --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --border-radius: 50%;
+
+    ion-icon {
+      font-size: 1.6rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    // Ajustar para botón más pequeño en móviles (48px + 16px espacio)
+    margin-bottom: calc(112px + var(--ion-safe-area-bottom));
+
+    ion-fab-button {
+      --size: 48px;
+
+      ion-icon {
+        font-size: 1.4rem;
+      }
+    }
+  }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    // Ajustar para pantallas pequeñas horizontal (44px + 12px espacio)
+    margin-bottom: calc(104px + var(--ion-safe-area-bottom));
 
     ion-fab-button {
       --size: 44px;

@@ -1,6 +1,6 @@
 <ion-content [fullscreen]="true">
   <!-- FAB flotante para crear rúbrica (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-rubrica ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-rubrica">
     @if (!modoEdicion && !modoCreacion && !modoSeleccionCrear) {
     <ion-fab-button color="success" (click)="mostrarOpcionesCrearMobile()" aria-label="Crear nueva rúbrica">
       <ion-icon name="add"></ion-icon>
@@ -9,7 +9,7 @@
   </ion-fab>
 
   <!-- FAB list para acciones de guardar/cancelar (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-rubrica ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-rubrica">
     @if (modoEdicion || modoCreacion || modoSeleccionCrear) {
     <ion-fab-button color="primary" aria-label="Acciones de rúbrica">
       <ion-icon name="ellipsis-vertical"></ion-icon>
@@ -178,62 +178,42 @@
                                     [color]="rubrica.estado === 'borrador' ? 'warning' : (rubrica.activa !== false ? 'success' : 'medium')"
                                     (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()">
                             <ion-icon [name]="rubrica.estado === 'borrador' ? 'construct-outline' : (rubrica.activa !== false ? 'checkmark-circle-outline' : 'ellipse-outline')"></ion-icon>
-                            {{ rubrica.estado === 'borrador' ? 'Borrador' : (rubrica.activa !== false ? 'Activa' : 'Inactiva') }}
                           </ion-chip>
-                          <ion-chip class="tipo-chip" color="primary">
-                            <ion-icon name="people-outline"></ion-icon>
-                            {{ rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual' }}
+                          <ion-chip class="tipo-chip" [color]="rubrica.tipoRubrica === 'PG' ? 'primary' : 'secondary'">
+                            <ion-icon [name]="rubrica.tipoRubrica === 'PG' ? 'people-outline' : 'person-outline'"></ion-icon>
                           </ion-chip>
                           @if (rubrica.tipoEntrega) {
                           <ion-chip class="entrega-chip" color="tertiary">
-                            <ion-icon name="trophy-outline"></ion-icon>
                             {{ rubrica.tipoEntrega }}
                           </ion-chip>
                           }
-                          <ion-chip class="version-chip" color="medium">
-                            v{{ rubrica.version || 1 }}
-                          </ion-chip>
                         </div>
                         <ion-card-title>{{ rubrica.nombre }}</ion-card-title>
-                        <p class="rubrica-meta">{{ obtenerNombreCurso(rubrica) || 'Sin curso asignado' }}</p>
+                        <p class="rubrica-codigo-label">{{ obtenerCodigoBase(rubrica) }}</p>
                       </ion-card-header>
                       <ion-card-content>
-                        <div class="rubrica-meta-grid">
-                          <div class="meta-item">
-                            <span class="meta-label">Código</span>
-                            <span class="meta-value">{{ obtenerCodigoBase(rubrica) }}</span>
-                          </div>
-                          <div class="meta-item">
-                            <span class="meta-label">Criterios</span>
-                            <span class="meta-value">{{ rubrica.criterios.length || 0 }}</span>
-                          </div>
-                          <div class="meta-item">
-                            <span class="meta-label">Puntos</span>
-                            <span class="meta-value">{{ rubrica.puntuacionTotal || 0 }}</span>
-                          </div>
-                        </div>
                         <div class="rubrica-actions">
                           <ion-button size="small" fill="clear" color="primary"
-                                      (click)="editarRubrica(rubrica); $event.stopPropagation()">
-                            <ion-icon slot="start" name="create-outline"></ion-icon>
-                            Editar
+                                      (click)="editarRubrica(rubrica); $event.stopPropagation()"
+                                      title="Editar rúbrica">
+                            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                           </ion-button>
                           @if (rubrica.version && rubrica.version >= 1) {
                           <ion-button size="small" fill="clear" color="tertiary"
-                                      (click)="verHistorialVersiones(rubrica, $event); $event.stopPropagation()">
-                            <ion-icon slot="start" name="git-branch-outline"></ion-icon>
-                            Historial
+                                      (click)="verHistorialVersiones(rubrica, $event); $event.stopPropagation()"
+                                      title="Ver historial">
+                            <ion-icon slot="icon-only" name="git-branch-outline"></ion-icon>
                           </ion-button>
                           }
                           <ion-button size="small" fill="clear" color="secondary"
-                                      (click)="mostrarOpcionesExportacion(rubrica); $event.stopPropagation()">
-                            <ion-icon slot="start" name="download-outline"></ion-icon>
-                            Exportar
+                                      (click)="mostrarOpcionesExportacion(rubrica); $event.stopPropagation()"
+                                      title="Exportar rúbrica">
+                            <ion-icon slot="icon-only" name="download-outline"></ion-icon>
                           </ion-button>
                           <ion-button size="small" fill="clear" color="danger"
-                                      (click)="confirmarEliminarRubrica(rubrica); $event.stopPropagation()">
-                            <ion-icon slot="start" name="trash-outline"></ion-icon>
-                            Eliminar
+                                      (click)="confirmarEliminarRubrica(rubrica); $event.stopPropagation()"
+                                      title="Eliminar rúbrica">
+                            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                           </ion-button>
                         </div>
                       </ion-card-content>
