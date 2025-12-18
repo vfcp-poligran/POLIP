@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -16,7 +16,8 @@ import {
   IonRow,
   IonCol,
   AlertController,
-  ViewWillEnter, IonFabList } from '@ionic/angular/standalone';
+  ViewWillEnter, IonFabList
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   listOutline,
@@ -49,7 +50,8 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical } from 'ionicons/icons';
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, appsOutline
+} from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
@@ -77,7 +79,7 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonGrid,
     IonRow,
     IonCol
-]
+  ]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -116,23 +118,26 @@ export class CursosPage implements OnInit, ViewWillEnter {
   // Vista activa para la sección de integrantes
   vistaActiva: 'general' | string = 'general';
 
-  get cursoSeleccionadoInfo() {
+  // Computed signals para reactividad automática
+  cursoSeleccionadoInfo = computed(() => {
     if (!this.cursoSeleccionado) {
       return null;
     }
     return this.cursosDisponibles.find(curso => curso.codigo === this.cursoSeleccionado) || null;
-  }
+  });
 
-  get estudiantesCurso(): any[] {
+  estudiantesCurso = computed(() => {
     const claveCurso = this.resolverClaveCurso(this.cursoSeleccionado);
     if (!claveCurso) return [];
+    // Access the signal to create dependency
+    const uiState = this.dataService.uiState();
     const estudiantes = this.dataService.getCurso(claveCurso);
     return Array.isArray(estudiantes) ? estudiantes : [];
-  }
+  });
 
-  get gruposCurso(): string[] {
+  gruposCurso = computed(() => {
     const gruposSet = new Set(
-      this.estudiantesCurso
+      this.estudiantesCurso()
         .map(est => (est?.grupo !== undefined && est?.grupo !== null ? String(est.grupo) : ''))
         .filter(grupo => grupo !== '')
     );
@@ -145,16 +150,16 @@ export class CursosPage implements OnInit, ViewWillEnter {
       }
       return a.localeCompare(b);
     });
-  }
+  });
 
-  get integrantesGrupo(): any[] {
+  integrantesGrupo = computed(() => {
     if (this.vistaActiva === 'general') {
-      return this.estudiantesCurso;
+      return this.estudiantesCurso();
     }
-    return this.estudiantesCurso.filter(est =>
+    return this.estudiantesCurso().filter(est =>
       String(est?.grupo ?? '') === String(this.vistaActiva)
     );
-  }
+  });
 
   private resolverClaveCurso(codigo: string | null): string | null {
     if (!codigo) return null;
@@ -192,7 +197,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   constructor() {
-    addIcons({add,ellipsisVertical,saveOutline,closeOutline,addCircleOutline,colorPaletteOutline,checkmark,informationCircleOutline,cloudUpload,closeCircle,checkmarkCircle,ellipseOutline,createOutline,trashOutline,calendarOutline,timeOutline,school,documentText,library,peopleOutline,cloudUploadOutline,statsChartOutline,documentTextOutline,ribbonOutline,calendar,schoolOutline,save,documentsOutline,codeSlash,eyeOutline,downloadOutline,star,checkmarkCircleOutline,documentOutline,listOutline,pricetagOutline,refreshOutline,people,person,chevronDownOutline,chevronUpOutline});
+    addIcons({ add, ellipsisVertical, saveOutline, closeOutline, addCircleOutline, colorPaletteOutline, checkmark, informationCircleOutline, cloudUpload, closeCircle, gridOutline, createOutline, trashOutline, peopleOutline, appsOutline, listOutline, people, person, cloudUploadOutline, documentTextOutline, checkmarkCircle, ellipseOutline, calendarOutline, timeOutline, school, documentText, library, statsChartOutline, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -364,7 +369,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   contarIntegrantes(grupo: string): number {
-    return this.estudiantesCurso.filter(est =>
+    return this.estudiantesCurso().filter(est =>
       String(est?.grupo ?? '') === String(grupo)
     ).length;
   }
@@ -626,8 +631,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
         const estudiante: any = {
           canvasUserId: canvasUserIdIndex >= 0 ? (valores[canvasUserIdIndex] || '').trim() : '',
           canvasGroupId: canvasGroupIdIndex >= 0 ? (valores[canvasGroupIdIndex] || '').trim() : '',
-          apellido: apellido,
-          nombre: nombre,
+          apellidos: apellido,
+          nombres: nombre,
           correo: loginIdIndex >= 0 ? (valores[loginIdIndex] || '').trim() : (correoIndex >= 0 ? (valores[correoIndex] || '').trim() : ''),
           grupo: grupoNumero,
           groupName: groupNameValue,

@@ -179,37 +179,37 @@
           </ion-row>
         </ion-grid>
 
-        @if (cursoSeleccionadoInfo) {
+        @if (cursoSeleccionadoInfo()) {
         <ion-card class="curso-detail-card">
           <ion-card-header>
-            <ion-card-title>Detalle de {{ cursoSeleccionadoInfo!.nombre }}</ion-card-title>
+            <ion-card-title>Detalle de {{ cursoSeleccionadoInfo()!.nombre }}</ion-card-title>
             <ion-chip class="estado-chip"
-                      [color]="cursoSeleccionadoInfo!.tieneCalificaciones ? 'success' : 'warning'">
-              <ion-icon [name]="cursoSeleccionadoInfo!.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
-              {{ cursoSeleccionadoInfo!.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
+                      [color]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'success' : 'warning'">
+              <ion-icon [name]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
+              {{ cursoSeleccionadoInfo()!.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
             </ion-chip>
           </ion-card-header>
           <ion-card-content>
             <div class="detalle-grid">
               <div class="detalle-item">
                 <span class="detalle-label">Código base</span>
-                <span class="detalle-value">{{ cursoSeleccionadoInfo!.codigoBase || '—' }}</span>
+                <span class="detalle-value">{{ cursoSeleccionadoInfo()!.codigoBase || '—' }}</span>
               </div>
               <div class="detalle-item">
                 <span class="detalle-label">Bloque</span>
-                <span class="detalle-value">{{ cursoSeleccionadoInfo!.bloque || '—' }}</span>
+                <span class="detalle-value">{{ cursoSeleccionadoInfo()!.bloque || '—' }}</span>
               </div>
               <div class="detalle-item">
                 <span class="detalle-label">Color</span>
-                <span class="detalle-value color-dot" [style.background]="getCursoColor(cursoSeleccionadoInfo!.codigo)"></span>
+                <span class="detalle-value color-dot" [style.background]="getCursoColor(cursoSeleccionadoInfo()!.codigo)"></span>
               </div>
               <div class="detalle-item">
                 <span class="detalle-label">Estudiantes</span>
-                <span class="detalle-value">{{ estudiantesCurso.length }}</span>
+                <span class="detalle-value">{{ estudiantesCurso().length }}</span>
               </div>
               <div class="detalle-item">
                 <span class="detalle-label">Grupos</span>
-                <span class="detalle-value">{{ gruposCurso.length }}</span>
+                <span class="detalle-value">{{ gruposCurso().length }}</span>
               </div>
             </div>
 
@@ -218,11 +218,11 @@
               <div class="grupos-tabs-header">
                 <h4>
                   <ion-icon name="people-outline"></ion-icon>
-                  Integrantes del Curso ({{ estudiantesCurso.length }} estudiantes, {{ gruposCurso.length }} grupos)
+                  Integrantes del Curso ({{ estudiantesCurso().length }} estudiantes, {{ gruposCurso().length }} grupos)
                 </h4>
               </div>
 
-              @if (estudiantesCurso.length > 0) {
+              @if (estudiantesCurso().length > 0) {
               <!-- Tabs de grupos -->
               <div class="grupos-tabs-bar">
                 <button
@@ -232,9 +232,9 @@
                   (click)="seleccionarVista('general')">
                   <ion-icon name="apps-outline"></ion-icon>
                   <span>Todos</span>
-                  <span class="badge">{{ estudiantesCurso.length }}</span>
+                  <span class="badge">{{ estudiantesCurso().length }}</span>
                 </button>
-                @for (grupo of gruposCurso; track grupo) {
+                @for (grupo of gruposCurso(); track grupo) {
                 <button
                   type="button"
                   class="grupo-tab"
@@ -251,17 +251,17 @@
                 <div class="tab-content-header">
                   @if (vistaActiva === 'general') {
                     <ion-icon name="list-outline"></ion-icon>
-                    <span>Todos los estudiantes ({{ estudiantesCurso.length }})</span>
+                    <span>Todos los estudiantes ({{ estudiantesCurso().length }})</span>
                   } @else {
                     <ion-icon name="people"></ion-icon>
-                    <span>Grupo {{ vistaActiva }} - {{ integrantesGrupo.length }} integrantes</span>
+                    <span>Grupo {{ vistaActiva }} - {{ integrantesGrupo().length }} integrantes</span>
                   }
                 </div>
 
                 <!-- Lista de integrantes -->
-                @if (integrantesGrupo.length > 0) {
+                @if (integrantesGrupo().length > 0) {
                 <div class="integrantes-grid">
-                  @for (estudiante of integrantesGrupo; track estudiante.correo) {
+                  @for (estudiante of integrantesGrupo(); track estudiante.correo) {
                   <div class="integrante-card">
                     <div class="integrante-avatar">
                       <ion-icon name="person"></ion-icon>
