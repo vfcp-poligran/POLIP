@@ -215,20 +215,24 @@ ion-content {
   }
 }
 
-.page-title-header {
+// Barra de título del curso con fondo azul
+.page-container .page-title-header {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   padding: 8px 12px;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-  border-radius: var(--rad-sm, 8px);
+  background: var(--azul-oscuro, #0f385a);
+  border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   overflow: visible;
-  min-height: auto;
+  min-height: 50px;
   gap: 6px;
-
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
   // Barra de navegación de grupos en la parte superior
   .grupos-nav-bar-top {
     display: flex;
@@ -291,21 +295,23 @@ ion-content {
 
     // Botón Vista General en la barra de navegación
     .vista-general-toggle-btn {
-      min-width: 28px;
-      height: 26px;
-      padding: 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      width: 40px;
+      height: 40px;
+      padding: 0;
       border-radius: var(--rad-sm, 8px);
       border: none;
       background: var(--verde-menta, #28a745);
       color: #ffffff;
-      font-size: 0.9rem;
+      font-size: 1.2rem;
       cursor: pointer;
       transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.7;
-      margin-right: 4px;
+      opacity: 1;
+      margin-right: 8px;
+      flex-shrink: 0;
 
       &:hover {
         opacity: 0.9;
@@ -317,8 +323,16 @@ ion-content {
       }
 
       ion-icon {
-        font-size: 1rem;
+        font-size: 1.2rem;
+        color: #ffffff;
       }
+    }
+
+    // Mensaje cuando no hay cursos
+    .no-cursos-message {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.75rem;
+      padding: 8px;
     }
   }
 
@@ -326,19 +340,23 @@ ion-content {
   .header-course-selector {
     display: flex;
     align-items: center;
-    justify-content: flex-start; // Alinear botones a la izquierda
-    flex: 0 1 auto; // No expandir, solo el espacio necesario
+    justify-content: flex-start;
+    flex: 1 1 auto;
     min-width: 0;
-    gap: 4px;
+    gap: 8px;
     padding-left: max(4px, env(safe-area-inset-left));
     padding-right: max(4px, env(safe-area-inset-right));
+    width: 100%;
 
     .course-segment {
       --background: transparent;
-      background: transparent !important;
+      background: transparent;
       border-radius: var(--rad-sm, 8px);
       min-height: 32px;
-      flex: 0 1 auto; // No expandir segmentos
+      flex: 0 1 auto;
+      justify-content: flex-start;
+      display: flex;
+      flex-wrap: nowrap;
 
       ion-segment-button {
         --background: var(--course-color, var(--azul-claro));
@@ -1061,6 +1079,31 @@ ion-card {
     gap: 16px;
   }
 
+  // Responsive para móvil
+  @media (max-width: 768px) {
+    padding: 0 6px;
+
+    .vista-general-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 4px;
+
+    .vista-general-grid {
+      gap: 10px;
+    }
+  }
+
+  // Landscape móvil
+  @media (max-width: 768px) and (orientation: landscape) {
+    .vista-general-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   .vista-general-card {
     background: white;
     border-radius: 12px;
@@ -1248,6 +1291,237 @@ ion-card {
    BARRA DE BÚSQUEDA GLOBAL
    Debajo del selector de cursos
    ======================================== */
+// Contenedor principal con búsqueda e información
+.search-info-container {
+  display: flex;
+  gap: 12px;
+  padding: 6px 12px;
+  align-items: flex-start;
+
+  .search-bar-wrapper {
+    flex: 1;
+    max-width: 400px;
+    min-width: 200px;
+    position: relative;
+
+    .search-with-results {
+      position: relative;
+    }
+
+    .main-searchbar {
+      --background: white;
+      --border-radius: 8px;
+      --box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      --placeholder-color: #999;
+      --icon-color: #666;
+      --color: #333;
+      --min-height: 36px;
+      height: 36px;
+      padding: 0;
+
+      &::part(native) {
+        border: 1px solid #e0e0e0;
+        padding: 0 8px;
+      }
+
+      &.searchbar-has-focus {
+        --box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.2);
+
+        &::part(native) {
+          border-color: var(--ion-color-primary);
+        }
+      }
+    }
+
+    // Dropdown de resultados de búsqueda
+    .search-results-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+      margin-top: 4px;
+
+      .search-result-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: #f8f9fa;
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        ion-checkbox {
+          --size: 20px;
+          margin: 0;
+        }
+
+        .result-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+
+          .result-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+          }
+
+          .result-meta {
+            font-size: 0.75rem;
+            color: #666;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+  }
+
+  .info-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 36px;
+
+    .info-content {
+      width: 100%;
+    }
+
+    .seleccionados-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px;
+      max-height: 80px;
+      overflow-y: auto;
+
+      .estudiante-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px 4px 10px;
+        background: rgba(var(--ion-color-primary-rgb), 0.12);
+        border: 1px solid rgba(var(--ion-color-primary-rgb), 0.25);
+        border-radius: 16px;
+        font-size: 0.7rem;
+        color: #333;
+        transition: all 0.2s;
+
+        &:hover {
+          background: rgba(var(--ion-color-primary-rgb), 0.18);
+          border-color: rgba(var(--ion-color-primary-rgb), 0.4);
+        }
+
+        .chip-text {
+          max-width: 150px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          line-height: 1.2;
+        }
+
+        .chip-remove {
+          font-size: 1rem;
+          color: var(--ion-color-primary);
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: color 0.2s;
+
+          &:hover {
+            color: var(--ion-color-danger);
+          }
+        }
+      }
+    }
+
+    .seleccionados-list {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(var(--ion-color-primary-rgb), 0.08);
+      border-radius: 8px;
+      border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
+
+      ion-icon {
+        font-size: 1.1rem;
+        color: var(--ion-color-primary);
+        flex-shrink: 0;
+      }
+
+      .seleccionados-text {
+        flex: 1;
+        font-size: 0.8rem;
+        color: #333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+      }
+
+      ion-button {
+        --padding-start: 4px;
+        --padding-end: 4px;
+        margin: 0;
+        height: 24px;
+
+        ion-icon {
+          font-size: 1.2rem;
+          color: #666;
+        }
+      }
+    }
+
+    .info-placeholder {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      color: var(--azul-oscuro, #0f385a);
+      font-size: 0.85rem;
+
+      ion-icon {
+        font-size: 1.2rem;
+        opacity: 0.7;
+      }
+    }
+  }
+
+  // Responsive: móvil
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 8px;
+
+    .search-bar-wrapper {
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .info-section {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+}
+
+// Retrocompatibilidad con clase antigua
 .search-bar-container {
   padding: 0 8px 8px 8px;
 

@@ -22,23 +22,69 @@
 
   <div class="layout" [ngStyle]="layoutStyles">
     <div class="page-container">
-      <!-- 1. Barra de búsqueda global - Visible solo cuando se activa -->
+      <!-- 1. Barra de búsqueda global con sección de información -->
       @if (cursosDisponibles.length > 0 && searchBarVisible) {
-      <div class="search-bar-container search-bar-top">
-        <ion-searchbar
-          #searchbarElement
-          [(ngModel)]="busquedaGeneral"
-          (ionInput)="onBusquedaChange($event)"
-          placeholder="Buscar"
-          debounce="300"
-          mode="ios"
-          class="main-searchbar">
-        </ion-searchbar>
+      <div class="search-info-container">
+        <div class="search-bar-wrapper">
+          <div class="search-with-results">
+            <ion-searchbar
+              #searchbarElement
+              [(ngModel)]="busquedaGeneral"
+              (ionInput)="onBusquedaChange($event)"
+              placeholder="Buscar"
+              debounce="300"
+              mode="ios"
+              class="main-searchbar">
+            </ion-searchbar>
+
+            <!-- Resultados de búsqueda -->
+            @if (resultadosBusqueda.length > 0 && busquedaGeneral.trim()) {
+            <div class="search-results-dropdown">
+              @for (resultado of resultadosBusqueda; track resultado.correo) {
+              <div class="search-result-item" (click)="toggleSeleccionResultado(resultado, $event)">
+                <ion-checkbox
+                  [checked]="isEstudianteSeleccionado(resultado.correo)"
+                  (ionChange)="toggleSeleccionResultado(resultado, $event)"
+                  (click)="$event.stopPropagation()">
+                </ion-checkbox>
+                <div class="result-info">
+                  <div class="result-name">{{ resultado.nombres }} {{ resultado.apellidos }}</div>
+                  <div class="result-meta">{{ resultado.curso ? getCodigoCorto(resultado.curso) : '' }} - Grupo {{ resultado.grupo }}</div>
+                </div>
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+        <div class="info-section">
+          <!-- Sección de información - Estudiantes seleccionados -->
+          <div class="info-content">
+            @if (estudiantesSeleccionadosBusqueda.size > 0) {
+              <div class="seleccionados-chips">
+                @for (correo of Array.from(estudiantesSeleccionadosBusqueda); track correo) {
+                  <div class="estudiante-chip">
+                    <span class="chip-text">{{ obtenerNombreEstudiante(correo) }}</span>
+                    <ion-icon
+                      name="close-circle"
+                      class="chip-remove"
+                      (click)="removerSeleccionado(correo)"
+                      aria-label="Eliminar">
+                    </ion-icon>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="info-placeholder">
+                <ion-icon name="information-circle-outline"></ion-icon>
+              </div>
+            }
+          </div>
+        </div>
       </div>
       }
 
       <!-- 2. Barra con Vista General + Selectores de curso -->
-      @if (cursosDisponibles.length > 0) {
       <div class="page-title-header">
         <div class="header-course-selector">
           <!-- Botón Vista General -->
@@ -46,13 +92,16 @@
                   class="vista-general-toggle-btn"
                   [class.activo]="vistaGeneralActiva()"
                   (click)="irAVistaGeneral()"
-                  title="Vista General"
+                  title="Vista General de todos los cursos"
                   aria-label="Vista General">
             <ion-icon name="apps"></ion-icon>
           </button>
+
+          <!-- Selectores de curso -->
+          @if (cursosDisponibles.length > 0) {
           <ion-segment
             [scrollable]="true"
-            [value]="cursoActivo"
+            [value]="cursoActivo ?? undefined"
             (ionChange)="onCursoChange($event)"
             class="course-segment">
             @for (curso of cursosDisponibles; track curso) {
@@ -73,9 +122,15 @@
             </ion-segment-button>
             }
           </ion-segment>
+          }
+          @else {
+          <!-- Mensaje debug cuando no hay cursos -->
+          <div class="no-cursos-message">
+            Sin cursos disponibles
+          </div>
+          }
         </div>
       </div>
-      }
 
       <!-- Popover para cambiar color (Ionic nativo) - Botón 3 puntos -->
       <ion-popover

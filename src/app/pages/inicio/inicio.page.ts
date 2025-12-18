@@ -18,6 +18,7 @@ import {
   IonItem,
   IonText,
   IonSearchbar,
+  IonCheckbox,
   MenuController,
   AlertController,
   LoadingController,
@@ -109,7 +110,8 @@ import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriteri
     IonFabList,
     IonItem,
     IonText,
-    IonSearchbar
+    IonSearchbar,
+    IonCheckbox
   ]
 })
 export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
@@ -123,6 +125,10 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   busquedaGeneral: string = '';
   gruposDisponibles: string[] = [];
   estudianteSeleccionado: string | null = null;
+
+  // Búsqueda avanzada con selección múltiple
+  resultadosBusqueda: Estudiante[] = [];
+  estudiantesSeleccionadosBusqueda: Set<string> = new Set();
 
   // Cache: trackear si los estudiantes del curso ya fueron cargados
   private _estudiantesCargadosPorCurso: Map<string, boolean> = new Map();
@@ -482,25 +488,33 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       this.mostrarNombreCorto = uiState.mostrarNombreCorto;
     }
 
-    // 🛠️ FIX: Si hay curso activo, desactivar vista general desde el inicio
-    if (uiState.cursoActivo) {
-      this.vistaGeneralActiva.set(false);
-      console.log('🎯 [ngOnInit] Curso activo detectado ->', uiState.cursoActivo, '- Vista General = false');
-    }
+    // 🛠️ INICIO: Mantener vista general como predeterminada
+    // No activar curso automáticamente - usuario debe seleccionar
+    this.vistaGeneralActiva.set(true);
+    console.log('🎯 [ngOnInit] Iniciando en Vista General');
 
     // NOTA: NO cargar curso aquí - ionViewWillEnter() lo manejará
     // Esto evita cargas duplicadas en la primera inicialización
   }
 
   async cargarDatosIniciales() {
+    console.log('🔄 Iniciando cargarDatosIniciales...');
     await this.dataService.loadCursos();
     this.cursosData = this.dataService.getCursos();
 
-    // Sincronizar UI si hay curso activo
-    const uiState = this.dataService.getUIState();
-    if (uiState.cursoActivo && this.cursosData[uiState.cursoActivo]) {
-      this.seleccionarCurso(uiState.cursoActivo);
-    }
+    // Mantener vista general activa - no auto-seleccionar curso
+    this.vistaGeneralActiva.set(true);
+    console.log('📦 Datos cargados - Manteniendo Vista General activa');
+    console.log('📊 Cursos disponibles:', Object.keys(this.cursosData));
+    console.log('📊 cursosDisponibles getter:', this.cursosDisponibles);
+    console.log('📊 vistaGeneralActiva:', this.vistaGeneralActiva());
+
+    // Forzar detección de cambios MÚLTIPLES VECES para asegurar renderizado
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      console.log('✅ Segunda detección de cambios ejecutada');
+    }, 100);
   }
 
   async ionViewWillEnter() {
@@ -531,25 +545,13 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       return;
     }
 
-    // ✨ CASO ESPECIAL: Solo 1 curso disponible -> Auto-seleccionar
+    // ✨ CASO ESPECIAL: Solo 1 curso disponible -> Mantener vista general
     const cursosDisponibles = Object.keys(this.cursosData);
     console.log('🎯 Cursos disponibles:', cursosDisponibles.length, cursosDisponibles);
     if (cursosDisponibles.length === 1 && !tieneCursoActivo) {
-      const unicoCurso = cursosDisponibles[0];
-      console.log('✨ AUTO-SELECCIÓN: Solo 1 curso ->', unicoCurso);
-      this.cursoActivo = unicoCurso;
-      this.vistaGeneralActiva.set(false);
-      console.log('🔄 Estado antes de seleccionarCurso():', {
-        cursoActivo: this.cursoActivo,
-        vistaGeneralActiva: this.vistaGeneralActiva(),
-        estudiantesActuales: this.estudiantesActuales.length
-      });
-      this.seleccionarCurso(unicoCurso);
-      console.log('✅ Estado después de seleccionarCurso():', {
-        cursoActivo: this.cursoActivo,
-        vistaGeneralActiva: this.vistaGeneralActiva(),
-        estudiantesActuales: this.estudiantesActuales.length
-      });
+      console.log('✨ Un solo curso disponible, pero manteniendo Vista General');
+      this.vistaGeneralActiva.set(true);
+      this.cdr.markForCheck();
       return;
     }
 
@@ -560,11 +562,12 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       return;
     }
 
-    // CASO 3: Mismo curso pero sin estudiantes en vista -> Restaurar estado
+    // CASO 3: Mismo curso pero sin estudiantes en vista -> Mantener vista general
     if (tieneCursoActivo && existeEnData) {
       if (this.estudiantesActuales.length === 0) {
-        console.log('👥 CASO 3: Sin estudiantes - Seleccionando curso nuevamente');
-        this.seleccionarCurso(uiState.cursoActivo!);
+        console.log('👥 CASO 3: Sin estudiantes - Manteniendo Vista General');
+        this.vistaGeneralActiva.set(true);
+        this.cdr.markForCheck();
         return;
       }
 
@@ -577,15 +580,9 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
         condicionTemplate: (!this.vistaGeneralActiva() && this.cursoActivo && this.estudiantesActuales.length > 0)
       });
 
-      // 🐛 FIX: Asegurar que vistaGeneralActiva esté en false si hay curso activo
-      if (this.vistaGeneralActiva() && cursosDisponibles.length === 1) {
-        console.log('🛠️ CORRIGIENDO: Estableciendo vistaGeneralActiva = false');
-        this.vistaGeneralActiva.set(false);
-      }
-
       this.aplicarFiltros();
 
-      // 🛠️ Forzar detección de cambios después de aplicar filtros
+      // Forzar detección de cambios después de aplicar filtros
       this.cdr.detectChanges();
       console.log('✅ Change detection forzada');
     }
@@ -629,80 +626,77 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     return this.cursosOrdenados;
   }
 
-  onCursoChange(event: any) {
+  onCursoChange(event: any): void {
     const valor = event.detail.value;
-    // Siempre procesar si hay valor seleccionado
-    if (valor) {
-      // Desactivar Vista General al seleccionar un curso
-      if (this.vistaGeneralActiva()) {
-        this.vistaGeneralActiva.set(false);
-        Logger.log('🌐 [onCursoChange] Saliendo de Vista General');
-      }
-      // Forzar selección aunque sea el mismo curso (para salir de Vista General)
-      this.seleccionarCurso(valor);
+
+    if (!valor) {
+      return; // No hacer nada si no hay valor
     }
+
+    console.log('🔄 [onCursoChange] Cambio detectado a:', valor);
+    console.log('   Estado previo - vistaGeneral:', this.vistaGeneralActiva(), 'cursoActivo:', this.cursoActivo);
+
+    // Desactivar Vista General
+    if (this.vistaGeneralActiva()) {
+      this.vistaGeneralActiva.set(false);
+      console.log('   ✓ Vista General desactivada');
+    }
+
+    // Seleccionar curso (siempre, incluso si es el mismo)
+    this.seleccionarCurso(valor);
   }
 
-  async seleccionarCurso(nombreCurso: string) {
+  async seleccionarCurso(nombreCurso: string): Promise<void> {
     console.log('\n🎯 ===== SELECCIONAR CURSO =====');
-    console.log('📌 Curso a seleccionar:', nombreCurso);
-    console.log('📊 Estado ANTES:', {
+    console.log('📌 Curso:', nombreCurso);
+    console.log('📊 Estado actual:', {
       cursoActivo: this.cursoActivo,
       vistaGeneralActiva: this.vistaGeneralActiva(),
-      estudiantesActuales: this.estudiantesActuales.length,
-      estudiantesEnData: this.cursosData[nombreCurso]?.length || 0
+      estudiantesActuales: this.estudiantesActuales.length
     });
 
-    const timestamp = new Date().toISOString().substr(11, 12);
-    // OPTIMIZACIÓN CRÍTICA: Si el curso ya está activo Y NO estamos en Vista General, no hacer nada
-    // Permitir reselección si vistaGeneralActiva estaba true (para forzar salida)
-    if (this.cursoActivo === nombreCurso &&
-      this._estudiantesCargadosPorCurso.has(nombreCurso) &&
-      this.estudiantesActuales.length > 0 &&
-      !this.vistaGeneralActiva()) {
-      console.log('⚠️ EARLY RETURN: Curso ya activo, sin cambios');
+    // Si ya es el curso activo Y no venimos de Vista General Y ya hay datos cargados
+    const yaEstaCargado = this.cursoActivo === nombreCurso &&
+                          !this.vistaGeneralActiva() &&
+                          this.estudiantesActuales.length > 0;
+
+    if (yaEstaCargado) {
+      console.log('⚠️ Curso ya está activo y cargado - sin cambios');
       return;
     }
 
+    // Activar curso
     this.cursoActivo = nombreCurso;
-
-    // 🛠️ FIX CRÍTICO: Al seleccionar un curso, SIEMPRE desactivar Vista General
     this.vistaGeneralActiva.set(false);
-    console.log('✅ Vista General desactivada');
 
-    // OPTIMIZACIÓN: Solo cargar estudiantes si no están en cache o si hay cambios
-    const estudiantesNuevos = this.cursosData[nombreCurso] || [];
-    const estudiantesPrevios = this.estudiantesActuales.length;
-    const cambiaronEstudiantes = estudiantesPrevios !== estudiantesNuevos.length;
+    // Cargar estudiantes del curso
+    const estudiantes = this.cursosData[nombreCurso] || [];
+    this.estudiantesActuales = estudiantes;
 
-    if (!this._estudiantesCargadosPorCurso.has(nombreCurso) || cambiaronEstudiantes) {
-      this.estudiantesActuales = estudiantesNuevos;
-      this._estudiantesCargadosPorCurso.set(nombreCurso, true);
-      console.log('✅ Estudiantes cargados:', this.estudiantesActuales.length);
-    }
+    console.log('✅ Curso cargado:', {
+      curso: nombreCurso,
+      estudiantes: estudiantes.length,
+      vistaGeneral: this.vistaGeneralActiva()
+    });
 
+    // Limpiar selecciones
     this.estudiantesSeleccionados.clear();
     this.estudianteSeleccionado = null;
 
     // Actualizar grupos disponibles
     this.actualizarGrupos();
 
-    // Pre-cargar calificaciones solo si no están en cache
-    if (!this._calificacionesCargadasPorCurso.has(nombreCurso)) {
-      this.precargarCalificacionesCurso();
-      this._calificacionesCargadasPorCurso.set(nombreCurso, true);
-    }
+    // Pre-cargar calificaciones
+    this.precargarCalificacionesCurso();
 
-    // Obtener CourseState una sola vez para restaurar grupo y entrega
+    // Obtener estado guardado del curso
     const courseState = this.dataService.getCourseState(nombreCurso);
 
     // Restaurar grupo desde CourseState específico de este curso
     if (courseState?.filtroGrupo && courseState.filtroGrupo !== 'todos' &&
       this.gruposDisponibles.includes(courseState.filtroGrupo)) {
 
-      // 🛡️ GUARDIA: Solo restaurar si es diferente al actual
       if (this.filtroGrupo !== courseState.filtroGrupo) {
-        // Restaurar el último grupo seleccionado para este curso
         this.grupoSeguimientoActivo = courseState.filtroGrupo;
         this.filtroGrupo = courseState.filtroGrupo;
 
@@ -711,13 +705,13 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
         this.seguimientoService.setGrupoSeleccionado(grupoNum);
       }
     } else {
-      // Resetear filtro si no hay grupo guardado o no existe en este curso
+      // Resetear filtro si no hay grupo guardado
       this.grupoSeguimientoActivo = null;
       this.filtroGrupo = 'todos';
       this.seguimientoService.setGrupoSeleccionado(0);
     }
 
-    // Inicializar vista de grupo a 'general' cuando se selecciona el curso
+    // Inicializar vista de grupo
     this.vistaGrupoActiva = 'general';
     console.log('[DEBUG] Curso seleccionado:', {
       nombreCurso,
@@ -727,6 +721,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       gruposCount: this.gruposDisponibles.length
     });
 
+    // Aplicar filtros
     this.aplicarFiltros();
 
     // Guardar en UI state
@@ -737,10 +732,10 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     this.tipoEvaluando = null;
     this.limpiarPanelSeguimiento();
 
-    // OPTIMIZACIÓN: Solo forzar detección de cambios si realmente hubo un cambio de curso
+    // Forzar detección de cambios
     this.cdr.detectChanges();
 
-    console.log('📊 Estado DESPUÉS:', {
+    console.log('📊 Estado final:', {
       cursoActivo: this.cursoActivo,
       vistaGeneralActiva: this.vistaGeneralActiva(),
       estudiantesActuales: this.estudiantesActuales.length,
@@ -3597,9 +3592,85 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   onBusquedaChange(event: any): void {
     const valor = event.detail?.value || event.target?.value || '';
     this.busquedaGeneral = valor;
+
+    // Actualizar resultados de búsqueda
+    if (valor.trim()) {
+      const busqueda = valor.toLowerCase();
+      this.resultadosBusqueda = this.estudiantesActuales.filter(est =>
+        est.nombres.toLowerCase().includes(busqueda) ||
+        est.apellidos.toLowerCase().includes(busqueda) ||
+        est.correo.toLowerCase().includes(busqueda)
+      ).slice(0, 10).map(est => ({
+        ...est,
+        curso: this.cursoActivo || ''
+      })); // Limitar a 10 resultados y agregar curso actual
+    } else {
+      this.resultadosBusqueda = [];
+    }
+
     this.aplicarFiltros();
     this.cdr.markForCheck();
   }
+
+  /**
+   * Alterna la selección de un estudiante en los resultados de búsqueda
+   */
+  toggleSeleccionResultado(estudiante: Estudiante, event?: any): void {
+    event?.stopPropagation();
+
+    if (this.estudiantesSeleccionadosBusqueda.has(estudiante.correo)) {
+      this.estudiantesSeleccionadosBusqueda.delete(estudiante.correo);
+    } else {
+      this.estudiantesSeleccionadosBusqueda.add(estudiante.correo);
+    }
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Verifica si un estudiante está seleccionado
+   */
+  isEstudianteSeleccionado(correo: string): boolean {
+    return this.estudiantesSeleccionadosBusqueda.has(correo);
+  }
+
+  /**
+   * Obtiene los nombres de los estudiantes seleccionados separados por comas
+   */
+  obtenerNombresSeleccionados(): string {
+    const seleccionados = this.estudiantesActuales.filter(est =>
+      this.estudiantesSeleccionadosBusqueda.has(est.correo)
+    );
+    return seleccionados.map(est => `${est.nombres} ${est.apellidos}`).join(', ');
+  }
+
+  /**
+   * Limpia la selección de estudiantes
+   */
+  limpiarSeleccion(): void {
+    this.estudiantesSeleccionadosBusqueda.clear();
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Obtiene el nombre de un estudiante por su correo
+   */
+  obtenerNombreEstudiante(correo: string): string {
+    const estudiante = this.estudiantesActuales.find(est => est.correo === correo);
+    return estudiante ? `${estudiante.nombres} ${estudiante.apellidos}` : correo;
+  }
+
+  /**
+   * Remueve un estudiante de la selección
+   */
+  removerSeleccionado(correo: string): void {
+    this.estudiantesSeleccionadosBusqueda.delete(correo);
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Expone Array.from para usar en el template
+   */
+  Array = Array;
 
   /**
    * Vuelve a la vista matricial de todos los grupos

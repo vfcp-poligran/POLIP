@@ -289,6 +289,29 @@ div.main-content-area {
       height: 28px;
     }
 
+    .app-title-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 1px;
+
+      .title-main {
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+      }
+
+      .title-sub {
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        opacity: 0.9;
+        line-height: 1.1;
+      }
+    }
+
     span {
       letter-spacing: 0.3px;
     }
@@ -370,6 +393,29 @@ div.main-content-area {
     .header-logo-avatar {
       width: 36px;
       height: 36px;
+    }
+
+    .app-title-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+      gap: 1px;
+
+      .title-main {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+      }
+
+      .title-sub {
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        opacity: 0.9;
+        line-height: 1.1;
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ export interface Estudiante {
   apellidos: string;
   nombres: string;
   correo: string;
+  curso?: string; // Nombre del curso al que pertenece
   grupo: string; // Número de grupo extraído del group_name (para mostrar)
   groupName?: string; // Nombre completo del grupo del CSV (ej: "Grupo 1")
 }

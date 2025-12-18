@@ -44,9 +44,9 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       bottom: 0;
       z-index: 99999;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      background: linear-gradient(to top, #0a2540 0%, #1a4a6a 25%, #3a7aaa 45%, #8ac0e0 65%, #d0e8f5 80%, #ffffff 100%);
+      background: linear-gradient(to top, #0f385a 0%, #1a4a6a 20%, #3a7aaa 35%, #8ac0e0 50%, #d0e8f5 65%, #ffffff 80%);
       padding: var(--ion-safe-area-top) var(--ion-safe-area-right) var(--ion-safe-area-bottom) var(--ion-safe-area-left);
     }
 
@@ -54,7 +54,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       text-align: center;
       color: #ffffff;
       max-width: 320px;
-      padding: 24px;
+      padding: 60px 24px 24px 24px;
     }
 
     .logo-container {
@@ -74,6 +74,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       margin: 0 0 40px 0;
       letter-spacing: 0.5px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      color: #0f385a;
     }
 
     .loader-container {
@@ -101,6 +102,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       font-size: 0.85rem;
       opacity: 0.7;
       margin: 0;
+      color: #0f385a;
       animation: pulse 1.5s ease-in-out infinite;
     }
 
