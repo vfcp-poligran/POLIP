@@ -279,7 +279,7 @@ div.main-content-area {
   .mobile-app-title {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 8px;
     font-size: 0.95rem;
     font-weight: 600;
@@ -335,6 +335,7 @@ div.main-content-area {
   padding: 0 24px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   background: var(--azul-oscuro, #0f385a);
   color: #ffffff;
@@ -3220,14 +3221,6 @@ ion-tab-button[tab="inicio"].circular-tab {
       min-width: 28px;
       border-radius: 6px;
 
-      @media (max-height: 500px) and (orientation: landscape) {
-        padding: 4px 5px;
-        min-height: 24px;
-        height: 24px;
-        min-width: 24px;
-        border-radius: 5px;
-      }
-
       // Colores base
       background: transparent;
       color: var(--azul-oscuro);
@@ -3239,13 +3232,18 @@ ion-tab-button[tab="inicio"].circular-tab {
       letter-spacing: 0.3px;
       line-height: 1;
 
+      // Transiciones suaves
+      transition: all 0.2s ease;
+
       @media (max-height: 500px) and (orientation: landscape) {
+        padding: 4px 5px;
+        min-height: 24px;
+        height: 24px;
+        min-width: 24px;
+        border-radius: 5px;
         font-size: 0.65rem;
         letter-spacing: 0.2px;
       }
-
-      // Transiciones suaves
-      transition: all 0.2s ease;
 
       // Estados hover/active
       &:hover {

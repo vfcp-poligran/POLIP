@@ -129,7 +129,7 @@
         <ion-list class="curso-list">
           @for (curso of cursosDisponibles; track curso.codigo) {
           <ion-item-sliding>
-            <ion-item class="curso-card-item" 
+            <ion-item class="curso-card-item"
                      [class.selected]="cursoSeleccionado === curso.codigo"
                      (click)="seleccionarCurso(curso.codigo)"
                      button>

@@ -135,6 +135,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   mostrarComentarios: boolean = false; // Controla visibilidad de la sección de comentarios (colapsada por defecto)
   menuAccionesAbierto: boolean = false; // Controla si el menú lateral de acciones está abierto (móvil)
   menuFabAbierto: boolean = false; // Controla el menú FAB flotante en móvil portrait
+  searchBarVisible: boolean = false; // Controla visibilidad de la barra de búsqueda
 
   // Vista General - Multi-curso (señal reactiva para Angular 20)
   vistaGeneralActiva: WritableSignal<boolean> = signal(true);
@@ -457,6 +458,12 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
     // Cargar comentarios frecuentes guardados
     this.cargarComentariosFrecuentes();
+
+    // Suscribirse a cambios en la visibilidad de la barra de búsqueda
+    this.dataService.searchBarVisible$.subscribe(visible => {
+      this.searchBarVisible = visible;
+      this.cdr.detectChanges();
+    });
 
     // Los atajos de teclado ahora se manejan automáticamente con @HostListener
 

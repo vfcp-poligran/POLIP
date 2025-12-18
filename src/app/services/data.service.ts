@@ -57,6 +57,9 @@ export class DataService implements OnDestroy {
   // Global search term
   private _globalSearch = signal<string>('');
 
+  // Control de visibilidad de la barra de búsqueda
+  private _searchBarVisible = signal<boolean>(false);
+
   // Global search results (cross-course)
   private _searchResults = signal<{
     term: string;
@@ -80,8 +83,10 @@ export class DataService implements OnDestroy {
   public comentariosGrupo = this.commentService.comentariosGrupo;
   public comentariosGrupo$ = this.commentService.comentariosGrupo$;
   public globalSearch = this._globalSearch.asReadonly();
+  public searchBarVisible = this._searchBarVisible.asReadonly();
   public searchResults = this._searchResults.asReadonly();
   public globalSearch$ = toObservable(this._globalSearch);
+  public searchBarVisible$ = toObservable(this._searchBarVisible);
   public searchResults$ = toObservable(this._searchResults);
   public calificacionesCanvasActualizadas = this.canvasService.calificacionesCanvasActualizadas;
   public calificacionesCanvasActualizadas$ = this.canvasService.calificacionesCanvasActualizadas$;

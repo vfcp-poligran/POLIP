@@ -7,29 +7,24 @@
         <ion-button (click)="toggleMobileSeguimiento()" aria-label="Alternar panel de seguimiento">
           <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
         </ion-button>
+        <ion-button (click)="toggleSearch()" aria-label="Buscar">
+          <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+        </ion-button>
       </ion-buttons>
       <ion-title class="mobile-app-title">
         <ion-avatar class="header-logo-avatar">
-          <img src="assets/icon/logo-poligran.svg" alt="Logo Poligran" />
+          <img src="https://instructure-uploads.s3.amazonaws.com/account_89940000000000001/attachments/673675/logocanvas.png" alt="Logo Poli" />
         </ion-avatar>
         <span>POLIProject</span>
       </ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="toggleSearch()" aria-label="Buscar">
-          <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-        </ion-button>
-      </ion-buttons>
     </ion-toolbar>
   </ion-header>
   } @else {
   <div class="desktop-nav-bar" role="navigation" aria-label="Navegación principal">
-    <div class="desktop-nav-brand">
-      <ion-avatar class="header-logo-avatar">
-        <img src="assets/icon/logo-poligran.svg" alt="Logo Poligran" />
-      </ion-avatar>
-      <span>POLIProject</span>
-    </div>
     <ion-buttons>
+      <ion-button fill="clear" color="light" (click)="toggleSearch()" aria-label="Buscar">
+        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+      </ion-button>
       <ion-button
         *ngFor="let item of navigationItems"
         [fill]="currentUrl.includes(item.path) ? 'solid' : 'clear'"
@@ -39,11 +34,12 @@
         {{ item.label }}
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-button fill="clear" color="light" (click)="toggleSearch()" aria-label="Buscar">
-        <ion-icon slot="icon-only" [name]="searchExpanded ? 'close-outline' : 'search-outline'"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    <div class="desktop-nav-brand">
+      <ion-avatar class="header-logo-avatar">
+        <img src="https://instructure-uploads.s3.amazonaws.com/account_89940000000000001/attachments/673675/logocanvas.png" alt="Logo Poli" />
+      </ion-avatar>
+      <span>POLIProject</span>
+    </div>
   </div>
   }
 
@@ -507,14 +503,4 @@
 <!-- Overlay para cerrar el panel móvil -->
 @if (!isDesktop) {
 <div class="mobile-seguimiento-overlay" [class.visible]="mobileSeguimientoVisible" (click)="toggleMobileSeguimiento()"></div>
-}
-
-<!-- Barra de búsqueda flotante cuando se expande -->
-@if (searchExpanded) {
-<div class="floating-search-container">
-  <ion-searchbar #searchBar class="floating-searchbar" [(ngModel)]="globalSearch" (ionInput)="onGlobalSearch($event)"
-    (ionCancel)="closeSearch()" (ionBlur)="onSearchBlur()" placeholder="Buscar..." debounce="300"
-    show-clear-button="focus" clear-icon="close-circle-outline">
-  </ion-searchbar>
-</div>
 }

@@ -12,7 +12,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         <!-- Logo del Politécnico -->
         <div class="logo-container">
           <img
-            src="https://www.poli.edu.co/themes/custom/ptecnico2023/logo.svg"
+            src="https://upload.wikimedia.org/wikipedia/commons/7/76/Logo_del_Polit%C3%A9cnico_Grancolombiano.svg"
             alt="Politécnico Grancolombiano"
             class="logo"
             (error)="onLogoError($event)"
@@ -21,7 +21,6 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 
         <!-- Nombre de la aplicación -->
         <h1 class="app-name">POLIProject</h1>
-        <p class="app-subtitle">Politécnico Grancolombiano</p>
 
         <!-- Indicador de carga -->
         <div class="loader-container">
@@ -32,7 +31,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         </div>
 
         <!-- Versión -->
-        <p class="version">v1.2.0</p>
+        <p class="version">v3.1.0</p>
       </div>
     </div>
   `,
@@ -47,7 +46,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #0f385a 0%, #1a5a8a 50%, #0f385a 100%);
+      background: linear-gradient(to top, #0a2540 0%, #1a4a6a 25%, #3a7aaa 45%, #8ac0e0 65%, #d0e8f5 80%, #ffffff 100%);
       padding: var(--ion-safe-area-top) var(--ion-safe-area-right) var(--ion-safe-area-bottom) var(--ion-safe-area-left);
     }
 
@@ -64,25 +63,17 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
     }
 
     .logo {
-      width: 180px;
+      width: 200px;
       height: auto;
-      filter: brightness(0) invert(1);
       transition: transform 0.3s ease;
     }
 
     .app-name {
       font-size: 1.5rem;
       font-weight: 700;
-      margin: 0 0 8px 0;
+      margin: 0 0 40px 0;
       letter-spacing: 0.5px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .app-subtitle {
-      font-size: 0.9rem;
-      opacity: 0.85;
-      margin: 0 0 40px 0;
-      font-weight: 300;
     }
 
     .loader-container {
@@ -101,7 +92,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
     .loader-bar {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, #1FB2DE, #A6CE38, #FBAF17);
+      background: #e91e63;
       border-radius: 4px;
       animation: loadProgress 2.5s ease-out forwards;
     }
@@ -162,6 +153,7 @@ export class SplashScreenComponent implements OnInit {
     'Cargando...',
     'Inicializando almacenamiento...',
     'Cargando cursos...',
+    'Cargando evaluaciones...',
     'Preparando interfaz...',
     '¡Listo!'
   ];
@@ -178,8 +170,12 @@ export class SplashScreenComponent implements OnInit {
         index++;
       } else {
         clearInterval(interval);
+        // Delay adicional de 0.5 segundos antes de ocultar el splash
+        setTimeout(() => {
+          this.hideSplash();
+        }, 500);
       }
-    }, 500);
+    }, 450);
   }
 
   hideSplash(): void {

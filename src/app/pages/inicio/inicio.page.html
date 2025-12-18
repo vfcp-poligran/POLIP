@@ -22,13 +22,14 @@
 
   <div class="layout" [ngStyle]="layoutStyles">
     <div class="page-container">
-      <!-- 1. Barra de búsqueda global - SIEMPRE ARRIBA -->
-      @if (cursosDisponibles.length > 0) {
+      <!-- 1. Barra de búsqueda global - Visible solo cuando se activa -->
+      @if (cursosDisponibles.length > 0 && searchBarVisible) {
       <div class="search-bar-container search-bar-top">
         <ion-searchbar
+          #searchbarElement
           [(ngModel)]="busquedaGeneral"
           (ionInput)="onBusquedaChange($event)"
-          placeholder="Buscar estudiante..."
+          placeholder="Buscar"
           debounce="300"
           mode="ios"
           class="main-searchbar">

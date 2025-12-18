@@ -466,60 +466,159 @@ ion-content {
 }
 
 // ============================================
-// ÁREA DE TARJETAS DE CURSOS
+// ÁREA DE LISTA DE CURSOS CON SWIPE
 // ============================================
 .cards-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
   margin-top: 8px;
 
   @media (max-width: 768px) {
     margin-top: 4px;
-    gap: 12px;
+    gap: 6px;
   }
 }
 
-.curso-card-grid {
-  width: 100%;
+.curso-list {
+  background: transparent;
+  padding: 0;
 
-  ion-row {
-    row-gap: 16px;
-  }
+  ion-item-sliding {
+    margin-bottom: 8px;
+    border-radius: 12px;
+    overflow: hidden;
 
-  .curso-card-column {
-    display: flex;
+    @media (max-width: 768px) {
+      margin-bottom: 6px;
+    }
   }
 
   .curso-card-item {
-    width: 100%;
+    --background: #ffffff;
+    --border-radius: 12px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --min-height: 70px;
     border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(15, 56, 90, 0.08);
+    box-shadow: 0 4px 12px rgba(15, 56, 90, 0.08);
     border: 1px solid transparent;
-    cursor: pointer;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
     position: relative;
     z-index: 2;
+    margin: 0;
+    cursor: pointer;
 
     &:hover {
-      transform: translateY(-2px);
+      transform: translateY(-1px);
       border-color: rgba(31, 178, 222, 0.4);
+      box-shadow: 0 6px 16px rgba(15, 56, 90, 0.12);
       z-index: 3;
     }
 
     &.selected {
       border-color: var(--azul-claro, #1fb2de);
-      box-shadow: 0 10px 20px rgba(15, 56, 90, 0.12);
+      box-shadow: 0 8px 18px rgba(15, 56, 90, 0.14);
       z-index: 3;
+      --background: rgba(31, 178, 222, 0.02);
     }
 
-    ion-card-header {
-      padding: 10px 12px 6px;
+    @media (max-width: 768px) {
+      --min-height: 65px;
+      --padding-start: 10px;
+      --padding-end: 8px;
+    }
+  }
+
+  .curso-card-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .curso-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+
+    @media (max-width: 768px) {
+      gap: 8px;
+    }
+  }
+
+  .curso-info {
+    flex: 1;
+    min-width: 0;
+
+    .curso-nombre {
+      margin: 0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--azul-oscuro, #0f385a);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      @media (max-width: 768px) {
+        font-size: 0.8rem;
+      }
     }
 
-    ion-card-content {
-      padding: 8px 12px 10px;
+    .curso-codigo-label {
+      margin: 2px 0 0;
+      font-size: 0.72rem;
+      color: rgba(15, 56, 90, 0.65);
+      letter-spacing: 0.3px;
+
+      @media (max-width: 768px) {
+        font-size: 0.68rem;
+      }
+    }
+  }
+
+  .curso-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: 8px;
+
+    ion-button {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      font-size: 1rem;
+      min-width: 32px;
+      height: 32px;
+
+      @media (max-width: 768px) {
+        font-size: 0.9rem;
+        min-width: 30px;
+        height: 30px;
+      }
+    }
+
+    // Ocultar en móvil para solo usar swipe
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  ion-item-options {
+    ion-item-option {
+      font-size: 1.2rem;
+      min-width: 60px;
+
+      ion-icon {
+        font-size: 1.4rem;
+      }
+
+      @media (max-width: 768px) {
+        min-width: 55px;
+
+        ion-icon {
+          font-size: 1.3rem;
+        }
+      }
     }
   }
 }
@@ -529,7 +628,6 @@ ion-content {
   align-items: center;
   gap: 5px;
   flex-wrap: wrap;
-  margin-bottom: 6px;
 
   ion-chip {
     --background: rgba(15, 56, 90, 0.06);
@@ -538,13 +636,6 @@ ion-content {
     height: 22px;
     font-size: 0.72rem;
   }
-}
-
-.curso-codigo-label {
-  margin: 2px 0 0;
-  font-size: 0.75rem;
-  color: rgba(15, 56, 90, 0.65);
-  letter-spacing: 0.3px;
 }
 
 .curso-meta-grid {

@@ -110,7 +110,6 @@ export interface NavigationItem {
     RouterModule,
     FormsModule,
     IonIcon,
-    IonSearchbar,
     IonButton,
     IonButtons,
     IonCard,
@@ -384,34 +383,24 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }
 
   toggleSearch(): void {
-    this.searchExpanded = !this.searchExpanded;
-
-    // Si se expande, enfocar el searchbar después de un pequeño delay para la animación
-    if (this.searchExpanded) {
-      setTimeout(() => {
-        // Usar ViewChild para acceder al searchbar (patrón Angular correcto)
-        this.searchbarRef?.nativeElement?.setFocus();
-      }, 350); // Tiempo para completar la animación
-    } else {
-      // Si se cierra, limpiar la búsqueda
-      this.globalSearch = '';
-      this.dataService.setGlobalSearchTerm('');
+    // Navegar a la página de inicio si no estamos allí
+    if (!this.currentUrl.includes('/inicio')) {
+      this.router.navigate(['/tabs/inicio']);
     }
-  }
 
-  closeSearch(): void {
-    this.searchExpanded = false;
-    this.globalSearch = '';
-    this.dataService.setGlobalSearchTerm('');
-  }
+    // Alternar visibilidad de la barra de búsqueda
+    const currentVisible = this.dataService.searchBarVisible();
+    (this.dataService as any)._searchBarVisible.set(!currentVisible);
 
-  onSearchBlur(): void {
-    // Solo cerrar si no hay texto de búsqueda
-    setTimeout(() => {
-      if (!this.globalSearch?.trim()) {
-        this.searchExpanded = false;
-      }
-    }, 150);
+    // Si se acaba de mostrar, hacer focus después de un delay
+    if (!currentVisible) {
+      setTimeout(() => {
+        const searchbar = document.querySelector('.main-searchbar') as any;
+        if (searchbar && searchbar.setFocus) {
+          searchbar.setFocus();
+        }
+      }, 300);
+    }
   }
 
   /** Toggle del panel de seguimiento móvil */
