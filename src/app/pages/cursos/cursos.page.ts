@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef, computed } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -94,10 +94,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
   @ViewChild('calificacionesFileInput') calificacionesFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('rubricaFileInput') rubricaFileInput!: ElementRef<HTMLInputElement>;
 
-  cursosDisponibles: any[] = [];
-  cursoSeleccionado: string | null = null;
-  private cursoSeleccionadoClave: string | null = null;
-  modoEdicion = false;
+  // Señales para el estado del componente (Reactividad Angular 17+)
+  cursosDisponibles = signal<any[]>([]);
+  cursoSeleccionado = signal<string | null>(null);
+  private cursoSeleccionadoClave = signal<string | null>(null);
+  modoEdicion = signal<boolean>(false);
+  vistaActiva = signal<'general' | string>('general');
+
   rubricasAsociadas: any[] = [];
 
   estudiantesFileName = '';
@@ -126,21 +129,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
   coloresDisponibles: string[] = COLORES_CURSOS;
   colorCursoSeleccionado: string | null = null;
 
-  // Vista activa para la sección de integrantes
-  vistaActiva: 'general' | string = 'general';
-
   // Computed signals para reactividad automática
   cursoSeleccionadoInfo = computed(() => {
-    if (!this.cursoSeleccionado) {
+    const seleccion = this.cursoSeleccionado();
+    if (!seleccion) {
       return null;
     }
-    return this.cursosDisponibles.find(curso => curso.codigo === this.cursoSeleccionado) || null;
+    return this.cursosDisponibles().find(curso => curso.codigo === seleccion) || null;
   });
 
   estudiantesCurso = computed(() => {
-    const claveCurso = this.resolverClaveCurso(this.cursoSeleccionado);
+    const seleccion = this.cursoSeleccionado();
+    const claveCurso = this.resolverClaveCurso(seleccion);
     if (!claveCurso) return [];
-    // Access the signal to create dependency
+
+    // Al acceder a uiState() y cursoSeleccionado(), esta señal se recalcula automáticamente
     const uiState = this.dataService.uiState();
     const estudiantes = this.dataService.getCurso(claveCurso);
     return Array.isArray(estudiantes) ? estudiantes : [];
@@ -164,18 +167,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
   });
 
   integrantesGrupo = computed(() => {
-    if (this.vistaActiva === 'general') {
-      return this.estudiantesCurso();
+    const vista = this.vistaActiva();
+    const estudiantes = this.estudiantesCurso();
+
+    if (vista === 'general') {
+      return estudiantes;
     }
-    return this.estudiantesCurso().filter(est =>
-      String(est?.grupo ?? '') === String(this.vistaActiva)
+    return estudiantes.filter(est =>
+      String(est?.grupo ?? '') === String(vista)
     );
   });
 
   private resolverClaveCurso(codigo: string | null): string | null {
     if (!codigo) return null;
 
-    const curso = this.cursosDisponibles.find(c =>
+    const curso = this.cursosDisponibles().find(c =>
       c.codigo === codigo ||
       c.claveCurso === codigo ||
       c.nombreAbreviado === codigo ||
@@ -234,13 +240,14 @@ export class CursosPage implements OnInit, ViewWillEnter {
     console.log('='.repeat(80));
     Logger.log('[CursosPage] 🔄 ionViewWillEnter - Iniciando carga de cursos...');
     this.cargarCursos();
-    if (this.cursoSeleccionado) {
-      this.cursoSeleccionadoClave = this.resolverClaveCurso(this.cursoSeleccionado);
+    const seleccion = this.cursoSeleccionado();
+    if (seleccion) {
+      this.cursoSeleccionadoClave.set(this.resolverClaveCurso(seleccion));
     }
     // Restaurar estado de modoEdicion desde UIState
     const uiState = this.dataService.getUIState();
     if (uiState.cursosModoEdicion) {
-      this.modoEdicion = true;
+      this.modoEdicion.set(true);
     }
     console.log('[CursosPage] 🔄 ionViewWillEnter - FINALIZADO');
     console.log('='.repeat(80));
@@ -251,8 +258,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
    * Editar un curso desde la tabla
    */
   editarCurso(curso: any) {
-    this.cursoSeleccionado = curso.codigo;
-    this.cursoSeleccionadoClave = this.resolverClaveCurso(curso.codigo);
+    this.cursoSeleccionado.set(curso.codigo);
+    this.cursoSeleccionadoClave.set(this.resolverClaveCurso(curso.codigo));
     this.editarCursoSeleccionado();
   }
 
@@ -273,7 +280,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
       if (!uiState || !uiState.courseStates) {
         Logger.warn('[CursosPage] No hay estados de curso disponibles');
-        this.cursosDisponibles = [];
+        this.cursosDisponibles.set([]);
         return;
       }
 
@@ -281,7 +288,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       Logger.log('[CursosPage] 🔍 DEBUG - courseStates:', courseStates);
       Logger.log('[CursosPage] 🔍 DEBUG - Número de cursos en courseStates:', Object.keys(courseStates).length);
 
-      this.cursosDisponibles = Object.entries(courseStates)
+      const mappedCursos = Object.entries(courseStates)
         .map(([nombreCurso, state]) => {
           Logger.log(`[CursosPage] 🔍 DEBUG - Procesando curso: ${nombreCurso}, state:`, state);
 
@@ -315,14 +322,15 @@ export class CursosPage implements OnInit, ViewWillEnter {
         .filter((curso): curso is NonNullable<typeof curso> => curso !== null)
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-      Logger.log(`[CursosPage] 🔍 DEBUG - cursosDisponibles FINAL:`, this.cursosDisponibles);
-      Logger.log(`[CursosPage] ${this.cursosDisponibles.length} cursos cargados exitosamente`);
+      this.cursosDisponibles.set(mappedCursos);
+      Logger.log(`[CursosPage] 🔍 DEBUG - cursosDisponibles FINAL:`, this.cursosDisponibles());
+      Logger.log(`[CursosPage] ${this.cursosDisponibles().length} cursos cargados exitosamente`);
 
-      // Forzar detección de cambios
+      // Forzar detección de cambios (opcional con signals, pero ayuda en casos complejos)
       this.cd.detectChanges();
     } catch (error) {
       Logger.error('[CursosPage] Error crítico al cargar cursos:', error);
-      this.cursosDisponibles = [];
+      this.cursosDisponibles.set([]);
       this.mostrarToastError('Error al cargar la lista de cursos');
     }
   }
@@ -330,9 +338,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
   async iniciarCreacionCurso() {
     Logger.log('🔘 [CursosPage] Click en Crear Curso - Iniciando...');
     try {
-      this.modoEdicion = true;
-      this.cursoSeleccionado = null;
-      this.cursoSeleccionadoClave = null;
+      this.modoEdicion.set(true);
+      this.cursoSeleccionado.set(null);
+      this.cursoSeleccionadoClave.set(null);
       this.limpiarFormulario();
       // Generar color aleatorio diferente a los cursos existentes
       const coloresUsados = this.obtenerColoresUsados();
@@ -383,7 +391,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   async cancelarCreacionCurso() {
-    this.modoEdicion = false;
+    this.modoEdicion.set(false);
     this.colorCursoSeleccionado = null;
     this.limpiarFormulario();
     // Limpiar estado en UIState
@@ -396,7 +404,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   seleccionarVista(vista: 'general' | string) {
-    this.vistaActiva = vista;
+    this.vistaActiva.set(vista);
   }
 
   contarIntegrantes(grupo: string): number {
@@ -406,20 +414,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   seleccionarCurso(codigo: string) {
-    this.cursoSeleccionado = codigo;
-    this.cursoSeleccionadoClave = this.resolverClaveCurso(codigo);
-    this.vistaActiva = 'general';
-    this.modoEdicion = false;
-    this.cargarRubricasAsociadas(this.cursoSeleccionadoClave || codigo);
+    this.cursoSeleccionado.set(codigo);
+    const clave = this.resolverClaveCurso(codigo);
+    this.cursoSeleccionadoClave.set(clave);
+    this.vistaActiva.set('general');
+    this.modoEdicion.set(false);
+    this.cargarRubricasAsociadas(clave || codigo);
     // Limpiar estado en UIState
     this.dataService.updateUIState({ cursosModoEdicion: false });
   }
 
   deseleccionarCurso() {
-    this.cursoSeleccionado = null;
-    this.cursoSeleccionadoClave = null;
-    this.vistaActiva = 'general';
-    this.modoEdicion = false;
+    this.cursoSeleccionado.set(null);
+    this.cursoSeleccionadoClave.set(null);
+    this.vistaActiva.set('general');
+    this.modoEdicion.set(false);
     this.limpiarFormulario();
     this.rubricasAsociadas = [];
     // Limpiar estado en UIState
@@ -454,14 +463,15 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   editarCursoSeleccionado() {
-    if (!this.cursoSeleccionado) return;
+    const seleccion = this.cursoSeleccionado();
+    if (!seleccion) return;
 
-    const curso = this.cursosDisponibles.find(c => c.codigo === this.cursoSeleccionado);
+    const curso = this.cursosDisponibles().find(c => c.codigo === seleccion);
     if (!curso) return;
 
-    const claveCurso = this.cursoSeleccionadoClave || this.resolverClaveCurso(curso.codigo) || curso.codigo;
+    const claveCurso = this.cursoSeleccionadoClave() || this.resolverClaveCurso(curso.codigo) || curso.codigo;
 
-    this.modoEdicion = true;
+    this.modoEdicion.set(true);
     this.codigoCursoEnEdicion = claveCurso;
     this.cursoParseado = {
       nombre: curso.nombre,
@@ -1161,9 +1171,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
       let codigoCurso: string;
 
       // Verificar si es edición o creación
-      if (this.codigoCursoEnEdicion) {
+      const enEdicion = this.codigoCursoEnEdicion;
+      if (enEdicion) {
         // MODO EDICIÓN: Actualizar curso existente
-        codigoCurso = this.codigoCursoEnEdicion;
+        codigoCurso = enEdicion;
 
         // Actualizar estudiantes del curso
         await this.dataService.actualizarEstudiantesCurso(codigoCurso, estudiantesTransformados);
@@ -1218,13 +1229,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
         });
       }
 
-      // Logger.log('🔄 Recargando lista de cursos...');
       this.cargarCursos();
-      // Logger.log('📋 Cursos disponibles:', this.cursosDisponibles.length);
 
       // Detectar si hubo cambios
       let huboCambios = false;
-      if (this.codigoCursoEnEdicion && this.estadoOriginalCurso) {
+      if (enEdicion && this.estadoOriginalCurso) {
         // Verificar cambios en color
         const cambioColor = this.estadoOriginalCurso.color !== this.colorCursoSeleccionado;
         // Verificar cambios en estudiantes (comparando longitud o contenido)
@@ -1237,13 +1246,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
       // Limpiar formulario sin mostrar toast de cancelación
       this.limpiarFormulario();
-      this.modoEdicion = false;
-      this.cursoSeleccionado = null;
-      this.cursoSeleccionadoClave = null;
+      this.modoEdicion.set(false);
+      this.cursoSeleccionado.set(null);
+      this.cursoSeleccionadoClave.set(null);
       this.estadoOriginalCurso = null;
 
       // Mostrar mensaje apropiado según si hubo cambios
-      if (this.codigoCursoEnEdicion) {
+      if (enEdicion) {
         const mensaje = huboCambios ? 'Cambios aplicados' : 'Sin cambios';
         await this.mostrarToastExito(mensaje);
       } else {
@@ -1272,9 +1281,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
       ? 'Creación de nuevo curso cancelada'
       : 'Edición cancelada';
 
-    this.modoEdicion = false;
-    this.cursoSeleccionado = null;
-    this.cursoSeleccionadoClave = null;
+    this.modoEdicion.set(false);
+    this.cursoSeleccionado.set(null);
+    this.cursoSeleccionadoClave.set(null);
     this.limpiarFormulario();
 
     await this.mostrarToastWarning(mensaje);
@@ -1352,7 +1361,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
               await this.dataService.eliminarCurso(claveCurso);
               this.cargarCursos();
 
-              if (this.cursoSeleccionado === curso.codigo || this.cursoSeleccionadoClave === claveCurso) {
+              if (this.cursoSeleccionado() === curso.codigo || this.cursoSeleccionadoClave() === claveCurso) {
                 this.deseleccionarCurso();
               }
 

@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true">
   <!-- FAB flotante para crear curso (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso">
-    @if (!modoEdicion) {
+    @if (!modoEdicion()) {
     <ion-fab-button color="success" (click)="iniciarCreacionCurso()" aria-label="Crear nuevo curso">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
@@ -10,7 +10,7 @@
 
   <!-- FAB Guardar (móvil/tablet) - Verde, inferior derecha -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-guardar-curso">
-    @if (modoEdicion) {
+    @if (modoEdicion()) {
     <ion-fab-button color="success" (click)="guardarCurso()" aria-label="Guardar curso">
       <ion-icon name="save-outline"></ion-icon>
     </ion-fab-button>
@@ -19,7 +19,7 @@
 
   <!-- FAB Cancelar (móvil/tablet) - Amarillo con X, inferior derecha (más arriba) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-cancelar-curso">
-    @if (modoEdicion) {
+    @if (modoEdicion()) {
     <ion-fab-button color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
       <ion-icon name="close-outline"></ion-icon>
     </ion-fab-button>
@@ -35,7 +35,7 @@
           <h2>Cursos</h2>
         </div>
         <div class="header-actions ion-hide-md-down">
-          @if (!modoEdicion) {
+          @if (!modoEdicion()) {
           <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
             <ion-icon name="add-circle-outline" slot="start"></ion-icon>
             Crear
@@ -53,7 +53,7 @@
         <!-- Botones removidos - ahora se usan FABs flotantes -->
       </div>
 
-      @if (modoEdicion) {
+      @if (modoEdicion()) {
       <!-- Selector de color del curso -->
       <div class="color-selector-section">
         <div class="color-selector-header">
@@ -125,20 +125,18 @@
 
       <!-- Área principal: Tarjetas de cursos -->
       <div class="cards-area">
-        @if (cursosDisponibles.length > 0) {
+        @if (cursosDisponibles().length > 0) {
         <ion-list class="curso-list">
-          @for (curso of cursosDisponibles; track curso.codigo) {
+          @for (curso of cursosDisponibles(); track curso.codigo) {
           <ion-item-sliding>
-            <ion-item class="curso-card-item"
-                     [class.selected]="cursoSeleccionado === curso.codigo"
-                     (click)="seleccionarCurso(curso.codigo)"
-                     button>
+            <ion-item class="curso-card-item" [class.selected]="cursoSeleccionado() === curso.codigo"
+              (click)="seleccionarCurso(curso.codigo)" button>
               <div class="curso-card-content" slot="start">
                 <div class="curso-card-header">
                   <div class="curso-card-top">
-                    <ion-chip class="estado-chip"
-                              [color]="curso.tieneCalificaciones ? 'success' : 'warning'">
-                      <ion-icon [name]="curso.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
+                    <ion-chip class="estado-chip" [color]="curso.tieneCalificaciones ? 'success' : 'warning'">
+                      <ion-icon
+                        [name]="curso.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
                     </ion-chip>
                     <ion-chip class="color-indicator" [style.background]="getCursoColor(curso.codigo)"></ion-chip>
                   </div>
@@ -150,13 +148,11 @@
               </div>
               <div class="curso-actions-right" slot="end">
                 <ion-button size="small" fill="clear" color="primary"
-                            (click)="editarCurso(curso); $event.stopPropagation()"
-                            title="Editar curso">
+                  (click)="editarCurso(curso); $event.stopPropagation()" title="Editar curso">
                   <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                 </ion-button>
                 <ion-button size="small" fill="clear" color="danger"
-                            (click)="confirmarEliminarCurso(curso); $event.stopPropagation()"
-                            title="Eliminar curso">
+                  (click)="confirmarEliminarCurso(curso); $event.stopPropagation()" title="Eliminar curso">
                   <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                 </ion-button>
               </div>
@@ -179,8 +175,9 @@
           <ion-card-header>
             <ion-card-title>Detalle de {{ cursoSeleccionadoInfo()!.nombre }}</ion-card-title>
             <ion-chip class="estado-chip"
-                      [color]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'success' : 'warning'">
-              <ion-icon [name]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
+              [color]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'success' : 'warning'">
+              <ion-icon
+                [name]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
               {{ cursoSeleccionadoInfo()!.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
             </ion-chip>
           </ion-card-header>
@@ -196,7 +193,8 @@
               </div>
               <div class="detalle-item">
                 <span class="detalle-label">Color</span>
-                <span class="detalle-value color-dot" [style.background]="getCursoColor(cursoSeleccionadoInfo()!.codigo)"></span>
+                <span class="detalle-value color-dot"
+                  [style.background]="getCursoColor(cursoSeleccionadoInfo()!.codigo)"></span>
               </div>
               <div class="detalle-item">
                 <span class="detalle-label">Estudiantes</span>
@@ -220,20 +218,14 @@
               @if (estudiantesCurso().length > 0) {
               <!-- Tabs de grupos -->
               <div class="grupos-tabs-bar">
-                <button
-                  type="button"
-                  class="grupo-tab"
-                  [class.active]="vistaActiva === 'general'"
+                <button type="button" class="grupo-tab" [class.active]="vistaActiva() === 'general'"
                   (click)="seleccionarVista('general')">
                   <ion-icon name="apps-outline"></ion-icon>
                   <span>Todos</span>
                   <span class="badge">{{ estudiantesCurso().length }}</span>
                 </button>
                 @for (grupo of gruposCurso(); track grupo) {
-                <button
-                  type="button"
-                  class="grupo-tab"
-                  [class.active]="vistaActiva === grupo"
+                <button type="button" class="grupo-tab" [class.active]="vistaActiva() === grupo"
                   (click)="seleccionarVista(grupo)">
                   <span class="grupo-numero">{{ grupo }}</span>
                   <span class="badge">{{ contarIntegrantes(grupo) }}</span>
@@ -244,12 +236,12 @@
               <!-- Contenido del tab seleccionado -->
               <div class="grupo-tab-content">
                 <div class="tab-content-header">
-                  @if (vistaActiva === 'general') {
-                    <ion-icon name="list-outline"></ion-icon>
-                    <span>Todos los estudiantes ({{ estudiantesCurso().length }})</span>
+                  @if (vistaActiva() === 'general') {
+                  <ion-icon name="list-outline"></ion-icon>
+                  <span>Todos los estudiantes ({{ estudiantesCurso().length }})</span>
                   } @else {
-                    <ion-icon name="people"></ion-icon>
-                    <span>Grupo {{ vistaActiva }} - {{ integrantesGrupo().length }} integrantes</span>
+                  <ion-icon name="people"></ion-icon>
+                  <span>Grupo {{ vistaActiva() }} - {{ integrantesGrupo().length }} integrantes</span>
                   }
                 </div>
 
@@ -265,7 +257,7 @@
                       <span class="nombre">{{ estudiante.nombres }} {{ estudiante.apellidos }}</span>
                       <span class="correo">{{ estudiante.correo }}</span>
                     </div>
-                    @if (vistaActiva === 'general') {
+                    @if (vistaActiva() === 'general') {
                     <div class="grupo-badge">G{{ estudiante.grupo }}</div>
                     }
                   </div>
