@@ -1076,93 +1076,186 @@ ion-content {
           }
         }
 
-        // Grid de integrantes
-        .integrantes-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 10px;
+        // ==================================================
+        // TABLA DE CALIFICACIONES (Estilo CalificacionesPage)
+        // ==================================================
+        .tabla-wrapper {
+          overflow: auto;
+          flex: 1;
           max-height: 400px;
-          overflow-y: auto;
-          padding-right: 4px;
+          border-radius: 8px;
+          border: 1px solid rgba(15, 56, 90, 0.1);
 
           &::-webkit-scrollbar {
-            width: 4px;
-          }
-
-          &::-webkit-scrollbar-track {
-            background: transparent;
+            width: 6px;
+            height: 6px;
+            background: #f1f1f1;
           }
 
           &::-webkit-scrollbar-thumb {
-            background: rgba(15, 56, 90, 0.2);
-            border-radius: 2px;
+            background: var(--azul-claro, #4a90e2);
+            border-radius: 3px;
           }
 
-          .integrante-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            background: #fff;
-            border-radius: 10px;
-            border: 1px solid rgba(15, 56, 90, 0.1);
-            transition: all 0.2s ease;
+          &.tabla-completa {
+            overflow-x: auto;
+            overflow-y: auto;
+          }
+        }
 
-            &:hover {
-              border-color: rgba(15, 56, 90, 0.2);
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-              transform: translateY(-1px);
+        .tabla-calificaciones {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          font-size: 0.78rem;
+
+          thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, var(--azul-claro, #4a90e2) 100%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            tr th {
+              position: sticky;
+              top: 0;
+              background: inherit;
+            }
+          }
+
+          .tabla-header {
+            padding: 8px 10px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            font-size: 0.65rem;
+            white-space: nowrap;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            vertical-align: middle;
+
+            &.col-numeric {
+              text-align: center;
+              min-width: 45px;
             }
 
-            .integrante-avatar {
-              width: 40px;
-              height: 40px;
-              border-radius: 50%;
-              background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              flex-shrink: 0;
+            &.col-estudiante {
+              min-width: 140px;
+            }
 
-              ion-icon {
-                font-size: 1.2rem;
-                color: #fff;
+            &.col-id {
+              text-align: center;
+              min-width: 60px;
+            }
+
+            &.col-grupo {
+              text-align: center;
+              min-width: 45px;
+            }
+
+            &.col-sticky {
+              position: sticky;
+              left: 0;
+              z-index: 11;
+              background: var(--azul-oscuro, #0f385a);
+              box-shadow: 2px 0 4px rgba(0, 0, 0, 0.15);
+            }
+          }
+
+          tbody tr {
+            transition: background-color 0.15s ease;
+            border-bottom: 1px solid #e9ecef;
+
+            &:hover {
+              background-color: rgba(74, 144, 226, 0.08);
+            }
+
+            &.fila-par {
+              background-color: #ffffff;
+            }
+
+            &.fila-impar {
+              background-color: #f8f9fc;
+            }
+          }
+
+          .tabla-cell {
+            padding: 8px 10px;
+            text-align: left;
+            color: #333;
+            border-right: 1px solid #e9ecef;
+            vertical-align: middle;
+            white-space: nowrap;
+            font-size: 0.75rem;
+
+            &.col-numeric {
+              text-align: center;
+              font-weight: 700;
+              font-family: 'Segoe UI', serif;
+
+              &.low {
+                color: var(--ion-color-danger, #f44336);
+              }
+
+              &.empty {
+                color: rgba(15, 56, 90, 0.2);
               }
             }
 
-            .integrante-data {
+            &.col-id {
+              text-align: center;
+              font-size: 0.68rem;
+              color: #6c757d;
+            }
+
+            &.col-sticky {
+              position: sticky;
+              left: 0;
+              z-index: 5;
+              background: inherit;
+              box-shadow: 2px 0 4px rgba(0, 0, 0, 0.08);
+            }
+
+            .integrante-info-table {
               display: flex;
               flex-direction: column;
-              gap: 2px;
-              flex: 1;
-              min-width: 0;
+              gap: 1px;
 
               .nombre {
-                font-size: 0.85rem;
                 font-weight: 600;
                 color: var(--azul-oscuro, #0f385a);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
               }
 
               .correo {
-                font-size: 0.72rem;
-                color: rgba(15, 56, 90, 0.55);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                font-size: 0.68rem;
+                color: #6c757d;
               }
             }
+          }
+        }
 
-            .grupo-badge {
-              font-size: 0.72rem;
-              font-weight: 700;
-              color: #fff;
-              background: var(--ion-color-tertiary, #5260ff);
-              padding: 4px 10px;
-              border-radius: 12px;
-              flex-shrink: 0;
+        // Responsive overrides for the table in CursosPage context
+        @media (max-width: 768px) {
+          .tabla-calificaciones {
+            font-size: 0.7rem;
+
+            .tabla-header {
+              padding: 6px 8px;
+              font-size: 0.6rem;
+            }
+
+            .tabla-cell {
+              padding: 6px 8px;
+              font-size: 0.7rem;
+
+              .integrante-info-table {
+                .nombre {
+                  font-size: 0.75rem;
+                }
+
+                .correo {
+                  font-size: 0.62rem;
+                }
+              }
             }
           }
         }

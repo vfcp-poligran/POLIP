@@ -247,21 +247,47 @@
 
                 <!-- Lista de integrantes -->
                 @if (integrantesGrupo().length > 0) {
-                <div class="integrantes-grid">
-                  @for (estudiante of integrantesGrupo(); track estudiante.correo) {
-                  <div class="integrante-card">
-                    <div class="integrante-avatar">
-                      <ion-icon name="person"></ion-icon>
-                    </div>
-                    <div class="integrante-data">
-                      <span class="nombre">{{ estudiante.nombres }} {{ estudiante.apellidos }}</span>
-                      <span class="correo">{{ estudiante.correo }}</span>
-                    </div>
-                    @if (vistaActiva() === 'general') {
-                    <div class="grupo-badge">G{{ estudiante.grupo }}</div>
-                    }
-                  </div>
-                  }
+                <div class="tabla-wrapper tabla-completa">
+                  <table class="tabla-calificaciones">
+                    <thead>
+                      <tr>
+                        <th class="tabla-header col-grupo col-sticky">Grupo</th>
+                        <th class="tabla-header col-estudiante">Estudiante</th>
+                        <th class="tabla-header col-id">ID</th>
+                        <th class="tabla-header col-numeric">E1</th>
+                        <th class="tabla-header col-numeric">E2</th>
+                        <th class="tabla-header col-numeric">EF</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (estudiante of integrantesGrupo(); track estudiante.correo; let isOdd = $odd) {
+                      <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
+                        <td class="tabla-cell col-grupo col-sticky">
+                          <ion-badge color="light" class="grupo-badge">{{ estudiante.grupo }}</ion-badge>
+                        </td>
+                        <td class="tabla-cell col-estudiante">
+                          <div class="integrante-info-table">
+                            <span class="nombre">{{ estudiante.nombres }} {{ estudiante.apellidos }}</span>
+                            <span class="correo">{{ estudiante.correo }}</span>
+                          </div>
+                        </td>
+                        <td class="tabla-cell col-id">{{ estudiante.canvasUserId || '-' }}</td>
+                        <td class="tabla-cell col-numeric" [class.low]="estudiante.notas?.e1 < 3"
+                          [class.empty]="!estudiante.notas?.e1">
+                          {{ estudiante.notas?.e1 || '-' }}
+                        </td>
+                        <td class="tabla-cell col-numeric" [class.low]="estudiante.notas?.e2 < 3"
+                          [class.empty]="!estudiante.notas?.e2">
+                          {{ estudiante.notas?.e2 || '-' }}
+                        </td>
+                        <td class="tabla-cell col-numeric" [class.low]="estudiante.notas?.ef < 3"
+                          [class.empty]="!estudiante.notas?.ef">
+                          {{ estudiante.notas?.ef || '-' }}
+                        </td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
                 </div>
                 } @else {
                 <div class="empty-tab-content">

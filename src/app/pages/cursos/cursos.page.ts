@@ -17,6 +17,7 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption,
+  IonBadge,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -83,7 +84,8 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonItem,
     IonItemSliding,
     IonItemOptions,
-    IonItemOption]
+    IonItemOption,
+    IonBadge]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -169,13 +171,35 @@ export class CursosPage implements OnInit, ViewWillEnter {
   integrantesGrupo = computed(() => {
     const vista = this.vistaActiva();
     const estudiantes = this.estudiantesCurso();
+    const seleccion = this.cursoSeleccionado();
+    const claveCurso = this.resolverClaveCurso(seleccion);
 
-    if (vista === 'general') {
-      return estudiantes;
+    // Obtener archivo de calificaciones de forma reactiva a través del uiState
+    const archivo = claveCurso ? this.dataService.obtenerArchivoCalificaciones(claveCurso) : null;
+    const notasMap = new Map<string, any>();
+
+    if (archivo?.calificaciones) {
+      archivo.calificaciones.forEach(c => {
+        if (c.id) notasMap.set(String(c.id), c);
+      });
     }
-    return estudiantes.filter(est =>
-      String(est?.grupo ?? '') === String(vista)
-    );
+
+    const integrantes = vista === 'general'
+      ? estudiantes
+      : estudiantes.filter(est => String(est?.grupo ?? '') === String(vista));
+
+    // Mapear cada integrante con sus notas si están disponibles
+    return integrantes.map(est => {
+      const notas = notasMap.get(String(est.canvasUserId || ''));
+      return {
+        ...est,
+        notas: notas ? {
+          e1: notas.e1 || '',
+          e2: notas.e2 || '',
+          ef: notas.ef || ''
+        } : null
+      };
+    });
   });
 
   private resolverClaveCurso(codigo: string | null): string | null {
