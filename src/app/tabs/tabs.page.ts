@@ -151,6 +151,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Configuración centralizada del menú
   public navigationItems: NavigationItem[] = [
     { path: '/tabs/inicio', icon: 'home', iconOutline: 'home-outline', label: 'Inicio' },
+    { path: '/tabs/inicio-draft', icon: 'construct', iconOutline: 'construct-outline', label: 'Draft', shortLabel: '🔧' },
     { path: '/tabs/cursos', icon: 'library', iconOutline: 'library-outline', label: 'Cursos' },
     { path: '/tabs/rubricas', icon: 'speedometer', iconOutline: 'speedometer-outline', label: 'Rúbricas' },
     { path: '/tabs/calificaciones', icon: 'ribbon', iconOutline: 'ribbon-outline', label: 'Calificaciones', shortLabel: 'Notas' },
@@ -563,7 +564,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
    */
   estaEditandoCalificacion(estudiante: any, entrega: string): boolean {
     return this.editandoCalificacion?.estudiante?.correo === estudiante.correo &&
-           this.editandoCalificacion?.entrega === entrega;
+      this.editandoCalificacion?.entrega === entrega;
   }
 
   /**
