@@ -35,9 +35,9 @@ export interface CourseState {
     contenidoOriginal: string;  // CSV completo para exportar a Canvas (mantiene estructura original)
     calificaciones: {            // Campos procesados para búsquedas y visualización
       id: string;                // Campo 1: ID de Canvas (canvasUserId)
-      e1: string;                // Campo 4: Entrega proyecto 1 - Escenario 3
-      e2: string;                // Campo 5: Entrega proyecto 2 - Escenario 5
-      ef: string;                // Campo 6: Entrega final y sustentacion - Escenario 7 y 8
+      e1: number;                // Campo 4: Entrega proyecto 1 - Escenario 3
+      e2: number;                // Campo 5: Entrega proyecto 2 - Escenario 5
+      ef: number;                // Campo 6: Entrega final y sustentacion - Escenario 7 y 8
     }[];
   };
   rubricasAsociadas?: {

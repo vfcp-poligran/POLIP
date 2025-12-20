@@ -22,9 +22,9 @@ export class CanvasService {
    */
   private parsearCalificacionesCanvas(contenido: string): Array<{
     id: string;
-    e1: string;
-    e2: string;
-    ef: string;
+    e1: number;
+    e2: number;
+    ef: number;
   }> {
     const lineas = contenido.split('\n').filter(l => l.trim());
     if (lineas.length < 3) {
@@ -39,9 +39,9 @@ export class CanvasService {
       if (campos.length >= 7) {
         calificaciones.push({
           id: campos[1] || '',   // Campo 1: ID de Canvas (canvasUserId)
-          e1: campos[4] || '',   // Campo 4: Entrega proyecto 1
-          e2: campos[5] || '',   // Campo 5: Entrega proyecto 2
-          ef: campos[6] || ''    // Campo 6: Entrega final
+          e1: parseFloat(campos[4]) || 0,   // Campo 4: Entrega proyecto 1
+          e2: parseFloat(campos[5]) || 0,   // Campo 5: Entrega proyecto 2
+          ef: parseFloat(campos[6]) || 0    // Campo 6: Entrega final
         });
       }
     }
@@ -55,9 +55,9 @@ export class CanvasService {
     contenidoOriginal: string;
     calificaciones: Array<{
       id: string;
-      e1: string;
-      e2: string;
-      ef: string;
+      e1: number;
+      e2: number;
+      ef: number;
     }>;
   } | null {
     const uiState = this.stateService.getUIState();

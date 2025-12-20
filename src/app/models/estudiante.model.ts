@@ -102,67 +102,43 @@ export interface Estudiante {
 
 /**
  * Estructura que contiene todas las notas de un estudiante.
- * Combina el estudiante con sus calificaciones por entrega.
+ * Combina el estudiante con sus calificaciones por entrega (suma total).
+ * 
+ * Los valores e1, e2, ef representan la suma de puntos individuales + grupales.
+ * Los puntos desglosados se almacenan en CalificacionesEstudiante (ei1, eg1, etc.)
  * 
  * @example
  * const notaEstudiante: NotaEstudiante = {
  *   estudiante: miEstudiante,
- *   e1: { ei: 15, eg: 20 },  // Entrega 1: 15 ind + 20 grupal = 35
- *   e2: { ei: 18, eg: 22 },  // Entrega 2: 18 ind + 22 grupal = 40
- *   ef: { ei: 25, eg: 30 }   // Final: 25 ind + 30 grupal = 55
+ *   e1: 35,   // Entrega 1: ei1 + eg1 = 35
+ *   e2: 40,   // Entrega 2: ei2 + eg2 = 40
+ *   ef: 55    // Final: eif + egf = 55
  * };
  */
 export interface NotaEstudiante {
   /** Referencia al estudiante */
   estudiante: Estudiante;
 
-  /** Calificaciones de Entrega 1 */
-  e1?: NotaEntrega;
-
-  /** Calificaciones de Entrega 2 */
-  e2?: NotaEntrega;
-
-  /** Calificaciones de Entrega Final */
-  ef?: NotaEntrega;
-}
-
-/**
- * Calificaciones detalladas de una entrega específica.
- * 
- * Cada entrega tiene dos componentes:
- * - ei (Evaluación Individual): Puntos obtenidos de la rúbrica individual
- * - eg (Evaluación Grupal): Puntos obtenidos de la rúbrica grupal
- * 
- * La nota final de la entrega = ei + eg
- * 
- * @example
- * const notaE1: NotaEntrega = {
- *   ei: 15,    // Rúbrica individual: 15 puntos
- *   eg: 20,    // Rúbrica grupal: 20 puntos
- *   suma: 35   // Total: 35 puntos
- * };
- */
-export interface NotaEntrega {
-  /**
-   * Puntos de Evaluación Individual.
-   * Provienen de la rúbrica individual aplicada al estudiante.
-   * Se calcula en data.service.ts desde las evaluaciones.
+  /** 
+   * Calificación total de Entrega 1.
+   * Calculada como: ei1 + eg1 (puntos individuales + grupales)
+   * Se exporta al CSV de Canvas en la columna 4.
    */
-  ei?: number;
+  e1?: number;
 
-  /**
-   * Puntos de Evaluación Grupal.
-   * Provienen de la rúbrica grupal aplicada al grupo.
-   * Todos los integrantes del grupo comparten este valor.
+  /** 
+   * Calificación total de Entrega 2.
+   * Calculada como: ei2 + eg2 (puntos individuales + grupales)
+   * Se exporta al CSV de Canvas en la columna 5.
    */
-  eg?: number;
+  e2?: number;
 
-  /**
-   * Sumatoria calculada: ei + eg.
-   * Representa la nota total de la entrega.
-   * Se calcula automáticamente al guardar evaluaciones.
+  /** 
+   * Calificación total de Entrega Final.
+   * Calculada como: eif + egf (puntos individuales + grupales)
+   * Se exporta al CSV de Canvas en la columna 6.
    */
-  suma?: number;
+  ef?: number;
 }
 
 /**

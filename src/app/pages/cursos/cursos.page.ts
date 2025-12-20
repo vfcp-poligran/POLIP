@@ -949,7 +949,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
    * @param calificaciones Array de calificaciones parseadas
    * @returns Objeto con resultado de validación y mensaje de error si aplica
    */
-  private validarCoincidenciaEstudiantes(calificaciones: Array<{ id: string; e1: string; e2: string; ef: string }>): { esValido: boolean; mensaje: string } {
+  private validarCoincidenciaEstudiantes(calificaciones: Array<{ id: string; e1: number; e2: number; ef: number }>): { esValido: boolean; mensaje: string } {
     // Obtener IDs de estudiantes cargados (archivo Personas)
     const idsPersonas = new Set(
       this.estudiantesCargados
@@ -1039,9 +1039,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
    */
   private parsearCalificacionesCanvasLocal(contenido: string): Array<{
     id: string;
-    e1: string;
-    e2: string;
-    ef: string;
+    e1: number;
+    e2: number;
+    ef: number;
   }> {
     const lineas = contenido.split('\n').filter(l => l.trim());
     if (lineas.length < 3) return [];
@@ -1054,9 +1054,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
       if (campos.length >= 7) {
         calificaciones.push({
           id: campos[1] || '',   // Campo 1: ID de Canvas (canvasUserId)
-          e1: campos[4] || '',   // Campo 4: Entrega proyecto 1 - Escenario 3
-          e2: campos[5] || '',   // Campo 5: Entrega proyecto 2 - Escenario 5
-          ef: campos[6] || ''    // Campo 6: Entrega final y sustentacion - Escenario 7 y 8
+          e1: parseFloat(campos[4]) || 0,   // Campo 4: Entrega proyecto 1 - Escenario 3
+          e2: parseFloat(campos[5]) || 0,   // Campo 5: Entrega proyecto 2 - Escenario 5
+          ef: parseFloat(campos[6]) || 0    // Campo 6: Entrega final y sustentacion - Escenario 7 y 8
         });
       }
     }

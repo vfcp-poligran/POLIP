@@ -95,7 +95,7 @@ export class DataService implements OnDestroy {
   private cache = {
     // Caché de archivos de calificaciones por curso
     archivosCalificaciones: new Map<string, {
-      data: { nombre: string; fechaCarga: string; contenidoOriginal: string; calificaciones: Array<{ id: string; e1: string; e2: string; ef: string; }>; } | null;
+      data: { nombre: string; fechaCarga: string; contenidoOriginal: string; calificaciones: Array<{ id: string; e1: number; e2: number; ef: number; }>; } | null;
       timestamp: number;
     }>(),
 
@@ -695,9 +695,9 @@ export class DataService implements OnDestroy {
     contenidoOriginal: string;
     calificaciones: Array<{
       id: string;
-      e1: string;
-      e2: string;
-      ef: string;
+      e1: number;
+      e2: number;
+      ef: number;
     }>;
   } | null {
     return this.canvasService.obtenerArchivoCalificaciones(codigoCurso);
@@ -2279,8 +2279,8 @@ export class DataService implements OnDestroy {
 
         // Parsear líneas de escala hasta encontrar "---" o línea vacía seguida de criterio
         while (lineaActual < lineas.length &&
-               !lineas[lineaActual].startsWith('---') &&
-               !lineas[lineaActual].startsWith('CRITERIO_')) {
+          !lineas[lineaActual].startsWith('---') &&
+          !lineas[lineaActual].startsWith('CRITERIO_')) {
           const lineaEscala = lineas[lineaActual];
 
           // Formato nuevo: =0,29|Insuficiente:Descripción=
@@ -2370,7 +2370,7 @@ export class DataService implements OnDestroy {
 
     // Saltar líneas vacías y separadores "--"
     while (lineaActual < lineas.length &&
-           (lineas[lineaActual] === '' || lineas[lineaActual] === '--')) {
+      (lineas[lineaActual] === '' || lineas[lineaActual] === '--')) {
       lineaActual++;
     }
 
@@ -2394,7 +2394,7 @@ export class DataService implements OnDestroy {
 
     // Saltar línea "---" si existe y líneas vacías
     while (lineaActual < lineas.length &&
-           (lineas[lineaActual] === '---' || lineas[lineaActual] === '')) {
+      (lineas[lineaActual] === '---' || lineas[lineaActual] === '')) {
       lineaActual++;
     }
 
@@ -2947,8 +2947,8 @@ export class DataService implements OnDestroy {
     Object.values(rubricas).forEach(rubrica => {
       // Verificar si es el código base exacto O si empieza con los patrones de versión
       const esVersion = rubrica.codigo === codigoBase ||
-                        rubrica.codigo?.startsWith(patronNuevo) ||
-                        rubrica.codigo?.startsWith(patronAnterior);
+        rubrica.codigo?.startsWith(patronNuevo) ||
+        rubrica.codigo?.startsWith(patronAnterior);
 
       if (esVersion) {
         rubrica.activa = rubrica.id === rubricaIdActiva;
@@ -3172,13 +3172,13 @@ export class DataService implements OnDestroy {
       tipo: 'PG' | 'PI';
       entrega: 'E1' | 'E2' | 'EF';
     }> = [
-      { campo: 'entrega1', tipo: 'PG', entrega: 'E1' },
-      { campo: 'entrega2', tipo: 'PG', entrega: 'E2' },
-      { campo: 'entregaFinal', tipo: 'PG', entrega: 'EF' },
-      { campo: 'entrega1Individual', tipo: 'PI', entrega: 'E1' },
-      { campo: 'entrega2Individual', tipo: 'PI', entrega: 'E2' },
-      { campo: 'entregaFinalIndividual', tipo: 'PI', entrega: 'EF' }
-    ];
+        { campo: 'entrega1', tipo: 'PG', entrega: 'E1' },
+        { campo: 'entrega2', tipo: 'PG', entrega: 'E2' },
+        { campo: 'entregaFinal', tipo: 'PG', entrega: 'EF' },
+        { campo: 'entrega1Individual', tipo: 'PI', entrega: 'E1' },
+        { campo: 'entrega2Individual', tipo: 'PI', entrega: 'E2' },
+        { campo: 'entregaFinalIndividual', tipo: 'PI', entrega: 'EF' }
+      ];
 
     for (const { campo, tipo, entrega } of campos) {
       const rubricaIdAsociada = rubricasAsociadas[campo];

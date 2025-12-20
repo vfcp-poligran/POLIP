@@ -499,17 +499,16 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
     if (!calificacion) return 0;
 
-    // Obtener el valor según la entrega
-    let valor: string = '';
+    // Obtener el valor según la entrega (ahora son numbers)
+    let valor: number = 0;
     switch (entrega) {
       case 'E1': valor = calificacion.e1; break;
       case 'E2': valor = calificacion.e2; break;
       case 'EF': valor = calificacion.ef; break;
     }
 
-    // Parsear el valor (puede ser vacío, número o texto)
-    const num = parseFloat(valor);
-    return isNaN(num) ? 0 : num;
+    // El valor ya es number, solo validar que no sea NaN
+    return isNaN(valor) ? 0 : valor;
   }
 
   /**
@@ -620,12 +619,13 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
     if (index === -1) return;
 
-    // Actualizar el valor según la entrega
+    // Actualizar el valor según la entrega (ahora son numbers)
     const calificacion = { ...calificaciones[index] };
+    const valorNumerico = parseFloat(nuevoValor) || 0;
     switch (entrega) {
-      case 'E1': calificacion.e1 = nuevoValor; break;
-      case 'E2': calificacion.e2 = nuevoValor; break;
-      case 'EF': calificacion.ef = nuevoValor; break;
+      case 'E1': calificacion.e1 = valorNumerico; break;
+      case 'E2': calificacion.e2 = valorNumerico; break;
+      case 'EF': calificacion.ef = valorNumerico; break;
     }
 
     calificaciones[index] = calificacion;

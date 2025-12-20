@@ -91,9 +91,9 @@ interface ArchivoCalificacionesVisualizacion {
   contenidoOriginal: string;
   calificaciones: Array<{
     id: string;
-    e1: string;
-    e2: string;
-    ef: string;
+    e1: number;
+    e2: number;
+    ef: number;
   }>;
 }
 
@@ -159,9 +159,9 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
       contenidoOriginal: string;
       calificaciones: Array<{
         id: string;
-        e1: string;
-        e2: string;
-        ef: string;
+        e1: number;
+        e2: number;
+        ef: number;
       }>;
     };
   }> = [];
@@ -606,9 +606,9 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
       if (cal.id === fila.studentId) {
         return {
           ...cal,
-          e1: fila.e1,
-          e2: fila.e2,
-          ef: fila.ef
+          e1: parseFloat(fila.e1) || 0,
+          e2: parseFloat(fila.e2) || 0,
+          ef: parseFloat(fila.ef) || 0
         };
       }
       return cal;
@@ -723,7 +723,7 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
    */
   estaEditandoCelda(filaIndex: number, columnaIndex: number): boolean {
     return this.celdaEditando?.filaIndex === filaIndex &&
-           this.celdaEditando?.campo === columnaIndex.toString();
+      this.celdaEditando?.campo === columnaIndex.toString();
   }
 
   /**
