@@ -38,6 +38,14 @@ Registro de cambios del proyecto POLI.
 - `tabs/tabs.routes.ts`: Agregada ruta para inicio-draft
 - `tabs/tabs.page.ts`: Agregado navigationItem para Draft
 
+#### 🔄 Refactored (Refactorizado)
+- **Interfaces de Notas** (`estudiante.model.ts`)
+  - Eliminada interface `NotaEntrega` redundante
+  - Simplificada `NotaEstudiante` para usar `number` directamente en `e1`, `e2`, `ef`
+  - Actualizado parsing CSV con `parseFloat()` en `canvas.service.ts`
+  - Tipos actualizados en 7 archivos: `app-state.model.ts`, `data.service.ts`, `cursos.page.ts`, `calificaciones.page.ts`, `tabs.page.ts`
+  - Ver: [`docs/refactorizacion-interfaces-notas.md`](docs/refactorizacion-interfaces-notas.md)
+
 #### 📝 Documentation
 - Creados 5 archivos de documentación en `docs/`
 
