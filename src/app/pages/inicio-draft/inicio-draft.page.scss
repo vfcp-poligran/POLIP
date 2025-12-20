@@ -335,8 +335,171 @@ section {
                     }
                 }
             }
+
+            // Botones de acción visibles en cada item
+            .novedad-actions {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+
+                ion-button {
+                    --padding-start: 6px;
+                    --padding-end: 6px;
+                    min-height: 36px;
+                    min-width: 36px;
+
+                    ion-icon {
+                        font-size: 1.2rem;
+                    }
+                }
+            }
         }
     }
+}
+
+// === ESTUDIANTES REGISTRADOS ===
+.estudiantes-registrados {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    .section-header {
+        .btn-limpiar-lista {
+            margin-left: auto;
+            --padding-start: 8px;
+            --padding-end: 8px;
+        }
+    }
+
+    .estudiantes-list {
+        background: transparent;
+        padding: 0;
+        margin-top: 8px;
+
+        .estudiante-item {
+            --background: #f8f9fa;
+            --padding-start: 12px;
+            --padding-end: 8px;
+            --border-radius: 8px;
+            margin-bottom: 6px;
+
+            .estudiante-icon {
+                font-size: 1.3rem;
+                color: $azul-claro;
+            }
+
+            ion-label {
+                h3 {
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    color: $azul-oscuro;
+                    margin-bottom: 2px;
+                }
+
+                p {
+                    font-size: 0.75rem;
+                    color: #666;
+                    margin: 0;
+                }
+            }
+
+            ion-button {
+                --color: #ef5350;
+
+                ion-icon {
+                    font-size: 1.2rem;
+                }
+            }
+        }
+    }
+}
+
+// === DROPDOWN CURSOS (#C) ===
+.cursos-dropdown {
+    .dropdown-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: rgba($azul-claro, 0.08);
+        border-bottom: 1px solid rgba($azul-claro, 0.2);
+        font-weight: 600;
+        color: $azul-oscuro;
+        font-size: 0.85rem;
+
+        ion-icon {
+            font-size: 1.1rem;
+        }
+    }
+
+    .curso-item {
+        .curso-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+    }
+}
+
+// === NOVEDADES SECTION ===
+.novedades-section {
+    .section-header {
+        .btn-seleccionar-todos {
+            margin-left: auto;
+            --padding-start: 8px;
+            --padding-end: 8px;
+
+            ion-icon {
+                font-size: 1.2rem;
+            }
+        }
+
+        .btn-limpiar-lista {
+            margin-left: 4px;
+        }
+    }
+}
+
+// Items seleccionables con toggle
+.novedad-item-selectable {
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    --padding-start: 8px;
+
+    ion-checkbox {
+        margin-right: 8px;
+        --size: 20px;
+    }
+
+    &:hover {
+        --background: rgba($azul-claro, 0.06);
+    }
+
+    &:active {
+        transform: scale(0.99);
+    }
+
+    &.selected {
+        --background: rgba($azul-claro, 0.12);
+
+        ion-label h3 {
+            color: $azul-oscuro;
+            font-weight: 700;
+        }
+    }
+}
+
+// Chip curso/grupo
+.curso-grupo-chip {
+    --background: rgba($azul-claro, 0.15);
+    --color: $azul-oscuro;
+    height: 24px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0 8px;
+    margin-right: 4px;
 }
 
 // === EMPTY STATES ===

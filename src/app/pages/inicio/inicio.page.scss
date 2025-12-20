@@ -6455,3 +6455,213 @@ ion-chip {
     }
   }
 }
+
+/* ==========================================
+   ESTILOS PARA REGISTRO DE NOVEDADES
+   ========================================== */
+
+// Contenedor de búsqueda e información
+.search-info-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--rad-sm, 8px);
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  align-items: flex-start;
+
+  @media (min-width: 992px) {
+    flex-wrap: nowrap;
+  }
+}
+
+// Sección de información con chips
+.info-section {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 300px;
+}
+
+.info-content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// Chips de estudiantes seleccionados
+.seleccionados-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 200px;
+}
+
+.estudiante-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, var(--azul-claro, #1fb2de) 0%, var(--cyan, #15bece) 100%);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  .chip-text {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chip-remove {
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Botón Registrar
+.btn-registrar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, var(--verde, #4caf50) 0%, #66bb6a 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.35);
+
+  ion-icon {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #45a049 0%, #4caf50 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Panel de estudiantes registrados (derecha)
+.registrados-panel {
+  flex: 0 0 280px;
+  max-width: 320px;
+  background: #ffffff;
+  border-radius: var(--rad-sm, 8px);
+  border: 1px solid rgba(15, 56, 90, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  @media (max-width: 991px) {
+    flex: 1 1 100%;
+    max-width: 100%;
+    margin-top: 8px;
+  }
+}
+
+.registrados-list {
+  --background: transparent;
+  padding: 0;
+  margin: 0;
+
+  ion-list-header {
+    --background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #0d2e47 100%);
+    --color: #ffffff;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    ion-label {
+      flex: 1;
+      margin: 0;
+    }
+
+    .btn-limpiar {
+      font-size: 1.1rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+      color: #ffffff;
+
+      &:hover {
+        opacity: 1;
+        color: #ff6b6b;
+      }
+    }
+  }
+}
+
+.registrado-item {
+  --padding-start: 12px;
+  --padding-end: 8px;
+  --min-height: 50px;
+  --background: #ffffff;
+  --background-hover: rgba(31, 178, 222, 0.05);
+  border-bottom: 1px solid rgba(15, 56, 90, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  ion-label {
+    h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--azul-oscuro, #0f385a);
+      margin: 0 0 2px 0;
+    }
+
+    p {
+      font-size: 0.72rem;
+      color: #78909c;
+      margin: 0;
+    }
+  }
+
+  .btn-eliminar {
+    font-size: 1.2rem;
+    color: #90a4ae;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #ef5350;
+    }
+  }
+}
+
+.info-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #90a4ae;
+  opacity: 0.5;
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}

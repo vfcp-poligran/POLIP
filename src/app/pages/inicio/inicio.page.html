@@ -74,6 +74,15 @@
                   </div>
                 }
               </div>
+              <!-- Botón Registrar -->
+              <button
+                type="button"
+                class="btn-registrar"
+                (click)="registrarEstudiantes()"
+                aria-label="Registrar estudiantes seleccionados">
+                <ion-icon name="add-circle-outline"></ion-icon>
+                <span>Registrar</span>
+              </button>
             } @else {
               <div class="info-placeholder">
                 <ion-icon name="information-circle-outline"></ion-icon>
@@ -81,6 +90,39 @@
             }
           </div>
         </div>
+
+        <!-- Lista de estudiantes registrados (derecha) -->
+        @if (estudiantesRegistrados.length > 0) {
+        <div class="registrados-panel">
+          <ion-list class="registrados-list">
+            <ion-list-header>
+              <ion-label>Estudiantes Registrados ({{ estudiantesRegistrados.length }})</ion-label>
+              <ion-icon
+                name="trash-outline"
+                class="btn-limpiar"
+                (click)="limpiarRegistrados()"
+                title="Limpiar lista"
+                aria-label="Limpiar lista">
+              </ion-icon>
+            </ion-list-header>
+            @for (est of estudiantesRegistrados; track est.correo) {
+            <ion-item lines="inset" class="registrado-item">
+              <ion-label>
+                <h3>{{ est.nombre }}</h3>
+                <p>{{ est.curso }} - G{{ est.grupo }}</p>
+              </ion-label>
+              <ion-icon
+                name="close-circle-outline"
+                slot="end"
+                class="btn-eliminar"
+                (click)="eliminarRegistrado(est.correo)"
+                aria-label="Eliminar">
+              </ion-icon>
+            </ion-item>
+            }
+          </ion-list>
+        </div>
+        }
       </div>
       }
 

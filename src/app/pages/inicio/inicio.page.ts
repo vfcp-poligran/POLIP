@@ -19,13 +19,16 @@ import {
   IonText,
   IonSearchbar,
   IonCheckbox,
+  IonList,
+  IonListHeader,
   MenuController,
   AlertController,
   LoadingController,
   PopoverController,
   ModalController,
   GestureController,
-  ViewWillEnter } from '@ionic/angular/standalone';
+  ViewWillEnter
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   menuOutline,
@@ -82,7 +85,8 @@ import {
   eye,
   arrowForward,
   informationCircle,
-  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums, globeOutline, constructOutline, apps, appsOutline } from 'ionicons/icons';
+  alertCircle, scanOutline, lockClosed, lockOpen, rocket, peopleCircle, gitMerge, closeCircle, library, hourglassOutline, home, schoolOutline, book, grid, speedometer, homeOutline, gridOutline, helpCircleOutline, peopleCircleOutline, checkmarkDoneCircle, warning, albums, globeOutline, constructOutline, apps, appsOutline
+} from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { SeguimientoService, EvaluacionRubrica, CriterioEvaluado, EstadoEstudiante } from '../../services/seguimiento.service';
 import { ToastService } from '../../services/toast.service';
@@ -111,7 +115,9 @@ import { Estudiante, CursoData, RubricaDefinicion, Evaluacion, EvaluacionCriteri
     IonItem,
     IonText,
     IonSearchbar,
-    IonCheckbox
+    IonCheckbox,
+    IonList,
+    IonListHeader
   ]
 })
 export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
@@ -129,6 +135,9 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   // Búsqueda avanzada con selección múltiple
   resultadosBusqueda: Estudiante[] = [];
   estudiantesSeleccionadosBusqueda: Set<string> = new Set();
+
+  // Lista de estudiantes registrados (para novedades)
+  estudiantesRegistrados: { correo: string; nombre: string; curso: string; grupo: string }[] = [];
 
   // Cache: trackear si los estudiantes del curso ya fueron cargados
   private _estudiantesCargadosPorCurso: Map<string, boolean> = new Map();
@@ -352,7 +361,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ellipsisVerticalOutline,arrowBackOutline,arrowForwardOutline,apps,ellipsisVertical,closeOutline,checkmarkCircle,library,speedometer,constructOutline,chevronForwardOutline,gridOutline,peopleOutline,appsOutline,listOutline,people,person,cloudUploadOutline,informationCircleOutline,alertCircle,homeOutline,grid,peopleCircleOutline,checkmarkDoneCircle,hourglassOutline,warning,albums,globeOutline,home,schoolOutline,analyticsOutline,rocket,saveOutline,documentTextOutline,createOutline,gitMerge,closeCircle,helpCircleOutline,trashOutline,informationCircle,peopleCircle,book,clipboardOutline,documentText,checkmarkOutline,arrowForward,lockClosed,lockOpen,scanOutline,enterOutline,eye,logIn,eyeOutline,alertCircleOutline,copyOutline,personOutline,checkmarkCircleOutline,cubeOutline,timeOutline,documentOutline,trophyOutline,personCircleOutline,arrowUndoOutline,arrowRedoOutline,chevronBackOutline,notificationsOutline,checkmarkDoneOutline,linkOutline,downloadOutline,refreshOutline,addCircleOutline,chatbubblesOutline,closeCircleOutline,pencilOutline,layersOutline,menuOutline,save,chatboxOutline,add});
+    addIcons({ ellipsisVerticalOutline, arrowBackOutline, arrowForwardOutline, apps, ellipsisVertical, closeOutline, checkmarkCircle, library, speedometer, constructOutline, chevronForwardOutline, gridOutline, peopleOutline, appsOutline, listOutline, people, person, cloudUploadOutline, informationCircleOutline, alertCircle, homeOutline, grid, peopleCircleOutline, checkmarkDoneCircle, hourglassOutline, warning, albums, globeOutline, home, schoolOutline, analyticsOutline, rocket, saveOutline, documentTextOutline, createOutline, gitMerge, closeCircle, helpCircleOutline, trashOutline, informationCircle, peopleCircle, book, clipboardOutline, documentText, checkmarkOutline, arrowForward, lockClosed, lockOpen, scanOutline, enterOutline, eye, logIn, eyeOutline, alertCircleOutline, copyOutline, personOutline, checkmarkCircleOutline, cubeOutline, timeOutline, documentOutline, trophyOutline, personCircleOutline, arrowUndoOutline, arrowRedoOutline, chevronBackOutline, notificationsOutline, checkmarkDoneOutline, linkOutline, downloadOutline, refreshOutline, addCircleOutline, chatbubblesOutline, closeCircleOutline, pencilOutline, layersOutline, menuOutline, save, chatboxOutline, add });
 
     // Cargar el orden personalizado de cursos
     this.cargarOrdenCursos();
@@ -589,7 +598,7 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     console.log('🔵 ===== FIN: ionViewWillEnter =====');
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 
   /**
    * Estilos reactivos para el layout grid
@@ -657,8 +666,8 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
 
     // Si ya es el curso activo Y no venimos de Vista General Y ya hay datos cargados
     const yaEstaCargado = this.cursoActivo === nombreCurso &&
-                          !this.vistaGeneralActiva() &&
-                          this.estudiantesActuales.length > 0;
+      !this.vistaGeneralActiva() &&
+      this.estudiantesActuales.length > 0;
 
     if (yaEstaCargado) {
       console.log('⚠️ Curso ya está activo y cargado - sin cambios');
@@ -5002,5 +5011,73 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
       return this.estudiantesActuales;
     }
     return this.estudiantesActuales.filter(e => e.grupo === this.vistaGrupoActiva);
+  }
+
+  // === MÉTODOS PARA REGISTRO DE NOVEDADES ===
+
+  /**
+   * Registra los estudiantes seleccionados en la búsqueda
+   * Agrega sus nombres a la lista de estudiantes registrados
+   */
+  registrarEstudiantes(): void {
+    if (this.estudiantesSeleccionadosBusqueda.size === 0) {
+      this.toastService.info('No hay estudiantes seleccionados para registrar');
+      return;
+    }
+
+    // Convertir los correos seleccionados a objetos con nombre completo
+    this.estudiantesSeleccionadosBusqueda.forEach(correo => {
+      // Evitar duplicados
+      if (this.estudiantesRegistrados.some(e => e.correo === correo)) {
+        return;
+      }
+
+      // Buscar el estudiante en todos los cursos
+      let estudianteEncontrado: Estudiante | null = null;
+      let cursoEncontrado = '';
+
+      for (const [curso, estudiantes] of Object.entries(this.cursosData)) {
+        const est = (estudiantes as Estudiante[]).find(e => e.correo === correo);
+        if (est) {
+          estudianteEncontrado = est;
+          cursoEncontrado = curso;
+          break;
+        }
+      }
+
+      if (estudianteEncontrado) {
+        const nombreCompleto = `${estudianteEncontrado.nombres} ${estudianteEncontrado.apellidos}`.trim();
+        this.estudiantesRegistrados.push({
+          correo,
+          nombre: nombreCompleto,
+          curso: this.getCodigoCorto(cursoEncontrado),
+          grupo: estudianteEncontrado.grupo
+        });
+      }
+    });
+
+    // Limpiar la selección de búsqueda después de registrar
+    this.estudiantesSeleccionadosBusqueda.clear();
+    this.busquedaGeneral = '';
+    this.resultadosBusqueda = [];
+
+    this.toastService.success(`${this.estudiantesRegistrados.length} estudiante(s) en lista de registro`);
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Elimina un estudiante de la lista de registrados
+   */
+  eliminarRegistrado(correo: string): void {
+    this.estudiantesRegistrados = this.estudiantesRegistrados.filter(e => e.correo !== correo);
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Limpia toda la lista de estudiantes registrados
+   */
+  limpiarRegistrados(): void {
+    this.estudiantesRegistrados = [];
+    this.cdr.detectChanges();
   }
 }

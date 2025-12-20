@@ -16,9 +16,7 @@ import {
     IonSearchbar,
     IonList,
     IonItem,
-    IonItemSliding,
-    IonItemOptions,
-    IonItemOption,
+    IonCheckbox,
     IonFab,
     IonFabButton,
     ActionSheetController,
@@ -53,7 +51,7 @@ import {
     cloudOfflineOutline,
     notificationsOutline,
     alertCircleOutline,
-    appsOutline
+    appsOutline, chevronForwardOutline, checkmarkDoneOutline
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -104,9 +102,7 @@ interface EstudianteSeleccionado {
         IonSearchbar,
         IonList,
         IonItem,
-        IonItemSliding,
-        IonItemOptions,
-        IonItemOption,
+        IonCheckbox,
         IonFab,
         IonFabButton
     ]
@@ -119,6 +115,9 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     // === SIGNALS ===
     cursosResumen = signal<CursoResumen[]>([]);
     estudiantesSeleccionados = signal<EstudianteSeleccionado[]>([]);
+    estudiantesRegistrados = signal<EstudianteSeleccionado[]>([]); // Lista en main-content (Novedades)
+    seleccionadosIndices = signal<Set<number>>(new Set()); // Índices seleccionados en lista Novedades
+    sugerenciasCursos = signal<CursoResumen[]>([]); // Para comando #C
     busquedaTermino = signal<string>('');
     resultadosBusqueda = signal<EstudianteSeleccionado[]>([]);
     drawerVisible = signal<boolean>(false);
@@ -138,36 +137,7 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({
-            homeOutline,
-            searchOutline,
-            peopleOutline,
-            personOutline,
-            closeCircleOutline,
-            warningOutline,
-            documentTextOutline,
-            checkmarkCircleOutline,
-            timeOutline,
-            addOutline,
-            closeOutline,
-            chevronDownOutline,
-            chevronUpOutline,
-            statsChartOutline,
-            listOutline,
-            gridOutline,
-            chatbubblesOutline,
-            schoolOutline,
-            mailOutline,
-            ellipsisHorizontalOutline,
-            checkmarkOutline,
-            trashOutline,
-            createOutline,
-            syncOutline,
-            cloudOfflineOutline,
-            notificationsOutline,
-            alertCircleOutline,
-            appsOutline
-        });
+        addIcons({ homeOutline, cloudOfflineOutline, personOutline, addOutline, schoolOutline, chevronForwardOutline, closeOutline, appsOutline, alertCircleOutline, checkmarkCircleOutline, createOutline, trashOutline, documentTextOutline, checkmarkDoneOutline, closeCircleOutline, chevronDownOutline, searchOutline, peopleOutline, warningOutline, timeOutline, chevronUpOutline, statsChartOutline, listOutline, gridOutline, chatbubblesOutline, mailOutline, ellipsisHorizontalOutline, checkmarkOutline, syncOutline, notificationsOutline });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -213,10 +183,31 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     // === BÚSQUEDA ===
 
     onBusquedaChange(event: any): void {
-        const termino = event.detail.value?.toLowerCase() || '';
+        const termino = event.detail.value || '';
+        const terminoLower = termino.toLowerCase();
         this.busquedaTermino.set(termino);
 
-        if (termino.length < 2) {
+        // Limpiar sugerencias de cursos
+        this.sugerenciasCursos.set([]);
+
+        // Comando #C: Mostrar cursos disponibles
+        if (termino === '#C' || termino === '#c') {
+            this.sugerenciasCursos.set(this.cursosResumen());
+            this.resultadosBusqueda.set([]);
+            return;
+        }
+
+        // Comando #GX: Agregar todos los integrantes del grupo X
+        const grupoMatch = termino.match(/^#[Gg](\d+)$/);
+        if (grupoMatch) {
+            const grupoNumero = grupoMatch[1];
+            this.agregarGrupoCompleto(grupoNumero);
+            this.busquedaTermino.set('');
+            this.resultadosBusqueda.set([]);
+            return;
+        }
+
+        if (terminoLower.length < 2) {
             this.resultadosBusqueda.set([]);
             return;
         }
@@ -228,7 +219,7 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
             const estudiantes = cursos[cursoKey] || [];
             estudiantes.forEach(est => {
                 const nombreCompleto = `${est.nombres || ''} ${est.apellidos || ''}`.toLowerCase();
-                if (nombreCompleto.includes(termino) || est.correo?.toLowerCase().includes(termino)) {
+                if (nombreCompleto.includes(terminoLower) || est.correo?.toLowerCase().includes(terminoLower)) {
                     resultados.push({
                         correo: est.correo,
                         nombre: `${est.nombres} ${est.apellidos}`,
@@ -242,13 +233,70 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
         this.resultadosBusqueda.set(resultados.slice(0, 10));
     }
 
+    /**
+     * Agrega todos los estudiantes de un grupo específico a la lista de Novedades
+     */
+    agregarGrupoCompleto(grupo: string): void {
+        const cursos = this.dataService.cursos();
+        const estudiantesGrupo: EstudianteSeleccionado[] = [];
+
+        Object.keys(cursos).forEach(cursoKey => {
+            const estudiantes = cursos[cursoKey] || [];
+            estudiantes
+                .filter(est => String(est.grupo) === grupo)
+                .forEach(est => {
+                    estudiantesGrupo.push({
+                        correo: est.correo,
+                        nombre: `${est.nombres} ${est.apellidos}`,
+                        curso: cursoKey,
+                        grupo: grupo
+                    });
+                });
+        });
+
+        if (estudiantesGrupo.length > 0) {
+            this.estudiantesRegistrados.update(list => [...list, ...estudiantesGrupo]);
+        }
+    }
+
+    /**
+     * Selecciona un curso desde el comando #C y filtra por ese curso
+     */
+    seleccionarCursoFiltro(curso: CursoResumen): void {
+        this.sugerenciasCursos.set([]);
+        // Agregar todos los estudiantes del curso a la lista
+        const cursos = this.dataService.cursos();
+        const estudiantes = cursos[curso.codigo] || [];
+        const estudiantesDelCurso: EstudianteSeleccionado[] = estudiantes.map(est => ({
+            correo: est.correo,
+            nombre: `${est.nombres} ${est.apellidos}`,
+            curso: curso.codigo,
+            grupo: String(est.grupo || '')
+        }));
+
+        if (estudiantesDelCurso.length > 0) {
+            this.estudiantesRegistrados.update(list => [...list, ...estudiantesDelCurso]);
+        }
+        this.busquedaTermino.set('');
+    }
+
     // === SELECCIÓN DE ESTUDIANTES ===
 
+    /**
+     * Selecciona o deselecciona un estudiante (toggle)
+     * Click para agregar, click nuevamente para remover
+     */
     seleccionarEstudiante(estudiante: EstudianteSeleccionado): void {
         const actuales = this.estudiantesSeleccionados();
         const existe = actuales.find(e => e.correo === estudiante.correo);
 
-        if (!existe) {
+        if (existe) {
+            // Ya existe -> deseleccionar (toggle off)
+            this.estudiantesSeleccionados.update(list =>
+                list.filter(e => e.correo !== estudiante.correo)
+            );
+        } else {
+            // No existe -> agregar (toggle on)
             this.estudiantesSeleccionados.update(list => [...list, estudiante]);
         }
 
@@ -265,6 +313,78 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
 
     limpiarSeleccion(): void {
         this.estudiantesSeleccionados.set([]);
+    }
+
+    /**
+     * Transfiere los estudiantes seleccionados a la lista de registrados en main-content
+     * No abre el drawer, los agrega directamente a la lista visible
+     */
+    registrarEnLista(): void {
+        const seleccionados = this.estudiantesSeleccionados();
+        if (seleccionados.length === 0) return;
+
+        // Agregar a registrados (permite duplicados para múltiples novedades)
+        this.estudiantesRegistrados.update(list => [...list, ...seleccionados]);
+
+        // Limpiar selección después de registrar
+        this.limpiarSeleccion();
+    }
+
+    /**
+     * Remueve un estudiante de la lista de registrados por índice
+     * (usa índice porque puede haber duplicados del mismo correo)
+     */
+    removerRegistrado(index: number): void {
+        this.estudiantesRegistrados.update(list =>
+            list.filter((_, i) => i !== index)
+        );
+    }
+
+    /**
+     * Limpia toda la lista de registrados
+     */
+    limpiarRegistrados(): void {
+        this.estudiantesRegistrados.set([]);
+        this.seleccionadosIndices.set(new Set());
+    }
+
+    /**
+     * Toggle de selección para un item en la lista de Novedades
+     */
+    toggleSeleccionNovedad(index: number): void {
+        this.seleccionadosIndices.update(set => {
+            const newSet = new Set(set);
+            if (newSet.has(index)) {
+                newSet.delete(index);
+            } else {
+                newSet.add(index);
+            }
+            return newSet;
+        });
+    }
+
+    /**
+     * Verifica si un item está seleccionado en la lista de Novedades
+     */
+    isNovedadSelected(index: number): boolean {
+        return this.seleccionadosIndices().has(index);
+    }
+
+    /**
+     * Selecciona/deselecciona todos los items de la lista de Novedades
+     */
+    toggleSeleccionarTodos(): void {
+        const registrados = this.estudiantesRegistrados();
+        const seleccionados = this.seleccionadosIndices();
+
+        if (seleccionados.size === registrados.length) {
+            // Todos seleccionados -> deseleccionar todos
+            this.seleccionadosIndices.set(new Set());
+        } else {
+            // No todos seleccionados -> seleccionar todos
+            const todosIndices = new Set(registrados.map((_, i) => i));
+            this.seleccionadosIndices.set(todosIndices);
+        }
     }
 
     // === DRAWER DE REGISTRO ===
@@ -365,6 +485,33 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     async descartarNovedad(novedad: Novedad): Promise<void> {
         await this.novedadService.actualizarEstado(novedad.id, 'descartado');
         this.cargarCursos();
+    }
+
+    /**
+     * Abre el drawer para editar una novedad existente
+     */
+    editarNovedad(novedad: Novedad): void {
+        // Cargar datos de la novedad en el formulario
+        const tipo = this.tiposNovedad().find(t => t.id === novedad.tipoNovedadId);
+        if (tipo) {
+            this.tipoNovedadSeleccionado.set(tipo);
+        }
+        this.origenSeleccionado.set(novedad.origen);
+        this.descripcionNovedad.set(novedad.descripcion || '');
+
+        // Agregar el estudiante a la selección si no está
+        const yaSeleccionado = this.estudiantesSeleccionados().find(e => e.correo === novedad.estudianteCorreo);
+        if (!yaSeleccionado) {
+            this.estudiantesSeleccionados.set([{
+                correo: novedad.estudianteCorreo,
+                nombre: novedad.estudianteNombre || novedad.estudianteCorreo,
+                curso: novedad.cursoId,
+                grupo: novedad.grupo
+            }]);
+        }
+
+        // Abrir drawer para edición
+        this.abrirDrawer();
     }
 
     // === NAVEGACIÓN ===
