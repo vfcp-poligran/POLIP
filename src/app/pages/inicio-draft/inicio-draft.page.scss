@@ -1,6 +1,9 @@
+@use "sass:color";
+
 // Variables
 $azul-oscuro: #0f385a;
 $azul-claro: #4a90e2;
+$verde-exito: #2dd36f;
 $gris-claro: #f8f9fa;
 $touch-target: 44px;
 
@@ -11,7 +14,7 @@ $touch-target: 44px;
 
 // === HEADER ===
 .page-header {
-    background: linear-gradient(135deg, $azul-oscuro 0%, darken($azul-oscuro, 5%) 100%);
+    background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
     padding: 16px;
     padding-top: calc(16px + var(--ion-safe-area-top, 0px));
     position: sticky;
@@ -55,6 +58,51 @@ $touch-target: 44px;
         }
     }
 
+    // Row de búsqueda + chips de tipos
+    .search-tipos-row {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+
+        @media (max-width: 991px) {
+            flex-direction: column;
+            gap: 8px;
+        }
+    }
+
+    // Chips de tipos de novedad como filtro
+    .tipos-filtro-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        flex-shrink: 0;
+
+        ion-chip {
+            --background: rgba(255, 255, 255, 0.2);
+            --color: rgba(255, 255, 255, 0.9);
+            height: 32px;
+            font-size: 0.75rem;
+            margin: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            ion-icon {
+                font-size: 0.9rem;
+            }
+
+            &.selected {
+                --background: var(--chip-color, #fff);
+                --color: #fff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            }
+
+            &:hover:not(.selected) {
+                --background: rgba(255, 255, 255, 0.35);
+            }
+        }
+    }
+
     .search-container {
         position: relative;
 
@@ -93,9 +141,22 @@ $touch-target: 44px;
                     background: rgba($azul-claro, 0.08);
                 }
 
+                &.selected {
+                    background: rgba($verde-exito, 0.1);
+
+                    .result-name {
+                        color: $verde-exito;
+                        font-weight: 600;
+                    }
+                }
+
                 ion-icon:first-child {
                     font-size: 1.2rem;
                     color: $azul-oscuro;
+
+                    &.selected-icon {
+                        color: $verde-exito;
+                    }
                 }
 
                 .result-info {
@@ -120,6 +181,26 @@ $touch-target: 44px;
                 .add-icon {
                     font-size: 1.2rem;
                     color: $azul-claro;
+                }
+            }
+
+            .dropdown-actions {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 12px;
+                background: #f8f9fa;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+                .dropdown-hint {
+                    font-size: 0.7rem;
+                    color: #888;
+                    font-style: italic;
+                }
+
+                ion-button {
+                    --color: #888;
+                    margin: 0;
                 }
             }
         }
@@ -198,6 +279,81 @@ section {
 
 // === PANORAMA DE CURSOS ===
 .cursos-panorama {
+
+    // Accordion de cursos
+    .cursos-accordion {
+        background: transparent;
+
+        ion-accordion {
+            margin-bottom: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+            &.accordion-expanded {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        .curso-accordion-header {
+            --background: #fff;
+            --padding-start: 12px;
+            --padding-end: 12px;
+            --min-height: 56px;
+            position: relative;
+
+            .curso-color-indicator {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+            }
+
+            ion-label {
+                margin-left: 8px;
+
+                h3 {
+                    font-size: 1rem;
+                    font-weight: 700;
+                    color: $azul-oscuro;
+                    margin: 0;
+                }
+
+                p {
+                    font-size: 0.75rem;
+                    color: #666;
+                    margin: 2px 0 0;
+                }
+            }
+        }
+
+        .curso-grupos-content {
+            background: #f8f9fa;
+            padding: 12px 16px;
+
+            .grupos-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+
+                .grupo-btn {
+                    --border-radius: 8px;
+                    --padding-start: 12px;
+                    --padding-end: 12px;
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    min-height: 36px;
+
+                    &:hover {
+                        opacity: 0.85;
+                    }
+                }
+            }
+        }
+    }
+
+    // Mantener estilos legacy para compatibilidad
     .cursos-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -206,73 +362,6 @@ section {
         @media (max-width: 576px) {
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-        }
-    }
-
-    .curso-card {
-        margin: 0;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        cursor: pointer;
-
-        &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-        }
-
-        .curso-color-bar {
-            height: 4px;
-            width: 100%;
-        }
-
-        ion-card-header {
-            padding: 12px 14px 8px;
-            position: relative;
-
-            ion-card-title {
-                font-size: 1.1rem;
-                font-weight: 700;
-                color: $azul-oscuro;
-            }
-
-            ion-card-subtitle {
-                font-size: 0.75rem;
-                color: #666;
-            }
-
-            .novedad-badge {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                font-size: 0.7rem;
-                padding: 2px 8px;
-                border-radius: 10px;
-            }
-        }
-
-        ion-card-content {
-            padding: 8px 14px 14px;
-
-            .grupos-chips {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
-
-                .grupo-chip {
-                    --background: var(--chip-bg, rgba($azul-claro, 0.1));
-                    --color: $azul-oscuro;
-                    height: 26px;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    margin: 0;
-
-                    &:hover {
-                        --background: var(--chip-bg, rgba($azul-claro, 0.2));
-                    }
-                }
-            }
         }
     }
 }
@@ -446,47 +535,108 @@ section {
 // === NOVEDADES SECTION ===
 .novedades-section {
     .section-header {
-        .btn-seleccionar-todos {
+        .header-actions {
             margin-left: auto;
-            --padding-start: 8px;
-            --padding-end: 8px;
-
-            ion-icon {
-                font-size: 1.2rem;
-            }
+            display: flex;
+            gap: 4px;
         }
 
-        .btn-limpiar-lista {
-            margin-left: 4px;
+        ion-badge {
+            margin-left: 8px;
         }
     }
 }
 
-// Items seleccionables con toggle
-.novedad-item-selectable {
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
-    --padding-start: 8px;
+// Grilla de Novedades (Estudiantes para seleccionar)
+.novedades-grid {
+    padding: 8px 16px;
+    --ion-grid-padding: 0;
 
-    ion-checkbox {
-        margin-right: 8px;
-        --size: 20px;
+    ion-row {
+        margin: 0 -8px;
     }
 
-    &:hover {
-        --background: rgba($azul-claro, 0.06);
+    ion-col {
+        padding: 8px;
     }
 
-    &:active {
-        transform: scale(0.99);
-    }
+    .novedad-card-selectable {
+        background: #fff;
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-    &.selected {
-        --background: rgba($azul-claro, 0.12);
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: #fdfdfd;
+        }
 
-        ion-label h3 {
-            color: $azul-oscuro;
-            font-weight: 700;
+        &.selected {
+            background: rgba($azul-claro, 0.08);
+            border-color: rgba($azul-claro, 0.3);
+            box-shadow: 0 4px 12px rgba($azul-claro, 0.15);
+
+            .student-name {
+                color: $azul-oscuro;
+                font-weight: 700;
+            }
+        }
+
+        .card-selection-check {
+            flex-shrink: 0;
+
+            ion-checkbox {
+                --size: 20px;
+                --checkbox-background-checked: #{$azul-claro};
+                --border-color-checked: #{$azul-claro};
+            }
+        }
+
+        .card-info {
+            flex: 1;
+            min-width: 0;
+
+            .student-name {
+                display: block;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: #333;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-bottom: 4px;
+            }
+
+            .student-meta {
+                .mini-chip {
+                    --background: rgba($azul-claro, 0.1);
+                    --color: #444;
+                    font-size: 0.7rem;
+                    height: 20px;
+                    margin: 0;
+                    padding: 0 6px;
+                    font-weight: 600;
+                    border: 1px solid rgba($azul-claro, 0.1);
+                }
+            }
+        }
+
+        .btn-remove {
+            --color: #ff4961;
+            margin: 0 -4px 0 0;
+            --padding-start: 4px;
+            --padding-end: 4px;
+
+            ion-icon {
+                font-size: 1.1rem;
+            }
         }
     }
 }
@@ -500,6 +650,217 @@ section {
     font-weight: 600;
     padding: 0 8px;
     margin-right: 4px;
+}
+
+// === PANEL ASIGNACION AVANZADA (Desktop) ===
+.panel-asignacion {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    margin-top: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    .section-header {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 12px;
+
+        h2 {
+            font-size: 1.25rem;
+            color: $azul-oscuro;
+        }
+
+        .codigo-novedad-badge {
+            --padding-start: 12px;
+            --padding-end: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 6px;
+        }
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .custom-input-item {
+            --background: #fdfdfd;
+            --border-radius: 10px;
+            --border-color: #e0e0e0;
+            --border-style: solid;
+            --border-width: 1px;
+            --padding-start: 12px;
+            --inner-padding-end: 12px;
+            margin-bottom: 0;
+            min-height: 44px;
+
+            &.datetime-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 4px 0;
+
+            &.multi-select-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            ion-chip {
+                margin: 0;
+                height: 36px;
+                --background: rgba(0, 0, 0, 0.04);
+                --color: #666;
+                transition: all 0.2s ease;
+                border: 1px solid transparent;
+
+                &.selected {
+                    --background: var(--chip-color, $azul-claro);
+                    --color: #fff;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                    border-color: rgba(255, 255, 255, 0.2);
+                }
+
+                &:hover:not(.selected) {
+                    --background: rgba(0, 0, 0, 0.08);
+                }
+            }
+        }
+
+        .textarea-container {
+            .custom-textarea {
+                --background: #fdfdfd;
+                --border-radius: 10px;
+                --border-color: #e0e0e0;
+                --border-style: solid;
+                --border-width: 1px;
+                --padding-start: 12px;
+                --padding-end: 12px;
+                margin-bottom: 6px;
+                font-size: 0.95rem;
+            }
+
+            ion-note {
+                font-size: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                padding-left: 4px;
+
+                ion-icon {
+                    font-size: 1rem;
+                }
+            }
+        }
+    }
+
+    .acciones-finales {
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .btn-confirmar-novedades {
+            --border-radius: 12px;
+            --padding-top: 14px;
+            --padding-bottom: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba($azul-claro, 0.2);
+        }
+    }
+}
+
+// === PANEL OPCIONES DESKTOP ===
+.registro-opciones-desktop {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+
+    .opciones-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .opcion-grupo {
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .tipo-chips,
+    .origen-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        ion-chip {
+            --background: #f0f0f0;
+            --color: #666;
+            margin: 0;
+            height: 36px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+
+            ion-icon {
+                font-size: 1rem;
+            }
+
+            &.selected {
+                --background: var(--chip-color, $azul-claro);
+                --color: #fff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+
+            &:hover:not(.selected) {
+                --background: #e0e0e0;
+            }
+        }
+    }
+
+    .btn-confirmar-novedades {
+        margin-top: 12px;
+        --border-radius: 10px;
+        min-height: $touch-target;
+        font-weight: 600;
+
+        &[disabled] {
+            opacity: 0.5;
+        }
+    }
 }
 
 // === EMPTY STATES ===
