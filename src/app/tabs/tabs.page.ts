@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone, effect } from '@angular/core';
+import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
@@ -24,8 +24,7 @@ import {
   IonToolbar,
   IonAvatar,
   IonCheckbox,
-  IonTitle,
-  IonTextarea
+  IonTitle
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
@@ -92,6 +91,7 @@ import {
 import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
 import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo, EstadoEstudiante } from '../services/seguimiento.service';
+import { NovedadService } from '../services/novedad.service';
 
 export interface NavigationItem {
   path: string;
@@ -130,8 +130,7 @@ export interface NavigationItem {
     IonToolbar,
     IonAvatar,
     IonCheckbox,
-    IonTitle,
-    IonTextarea
+    IonTitle
   ],
   animations: [
     trigger('slideInOut', [
@@ -162,6 +161,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   private dataService = inject(DataService);
   private seguimientoService = inject(SeguimientoService);
   public fullscreenService = inject(FullscreenService);
+  private novedadService = inject(NovedadService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
 
@@ -220,6 +220,57 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   // Control del panel de seguimiento móvil
   mobileSeguimientoVisible: boolean = false;
+
+  // Control de visibilidad del panel de seguimiento global (Desktop)
+  panelSeguimientoVisible = signal<boolean>(true);
+
+  // Computed para resumen centralizado (si se requiere en el panel global)
+  novedadesPendientes = computed(() => this.novedadService.novedadesPendientes());
+
+  novedadesResumen = computed(() => {
+    const porTipo: Record<string, { count: number; nombre: string; icono: string; color: string }> = {};
+    const pendientes = this.novedadesPendientes();
+
+    pendientes.forEach((n: any) => {
+      if (!porTipo[n.tipoNovedadId]) {
+        const config = this.novedadService.getTipoConfig(n.tipoNovedadId);
+        porTipo[n.tipoNovedadId] = {
+          count: 0,
+          nombre: n.tipoNovedadNombre || 'Sin nombre',
+          icono: config?.icono || 'document-text-outline',
+          color: config?.color || '#607d8b'
+        };
+      }
+      porTipo[n.tipoNovedadId].count++;
+    });
+
+    return Object.values(porTipo).sort((a, b) => b.count - a.count);
+  });
+
+  // Estadísticas globales para el panel de información
+  statsGlobales = computed(() => {
+    const cursosData = this.dataService.cursos() || {};
+    const cursosKeys = Object.keys(cursosData);
+
+    let totalEstudiantes = 0;
+    let totalGrupos = 0;
+
+    cursosKeys.forEach((key: string) => {
+      const estudiantes = cursosData[key] || [];
+      totalEstudiantes += estudiantes.length;
+
+      // Contar grupos únicos en este curso
+      const gruposUnicos = new Set(estudiantes.map((e: any) => e.grupo).filter((g: any) => g));
+      totalGrupos += gruposUnicos.size;
+    });
+
+    return {
+      totalCursos: cursosKeys.length,
+      totalEstudiantes: totalEstudiantes,
+      totalGrupos: totalGrupos,
+      promedioEstudiantes: cursosKeys.length > 0 ? Math.round(totalEstudiantes / cursosKeys.length) : 0
+    };
+  });
 
   constructor() {
     addIcons({
@@ -407,6 +458,12 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   /** Toggle del panel de seguimiento móvil */
   toggleMobileSeguimiento(): void {
     this.mobileSeguimientoVisible = !this.mobileSeguimientoVisible;
+  }
+
+  /** Toggle del panel de seguimiento global (Desktop) */
+  togglePanelSeguimiento(): void {
+    this.panelSeguimientoVisible.update((v: boolean) => !v);
+    Logger.log(`🖥️[TabsPage] Panel de seguimiento global: ${this.panelSeguimientoVisible() ? 'Visible' : 'Oculto'}`);
   }
 
   /** Ruta activa para navegación desktop */

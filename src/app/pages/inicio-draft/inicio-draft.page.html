@@ -1,23 +1,4 @@
-<ion-menu side="end" menuId="tipos-menu" contentId="main-content">
-    <ion-header>
-        <ion-toolbar color="primary">
-            <ion-title>Tipo de Novedad</ion-title>
-        </ion-toolbar>
-    </ion-header>
-    <ion-content>
-        <ion-list>
-            @for (tipo of tiposNovedad(); track tipo.id) {
-            <ion-item (click)="seleccionarTipoDesdeMenu(tipo)" button detail="false">
-                <ion-icon [name]="tipo.icono" slot="start" [style.color]="tipo.color"></ion-icon>
-                <ion-label>{{ tipo.nombre }}</ion-label>
-                @if (tipoNovedadSeleccionado()?.id === tipo.id) {
-                <ion-icon name="checkmark-outline" slot="end" color="primary"></ion-icon>
-                }
-            </ion-item>
-            }
-        </ion-list>
-    </ion-content>
-</ion-menu>
+<!-- Menu para tipos eliminado (sera un select o chips en el modal) -->
 
 <ion-content id="main-content" class="inicio-draft-content" [fullscreen]="true">
 
@@ -132,398 +113,237 @@
         }
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="main-content">
+    <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
+    <div class="main-content-grid">
+        <ion-grid>
+            <ion-row>
+                <!-- COLUMNA 1: PANORAMA DE CURSOS (Cards) -->
+                <ion-col size="12" size-lg="4" class="column-container column-courses">
+                    <div class="column-header">
+                        <ion-icon name="apps-outline"></ion-icon>
+                        <h2>Mis Cursos</h2>
+                        <ion-badge color="primary">{{ cursosResumen().length }}</ion-badge>
+                    </div>
 
-        <!-- SECCIÓN: Panorama de Cursos -->
-        <section class="cursos-panorama">
-            <div class="section-header">
-                <ion-icon name="apps-outline"></ion-icon>
-                <h2>Cursos</h2>
-                <ion-badge color="medium">{{ cursosResumen().length }}</ion-badge>
-            </div>
-
-            @if (cursosResumen().length === 0) {
-            <div class="empty-state">
-                <ion-icon name="school-outline"></ion-icon>
-                <p>No hay cursos cargados</p>
-                <small>Vaya a la sección Cursos para importar datos</small>
-            </div>
-            } @else {
-            <ion-accordion-group [value]="cursoExpandido()" (ionChange)="onAccordionChange($event)"
-                class="cursos-accordion">
-                @for (curso of cursosResumen(); track curso.codigo) {
-                <ion-accordion [value]="curso.codigo" class="curso-accordion">
-                    <ion-item slot="header" class="curso-accordion-header" [style.--border-color]="curso.color">
-                        <div class="curso-color-indicator" [style.background]="curso.color"></div>
-                        <ion-label>
-                            <h3>{{ getCodigoCorto(curso.codigo) }}</h3>
-                            <p>{{ curso.estudiantes }} estudiantes</p>
-                        </ion-label>
-                        @if (curso.novedadesPendientes > 0) {
-                        <ion-badge slot="end" color="warning">{{ curso.novedadesPendientes }}</ion-badge>
+                    <div class="courses-card-list">
+                        @if (cursosResumen().length === 0) {
+                        <div class="empty-state">
+                            <ion-icon name="school-outline"></ion-icon>
+                            <p>No hay cursos cargados</p>
+                        </div>
+                        } @else {
+                        @for (curso of cursosResumen(); track curso.codigo) {
+                        <ion-card class="course-card-premium" [style.--course-color]="curso.color">
+                            <div class="card-color-strip" [style.background]="curso.color"></div>
+                            <ion-card-header>
+                                <ion-card-title>{{ getCodigoCorto(curso.codigo) }}</ion-card-title>
+                                <ion-card-subtitle>{{ curso.estudiantes }} estudiantes</ion-card-subtitle>
+                            </ion-card-header>
+                            <ion-card-content>
+                                <div class="grupos-grid">
+                                    @for (grupo of curso.grupos; track grupo) {
+                                    <ion-button fill="outline" size="small" class="grupo-mini-btn"
+                                        [style.--border-color]="curso.color" [style.--color]="curso.color"
+                                        (click)="seleccionarGrupo(curso, grupo)">
+                                        G{{ grupo }}
+                                    </ion-button>
+                                    }
+                                </div>
+                            </ion-card-content>
+                        </ion-card>
                         }
-                    </ion-item>
-                    <div slot="content" class="curso-grupos-content">
-                        <div class="grupos-buttons">
-                            @for (grupo of curso.grupos; track grupo) {
-                            <ion-button fill="outline" size="small" class="grupo-btn"
-                                [style.--border-color]="curso.color" [style.--color]="curso.color"
-                                (click)="seleccionarGrupo(curso, grupo)">
-                                G{{ grupo }}
+                        }
+                    </div>
+                </ion-col>
+
+                <!-- COLUMNA 2: REGISTRO DE NOVEDADES -->
+                <ion-col size="12" size-lg="4" class="column-container column-registration">
+                    <div class="column-header">
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        <h2>Estudiantes para Novedad</h2>
+                        <ion-badge [color]="estudiantesRegistrados().length > 0 ? 'primary' : 'medium'">
+                            {{ estudiantesRegistrados().length }}
+                        </ion-badge>
+                    </div>
+
+                    <div class="registration-control-pane">
+                        @if (estudiantesRegistrados().length > 0) {
+                        <div class="registration-actions-top">
+                            <ion-button fill="solid" expand="block" color="primary" class="btn-main-register"
+                                (click)="abrirModalRegistro()" [disabled]="seleccionadosIndices().size === 0">
+                                <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                                Registrar Novedad ({{ seleccionadosIndices().size }})
                             </ion-button>
+
+                            <div class="selection-tools">
+                                <ion-button fill="clear" size="small" color="medium" (click)="toggleSeleccionarTodos()">
+                                    <ion-icon slot="start"
+                                        [name]="seleccionadosIndices().size === estudiantesRegistrados().length ? 'checkbox' : 'square-outline'"></ion-icon>
+                                    {{ seleccionadosIndices().size === estudiantesRegistrados().length ? 'Deseleccionar
+                                    todos' : 'Seleccionar todos' }}
+                                </ion-button>
+                                <ion-button fill="clear" size="small" color="danger" (click)="limpiarRegistrados()">
+                                    <ion-icon slot="start" name="trash-outline"></ion-icon>
+                                    Limpiar lista
+                                </ion-button>
+                            </div>
+                        </div>
+
+                        <div class="selected-students-scroll">
+                            @for (est of estudiantesRegistrados(); track $index) {
+                            <div class="student-selection-item" [class.selected]="isNovedadSelected($index)"
+                                (click)="toggleSeleccionNovedad($index)">
+                                <div class="item-selection">
+                                    <ion-checkbox [checked]="isNovedadSelected($index)"
+                                        (click)="$event.stopPropagation()"></ion-checkbox>
+                                </div>
+                                <div class="item-info">
+                                    <span class="name">{{ est.nombre }}</span>
+                                    <span class="meta">{{ getCodigoCorto(est.curso) }} • G{{ est.grupo }}</span>
+                                </div>
+                                <ion-button fill="clear" color="medium" size="small"
+                                    (click)="$event.stopPropagation(); removerRegistrado($index)">
+                                    <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                </ion-button>
+                            </div>
                             }
                         </div>
-                    </div>
-                </ion-accordion>
-                }
-            </ion-accordion-group>
-            }
-        </section>
-
-        <!-- SECCIÓN: Novedades Registradas (Tabla) -->
-        <section class="novedades-registradas">
-            <div class="section-header">
-                <ion-icon name="checkmark-done-circle-outline"></ion-icon>
-                <h2>Novedades Registradas</h2>
-                <ion-badge [color]="pendientesCount() > 0 ? 'warning' : 'success'">
-                    {{ pendientesCount() }}
-                </ion-badge>
-            </div>
-
-            @if (novedadesPendientes().length === 0) {
-            <div class="empty-state success">
-                <ion-icon name="checkmark-circle-outline"></ion-icon>
-                <p>No hay nuevas novedades registradas por sincronizar</p>
-            </div>
-            } @else {
-            <div class="table-container">
-                <table class="custom-table novedades-table">
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Estudiante</th>
-                            <th class="hide-mobile">Curso / Grupo</th>
-                            <th class="hide-mobile">Origen</th>
-                            <th class="hide-mobile">Fecha</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (novedad of novedadesPendientes(); track novedad.id) {
-                        <tr>
-                            <td>
-                                <div class="tipo-cell">
-                                    <div class="tipo-dot" [style.background]="getTipoColor(novedad.tipoNovedadId)">
-                                    </div>
-                                    <ion-icon [name]="getTipoIcon(novedad.tipoNovedadId)"
-                                        [style.color]="getTipoColor(novedad.tipoNovedadId)"></ion-icon>
-                                    <span>{{ novedad.tipoNovedadNombre }}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="student-cell">
-                                    <span class="name">{{ novedad.estudianteNombre || novedad.estudianteCorreo }}</span>
-                                    <span class="email hide-desktop">{{ novedad.estudianteCorreo }}</span>
-                                </div>
-                            </td>
-                            <td class="hide-mobile">
-                                <ion-chip class="mini-chip">
-                                    {{ getCodigoCorto(novedad.cursoId) }} G{{ novedad.grupo }}
-                                </ion-chip>
-                            </td>
-                            <td class="hide-mobile">
-                                <div class="origen-cell">
-                                    <ion-icon [name]="getOrigenIcon(novedad.origen)"
-                                        [style.color]="getOrigenColor(novedad.origen)"></ion-icon>
-                                    <span>{{ getOrigenLabel(novedad.origen) }}</span>
-                                </div>
-                            </td>
-                            <td class="hide-mobile">
-                                <span class="fecha-text">{{ formatFecha(novedad.fechaRegistro) }}</span>
-                            </td>
-                            <td>
-                                <div class="actions-cell">
-                                    <ion-button fill="clear" color="success" size="small"
-                                        (click)="confirmarNovedad(novedad)" title="Confirmar">
-                                        <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
-                                    </ion-button>
-                                    <ion-button fill="clear" color="primary" size="small"
-                                        (click)="editarNovedad(novedad)" title="Editar">
-                                        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                                    </ion-button>
-                                    <ion-button fill="clear" color="danger" size="small"
-                                        (click)="descartarNovedad(novedad)" title="Eliminar">
-                                        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                                    </ion-button>
-                                </div>
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            }
-        </section>
-
-        <!-- SECCIÓN: Lista de Novedades (Grilla de Selección) -->
-        @if (estudiantesRegistrados().length > 0) {
-        <section class="estudiantes-registrados novedades-section">
-            <div class="section-header">
-                <ion-icon name="document-text-outline"></ion-icon>
-                <h2>Estudiantes para Novedad</h2>
-                <ion-badge color="primary">{{ estudiantesRegistrados().length }}</ion-badge>
-                <div class="header-actions">
-                    <ion-button fill="clear" size="small" color="medium" (click)="toggleSeleccionarTodos()"
-                        title="Seleccionar todos">
-                        <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
-                    </ion-button>
-                    <ion-button fill="clear" size="small" color="danger" (click)="limpiarRegistrados()"
-                        title="Limpiar lista">
-                        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                    </ion-button>
-                </div>
-            </div>
-
-            <ion-grid class="novedades-grid">
-                <ion-row>
-                    @for (est of estudiantesRegistrados(); track $index) {
-                    <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
-                        <div class="novedad-card-selectable" [class.selected]="isNovedadSelected($index)"
-                            (click)="toggleSeleccionNovedad($index)">
-                            <div class="card-selection-check">
-                                <ion-checkbox [checked]="isNovedadSelected($index)" (click)="$event.stopPropagation()"
-                                    (ionChange)="toggleSeleccionNovedad($index)"></ion-checkbox>
-                            </div>
-                            <div class="card-info">
-                                <span class="student-name">{{ est.nombre }}</span>
-                                <div class="student-meta">
-                                    <ion-chip class="mini-chip">
-                                        {{ getCodigoCorto(est.curso) }} G{{ est.grupo }}
-                                    </ion-chip>
-                                </div>
-                            </div>
-                            <ion-button fill="clear" color="danger" size="small" class="btn-remove"
-                                (click)="$event.stopPropagation(); removerRegistrado($index)">
-                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                            </ion-button>
+                        } @else {
+                        <div class="empty-state registration-empty">
+                            <ion-icon name="person-add-outline"></ion-icon>
+                            <p>No hay estudiantes seleccionados</p>
+                            <small>Usa el buscador arriba para agregar estudiantes a esta lista.</small>
                         </div>
-                    </ion-col>
-                    }
-                </ion-row>
-            </ion-grid>
-        </section>
-        }
+                        }
+                    </div>
+                </ion-col>
 
-        <!-- SECCIÓN: Opciones de Registro (Desktop) -->
-        <!-- SECCIÓN: Asignar Novedad (Panel Avanzado Desktop) -->
-        @if (isDesktop()) {
-        <section class="registro-opciones-desktop panel-asignacion">
-            <div class="section-header">
-                <ion-icon name="add-circle-outline"></ion-icon>
-                <h2>Asignar Novedad Grupal</h2>
-                <ion-badge color="tertiary" class="codigo-novedad-badge">{{ codigoNovedad() }}</ion-badge>
-            </div>
+                <!-- COLUMNA 3: EN CONSTRUCCIÓN -->
+                <ion-col size="12" size-lg="4" class="column-container column-placeholder">
+                    <div class="column-header">
+                        <ion-icon name="hammer-outline"></ion-icon>
+                        <h2>En Construcción</h2>
+                    </div>
 
-            <div class="asignacion-content">
-                <ion-grid>
-                    <ion-row>
-                        <!-- Alias y Fecha -->
-                        <ion-col size="12" size-md="6">
-                            <div class="input-group">
-                                <label>Nombre / Alias de la Novedad</label>
-                                <ion-item lines="none" class="custom-input-item">
-                                    <ion-input [(ngModel)]="aliasNovedad"
-                                        placeholder="Ej: Falta masiva, Retraso Teams..."></ion-input>
-                                </ion-item>
+                    <div class="construction-card">
+                        <div class="animation-placeholder">
+                            <ion-icon name="construct-outline" class="animated-icon"></ion-icon>
+                        </div>
+                        <h3>Próximas Funcionalidades</h3>
+                        <p>Estamos trabajando para traerte más herramientas de gestión y análisis en este espacio.</p>
+
+                        <div class="feature-list-mini">
+                            <div class="feature-item">
+                                <ion-icon name="analytics-outline" color="primary"></ion-icon>
+                                <span>Reportes Avanzados</span>
                             </div>
-                        </ion-col>
-                        <ion-col size="12" size-md="6">
-                            <div class="input-group">
-                                <label>Fecha y Hora</label>
-                                <ion-item lines="none" class="custom-input-item datetime-item">
-                                    <ion-datetime-button datetime="datetime"></ion-datetime-button>
-                                    <ion-modal [keepContentsMounted]="true">
-                                        <ng-template>
-                                            <ion-datetime id="datetime" [(ngModel)]="fechaHoraNovedad"></ion-datetime>
-                                        </ng-template>
-                                    </ion-modal>
-                                </ion-item>
+                            <div class="feature-item">
+                                <ion-icon name="calendar-outline" color="success"></ion-icon>
+                                <span>Agenda de Seguimiento</span>
                             </div>
-                        </ion-col>
-
-                        <!-- Tipos (Multi-select) -->
-                        <ion-col size="12">
-                            <div class="input-group">
-                                <label>Tipos de Novedad (Selección múltiple)</label>
-                                <div class="chips-container multi-select-grid">
-                                    @for (tipo of tiposNovedad(); track tipo.id) {
-                                    <ion-chip [class.selected]="isTipoSeleccionado(tipo.id)"
-                                        [style.--chip-color]="tipo.color" (click)="toggleTipoSeleccionado(tipo.id)">
-                                        <ion-icon [name]="tipo.icono"></ion-icon>
-                                        <ion-label>{{ tipo.nombre }}</ion-label>
-                                        @if (isTipoSeleccionado(tipo.id)) {
-                                        <ion-icon name="checkmark-circle"></ion-icon>
-                                        }
-                                    </ion-chip>
-                                    }
-                                </div>
+                            <div class="feature-item">
+                                <ion-icon name="notifications-outline" color="warning"></ion-icon>
+                                <span>Alertas Automáticas</span>
                             </div>
-                        </ion-col>
-
-                        <!-- Origen (Multi-select) -->
-                        <ion-col size="12">
-                            <div class="input-group">
-                                <label>Orígenes del Mensaje</label>
-                                <div class="chips-container">
-                                    @for (origen of ['teams', 'canvas', 'foro', 'email', 'presencial']; track origen) {
-                                    <ion-chip [class.selected]="isOrigenSeleccionado(origen)"
-                                        [style.--chip-color]="getOrigenColor(origen)"
-                                        (click)="toggleOrigenSeleccionado(origen)">
-                                        <ion-icon [name]="getOrigenIcon(origen)"></ion-icon>
-                                        <ion-label>{{ getOrigenLabel(origen) }}</ion-label>
-                                        @if (isOrigenSeleccionado(origen)) {
-                                        <ion-icon name="checkmark-circle"></ion-icon>
-                                        }
-                                    </ion-chip>
-                                    }
-                                </div>
-                            </div>
-                        </ion-col>
-
-                        <!-- Comentarios -->
-                        <ion-col size="12">
-                            <div class="input-group">
-                                <label>Comentarios y Observaciones</label>
-                                <div class="textarea-container">
-                                    <ion-textarea [(ngModel)]="descripcionNovedad"
-                                        placeholder="Escriba aquí los detalles..." [autoGrow]="true" rows="3"
-                                        class="custom-textarea"></ion-textarea>
-                                    <ion-note color="medium">
-                                        <ion-icon name="information-circle-outline"></ion-icon>
-                                        Estas notas serán visibles en el reporte detallado.
-                                    </ion-note>
-                                </div>
-                            </div>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
-
-                <div class="acciones-finales">
-                    <ion-button expand="block" color="success" class="btn-confirmar-novedades"
-                        [disabled]="tiposSeleccionados().size === 0 || seleccionadosIndices().size === 0"
-                        (click)="confirmarNovedadesSeleccionadas()">
-                        <ion-icon name="checkmark-done-circle" slot="start"></ion-icon>
-                        Registrar Novedad Grupal ({{ seleccionadosIndices().size }} estudiantes)
-                    </ion-button>
-                    <ion-button expand="block" fill="clear" color="medium" (click)="limpiarFormulario()">
-                        Limpiar Formulario
-                    </ion-button>
-                </div>
-            </div>
-        </section>
-        }
+                        </div>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
     </div>
 
-    <!-- FAB para móvil -->
-    @if (!isDesktop()) {
+    <!-- FAB para móvil (Trigger modal si hay selección) -->
+    @if (!isDesktop() && estudiantesRegistrados().length > 0) {
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="registro-fab">
-        <ion-fab-button color="primary" (click)="abrirDrawer()">
-            <ion-icon name="add-outline"></ion-icon>
+        <ion-fab-button color="primary" (click)="abrirModalRegistro()" [disabled]="seleccionadosIndices().size === 0">
+            <ion-icon name="checkmark-done-outline"></ion-icon>
         </ion-fab-button>
     </ion-fab>
     }
 
-    <!-- BOTTOM DRAWER (Móvil y Tablet) -->
-    <div class="bottom-drawer" [class.visible]="drawerVisible()">
-        <div class="drawer-handle" (click)="toggleDrawer()">
-            <div class="handle-bar"></div>
-        </div>
+    <!-- MODAL DE REGISTRO DE NOVEDAD -->
+    <ion-modal [isOpen]="isModalRegistroVisible()" (didDismiss)="cerrarModalRegistro()" class="registration-modal">
+        <ng-template>
+            <ion-header>
+                <ion-toolbar color="primary">
+                    <ion-title>Registrar Novedad</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button (click)="cerrarModalRegistro()">
+                            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+                <div class="modal-form-container">
+                    <!-- Resumen de seleccionados -->
+                    <div class="form-section">
+                        <label class="section-label">Estudiantes Seleccionados ({{ seleccionadosIndices().size
+                            }})</label>
+                        <div class="selected-summary-chips">
+                            @for (idx of Array.from(seleccionadosIndices()); track idx) {
+                            @if (estudiantesRegistrados()[idx]) {
+                            <ion-chip outline color="primary">
+                                <ion-label>{{ estudiantesRegistrados()[idx].nombre.split(' ')[0] }}</ion-label>
+                            </ion-chip>
+                            }
+                            }
+                        </div>
+                    </div>
 
-        <div class="drawer-header">
-            <h3>Registrar Novedad</h3>
-            <ion-button fill="clear" (click)="cerrarDrawer()">
-                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-            </ion-button>
-        </div>
+                    <!-- Tipo de novedad -->
+                    <div class="form-section">
+                        <label class="section-label">Tipo de Novedad</label>
+                        <div class="tipo-selector-grid">
+                            @for (tipo of tiposNovedad(); track tipo.id) {
+                            <div class="tipo-option-card" [class.active]="tipoNovedadSeleccionado()?.id === tipo.id"
+                                (click)="tipoNovedadSeleccionado.set(tipo)" [style.--tipo-color]="tipo.color">
+                                <ion-icon [name]="tipo.icono"></ion-icon>
+                                <span>{{ tipo.nombre }}</span>
+                                @if (tipoNovedadSeleccionado()?.id === tipo.id) {
+                                <div class="check-badge"><ion-icon name="checkmark-outline"></ion-icon></div>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
 
-        <div class="drawer-content">
-            <!-- Estudiantes seleccionados -->
-            @if (estudiantesSeleccionados().length === 0) {
-            <div class="drawer-empty">
-                <ion-icon name="person-outline"></ion-icon>
-                <p>Busca y selecciona estudiantes arriba</p>
-            </div>
-            } @else {
-            <div class="drawer-section">
-                <label>Estudiantes ({{ estudiantesSeleccionados().length }})</label>
-                <div class="drawer-chips">
-                    @for (est of estudiantesSeleccionados(); track est.correo) {
-                    <ion-chip>
-                        <ion-label>{{ est.nombre.split(' ')[0] }} ({{ getCodigoCorto(est.curso) }} G{{ est.grupo
-                            }})</ion-label>
-                        <ion-icon name="close-outline" (click)="removerEstudiante(est.correo)"></ion-icon>
-                    </ion-chip>
-                    }
+                    <!-- Origen -->
+                    <div class="form-section">
+                        <label class="section-label">Canal de Origen</label>
+                        <div class="origen-selector-row">
+                            @for (origen of ['teams', 'canvas', 'foro', 'email', 'presencial']; track origen) {
+                            <div class="origen-option" [class.active]="origenSeleccionado() === origen"
+                                (click)="origenSeleccionado.set($any(origen))" [title]="getOrigenLabel(origen)">
+                                <ion-icon [name]="getOrigenIcon(origen)"
+                                    [style.color]="getOrigenColor(origen)"></ion-icon>
+                                @if (origenSeleccionado() === origen) {
+                                <span class="origen-label">{{ getOrigenLabel(origen) }}</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="form-section">
+                        <label class="section-label">Notas Adicionales (Opcional)</label>
+                        <ion-textarea [value]="descripcionNovedad()"
+                            (ionInput)="descripcionNovedad.set($any($event.target).value)"
+                            placeholder="Ej: El estudiante informó por chat..." rows="3" class="custom-textarea">
+                        </ion-textarea>
+                    </div>
+
+                    <div class="form-actions-footer">
+                        <ion-button expand="block" color="primary" class="confirm-btn"
+                            [disabled]="!tipoNovedadSeleccionado()" (click)="registrarNovedadConfirmada()">
+                            <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                            Confirmar Registro
+                        </ion-button>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Tipo de novedad -->
-            <div class="drawer-section">
-                <label>Tipo de novedad</label>
-                @if (isDesktop()) {
-                <div class="tipo-chips">
-                    @for (tipo of tiposNovedad(); track tipo.id) {
-                    <ion-chip [class.selected]="tipoNovedadSeleccionado()?.id === tipo.id"
-                        [style.--chip-color]="tipo.color" (click)="tipoNovedadSeleccionado.set(tipo)">
-                        <ion-icon [name]="tipo.icono"></ion-icon>
-                        <ion-label>{{ tipo.nombre }}</ion-label>
-                    </ion-chip>
-                    }
-                </div>
-                } @else {
-                <ion-button expand="block" fill="outline" (click)="abrirMenuTipos()" class="tipo-selector-btn">
-                    @if (tipoNovedadSeleccionado()) {
-                    <ion-icon [name]="tipoNovedadSeleccionado()!.icono" slot="start"></ion-icon>
-                    {{ tipoNovedadSeleccionado()!.nombre }}
-                    } @else {
-                    Seleccionar tipo...
-                    }
-                    <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
-                </ion-button>
-                }
-            </div>
-
-            <!-- Origen -->
-            <div class="drawer-section">
-                <label>Origen del mensaje</label>
-                <div class="origen-chips">
-                    @for (origen of ['teams', 'canvas', 'foro', 'email', 'presencial']; track origen) {
-                    <ion-chip [class.selected]="origenSeleccionado() === origen"
-                        [style.--chip-color]="getOrigenColor(origen)" (click)="origenSeleccionado.set($any(origen))">
-                        <ion-icon [name]="getOrigenIcon(origen)"></ion-icon>
-                        @if (isDesktop()) {
-                        <ion-label>{{ getOrigenLabel(origen) }}</ion-label>
-                        }
-                    </ion-chip>
-                    }
-                </div>
-            </div>
-
-            <!-- Botón registrar -->
-            <ion-button expand="block" color="primary"
-                [disabled]="!tipoNovedadSeleccionado() || estudiantesSeleccionados().length === 0"
-                (click)="registrarNovedad()" class="registrar-btn">
-                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-                Registrar Novedad
-            </ion-button>
-            }
-        </div>
-    </div>
-
-    <!-- Overlay para drawer -->
-    @if (drawerVisible()) {
-    <div class="drawer-overlay" (click)="cerrarDrawer()"></div>
-    }
+            </ion-content>
+        </ng-template>
+    </ion-modal>
 
 </ion-content>

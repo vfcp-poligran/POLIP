@@ -9,19 +9,21 @@ import {
     IonChip,
     IonLabel,
     IonSearchbar,
-    IonList,
-    IonItem,
     IonCheckbox,
-    IonFabButton,
     IonAccordion,
     IonAccordionGroup,
     IonGrid,
     IonRow,
     IonCol,
-    IonNote,
     IonTextarea,
     IonDatetime,
     IonFab,
+    IonFabButton,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
     IonModal,
     IonInput,
     IonDatetimeButton,
@@ -29,6 +31,7 @@ import {
     IonHeader,
     IonToolbar,
     IonTitle,
+    IonButtons,
     ActionSheetController,
     ToastController,
     MenuController,
@@ -72,7 +75,9 @@ import {
     checkmarkDoneCircle,
     checkmarkCircle,
     checkmarkDoneCircleOutline,
-    chatboxEllipsesOutline
+    chatboxEllipsesOutline, bulbOutline,
+    personAddOutline, hammerOutline, constructOutline,
+    analyticsOutline, calendarOutline
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -117,8 +122,6 @@ interface EstudianteSeleccionado {
         IonChip,
         IonLabel,
         IonSearchbar,
-        IonList,
-        IonItem,
         IonCheckbox,
         IonFabButton,
         IonAccordion,
@@ -126,17 +129,18 @@ interface EstudianteSeleccionado {
         IonGrid,
         IonRow,
         IonCol,
-        IonNote,
         IonTextarea,
-        IonDatetime,
-        IonFab,
-        IonModal,
-        IonInput,
-        IonDatetimeButton,
-        IonMenu,
         IonHeader,
         IonToolbar,
-        IonTitle
+        IonTitle,
+        IonButtons,
+        IonModal,
+        IonCard,
+        IonCardHeader,
+        IonCardTitle,
+        IonCardSubtitle,
+        IonCardContent,
+        IonFab
     ]
 })
 export class InicioDraftPage implements OnInit, ViewWillEnter {
@@ -154,7 +158,7 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     sugerenciasCursos = signal<CursoResumen[]>([]); // Para comando #C
     busquedaTermino = signal<string>('');
     resultadosBusqueda = signal<EstudianteSeleccionado[]>([]);
-    drawerVisible = signal<boolean>(false);
+    isModalRegistroVisible = signal<boolean>(false);
     tipoNovedadSeleccionado = signal<TipoNovedad | null>(null);
     origenSeleccionado = signal<OrigenMensaje>('teams');
     descripcionNovedad = signal<string>('');
@@ -163,25 +167,33 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     tiposFiltro = signal<Set<string>>(new Set()); // Tipos de novedad seleccionados como filtro
 
     // Asignación de Novedad
-    tiposSeleccionados = signal<Set<string>>(new Set());
-    origenesSeleccionados = signal<Set<string>>(new Set());
     aliasNovedad = signal<string>('');
     fechaHoraNovedad = signal<string>(new Date().toISOString());
-    consecutivoNovedad = signal<number>(1);
 
     // === COMPUTED ===
-    codigoNovedad = computed(() => `N${String(this.consecutivoNovedad()).padStart(3, '0')}`);
     tiposNovedad = computed(() => this.novedadService.tiposActivos());
     novedadesPendientes = computed(() => this.novedadService.novedadesPendientes());
     pendientesCount = computed(() => this.novedadService.pendientesCount());
     isOnline = computed(() => this.novedadService.isOnline());
+    Array = Array; // Expose Array to template
 
     // Constantes para template
     ORIGEN_CONFIG = ORIGEN_CONFIG;
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ homeOutline, cloudOfflineOutline, closeOutline, schoolOutline, chevronForwardOutline, addOutline, appsOutline, checkmarkDoneCircleOutline, checkmarkCircleOutline, createOutline, trashOutline, documentTextOutline, checkmarkDoneOutline, addCircleOutline, checkmarkCircle, informationCircleOutline, checkmarkDoneCircle, personOutline, chevronDownOutline, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, peopleOutline, warningOutline, timeOutline, chevronUpOutline, statsChartOutline, listOutline, gridOutline, chatbubblesOutline, mailOutline, ellipsisHorizontalOutline, checkmarkOutline, syncOutline, notificationsOutline, chatboxEllipsesOutline });
+        addIcons({
+            checkmarkOutline, homeOutline, cloudOfflineOutline, closeOutline, schoolOutline,
+            chevronForwardOutline, addOutline, appsOutline, checkmarkDoneCircleOutline,
+            checkmarkCircleOutline, createOutline, trashOutline, documentTextOutline,
+            checkmarkDoneOutline, informationCircleOutline, timeOutline, addCircleOutline,
+            bulbOutline, personOutline, chevronDownOutline, checkmarkCircle,
+            checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline,
+            searchOutline, peopleOutline, warningOutline, chevronUpOutline, listOutline,
+            gridOutline, chatboxEllipsesOutline, notificationsOutline,
+            personAddOutline, hammerOutline, constructOutline,
+            analyticsOutline, calendarOutline
+        });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -225,14 +237,14 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     }
 
     /**
-     * Maneja el cambio de accordion para cursos
+     * Maneja el cambio de accordion para cursos (legacy or mobile)
      */
     onAccordionChange(event: any): void {
         const value = event.detail.value;
         this.cursoExpandido.set(value || null);
     }
 
-    // === BÚSQUEDA ===
+    // === BÚSQUEDA Y SELECCIÓN ===
 
     onBusquedaChange(event: any): void {
         const termino = event.detail.value || '';
@@ -294,77 +306,70 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
 
         Object.keys(cursos).forEach(cursoKey => {
             const estudiantes = cursos[cursoKey] || [];
-            estudiantes
-                .filter(est => String(est.grupo) === grupo)
+            estudiantes.filter(est => String(est.grupo || '') === grupo)
                 .forEach(est => {
                     estudiantesGrupo.push({
                         correo: est.correo,
                         nombre: `${est.nombres} ${est.apellidos}`,
                         curso: cursoKey,
-                        grupo: grupo
+                        grupo: String(est.grupo || '')
                     });
                 });
         });
 
         if (estudiantesGrupo.length > 0) {
             this.estudiantesRegistrados.update(list => [...list, ...estudiantesGrupo]);
+            this.toastController.create({
+                message: `Agregados ${estudiantesGrupo.length} estudiantes del grupo ${grupo}`,
+                duration: 2000,
+                color: 'success'
+            }).then(t => t.present());
         }
     }
 
     /**
-     * Selecciona un curso desde el comando #C y filtra por ese curso
+     * Filtra la búsqueda de estudiantes por un curso específico
      */
     seleccionarCursoFiltro(curso: CursoResumen): void {
-        this.sugerenciasCursos.set([]);
-        // Agregar todos los estudiantes del curso a la lista
         const cursos = this.dataService.cursos();
         const estudiantes = cursos[curso.codigo] || [];
-        const estudiantesDelCurso: EstudianteSeleccionado[] = estudiantes.map(est => ({
+
+        const estudiantesDelCurso = estudiantes.map(est => ({
             correo: est.correo,
             nombre: `${est.nombres} ${est.apellidos}`,
             curso: curso.codigo,
             grupo: String(est.grupo || '')
         }));
 
-        if (estudiantesDelCurso.length > 0) {
-            this.estudiantesRegistrados.update(list => [...list, ...estudiantesDelCurso]);
-        }
-        this.busquedaTermino.set('');
+        this.resultadosBusqueda.set(estudiantesDelCurso);
+        this.sugerenciasCursos.set([]);
     }
 
-    // === SELECCIÓN DE ESTUDIANTES ===
-
     /**
-     * Selecciona o deselecciona un estudiante (toggle)
-     * Click para agregar, click nuevamente para remover
+     * Selecciona o deselecciona un estudiante individual desde los resultados de búsqueda
      */
     seleccionarEstudiante(estudiante: EstudianteSeleccionado): void {
         const actuales = this.estudiantesSeleccionados();
-        const existe = actuales.find(e => e.correo === estudiante.correo);
+        const existe = actuales.some(e => e.correo === estudiante.correo);
 
         if (existe) {
-            // Ya existe -> deseleccionar (toggle off)
-            this.estudiantesSeleccionados.update(list =>
-                list.filter(e => e.correo !== estudiante.correo)
-            );
+            // Deseleccionar
+            this.estudiantesSeleccionados.update(list => list.filter(e => e.correo !== estudiante.correo));
         } else {
-            // No existe -> agregar (toggle on)
+            // Seleccionar
             this.estudiantesSeleccionados.update(list => [...list, estudiante]);
         }
-
-        // NO limpiar búsqueda para permitir selección múltiple
-        // El usuario puede limpiar manualmente o seguir seleccionando
     }
 
     /**
-     * Verifica si un estudiante ya está seleccionado
+     * Verifica si un estudiante está seleccionado en los resultados de búsqueda
      */
     isEstudianteSeleccionado(correo: string): boolean {
         return this.estudiantesSeleccionados().some(e => e.correo === correo);
     }
 
     /**
-     * Limpia los resultados de búsqueda manualmente
+     * Limpia la búsqueda actual
      */
     limpiarBusqueda(): void {
         this.busquedaTermino.set('');
@@ -372,174 +377,43 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
         this.sugerenciasCursos.set([]);
     }
 
+    /**
+     * Remueve un estudiante de la lista de seleccionados (búsqueda)
+     */
     removerEstudiante(correo: string): void {
-        this.estudiantesSeleccionados.update(list =>
-            list.filter(e => e.correo !== correo)
-        );
+        this.estudiantesSeleccionados.update(list => list.filter(e => e.correo !== correo));
     }
 
-    limpiarSeleccion(): void {
-        this.estudiantesSeleccionados.set([]);
-    }
-
-    // --- Métodos Asignación Novedad ---
+    // === GESTIÓN DE LISTA CENTRAL (COLUMNA 2) ===
 
     /**
-     * Toggle de tipo de novedad para asignación
-     */
-    toggleTipoSeleccionado(tipoId: string): void {
-        this.tiposSeleccionados.update(set => {
-            const newSet = new Set(set);
-            if (newSet.has(tipoId)) {
-                newSet.delete(tipoId);
-            } else {
-                newSet.add(tipoId);
-            }
-            return newSet;
-        });
-    }
-
-    isTipoSeleccionado(tipoId: string): boolean {
-        return this.tiposSeleccionados().has(tipoId);
-    }
-
-    limpiarFormulario(): void {
-        this.aliasNovedad.set('');
-        this.descripcionNovedad.set('');
-        this.tiposSeleccionados.set(new Set());
-        this.origenesSeleccionados.set(new Set());
-        this.fechaHoraNovedad.set(new Date().toISOString());
-    }
-
-    /**
-     * Registra la novedad para todos los estudiantes seleccionados en la grilla
-     */
-    async confirmarNovedadesSeleccionadas(): Promise<void> {
-        const seleccionados = this.estudiantesRegistrados().filter((_, i) =>
-            this.seleccionadosIndices().has(i)
-        );
-
-        if (seleccionados.length === 0 || this.tiposSeleccionados().size === 0) {
-            const toast = await this.toastController.create({
-                message: 'Debes seleccionar al menos un estudiante y un tipo de novedad.',
-                duration: 2000,
-                color: 'warning',
-                position: 'top'
-            });
-            await toast.present();
-            return;
-        }
-
-        // Para cada estudiante seleccionado, creamos los registros
-        const groupSuffix = this.aliasNovedad() ? ` [${this.aliasNovedad()}]` : '';
-        const descripcionCompleta = this.descripcionNovedad() + groupSuffix;
-
-        for (const est of seleccionados) {
-            for (const tipoId of this.tiposSeleccionados()) {
-                const tipo = this.tiposNovedad().find(t => t.id === tipoId);
-                if (!tipo) continue;
-
-                const origenes = this.origenesSeleccionados().size > 0
-                    ? Array.from(this.origenesSeleccionados())
-                    : ['otro'];
-
-                for (const origenId of origenes) {
-                    await this.novedadService.registrarNovedad({
-                        estudianteCorreo: est.correo,
-                        estudianteNombre: est.nombre,
-                        cursoId: est.curso,
-                        grupo: est.grupo,
-                        tipoNovedadId: tipo.id,
-                        tipoNovedadNombre: tipo.nombre,
-                        origen: origenId as any,
-                        descripcion: descripcionCompleta,
-                        estado: 'en_revision'
-                    });
-                }
-            }
-        }
-
-        // Incrementar consecutivo
-        this.consecutivoNovedad.update(n => n + 1);
-
-        // Limpiar
-        this.limpiarFormulario();
-        this.limpiarRegistrados(); // Limpia la lista de estudiantes para novedad
-
-        // Feedback
-        const toast = await this.toastController.create({
-            message: `Registradas novedades para ${seleccionados.length} estudiantes exitosamente.`,
-            duration: 2000,
-            color: 'success',
-            position: 'top'
-        });
-        await toast.present();
-    }
-
-    /**
-     * Toggle de origen del mensaje para asignación
-     */
-    toggleOrigenSeleccionado(origen: string): void {
-        this.origenesSeleccionados.update(set => {
-            const newSet = new Set(set);
-            if (newSet.has(origen)) {
-                newSet.delete(origen);
-            } else {
-                newSet.add(origen);
-            }
-            return newSet;
-        });
-    }
-
-    isOrigenSeleccionado(origen: string): boolean {
-        return this.origenesSeleccionados().has(origen);
-    }
-
-    /**
-     * Toggle de tipo de novedad como filtro
-     */
-    toggleTipoFiltro(tipoId: string): void {
-        this.tiposFiltro.update(set => {
-            const newSet = new Set(set);
-            if (newSet.has(tipoId)) {
-                newSet.delete(tipoId);
-            } else {
-                newSet.add(tipoId);
-            }
-            return newSet;
-        });
-    }
-
-    /**
-     * Verifica si un tipo está activo como filtro
-     */
-    isTipoFiltroActivo(tipoId: string): boolean {
-        return this.tiposFiltro().has(tipoId);
-    }
-
-    /**
-     * Transfiere los estudiantes seleccionados a la lista de registrados en main-content
-     * No abre el drawer, los agrega directamente a la lista visible
+     * Transfiere los estudiantes seleccionados en la búsqueda a la lista de registrados
      */
     registrarEnLista(): void {
         const seleccionados = this.estudiantesSeleccionados();
         if (seleccionados.length === 0) return;
 
-        // Agregar a registrados (permite duplicados para múltiples novedades)
+        // Agregar a la lista de registrados
         this.estudiantesRegistrados.update(list => [...list, ...seleccionados]);
 
-        // Limpiar selección después de registrar
-        this.limpiarSeleccion();
+        // Limpiar selección temporal
+        this.estudiantesSeleccionados.set([]);
+        this.limpiarBusqueda();
     }
 
     /**
      * Remueve un estudiante de la lista de registrados por índice
-     * (usa índice porque puede haber duplicados del mismo correo)
      */
     removerRegistrado(index: number): void {
-        this.estudiantesRegistrados.update(list =>
-            list.filter((_, i) => i !== index)
-        );
+        this.estudiantesRegistrados.update(list => list.filter((_, i) => i !== index));
+        // También remover de seleccionadosIndices si estaba allí
+        this.seleccionadosIndices.update(set => {
+            const newSet = new Set(set);
+            newSet.delete(index);
+            // Re-indexar podría ser complejo, por ahora simplemente limpiamos selección
+            // pero lo ideal es manejar IDs únicos.
+            return newSet;
+        });
     }
 
     /**
@@ -551,7 +425,7 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     }
 
     /**
-     * Toggle de selección para un item en la lista de Novedades
+     * Toggle de selección para un item en la lista de registrados
      */
     toggleSeleccionNovedad(index: number): void {
         this.seleccionadosIndices.update(set => {
@@ -566,191 +440,121 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     }
 
     /**
-     * Verifica si un item está seleccionado en la lista de Novedades
+     * Verifica si un item de la lista de registrados está seleccionado
      */
     isNovedadSelected(index: number): boolean {
         return this.seleccionadosIndices().has(index);
     }
 
     /**
-     * Selecciona/deselecciona todos los items de la lista de Novedades
+     * Selecciona o deselecciona todos los items en la lista de registrados
      */
     toggleSeleccionarTodos(): void {
         const registrados = this.estudiantesRegistrados();
         const seleccionados = this.seleccionadosIndices();
 
-        if (seleccionados.size === registrados.length) {
-            // Todos seleccionados -> deseleccionar todos
+        if (seleccionados.size === registrados.length && registrados.length > 0) {
             this.seleccionadosIndices.set(new Set());
         } else {
-            // No todos seleccionados -> seleccionar todos
-            const todosIndices = new Set(registrados.map((_, i) => i));
-            this.seleccionadosIndices.set(todosIndices);
+            this.seleccionadosIndices.set(new Set(registrados.map((_, i) => i)));
         }
     }
 
-    // === DRAWER DE REGISTRO ===
+    // === MODAL DE REGISTRO ===
 
-    toggleDrawer(): void {
-        this.drawerVisible.update(v => !v);
+    abrirModalRegistro(): void {
+        this.isModalRegistroVisible.set(true);
     }
 
-    abrirDrawer(): void {
-        this.drawerVisible.set(true);
-    }
-
-    cerrarDrawer(): void {
-        this.drawerVisible.set(false);
+    cerrarModalRegistro(): void {
+        this.isModalRegistroVisible.set(false);
         this.limpiarFormulario();
     }
 
-    // --- Gestión de Drawer ---
-
-    async abrirMenuTipos(): Promise<void> {
-        await this.menuCtrl.enable(true, 'tipos-menu');
-        await this.menuCtrl.open('tipos-menu');
-    }
-
-    seleccionarTipoDesdeMenu(tipo: TipoNovedad): void {
-        this.tipoNovedadSeleccionado.set(tipo);
-        this.menuCtrl.close('tipos-menu');
-    }
-
-    // === ACTION SHEET PARA TIPO DE NOVEDAD (MÓVIL - LEGACY) ===
-
-    async mostrarTiposNovedad(): Promise<void> {
-        const tipos = this.tiposNovedad();
-        const buttons = tipos.map(tipo => ({
-            text: tipo.nombre,
-            icon: tipo.icono,
-            handler: () => {
-                this.tipoNovedadSeleccionado.set(tipo);
-            }
-        }));
-
-        buttons.push({
-            text: 'Cancelar',
-            icon: 'close-outline',
-            handler: () => { }
-        });
-
-        const actionSheet = await this.actionSheetCtrl.create({
-            header: 'Tipo de Novedad',
-            buttons
-        });
-
-        await actionSheet.present();
-    }
-
-    // === REGISTRO DE NOVEDAD ===
-
-    // === REGISTRO DE NOVEDAD (DEP) ===
-    // Este bloque será removido ya que usamos confirmarNovedadesSeleccionadas
-    async registrarNovedad(): Promise<void> {
-        await this.confirmarNovedadesSeleccionadas();
-    }
-
     /**
-     * Confirma las novedades seleccionadas en la lista (Desktop)
-     * Registra novedades para los items seleccionados en estudiantesRegistrados
+     * Confirma el registro final de las novedades en el servicio
      */
-    // Deprecated: old implementation of confirming
-    /*
-    async confirmarNovedadesSeleccionadas(): Promise<void> {
-        const tipo = this.tipoNovedadSeleccionado();
-        const indices = this.seleccionadosIndices();
-        const registrados = this.estudiantesRegistrados();
+    async registrarNovedadConfirmada(): Promise<void> {
+        const seleccionados = this.estudiantesRegistrados().filter((_, i) =>
+            this.seleccionadosIndices().has(i)
+        );
 
-        if (!tipo || indices.size === 0) {
-            console.warn('Faltan datos para confirmar novedades');
+        if (seleccionados.length === 0 || !this.tipoNovedadSeleccionado()) {
+            const toast = await this.toastController.create({
+                message: 'Selecciona estudiantes y un tipo de novedad.',
+                duration: 2000,
+                color: 'warning'
+            });
+            await toast.present();
             return;
         }
 
-        // Obtener estudiantes seleccionados
-        const estudiantesAConfirmar = Array.from(indices)
-            .map(i => registrados[i])
-            .filter(est => est !== undefined);
+        const tipo = this.tipoNovedadSeleccionado()!;
+        const origen = this.origenSeleccionado();
+        const descripcion = this.descripcionNovedad();
 
-        if (estudiantesAConfirmar.length === 0) return;
-
-        // Registrar novedades para cada estudiante seleccionado
-        for (const est of estudiantesAConfirmar) {
+        for (const est of seleccionados) {
             await this.novedadService.registrarNovedad({
+                estudianteCorreo: est.correo,
+                estudianteNombre: est.nombre,
+                cursoId: est.curso,
+                grupo: est.grupo,
                 tipoNovedadId: tipo.id,
                 tipoNovedadNombre: tipo.nombre,
-                origen: this.origenSeleccionado(),
-                estado: 'en_revision',
-                descripcion: this.descripcionNovedad() || undefined,
-                cursoId: est.curso,
-                cursoNombre: est.curso,
-                grupo: est.grupo,
-                estudianteCorreo: est.correo,
-                estudianteNombre: est.nombre
+                origen: origen,
+                descripcion: descripcion || undefined,
+                estado: 'en_revision'
             });
         }
 
-        // Remover los confirmados de la lista de registrados (orden inverso para no afectar índices)
-        const indicesOrdenados = Array.from(indices).sort((a, b) => b - a);
-        for (const idx of indicesOrdenados) {
-            this.estudiantesRegistrados.update(list => list.filter((_, i) => i !== idx));
-        }
+        const toast = await this.toastController.create({
+            message: `${seleccionados.length} novedades registradas con éxito.`,
+            duration: 2000,
+            color: 'success'
+        });
+        await toast.present();
 
-        // Limpiar selección
-        this.seleccionadosIndices.set(new Set());
-        this.cargarCursos();
-    }
-    */
-
-    // === GESTIÓN DE NOVEDADES PENDIENTES ===
-
-    async confirmarNovedad(novedad: Novedad): Promise<void> {
-        await this.novedadService.actualizarEstado(novedad.id, 'confirmado');
-        this.cargarCursos();
-    }
-
-    async descartarNovedad(novedad: Novedad): Promise<void> {
-        await this.novedadService.actualizarEstado(novedad.id, 'descartado');
+        this.cerrarModalRegistro();
+        this.limpiarRegistrados();
         this.cargarCursos();
     }
 
     /**
-     * Abre el drawer para editar una novedad existente
+     * Limpia los campos del formulario de registro
      */
-    editarNovedad(novedad: Novedad): void {
-        // Cargar datos de la novedad en el formulario
-        const tipo = this.tiposNovedad().find(t => t.id === novedad.tipoNovedadId);
-        if (tipo) {
-            this.tipoNovedadSeleccionado.set(tipo);
-        }
-        this.origenSeleccionado.set(novedad.origen);
-        this.descripcionNovedad.set(novedad.descripcion || '');
-
-        // Agregar el estudiante a la selección si no está
-        const yaSeleccionado = this.estudiantesSeleccionados().find(e => e.correo === novedad.estudianteCorreo);
-        if (!yaSeleccionado) {
-            this.estudiantesSeleccionados.set([{
-                correo: novedad.estudianteCorreo,
-                nombre: novedad.estudianteNombre || novedad.estudianteCorreo,
-                curso: novedad.cursoId,
-                grupo: novedad.grupo
-            }]);
-        }
-
-        // Abrir drawer para edición
-        this.abrirDrawer();
+    limpiarFormulario(): void {
+        this.tipoNovedadSeleccionado.set(null);
+        this.descripcionNovedad.set('');
+        this.origenSeleccionado.set('teams');
     }
 
-    // === NAVEGACIÓN ===
+    // === FILTROS GLOBALES (Legacy/Optional) ===
+
+    toggleTipoFiltro(tipoId: string): void {
+        this.tiposFiltro.update(set => {
+            const newSet = new Set(set);
+            if (newSet.has(tipoId)) {
+                newSet.delete(tipoId);
+            } else {
+                newSet.add(tipoId);
+            }
+            return newSet;
+        });
+    }
+
+    isTipoFiltroActivo(tipoId: string): boolean {
+        return this.tiposFiltro().has(tipoId);
+    }
+
+    // === ACCIONES DE CARTAS DE CURSO ===
 
     seleccionarGrupo(curso: CursoResumen, grupo: string): void {
-        console.log(`Seleccionado: ${curso.codigo} - Grupo ${grupo}`);
-        // TODO: Implementar vista detallada del grupo
+        this.agregarGrupoCompleto(grupo);
     }
 
     // === UTILIDADES ===
 
     getCodigoCorto(codigo: string): string {
-        // Extraer código corto del nombre completo
         const match = codigo.match(/^([A-Z]+)/);
         return match ? match[1] : codigo.slice(0, 3).toUpperCase();
     }
@@ -763,7 +567,6 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
         return this.novedadService.getTipoConfig(tipoId)?.color || '#607d8b';
     }
 
-    // Helper methods for template ORIGEN_CONFIG access
     getOrigenIcon(origen: string): string {
         return ORIGEN_CONFIG[origen as OrigenMensaje]?.icono || 'ellipsis-horizontal-outline';
     }

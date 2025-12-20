@@ -14,7 +14,7 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: false,  // Deshabilitado para producción
+    webContentsDebuggingEnabled: true,  // Habilitado para debugging
     minWebViewVersion: 60,
     backgroundColor: '#0f385a',
     overrideUserAgent: 'GestorProyectosEPM-Android'
