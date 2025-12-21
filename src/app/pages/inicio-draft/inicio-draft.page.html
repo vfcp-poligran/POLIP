@@ -115,6 +115,46 @@
 
     <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
     <div class="main-content-grid">
+        <!-- Dynamic Group Buttons (appears when course selected - ABOVE ALL COLUMNS) -->
+        @if (cursoSeleccionado()) {
+        <div class="grupos-selector-bar-global">
+            <div class="grupos-selector-header">
+                <div class="grupos-selector-label">
+                    <ion-icon name="people-outline"></ion-icon>
+                    <span>Grupos de {{ getCodigoCorto(cursoSeleccionado()!) }}</span>
+                </div>
+                @if (gruposSeleccionados().size > 0) {
+                <div class="selection-info">
+                    <ion-badge color="primary">{{ gruposSeleccionados().size }} seleccionado(s)</ion-badge>
+                    <ion-button fill="clear" size="small" (click)="agregarGruposSeleccionados()">
+                        <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                        Agregar todos
+                    </ion-button>
+                </div>
+                }
+            </div>
+            <div class="grupos-buttons-row">
+                @for (grupo of gruposDelCursoSeleccionado(); track grupo) {
+                <ion-button [fill]="gruposSeleccionados().has(grupo) ? 'solid' : 'outline'" size="small"
+                    class="grupo-dynamic-btn" [class.selected]="gruposSeleccionados().has(grupo)"
+                    [style.--background]="colorDelCursoSeleccionado()"
+                    [style.--border-color]="colorDelCursoSeleccionado()"
+                    [style.--color]="getTextColorForBackground(colorDelCursoSeleccionado())"
+                    (click)="toggleGrupoSeleccion(grupo, $event)">
+                    @if (gruposSeleccionados().has(grupo)) {
+                    <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                    }
+                    G{{ grupo }}
+                </ion-button>
+                }
+            </div>
+            <div class="hint-text">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <span>Ctrl/Cmd + Click para seleccionar múltiples grupos</span>
+            </div>
+        </div>
+        }
+
         <ion-grid>
             <ion-row>
                 <!-- COLUMNA 1: PANORAMA DE CURSOS (Cards) -->
@@ -133,23 +173,35 @@
                         </div>
                         } @else {
                         @for (curso of cursosResumen(); track curso.codigo) {
-                        <ion-card class="course-card-premium" [style.--course-color]="curso.color">
+                        <ion-card class="course-card-premium" [class.selected]="cursoSeleccionado() === curso.codigo"
+                            [style.--course-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)">
                             <div class="card-color-strip" [style.background]="curso.color"></div>
+
+                            <!-- Mobile selection mode indicator (only on mobile) -->
+                            @if (!isDesktop()) {
+                            <div class="card-mobile-mode-icon">
+                                @if (gruposSeleccionados().size > 1) {
+                                <ion-icon name="pin-outline" [style.color]="curso.color"></ion-icon>
+                                } @else if (gruposSeleccionados().size === 1) {
+                                <ion-icon name="lock-open-outline" [style.color]="curso.color"></ion-icon>
+                                }
+                            </div>
+                            }
+
+                            <!-- Desktop selection indicator -->
+                            @if (isDesktop()) {
+                            <div class="card-selection-indicator">
+                                @if (cursoSeleccionado() === curso.codigo) {
+                                <ion-icon name="checkmark-circle" color="primary"></ion-icon>
+                                }
+                            </div>
+                            }
+
                             <ion-card-header>
                                 <ion-card-title>{{ getCodigoCorto(curso.codigo) }}</ion-card-title>
-                                <ion-card-subtitle>{{ curso.estudiantes }} estudiantes</ion-card-subtitle>
+                                <ion-card-subtitle>{{ curso.estudiantes }} estudiantes • {{ curso.grupos.length }}
+                                    grupos</ion-card-subtitle>
                             </ion-card-header>
-                            <ion-card-content>
-                                <div class="grupos-grid">
-                                    @for (grupo of curso.grupos; track grupo) {
-                                    <ion-button fill="outline" size="small" class="grupo-mini-btn"
-                                        [style.--border-color]="curso.color" [style.--color]="curso.color"
-                                        (click)="seleccionarGrupo(curso, grupo)">
-                                        G{{ grupo }}
-                                    </ion-button>
-                                    }
-                                </div>
-                            </ion-card-content>
                         </ion-card>
                         }
                         }

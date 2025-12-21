@@ -253,12 +253,41 @@ export class DataService implements OnDestroy {
    * @param codigoCurso Código completo del curso
    * @returns Código base (ej: EPM, SO, BD)
    */
-  private extraerCodigoBaseCurso(codigoCurso: string): string {
+  public extraerCodigoBaseCurso(codigoCurso: string): string {
     return this.courseService.extraerCodigoBaseCurso(codigoCurso);
   }
 
   async loadCursos(): Promise<void> {
     await this.courseService.loadCursos();
+  }
+
+  /**
+   * FASE 2: Genera información de grupos desde un array de estudiantes
+   * @param estudiantes Array de estudiantes del curso
+   * @returns Array de GrupoInfo con estadísticas por grupo
+   */
+  private generarGruposInfo(estudiantes: Estudiante[]): any[] {
+    // Agrupar estudiantes por número de grupo
+    const gruposMap = new Map<string, Estudiante[]>();
+
+    estudiantes.forEach(est => {
+      const numGrupo = String(est.grupo || '');
+      if (!numGrupo) return; // Saltar si no tiene grupo
+
+      if (!gruposMap.has(numGrupo)) {
+        gruposMap.set(numGrupo, []);
+      }
+      gruposMap.get(numGrupo)!.push(est);
+    });
+
+    // Convertir a array de GrupoInfo
+    return Array.from(gruposMap.entries())
+      .map(([numero, integrantes]) => ({
+        numero,
+        integrantes: integrantes.length
+        // promedio se puede calcular más adelante cuando haya calificaciones
+      }))
+      .sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
   }
 
   /**
@@ -303,24 +332,32 @@ export class DataService implements OnDestroy {
         );
       }
 
-      // Validar que no exista otro curso con el mismo código base y nombre (ignoring timestamp)
-      const cursosExistentes = Object.entries(courseStates).filter(([key, state]) => {
+      // VALIDACIÓN MEJORADA: Permitir mismo curso en diferentes períodos
+      // Solo alertar si se intenta crear el MISMO día (probablemente un error)
+      const cursosDelMismoDia = Object.entries(courseStates).filter(([key, state]) => {
         const metadata = state.metadata;
         if (!metadata) return false;
 
-        // Comparar código base (sin timestamp) y nombre
-        return metadata.codigo === cursoData.codigo &&
-          metadata.nombre?.toLowerCase() === cursoData.nombre?.toLowerCase();
+        const mismoCodigo = metadata.codigo === cursoData.codigo;
+        const mismoNombre = metadata.nombre?.toLowerCase() === cursoData.nombre?.toLowerCase();
+
+        // Extraer timestamp del código único existente
+        const codigoUnicoExistente = metadata.codigoUnico || key;
+        const timestampExistente = codigoUnicoExistente.split('-').pop();
+
+        // Solo es duplicado si es el MISMO día
+        return mismoCodigo && mismoNombre && timestampExistente === timestamp;
       });
 
-      if (cursosExistentes.length > 0) {
-        const [codigoExistente, stateExistente] = cursosExistentes[0];
+      if (cursosDelMismoDia.length > 0) {
+        const [codigoExistente, stateExistente] = cursosDelMismoDia[0];
         throw new Error(
-          `❌ Ya existe un curso con el mismo código base y nombre:\n\n` +
+          `❌ Ya existe un curso creado HOY con el mismo código:\n\n` +
           `• Código: "${cursoData.codigo}"\n` +
           `• Nombre: "${cursoData.nombre}"\n` +
-          `• Bloque: "${stateExistente.metadata?.bloque}"\n\n` +
-          `Por favor, use un código o nombre diferente para crear un nuevo curso.`
+          `• Fecha: ${new Date().toLocaleDateString()}\n\n` +
+          `Si desea crear el mismo curso para un período diferente,\n` +
+          `inténtelo en otra fecha o espere hasta mañana.`
         );
       }
 
@@ -331,6 +368,10 @@ export class DataService implements OnDestroy {
 
       // Si hay estudiantes, cargarlos; si no, crear lista vacía
       const estudiantes = cursoData.estudiantes || [];
+
+      // FASE 2: Generar información de grupos desde estudiantes
+      const grupos = this.generarGruposInfo(estudiantes);
+      Logger.log(`📊 [crearCurso] Grupos generados:`, grupos);
 
       // INMUTABILIDAD: Crear nuevo objeto en lugar de mutar el existente
       const cursosActuales = {
@@ -536,6 +577,133 @@ export class DataService implements OnDestroy {
 
   getCurso(nombre: string): Estudiante[] | undefined {
     return this.courseService.getCurso(nombre);
+  }
+
+  /**
+   * FASE 3: Migración de grupos en cursos existentes
+   * Actualiza todos los cursos que no tienen grupos[] para generarlos
+   * desde sus estudiantes actuales.
+   * 
+   * @returns Estadísticas de migración
+   */
+  async migrarGruposEnCursosExistentes(): Promise<{
+    total: number;
+    migrados: number;
+    yaExistian: number;
+    errores: number;
+    detalles: Array<{ curso: string; grupos: number; status: string }>;
+  }> {
+    await this.ensureInitialized();
+
+    Logger.log('🔄 [FASE 3] Iniciando migración de grupos en cursos existentes...');
+
+    const resultado = {
+      total: 0,
+      migrados: 0,
+      yaExistian: 0,
+      errores: 0,
+      detalles: [] as Array<{ curso: string; grupos: number; status: string }>
+    };
+
+    try {
+      const cursos = this.courseService.getCursosValue();
+      const uiState = this.stateService.getUIStateValue();
+      const courseStates = { ...uiState.courseStates };
+
+      resultado.total = Object.keys(cursos).length;
+
+      for (const [codigoCurso, estudiantes] of Object.entries(cursos)) {
+        try {
+          const courseState = courseStates[codigoCurso];
+
+          // Verificar si ya tiene grupos
+          if (courseState?.metadata?.['grupos' as keyof typeof courseState.metadata]) {
+            resultado.yaExistian++;
+            Logger.log(`⏭️  [migrarGrupos] Curso "${codigoCurso}" ya tiene grupos, omitiendo`);
+            resultado.detalles.push({
+              curso: codigoCurso,
+              grupos: (courseState.metadata['grupos' as keyof typeof courseState.metadata] as any)?.length || 0,
+              status: 'ya_existía'
+            });
+            continue;
+          }
+
+          // Generar grupos desde estudiantes
+          const grupos = this.generarGruposInfo(estudiantes);
+
+          if (grupos.length === 0) {
+            Logger.warn(`⚠️  [migrarGrupos] Curso "${codigoCurso}" no tiene grupos válidos`);
+            resultado.detalles.push({
+              curso: codigoCurso,
+              grupos: 0,
+              status: 'sin_grupos'
+            });
+            continue;
+          }
+
+          // Actualizar courseState con grupos
+          const courseStateActualizado: CourseState = {
+            ...courseState,
+            metadata: {
+              nombre: courseState?.metadata?.nombre || '',
+              codigo: courseState?.metadata?.codigo || '',
+              bloque: courseState?.metadata?.bloque || '',
+              fechaCreacion: courseState?.metadata?.fechaCreacion || new Date().toISOString(),
+              profesor: courseState?.metadata?.profesor || '',
+              ...courseState?.metadata,  // Preservar campos opcionales (nombreAbreviado, codigoUnico, cohorte, etc.)
+              ['grupos' as any]: grupos
+            }
+          };
+
+          courseStates[codigoCurso] = courseStateActualizado;
+
+          resultado.migrados++;
+          Logger.log(`✅ [migrarGrupos] Curso "${codigoCurso}": ${grupos.length} grupos generados`);
+          resultado.detalles.push({
+            curso: codigoCurso,
+            grupos: grupos.length,
+            status: 'migrado'
+          });
+
+        } catch (error) {
+          resultado.errores++;
+          Logger.error(`❌ [migrarGrupos] Error en curso "${codigoCurso}":`, error);
+          resultado.detalles.push({
+            curso: codigoCurso,
+            grupos: 0,
+            status: 'error'
+          });
+        }
+      }
+
+      // Guardar cambios si hubo migraciones
+      if (resultado.migrados > 0) {
+        const nuevoUIState: UIState = {
+          ...uiState,
+          courseStates
+        };
+
+        this.stateService.updateUIStateState(nuevoUIState);
+        await this.saveUIState();
+
+        Logger.log(`💾 [migrarGrupos] Cambios guardados en storage`);
+      }
+
+      // Log de resumen
+      Logger.log(
+        `✅ [FASE 3] Migración completada:\\n` +
+        `   • Total cursos: ${resultado.total}\\n` +
+        `   • Migrados: ${resultado.migrados}\\n` +
+        `   • Ya existían: ${resultado.yaExistian}\\n` +
+        `   • Errores: ${resultado.errores}`
+      );
+
+      return resultado;
+
+    } catch (error) {
+      Logger.error('❌ [FASE 3] Error en migración de grupos:', error);
+      throw error;
+    }
   }
 
   /**

@@ -1,0 +1,19 @@
+cohorte 202410 B2 
+Inicio:08 de mayo 
+Fin:02 de julio
+
+Cohorte 202510 B1 
+Inicio:04 de marzo 
+Fin:06 de mayo  
+
+Cohorte 202510 B2
+Inicio:07 de mayo 
+Fin:01 de julio
+
+Cohorte 202560 B1
+Inicio:19 de agosto 
+Fin:14 de octubre  
+
+Cohorte 202560 B2
+Inicio:15 de octubre 
+Fin:09 de diciembre 

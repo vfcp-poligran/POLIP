@@ -72,6 +72,46 @@
         </div>
       </div>
 
+      <!-- Información de Cohorte -->
+      <div class="cohorte-section">
+        <div class="cohorte-header">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>Información de Cohorte</span>
+        </div>
+
+        <div class="cohorte-form-grid">
+          <ion-item lines="none" class="cohorte-input-item">
+            <ion-label position="stacked">Nombre de Cohorte</ion-label>
+            <ion-input [(ngModel)]="cohorteForm.nombre" placeholder="ej: 202410 B2" [clearInput]="true">
+            </ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="cohorte-input-item">
+            <ion-label position="stacked">Ingreso (Opcional)</ion-label>
+            <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" placeholder="Seleccionar"
+              interface="popover">
+              <ion-select-option value="A">A (~120 días)</ion-select-option>
+              <ion-select-option value="B">B (~132 días)</ion-select-option>
+              <ion-select-option value="C">C (~105 días)</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item lines="none" class="cohorte-input-item">
+            <ion-label position="stacked">Fecha Inicio</ion-label>
+            <ion-datetime [(ngModel)]="cohorteForm.fechaInicio" (ionChange)="onFechaInicioChange()" presentation="date"
+              [preferWheel]="true" locale="es-ES">
+            </ion-datetime>
+          </ion-item>
+
+          <ion-item lines="none" class="cohorte-input-item">
+            <ion-label position="stacked">Fecha Fin</ion-label>
+            <ion-datetime [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()" presentation="date"
+              [preferWheel]="true" locale="es-ES">
+            </ion-datetime>
+          </ion-item>
+        </div>
+      </div>
+
       <!-- Contenedor principal que agrupa info + uploads -->
       <div class="upload-wrapper" [class.expanded]="infoExpanded">
         <!-- Mensaje instructivo con icono -->

@@ -310,6 +310,257 @@ $touch-target: 44px;
     }
 }
 
+// === DYNAMIC GRUPOS SELECTOR BAR ===
+.grupos-selector-bar {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .grupos-selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .grupos-selector-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-icon {
+            font-size: 1.2rem;
+            color: $azul-oscuro;
+        }
+
+        span {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .selection-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+
+        ion-button {
+            --padding-start: 8px;
+            --padding-end: 8px;
+            height: 32px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    }
+
+    .grupos-buttons-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        .grupo-dynamic-btn {
+            --border-radius: 10px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --padding-top: 10px;
+            --padding-bottom: 10px;
+            height: 40px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            position: relative;
+
+            &.selected {
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+                transform: translateY(-1px);
+
+                ion-icon {
+                    margin-right: 4px;
+                }
+            }
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+
+    .hint-text {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: rgba($azul-claro, 0.05);
+        border-radius: 8px;
+
+        ion-icon {
+            font-size: 1rem;
+            color: $azul-claro;
+            flex-shrink: 0;
+        }
+
+        span {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+    }
+}
+
+// === DYNAMIC GRUPOS SELECTOR BAR (GLOBAL - ABOVE ALL COLUMNS) ===
+.grupos-selector-bar-global {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .grupos-selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .grupos-selector-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-icon {
+            font-size: 1.2rem;
+            color: $azul-oscuro;
+        }
+
+        span {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .selection-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+
+        ion-button {
+            --padding-start: 8px;
+            --padding-end: 8px;
+            height: 32px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    }
+
+    .grupos-buttons-row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 4px 0;
+
+        // Custom scrollbar
+        &::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .grupo-dynamic-btn {
+            --border-radius: 10px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --padding-top: 10px;
+            --padding-bottom: 10px;
+            height: 40px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            position: relative;
+            flex-shrink: 0;
+
+            &.selected {
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+                transform: translateY(-1px);
+
+                ion-icon {
+                    margin-right: 4px;
+                }
+            }
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+
+    .hint-text {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: rgba($azul-claro, 0.05);
+        border-radius: 8px;
+
+        ion-icon {
+            font-size: 1rem;
+            color: $azul-claro;
+            flex-shrink: 0;
+        }
+
+        span {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+    }
+}
+
 // === COLUMNA 1: CURSOS ===
 .courses-card-list {
     display: flex;
@@ -329,7 +580,8 @@ $touch-target: 44px;
     border: 1px solid rgba(0, 0, 0, 0.04);
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
 
     .card-color-strip {
         position: absolute;
@@ -337,6 +589,34 @@ $touch-target: 44px;
         left: 0;
         bottom: 0;
         width: 6px;
+        transition: width 0.2s ease;
+    }
+
+    // Desktop selection indicator positioning
+    .card-selection-indicator {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 10;
+
+        ion-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+    }
+
+    // Mobile selection mode icon (top-left)
+    .card-mobile-mode-icon {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        z-index: 10;
+
+        ion-icon {
+            font-size: 1.3rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+            opacity: 0.9;
+        }
     }
 
     ion-card-header {
@@ -358,34 +638,26 @@ $touch-target: 44px;
         }
     }
 
-    ion-card-content {
-        padding: 0 16px 16px 22px;
-    }
+    // Selection state styles
+    &.selected {
+        border-color: var(--course-color);
+        border-width: 2px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
 
-    .grupos-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-
-        .grupo-mini-btn {
-            --border-radius: 8px;
-            --padding-start: 12px;
-            --padding-end: 12px;
-            margin: 0;
-            height: 32px;
-            font-weight: 700;
-            font-size: 0.595rem; // Reducido 30% desde 0.85rem
-
-            &:hover {
-                --background: var(--border-color);
-                --color: #fff;
-            }
+        .card-color-strip {
+            width: 8px; // Slightly wider when selected
         }
     }
 
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+        &.selected {
+            transform: translateY(-4px); // More lift when selected
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
     }
 }
 

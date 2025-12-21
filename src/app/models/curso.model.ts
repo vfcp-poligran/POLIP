@@ -1,11 +1,59 @@
 import { Estudiante } from './estudiante.model';
 
+/**
+ * Tipo de ingreso académico
+ * Cada ingreso tiene una duración característica diferente
+ */
+export type TipoIngreso = 'A' | 'B' | 'C';
+
+/**
+ * Información de cohorte/período académico
+ * Permite rastrear cuándo se dictó un curso y detectar estudiantes repitentes
+ */
+export interface Cohorte {
+  /** Nombre de la cohorte (ej: "202410 B2", "202510 B1", "202560 B2") */
+  nombre: string;
+  /** Tipo de ingreso (A: 120 días, B: 132 días con nivelatorios, C: 105 días) - Opcional */
+  ingreso?: TipoIngreso;
+  /** Fecha de inicio del período académico */
+  fechaInicio: Date;
+  /** Fecha de fin del período académico */
+  fechaFin: Date;
+}
+
+/**
+ * Información resumida de un grupo dentro de un curso.
+ * Útil para estadísticas y visualización sin iterar todos los estudiantes.
+ */
+export interface GrupoInfo {
+  /** Número del grupo ("1", "2", etc.) */
+  numero: string;
+  /** Cantidad de integrantes en el grupo */
+  integrantes: number;
+  /** Promedio de calificaciones del grupo (opcional) */
+  promedio?: number;
+}
+
 export interface Curso {
   nombre: string;
   estudiantes: Estudiante[];
   fechaCreacion: Date;
   fechaModificacion: Date;
   color?: string; // Color del curso para UI (selector de curso)
+
+  /**
+   * FASE 1: Campo opcional para retrocompatibilidad.
+   * Contiene información resumida de grupos.
+   * Si no está presente, se calcula dinámicamente desde estudiantes[].
+   */
+  grupos?: GrupoInfo[];
+
+  /**
+   * Cohorte/período académico en el que se desarrolla el curso.
+   * Permite identificar el período específico y detectar estudiantes repitentes.
+   * Opcional para retrocompatibilidad con cursos existentes.
+   */
+  cohorte?: Cohorte;
 }
 
 export interface CursoData {

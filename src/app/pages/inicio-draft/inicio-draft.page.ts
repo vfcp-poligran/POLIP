@@ -77,7 +77,7 @@ import {
     checkmarkDoneCircleOutline,
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
-    analyticsOutline, calendarOutline
+    analyticsOutline, calendarOutline, pinOutline, lockOpenOutline
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -166,6 +166,10 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     cursoExpandido = signal<string | null>(null); // Código del curso expandido en accordion
     tiposFiltro = signal<Set<string>>(new Set()); // Tipos de novedad seleccionados como filtro
 
+    // NEW: Course and group selection signals
+    cursoSeleccionado = signal<string | null>(null);
+    gruposSeleccionados = signal<Set<string>>(new Set()); // Multi-selection support
+
     // Asignación de Novedad
     aliasNovedad = signal<string>('');
     fechaHoraNovedad = signal<string>(new Date().toISOString());
@@ -175,6 +179,33 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     novedadesPendientes = computed(() => this.novedadService.novedadesPendientes());
     pendientesCount = computed(() => this.novedadService.pendientesCount());
     isOnline = computed(() => this.novedadService.isOnline());
+
+    // NEW: Computed properties for dynamic group buttons
+    gruposDelCursoSeleccionado = computed(() => {
+        const cursoActivo = this.cursoSeleccionado();
+        if (!cursoActivo) return [];
+        const curso = this.cursosResumen().find(c => c.codigo === cursoActivo);
+        return curso?.grupos || [];
+    });
+
+    colorDelCursoSeleccionado = computed(() => {
+        const cursoActivo = this.cursoSeleccionado();
+        if (!cursoActivo) return '#4a90e2';
+        const curso = this.cursosResumen().find(c => c.codigo === cursoActivo);
+        return curso?.color || '#4a90e2';
+    });
+
+    estudiantesDeGruposSeleccionados = computed(() => {
+        const cursoActivo = this.cursoSeleccionado();
+        const grupos = this.gruposSeleccionados();
+        if (!cursoActivo || grupos.size === 0) return [];
+
+        const cursos = this.dataService.cursos();
+        const estudiantes = cursos[cursoActivo] || [];
+
+        return estudiantes.filter(e => grupos.has(String(e.grupo || '')));
+    });
+
     Array = Array; // Expose Array to template
 
     // Constantes para template
@@ -182,18 +213,7 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({
-            checkmarkOutline, homeOutline, cloudOfflineOutline, closeOutline, schoolOutline,
-            chevronForwardOutline, addOutline, appsOutline, checkmarkDoneCircleOutline,
-            checkmarkCircleOutline, createOutline, trashOutline, documentTextOutline,
-            checkmarkDoneOutline, informationCircleOutline, timeOutline, addCircleOutline,
-            bulbOutline, personOutline, chevronDownOutline, checkmarkCircle,
-            checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline,
-            searchOutline, peopleOutline, warningOutline, chevronUpOutline, listOutline,
-            gridOutline, chatboxEllipsesOutline, notificationsOutline,
-            personAddOutline, hammerOutline, constructOutline,
-            analyticsOutline, calendarOutline
-        });
+        addIcons({ homeOutline, cloudOfflineOutline, closeOutline, schoolOutline, chevronForwardOutline, addOutline, peopleOutline, addCircleOutline, checkmarkCircle, informationCircleOutline, appsOutline, pinOutline, lockOpenOutline, documentTextOutline, checkmarkCircleOutline, trashOutline, personAddOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, checkmarkDoneOutline, checkmarkOutline, checkmarkDoneCircleOutline, createOutline, timeOutline, bulbOutline, personOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, listOutline, gridOutline, chatboxEllipsesOutline });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -548,15 +568,199 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
 
     // === ACCIONES DE CARTAS DE CURSO ===
 
+    /**
+     * Toggle course selection with exclusive behavior
+     */
+    toggleCursoSeleccion(codigo: string): void {
+        const actual = this.cursoSeleccionado();
+
+        if (actual === codigo) {
+            // Deselect course
+            this.cursoSeleccionado.set(null);
+            this.gruposSeleccionados.set(new Set());
+        } else {
+            // Select new course
+            this.cursoSeleccionado.set(codigo);
+            // Restore previously selected groups for this course
+            this.restoreCourseGroupSelection(codigo);
+        }
+    }
+
+    /**
+     * Toggle group selection with multi-selection support
+     */
+    toggleGrupoSeleccion(grupo: string, event?: MouseEvent): void {
+        const cursoActivo = this.cursoSeleccionado();
+        if (!cursoActivo) return;
+
+        const isMultiSelect = event?.ctrlKey || event?.metaKey;
+
+        this.gruposSeleccionados.update(grupos => {
+            const newSet = new Set(grupos);
+
+            if (isMultiSelect) {
+                // Multi-selection: toggle grupo
+                if (newSet.has(grupo)) {
+                    newSet.delete(grupo);
+                } else {
+                    newSet.add(grupo);
+                }
+            } else {
+                // Single selection: replace
+                newSet.clear();
+                newSet.add(grupo);
+            }
+
+            return newSet;
+        });
+
+        // Save to CourseState for persistence
+        this.saveCourseGroupSelection(cursoActivo);
+    }
+
+    /**
+     * Save group selection state to CourseState
+     */
+    private saveCourseGroupSelection(cursoId: string): void {
+        const grupos = Array.from(this.gruposSeleccionados());
+        this.dataService.updateCourseState(cursoId, {
+            gruposSeleccionados: grupos
+        });
+    }
+
+    /**
+     * Restore group selection when switching courses
+     */
+    private restoreCourseGroupSelection(cursoId: string): void {
+        const courseState = this.dataService.getCourseState(cursoId);
+        const gruposGuardados = courseState?.gruposSeleccionados || [];
+        this.gruposSeleccionados.set(new Set(gruposGuardados));
+    }
+
+    /**
+     * Add all students from selected groups to registration list
+     */
+    agregarGruposSeleccionados(): void {
+        const estudiantes = this.estudiantesDeGruposSeleccionados();
+        if (estudiantes.length === 0) return;
+
+        const nuevos: EstudianteSeleccionado[] = estudiantes.map(est => ({
+            correo: est.correo,
+            nombre: `${est.nombres} ${est.apellidos}`,
+            curso: this.cursoSeleccionado()!,
+            grupo: String(est.grupo || '')
+        }));
+
+        this.estudiantesRegistrados.update(list => [...list, ...nuevos]);
+
+        this.toastController.create({
+            message: `Agregados ${nuevos.length} estudiantes de ${this.gruposSeleccionados().size} grupo(s)`,
+            duration: 2000,
+            color: 'success'
+        }).then(t => t.present());
+    }
+
+    /**
+     * Legacy method - for backward compatibility with agregarGrupoCompleto
+     */
     seleccionarGrupo(curso: CursoResumen, grupo: string): void {
+        this.cursoSeleccionado.set(curso.codigo);
+        this.toggleGrupoSeleccion(grupo);
         this.agregarGrupoCompleto(grupo);
     }
 
     // === UTILIDADES ===
 
+    /**
+     * Extract course code with indicator (e.g., "EPM-B01", "EPM-B02")
+     */
     getCodigoCorto(codigo: string): string {
+        // Extract pattern like "EPM-B01" -> show "EPM-B01"
+        // or "Enfasis Programacion Movil-B01" -> show "EPM-B01"
+        const parts = codigo.split('-');
+        if (parts.length >= 2) {
+            const indicador = parts[parts.length - 1]; // B01, B02, etc.
+            const namePart = parts.slice(0, -1).join('-');
+
+            // Check if namePart is already an acronym (all uppercase, short)
+            if (namePart === namePart.toUpperCase() && namePart.length <= 5) {
+                // Already formatted correctly (e.g., "EPM")
+                return `${namePart}-${indicador}`;
+            }
+
+            // Generate acronym from full name
+            const acronym = this.getAcronymFromName(namePart);
+            return `${acronym}-${indicador}`;
+        }
+
+        // Fallback: try to extract initial letters
         const match = codigo.match(/^([A-Z]+)/);
         return match ? match[1] : codigo.slice(0, 3).toUpperCase();
+    }
+
+    /**
+     * Generate acronym from course name (e.g., "Enfasis Programacion Movil" -> "EPM")
+     */
+    private getAcronymFromName(name: string): string {
+        const palabras = name.split(/\s+/);
+        const prepositions = ['de', 'en', 'del', 'la', 'el', 'los', 'las', 'a', 'con', 'para', 'por', 'y'];
+
+        return palabras
+            .filter(p => p.length > 2)
+            .map(p => p.charAt(0).toUpperCase())
+            .filter((letra, index, arr) => {
+                // Avoid duplicates
+                const palabra = palabras.filter(p => p.length > 2)[index];
+                return palabra && !prepositions.includes(palabra.toLowerCase());
+            })
+            .join('');
+    }
+
+    /**
+     * Calculate appropriate text color for background using WCAG 2.1 relative luminance.
+     * This ensures proper contrast ratios for accessibility (WCAG AA standard).
+     * 
+     * @param bgColor - Hex color code (e.g., "#4a90e2")
+     * @returns "#ffffff" (white) for dark backgrounds, "#000000" (black) for light backgrounds
+     */
+    getTextColorForBackground(bgColor: string): string {
+        // Handle invalid input
+        if (!bgColor || bgColor === 'transparent') {
+            return '#000000';
+        }
+
+        // Convert hex to RGB
+        const hex = bgColor.replace('#', '');
+
+        // Handle 3-digit hex codes
+        const fullHex = hex.length === 3
+            ? hex.split('').map(c => c + c).join('')
+            : hex;
+
+        const r = parseInt(fullHex.substring(0, 2), 16);
+        const g = parseInt(fullHex.substring(2, 4), 16);
+        const b = parseInt(fullHex.substring(4, 6), 16);
+
+        // WCAG 2.1 relative luminance calculation
+        // Formula: L = 0.2126 * R + 0.7152 * G + 0.0722 * B
+        // where R, G, B are gamma-corrected values
+
+        const toLinear = (channel: number): number => {
+            const c = channel / 255;
+            return c <= 0.03928
+                ? c / 12.92
+                : Math.pow((c + 0.055) / 1.055, 2.4);
+        };
+
+        const rLinear = toLinear(r);
+        const gLinear = toLinear(g);
+        const bLinear = toLinear(b);
+
+        const luminance = 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
+
+        // Threshold at 0.5 provides good contrast
+        // For even better accessibility, could use 0.179 (WCAG AAA level)
+        return luminance > 0.5 ? '#000000' : '#ffffff';
     }
 
     getTipoIcon(tipoId: string): string {

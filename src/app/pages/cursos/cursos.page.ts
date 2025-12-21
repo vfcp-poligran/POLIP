@@ -18,6 +18,10 @@ import {
   IonItemOptions,
   IonItemOption,
   IonBadge,
+  IonInput,
+  IonDatetime,
+  IonSelect,
+  IonSelectOption,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -85,7 +89,11 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonItemSliding,
     IonItemOptions,
     IonItemOption,
-    IonBadge]
+    IonBadge,
+    IonInput,
+    IonDatetime,
+    IonSelect,
+    IonSelectOption]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -202,6 +210,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
     });
   });
 
+  // Formulario de cohorte - datos de período académico
+  cohorteForm: {
+    nombre: string;
+    ingreso: 'A' | 'B' | 'C' | undefined;
+    fechaInicio: string | undefined;
+    fechaFin: string | undefined;
+    fechaFinManual: boolean; // Indica si fechaFin fue editada manualmente
+  } = {
+      nombre: '',
+      ingreso: undefined,
+      fechaInicio: undefined,
+      fechaFin: undefined,
+      fechaFinManual: false
+    };
+
   private resolverClaveCurso(codigo: string | null): string | null {
     if (!codigo) return null;
 
@@ -245,6 +268,65 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   ngOnInit() {
     // Setup inicial que NO depende de recarga de datos
+  }
+
+  /**
+   * Calcula la duración en días según el tipo de ingreso
+   * @param ingreso Tipo de ingreso (A, B, o C)
+   * @returns Duración en días
+   */
+  private calcularDuracionIngreso(ingreso: 'A' | 'B' | 'C'): number {
+    const duraciones = {
+      'A': 120,  // Ingreso A: ~120 días
+      'B': 132,  // Ingreso B: ~132 días (incluye nivelatorios)
+      'C': 105   // Ingreso C: ~105 días
+    };
+    return duraciones[ingreso];
+  }
+
+  /**
+   * Maneja el cambio en la fecha de inicio de la cohorte
+   * Calcula automáticamente la fecha de fin basándose en el ingreso seleccionado
+   */
+  onFechaInicioChange(): void {
+    // Solo calcular automáticamente si:
+    // 1. Hay una fecha de inicio
+    // 2. Hay un ingreso seleccionado
+    // 3. La fecha de fin NO fue editada manualmente
+    if (this.cohorteForm.fechaInicio && this.cohorteForm.ingreso && !this.cohorteForm.fechaFinManual) {
+      const fechaInicio = new Date(this.cohorteForm.fechaInicio);
+      const duracionDias = this.calcularDuracionIngreso(this.cohorteForm.ingreso);
+
+      // Calcular fecha de fin
+      const fechaFin = new Date(fechaInicio);
+      fechaFin.setDate(fechaFin.getDate() + duracionDias);
+
+      // Formatear a ISO string para el datetime
+      this.cohorteForm.fechaFin = fechaFin.toISOString();
+
+      Logger.log(`[Cohorte] Fecha fin calculada automáticamente: ${fechaFin.toLocaleDateString()} (Ingreso ${this.cohorteForm.ingreso}, ${duracionDias} días)`);
+    }
+  }
+
+  /**
+   * Maneja el cambio en el tipo de ingreso
+   * Recalcula la fecha de fin si hay una fecha de inicio
+   */
+  onIngresoChange(): void {
+    // Resetear flag de edición manual al cambiar ingreso
+    this.cohorteForm.fechaFinManual = false;
+
+    // Recalcular fecha de fin
+    this.onFechaInicioChange();
+  }
+
+  /**
+   * Maneja la edición manual de la fecha de fin
+   * Marca que la fecha fue editada manualmente para evitar sobreescritura automática
+   */
+  onFechaFinManualChange(): void {
+    this.cohorteForm.fechaFinManual = true;
+    Logger.log('[Cohorte] Fecha fin editada manualmente - desactivando cálculo automático');
   }
 
   /**
@@ -796,29 +878,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
         const enfasisMatch = primeraSeccion.match(/\/([^-]+)-/);
         nombreCompleto = enfasisMatch?.[1]?.trim() || '';
 
-        // Generar siglas del énfasis (ej: ÉNFASIS EN PROGRAMACIÓN MÓVIL → EPM)
-        // Normalizar texto: quitar tildes y convertir a mayúsculas
-        const normalizarTexto = (texto: string): string => {
-          return texto
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toUpperCase();
-        };
-
-        // Lista de preposiciones a excluir
-        const preposiciones = ['DE', 'EN', 'DEL', 'LA', 'EL', 'LOS', 'LAS', 'A', 'CON', 'PARA', 'POR', 'Y'];
-
-        const palabras = nombreCompleto.split(/\s+/);
-        const siglas = palabras
-          .filter(p => p.length > 2)
-          .map(p => normalizarTexto(p))
-          .filter(p => !preposiciones.includes(p))
-          .map(p => p[0])
-          .join('');
-
-        // Solo agregar 'E' si el nombre empieza con "ÉNFASIS"
-        const esEnfasis = normalizarTexto(nombreCompleto).startsWith('ENFASIS');
-        const enfasisCodigo = esEnfasis ? 'E' + siglas : siglas;
+        // Generar siglas del énfasis usando algoritmo mejorado
+        // (ej: ÉNFASIS EN PROGRAMACIÓN MÓVIL → EPM)
+        const enfasisCodigo = this.generarAcronimoCurso(nombreCompleto);
 
         // Extraer grupo (ej: B01)
         const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z0-9]+)\]/i);
@@ -1178,9 +1240,23 @@ export class CursosPage implements OnInit, ViewWillEnter {
     }
 
     try {
+      // Construir objeto de cohorte si se proporcionó información
+      let cohorteData: any = undefined;
+      if (this.cohorteForm.nombre && this.cohorteForm.fechaInicio && this.cohorteForm.fechaFin) {
+        cohorteData = {
+          nombre: this.cohorteForm.nombre,
+          ingreso: this.cohorteForm.ingreso,  // Incluir tipo de ingreso (opcional)
+          fechaInicio: new Date(this.cohorteForm.fechaInicio),
+          fechaFin: new Date(this.cohorteForm.fechaFin)
+        };
+      }
+
+      // Extraer código base del curso para el historial de cohortes
+      const codigoBaseCurso = this.dataService.extraerCodigoBaseCurso(this.cursoParseado.codigo);
+
       // Transformar estudiantes al formato correcto incluyendo canvas_user_id, canvas_group_id y grupo
       const estudiantesTransformados = this.estudiantesCargados.map(est => {
-        return {
+        const estudianteBase = {
           canvasUserId: est.canvasUserId || '',
           canvasGroupId: est.canvasGroupId || '',
           // Soportar tanto formato singular (apellido/nombre) como plural (apellidos/nombres)
@@ -1188,8 +1264,24 @@ export class CursosPage implements OnInit, ViewWillEnter {
           nombres: (est as any).nombres || (est as any).nombre || '',
           correo: est.correo || '',
           grupo: est.grupo || '', // Ya fue extraído en el parser del CSV
-          groupName: est.groupName || ''
+          groupName: est.groupName || '',
+          historialCohortes: (est as any).historialCohortes || {}
         };
+
+        // Si hay cohorte definida, actualizar historial del estudiante
+        if (cohorteData && codigoBaseCurso) {
+          const historial = { ...estudianteBase.historialCohortes };
+          if (!historial[codigoBaseCurso]) {
+            historial[codigoBaseCurso] = [];
+          }
+          // Agregar cohorte solo si no existe ya en el historial
+          if (!historial[codigoBaseCurso].includes(cohorteData.nombre)) {
+            historial[codigoBaseCurso].push(cohorteData.nombre);
+          }
+          estudianteBase.historialCohortes = historial;
+        }
+
+        return estudianteBase;
       });
 
       let codigoCurso: string;
@@ -1217,7 +1309,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
             fechaCreacion: metadataExistente?.fechaCreacion || new Date().toISOString(),
             profesor: metadataExistente?.profesor || '',
             nombreAbreviado: metadataExistente?.nombreAbreviado,
-            codigoUnico: metadataExistente?.codigoUnico
+            codigoUnico: metadataExistente?.codigoUnico,
+            cohorte: cohorteData
           }
         });
 
@@ -1235,7 +1328,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
           bloque: this.cursoParseado.bloque,
           fechaCreacion: new Date().toISOString(),
           profesor: '',
-          estudiantes: estudiantesTransformados
+          estudiantes: estudiantesTransformados,
+          cohorte: cohorteData
         });
 
         // Guardar el color seleccionado para el nuevo curso
@@ -1322,6 +1416,15 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.rubricaCargada = null;
     this.cursoParseado = null;
     this.codigoCursoEnEdicion = '';
+
+    // Limpiar formulario de cohorte
+    this.cohorteForm = {
+      nombre: '',
+      ingreso: undefined,
+      fechaInicio: undefined,
+      fechaFin: undefined,
+      fechaFinManual: false
+    };
 
     if (this.estudiantesFileInput) {
       this.estudiantesFileInput.nativeElement.value = '';
@@ -1582,6 +1685,60 @@ export class CursosPage implements OnInit, ViewWillEnter {
    */
   private async mostrarToastWarning(mensaje: string, duracion: number = 2000): Promise<void> {
     await this.toastService.warning(mensaje, undefined, duracion);
+  }
+
+  /**
+   * Genera acrónimo del curso manejando casos especiales como ÉNFASIS
+   * @param nombreCompleto Nombre completo del curso (ej: "ÉNFASIS EN PROGRAMACIÓN MÓVIL")
+   * @returns Acrónimo generado (ej: "EPM")
+   * @example
+   * generarAcronimoCurso("ÉNFASIS EN PROGRAMACIÓN MÓVIL") → "EPM"
+   * generarAcronimoCurso("PROGRAMACIÓN MÓVIL") → "PM"
+   * generarAcronimoCurso("REDES Y COMUNICACIONES") → "RC"
+   */
+  private generarAcronimoCurso(nombreCompleto: string): string {
+    // Normalizar texto: quitar tildes y convertir a mayúsculas
+    const normalizarTexto = (texto: string): string => {
+      return texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+    };
+
+    // Lista de preposiciones a excluir
+    const preposiciones = new Set([
+      'DE', 'EN', 'DEL', 'LA', 'EL', 'LOS', 'LAS',
+      'A', 'CON', 'PARA', 'POR', 'Y', 'AL'
+    ]);
+
+    const palabras = nombreCompleto.split(/\s+/);
+    const letrasSignificativas: string[] = [];
+
+    palabras.forEach((palabra, index) => {
+      // Normalizar la palabra
+      const palabraNormalizada = normalizarTexto(palabra);
+
+      // CASO ESPECIAL: Primera palabra es "ÉNFASIS" → tomar "E"
+      if (index === 0 && palabraNormalizada === 'ENFASIS') {
+        letrasSignificativas.push('E');
+        return;
+      }
+
+      // Saltar preposiciones
+      if (preposiciones.has(palabraNormalizada)) {
+        return;
+      }
+
+      // Saltar palabras muy cortas (1-2 letras)
+      if (palabra.length <= 2) {
+        return;
+      }
+
+      // Tomar primera letra de palabra significativa
+      letrasSignificativas.push(palabraNormalizada[0]);
+    });
+
+    return letrasSignificativas.join('');
   }
 
 }

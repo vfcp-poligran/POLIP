@@ -19,6 +19,7 @@ export interface CourseState {
   emailsVisible: boolean;
   isScrollingTable: boolean;
   integrantesSeleccionados?: string[]; // Correos de integrantes seleccionados en el panel
+  gruposSeleccionados?: string[]; // Grupos seleccionados en inicio-draft (para multi-selección)
   color?: string; // Color personalizado para el botón del curso
   metadata?: {
     nombre: string;                    // Nombre completo: "PROGRAMACIÓN MÓVIL"
@@ -28,6 +29,12 @@ export interface CourseState {
     bloque: string;
     fechaCreacion: string;
     profesor: string;
+    cohorte?: {                        // Cohorte/período académico del curso
+      nombre: string;                  // Nombre de la cohorte (ej: "202410 B2")
+      ingreso?: 'A' | 'B' | 'C';       // Tipo de ingreso (opcional)
+      fechaInicio: Date;               // Fecha de inicio del período
+      fechaFin: Date;                  // Fecha de fin del período
+    };
   };
   archivoCalificaciones?: {
     nombre: string;
