@@ -212,18 +212,46 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   // Formulario de cohorte - datos de período académico
   cohorteForm: {
-    nombre: string;
+    anio: string | undefined;  // Año del cohorte (sin ñ para evitar problemas de encoding)
     ingreso: 'A' | 'B' | 'C' | undefined;
     fechaInicio: string | undefined;
     fechaFin: string | undefined;
     fechaFinManual: boolean; // Indica si fechaFin fue editada manualmente
   } = {
-      nombre: '',
+      anio: undefined,
       ingreso: undefined,
       fechaInicio: undefined,
       fechaFin: undefined,
       fechaFinManual: false
     };
+
+  /**
+   * Computed property que genera el nombre de la cohorte automáticamente
+   * Formato: {año} {ingreso O bloque}
+   * Ejemplo: "2024 A" o "2024 Segundo"
+   */
+  nombreCohorteGenerado = computed(() => {
+    if (!this.cohorteForm.anio) return '';
+
+    const año = new Date(this.cohorteForm.año).getFullYear();
+
+    // Si hay ingreso seleccionado, usarlo
+    if (this.cohorteForm.ingreso) {
+      // Agregar bloque si existe en el curso parseado
+      const bloque = this.cursoParseado?.bloque || '';
+      return `${anio} ${this.cohorteForm.ingreso}${bloque}`;
+    }
+
+    // Si no hay ingreso, usar el bloque del curso
+    const bloque = this.cursoParseado?.bloque || '';
+    if (bloque) {
+      // Convertir "2" a "Segundo", "1" a "Primero"
+      const bloqueTexto = bloque === '1' ? 'Primero' : bloque === '2' ? 'Segundo' : bloque;
+      return `${anio} ${bloqueTexto}`;
+    }
+
+    return `${anio}`;
+  });
 
   private resolverClaveCurso(codigo: string | null): string | null {
     if (!codigo) return null;
@@ -306,6 +334,14 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
       Logger.log(`[Cohorte] Fecha fin calculada automáticamente: ${fechaFin.toLocaleDateString()} (Ingreso ${this.cohorteForm.ingreso}, ${duracionDias} días)`);
     }
+  }
+
+  /**
+   * Maneja cambios en año o ingreso para actualizar el nombre generado
+   */
+  onCambioCohorte(): void {
+    // El nombre se actualiza automáticamente por el computed property
+    Logger.log('[Cohorte] Nombre actualizado:', this.nombreCohorteGenerado());
   }
 
   /**
@@ -1242,9 +1278,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
     try {
       // Construir objeto de cohorte si se proporcionó información
       let cohorteData: any = undefined;
-      if (this.cohorteForm.nombre && this.cohorteForm.fechaInicio && this.cohorteForm.fechaFin) {
+      const nombreGenerado = this.nombreCohorteGenerado();
+      if (nombreGenerado && this.cohorteForm.fechaInicio && this.cohorteForm.fechaFin) {
         cohorteData = {
-          nombre: this.cohorteForm.nombre,
+          nombre: nombreGenerado,  // Nombre generado automáticamente
           ingreso: this.cohorteForm.ingreso,  // Incluir tipo de ingreso (opcional)
           fechaInicio: new Date(this.cohorteForm.fechaInicio),
           fechaFin: new Date(this.cohorteForm.fechaFin)
@@ -1419,7 +1456,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
     // Limpiar formulario de cohorte
     this.cohorteForm = {
-      nombre: '',
+      anio: undefined,
       ingreso: undefined,
       fechaInicio: undefined,
       fechaFin: undefined,

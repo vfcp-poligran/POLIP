@@ -23,7 +23,6 @@ import {
   IonHeader,
   IonToolbar,
   IonAvatar,
-  IonCheckbox,
   IonTitle
 } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
@@ -129,7 +128,6 @@ export interface NavigationItem {
     IonHeader,
     IonToolbar,
     IonAvatar,
-    IonCheckbox,
     IonTitle
   ],
   animations: [
