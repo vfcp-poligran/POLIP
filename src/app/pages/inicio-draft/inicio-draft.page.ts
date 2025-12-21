@@ -16,7 +16,6 @@ import {
     IonRow,
     IonCol,
     IonTextarea,
-    IonDatetime,
     IonFab,
     IonFabButton,
     IonCard,
@@ -672,48 +671,82 @@ export class InicioDraftPage implements OnInit, ViewWillEnter {
     // === UTILIDADES ===
 
     /**
-     * Extract course code with indicator (e.g., "EPM-B01", "EPM-B02")
+     * Extract course code with indicator and block
+     * Handles format: "EEPM-B01-BLQ2-V-timestamp" -> "EPM-B01-BLQ2"
+     * or "ÉNFASIS EN PROGRAMACIÓN MÓVIL-B01-BLOQUE 2-timestamp" -> "EPM-B01-BLQ2"
      */
     getCodigoCorto(codigo: string): string {
-        // Extract pattern like "EPM-B01" -> show "EPM-B01"
-        // or "Enfasis Programacion Movil-B01" -> show "EPM-B01"
+        // Split by dash to get parts
         const parts = codigo.split('-');
-        if (parts.length >= 2) {
-            const indicador = parts[parts.length - 1]; // B01, B02, etc.
-            const namePart = parts.slice(0, -1).join('-');
 
-            // Check if namePart is already an acronym (all uppercase, short)
-            if (namePart === namePart.toUpperCase() && namePart.length <= 5) {
-                // Already formatted correctly (e.g., "EPM")
-                return `${namePart}-${indicador}`;
-            }
-
-            // Generate acronym from full name
-            const acronym = this.getAcronymFromName(namePart);
-            return `${acronym}-${indicador}`;
+        if (parts.length < 2) {
+            return codigo.slice(0, 10).toUpperCase();
         }
 
-        // Fallback: try to extract initial letters
-        const match = codigo.match(/^([A-Z]+)/);
-        return match ? match[1] : codigo.slice(0, 3).toUpperCase();
+        // Primera parte: puede ser "EEPM" o "ÉNFASIS EN PROGRAMACIÓN MÓVIL"
+        let nombreParte = parts[0];
+
+        // Si comienza con doble letra (ej: "EEPM"), quitar la primera
+        if (nombreParte.length > 3 && nombreParte[0] === nombreParte[1].toUpperCase()) {
+            nombreParte = nombreParte.substring(1); // "EEPM" -> "EPM"
+        }
+
+        // Si es ya un acrónimo (todo mayúsculas, corto), usarlo directamente
+        let acronimo: string;
+        if (nombreParte === nombreParte.toUpperCase() && nombreParte.length <= 5) {
+            acronimo = nombreParte;
+        } else {
+            // Generar acrónimo desde nombre completo
+            acronimo = this.getAcronymFromName(nombreParte);
+        }
+
+        // Segunda parte: indicador (B01, B02, etc.)
+        const indicador = parts[1];
+
+        // Tercera parte (opcional): BLOQUE o BLQ
+        let bloqueTexto = '';
+        if (parts.length > 2) {
+            const terceraParte = parts[2];
+
+            // Si ya viene como "BLQ2",usarlo
+            if (terceraParte.startsWith('BLQ')) {
+                bloqueTexto = `-${terceraParte}`;
+            }
+            // Si viene como "BLOQUE 2", convertir a "BLQ2"
+            else if (terceraParte.toUpperCase().includes('BLOQUE')) {
+                const bloqueMatch = terceraParte.match(/BLOQUE\s*(\d+)/i);
+                if (bloqueMatch) {
+                    bloqueTexto = `-BLQ${bloqueMatch[1]}`;
+                }
+            }
+        }
+
+        return `${acronimo}-${indicador}${bloqueTexto}`;
     }
 
     /**
-     * Generate acronym from course name (e.g., "Enfasis Programacion Movil" -> "EPM")
+     * Generate acronym from course name (e.g., "ÉNFASIS EN PROGRAMACIÓN MÓVIL" -> "EPM")
      */
     private getAcronymFromName(name: string): string {
-        const palabras = name.split(/\s+/);
-        const prepositions = ['de', 'en', 'del', 'la', 'el', 'los', 'las', 'a', 'con', 'para', 'por', 'y'];
+        // Lista de palabras a ignorar (preposiciones, artículos, etc.)
+        const palabrasIgnorar = ['de', 'en', 'del', 'la', 'el', 'los', 'las', 'a', 'con', 'para', 'por', 'y'];
 
-        return palabras
-            .filter(p => p.length > 2)
-            .map(p => p.charAt(0).toUpperCase())
-            .filter((letra, index, arr) => {
-                // Avoid duplicates
-                const palabra = palabras.filter(p => p.length > 2)[index];
-                return palabra && !prepositions.includes(palabra.toLowerCase());
+        // Dividir nombre en palabras
+        const palabras = name
+            .split(/[\s-]+/)  // Split por espacios o guiones
+            .filter(p => p.length > 0)
+            .filter(p => !palabrasIgnorar.includes(p.toLowerCase()));
+
+        // Tomar primera letra de cada palabra significativa
+        const acronimo = palabras
+            .map(palabra => {
+                // Normalizar caracteres acentuados
+                const primeraLetra = palabra.charAt(0);
+                return primeraLetra.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
             })
             .join('');
+
+        return acronimo || name.substring(0, 3).toUpperCase();
     }
 
     /**

@@ -141,8 +141,8 @@
         <div class="cohorte-form-grid">
           <ion-item lines="none" class="cohorte-input-item">
             <ion-label position="stacked">Año</ion-label>
-            <ion-datetime [(ngModel)]="cohorteForm.año" (ionChange)="onCambioCohorte()" presentation="year"
-              [preferWheel]="true" locale="es-ES">
+            <ion-datetime [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" presentation="year"
+              locale="es-ES">
             </ion-datetime>
           </ion-item>
 
@@ -159,14 +159,14 @@
           <ion-item lines="none" class="cohorte-input-item">
             <ion-label position="stacked">Fecha Inicio</ion-label>
             <ion-datetime [(ngModel)]="cohorteForm.fechaInicio" (ionChange)="onFechaInicioChange()" presentation="date"
-              [preferWheel]="true" locale="es-ES">
+              locale="es-ES">
             </ion-datetime>
           </ion-item>
 
           <ion-item lines="none" class="cohorte-input-item">
             <ion-label position="stacked">Fecha Fin</ion-label>
             <ion-datetime [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()" presentation="date"
-              [preferWheel]="true" locale="es-ES">
+              locale="es-ES">
             </ion-datetime>
           </ion-item>
         </div>

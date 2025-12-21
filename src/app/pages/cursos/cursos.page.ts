@@ -18,7 +18,6 @@ import {
   IonItemOptions,
   IonItemOption,
   IonBadge,
-  IonInput,
   IonDatetime,
   IonSelect,
   IonSelectOption,
@@ -90,7 +89,6 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonItemOptions,
     IonItemOption,
     IonBadge,
-    IonInput,
     IonDatetime,
     IonSelect,
     IonSelectOption]
@@ -233,7 +231,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   nombreCohorteGenerado = computed(() => {
     if (!this.cohorteForm.anio) return '';
 
-    const año = new Date(this.cohorteForm.año).getFullYear();
+    const anio = new Date(this.cohorteForm.anio).getFullYear();
 
     // Si hay ingreso seleccionado, usarlo
     if (this.cohorteForm.ingreso) {
@@ -1699,6 +1697,19 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
       await this.mostrarToastExito('Calificaciones exportadas');
     }
+  }
+
+  /**
+   * Obtiene la información de cohorte de un curso desde su metadata
+   */
+  getCursoCohorte(codigo: string): { nombre: string; ingreso?: 'A' | 'B' | 'C' } | null {
+    const claveCurso = this.resolverClaveCurso(codigo);
+    if (!claveCurso) return null;
+
+    const uiState = this.dataService.getUIState();
+    const metadata = uiState.courseStates?.[claveCurso]?.metadata;
+
+    return metadata?.cohorte || null;
   }
 
   /**
