@@ -21,6 +21,10 @@ import {
   IonDatetime,
   IonSelect,
   IonSelectOption,
+  IonRadio,
+  IonRadioGroup,
+  IonPopover,
+  IonDatetimeButton,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -57,7 +61,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, appsOutline
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, appsOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -91,7 +95,11 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonBadge,
     IonDatetime,
     IonSelect,
-    IonSelectOption]
+    IonSelectOption,
+    IonRadio,
+    IonRadioGroup,
+    IonPopover,
+    IonDatetimeButton]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -210,18 +218,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   // Formulario de cohorte - datos de período académico
   cohorteForm: {
-    anio: string | undefined;  // Año del cohorte (sin ñ para evitar problemas de encoding)
+    anio: string | undefined;
     ingreso: 'A' | 'B' | 'C' | undefined;
     fechaInicio: string | undefined;
     fechaFin: string | undefined;
-    fechaFinManual: boolean; // Indica si fechaFin fue editada manualmente
+    fechaFinManual: boolean;
   } = {
-      anio: undefined,
+      anio: new Date().getFullYear().toString(),
       ingreso: undefined,
       fechaInicio: undefined,
       fechaFin: undefined,
       fechaFinManual: false
     };
+
+  // Flag para mostrar/ocultar color picker
+  showColorPicker = false;
 
   /**
    * Computed property que genera el nombre de la cohorte automáticamente
@@ -287,7 +298,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   constructor() {
-    addIcons({ add, close, ellipsisVertical, saveOutline, closeOutline, addCircleOutline, colorPaletteOutline, checkmark, informationCircleOutline, cloudUpload, closeCircle, gridOutline, createOutline, trashOutline, peopleOutline, appsOutline, listOutline, people, person, cloudUploadOutline, documentTextOutline, checkmarkCircle, ellipseOutline, calendarOutline, timeOutline, school, documentText, library, statsChartOutline, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ add, saveOutline, closeOutline, addCircleOutline, informationCircleOutline, cloudUpload, closeCircle, calendarOutline, colorPalette, checkmark, createOutline, trashOutline, peopleOutline, appsOutline, listOutline, people, cloudUploadOutline, documentTextOutline, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, checkmarkCircle, ellipseOutline, timeOutline, school, documentText, library, statsChartOutline, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);

@@ -107,70 +107,88 @@
       </div>
 
       <!-- ============================================ -->
-      <!-- 2. SECCIÓN DE COLOR DEL CURSO -->
+      <!-- FORMULARIO COMPACTO DE COHORTE (UNA FILA) -->
       <!-- ============================================ -->
-      <div class="color-selector-section">
-        <div class="color-selector-header">
-          <ion-icon name="color-palette-outline"></ion-icon>
-          <span>Color del curso</span>
-        </div>
-        <div class="color-picker-grid">
-          @for (color of coloresDisponibles; track color) {
-          <div class="color-option" [style.background-color]="color" [class.selected]="colorCursoSeleccionado === color"
-            (click)="seleccionarColorCurso(color)">
-            @if (colorCursoSeleccionado === color) {
-            <ion-icon name="checkmark"></ion-icon>
-            }
-          </div>
-          }
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- 3. INFORMACIÓN DE COHORTE -->
-      <!-- ============================================ -->
-      <div class="cohorte-section">
-        <div class="cohorte-header">
+      <div class="cohorte-compact-section">
+        <div class="cohorte-header-compact">
           <ion-icon name="calendar-outline"></ion-icon>
-          <span>Información de Cohorte</span>
+          <span>Configuración de Cohorte</span>
           @if (nombreCohorteGenerado()) {
-          <ion-badge color="primary" class="cohorte-badge">{{ nombreCohorteGenerado() }}</ion-badge>
+          <ion-badge color="primary">{{ nombreCohorteGenerado() }}</ion-badge>
           }
         </div>
 
-        <div class="cohorte-form-grid">
-          <ion-item lines="none" class="cohorte-input-item">
-            <ion-label position="stacked">Año</ion-label>
-            <ion-datetime [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" presentation="year"
-              locale="es-ES">
-            </ion-datetime>
-          </ion-item>
+        <div class="cohorte-compact-row">
+          <!-- 1. Color: Botón que abre paleta -->
+          <div class="color-btn-container">
+            <button class="color-btn" [style.background]="colorCursoSeleccionado" id="color-trigger"
+              (click)="showColorPicker = !showColorPicker">
+              <ion-icon name="color-palette"></ion-icon>
+            </button>
+            <ion-popover trigger="color-trigger" [isOpen]="showColorPicker" (didDismiss)="showColorPicker = false">
+              <ng-template>
+                <div class="color-popover-grid">
+                  @for (color of coloresDisponibles; track color) {
+                  <div class="color-option" [style.background-color]="color"
+                    [class.selected]="colorCursoSeleccionado === color"
+                    (click)="seleccionarColorCurso(color); showColorPicker = false">
+                    @if (colorCursoSeleccionado === color) {
+                    <ion-icon name="checkmark"></ion-icon>
+                    }
+                  </div>
+                  }
+                </div>
+              </ng-template>
+            </ion-popover>
+          </div>
 
-          <ion-item lines="none" class="cohorte-input-item">
-            <ion-label position="stacked">Ingreso (Opcional)</ion-label>
-            <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onCambioCohorte(); onIngresoChange()"
-              placeholder="Seleccionar" interface="popover">
-              <ion-select-option value="A">A (~120 días)</ion-select-option>
-              <ion-select-option value="B">B (~132 días)</ion-select-option>
-              <ion-select-option value="C">C (~105 días)</ion-select-option>
+          <!-- 2. Año: Selector compacto -->
+          <div class="year-selector">
+            <ion-select [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" interface="popover"
+              placeholder="Año">
+              <ion-select-option value="2024">2024</ion-select-option>
+              <ion-select-option value="2025">2025</ion-select-option>
+              <ion-select-option value="2026">2026</ion-select-option>
             </ion-select>
-          </ion-item>
+          </div>
 
-          <ion-item lines="none" class="cohorte-input-item">
-            <ion-label position="stacked">Fecha Inicio</ion-label>
-            <ion-datetime [(ngModel)]="cohorteForm.fechaInicio" (ionChange)="onFechaInicioChange()" presentation="date"
-              locale="es-ES">
-            </ion-datetime>
-          </ion-item>
+          <!-- 3. Ingreso: Radio buttons apilados -->
+          <div class="ingreso-radios">
+            <ion-radio-group [(ngModel)]="cohorteForm.ingreso" (ionChange)="onCambioCohorte(); onIngresoChange()">
+              <ion-radio value="A" labelPlacement="end">A</ion-radio>
+              <ion-radio value="B" labelPlacement="end">B</ion-radio>
+              <ion-radio value="C" labelPlacement="end">C</ion-radio>
+            </ion-radio-group>
+          </div>
 
-          <ion-item lines="none" class="cohorte-input-item">
-            <ion-label position="stacked">Fecha Fin</ion-label>
-            <ion-datetime [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()" presentation="date"
-              locale="es-ES">
-            </ion-datetime>
-          </ion-item>
+          <!-- 4. Fecha Inicio: Botón + OK/Cancel -->
+          <div class="fecha-picker-container">
+            <ion-datetime-button datetime="fecha-inicio-picker"></ion-datetime-button>
+            <ion-popover [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="fecha-inicio-picker" [(ngModel)]="cohorteForm.fechaInicio"
+                  (ionChange)="onFechaInicioChange()" presentation="date" locale="es-ES" [showDefaultButtons]="true"
+                  doneText="✓" cancelText="✗">
+                </ion-datetime>
+              </ng-template>
+            </ion-popover>
+          </div>
+
+          <!-- 5. Fecha Fin: Botón + OK/Cancel -->
+          <div class="fecha-picker-container">
+            <ion-datetime-button datetime="fecha-fin-picker"></ion-datetime-button>
+            <ion-popover [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="fecha-fin-picker" [(ngModel)]="cohorteForm.fechaFin"
+                  (ionChange)="onFechaFinManualChange()" presentation="date" locale="es-ES" [showDefaultButtons]="true"
+                  doneText="✓" cancelText="✗">
+                </ion-datetime>
+              </ng-template>
+            </ion-popover>
+          </div>
         </div>
       </div>
+
 
 
       }

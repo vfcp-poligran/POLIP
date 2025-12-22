@@ -10,8 +10,6 @@ import {
     IonLabel,
     IonSearchbar,
     IonCheckbox,
-    IonAccordion,
-    IonAccordionGroup,
     IonGrid,
     IonRow,
     IonCol,
@@ -22,7 +20,6 @@ import {
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
-    IonCardContent,
     IonModal,
     IonInput,
     IonDatetimeButton,
@@ -122,12 +119,10 @@ interface EstudianteSeleccionado {
         IonLabel,
         IonSearchbar,
         IonCheckbox,
-        IonFabButton,
-        IonAccordion,
-        IonAccordionGroup,
         IonGrid,
         IonRow,
         IonCol,
+        IonFabButton,
         IonTextarea,
         IonHeader,
         IonToolbar,
@@ -138,7 +133,6 @@ interface EstudianteSeleccionado {
         IonCardHeader,
         IonCardTitle,
         IonCardSubtitle,
-        IonCardContent,
         IonFab
     ]
 })

@@ -3423,3 +3423,135 @@ ion-item-sliding {
     }
   }
 }
+// ============================================
+// FORMULARIO COMPACTO DE COHORTE
+// ============================================
+.cohorte-compact-section {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.cohorte-header-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--azul-oscuro, #0f385a);
+  margin-bottom: 12px;
+
+  ion-icon {
+    font-size: 1.1rem;
+    color: var(--ion-color-primary);
+  }
+
+  ion-badge {
+    font-size: 0.7rem;
+    margin-left: auto;
+  }
+}
+
+.cohorte-compact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.color-btn-container {
+  .color-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    ion-icon {
+      font-size: 1.2rem;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.color-popover-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 12px;
+
+  .color-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+
+    &.selected {
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--ion-color-primary);
+    }
+
+    ion-icon {
+      color: white;
+      font-size: 1rem;
+    }
+  }
+}
+
+.year-selector {
+  ion-select {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    min-width: 80px;
+    font-size: 0.85rem;
+    background: #f5f7f9;
+    border-radius: 6px;
+  }
+}
+
+.ingreso-radios {
+  ion-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  ion-radio {
+    --size: 16px;
+    font-size: 0.8rem;
+    padding: 2px 0;
+  }
+}
+
+.fecha-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  ion-datetime-button {
+    --background: #e8f4fd;
+    --color: var(--ion-color-primary);
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+}

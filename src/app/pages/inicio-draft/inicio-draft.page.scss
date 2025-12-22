@@ -10,13 +10,14 @@ $touch-target: 44px;
 // Contenedor principal
 .inicio-draft-content {
     --background: #{$gris-claro};
+    --padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 // === HEADER ===
 .page-header {
     background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
-    padding: 16px;
-    padding-top: calc(16px + var(--ion-safe-area-top, 0px));
+    padding: 10px 12px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
     position: sticky;
     top: 0;
     z-index: 100;
@@ -25,7 +26,7 @@ $touch-target: 44px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
 
         .header-title {
             display: flex;
@@ -242,7 +243,7 @@ $touch-target: 44px;
 
 // === CONTENIDO PRINCIPAL GRID (3 COLUMNS) ===
 .main-content-grid {
-    padding: 16px;
+    padding: 8px 6px;
     max-width: 1600px;
     margin: 0 auto;
 
@@ -273,8 +274,11 @@ $touch-target: 44px;
 
         // Columna de cursos más al borde izquierdo
         &.column-courses {
+            padding-left: 0 !important;
+            margin-left: -8px;
+
             @media (min-width: 992px) {
-                padding-left: 0;
+                padding-left: 0 !important;
             }
         }
     }
@@ -374,22 +378,32 @@ $touch-target: 44px;
         gap: 10px;
 
         .grupo-dynamic-btn {
-            --border-radius: 10px;
-            --padding-start: 16px;
-            --padding-end: 16px;
-            --padding-top: 10px;
-            --padding-bottom: 10px;
-            height: 40px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 8px;
+            --padding-start: 14px;
+            --padding-end: 14px;
+            --padding-top: 8px;
+            --padding-bottom: 8px;
+            --background: transparent;
+            --background-hover: rgba(0, 0, 0, 0.03);
+            --box-shadow: none;
+            height: 36px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: none !important;
+            border: none !important;
+            transition: all 0.2s ease;
             margin: 0;
             position: relative;
 
+            // Texto con color del curso (se aplica dinámicamente)
+            &::part(native) {
+                border: none !important;
+                box-shadow: none !important;
+            }
+
             &.selected {
-                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-                transform: translateY(-1px);
+                --background: rgba(var(--curso-color-rgb, 74, 144, 226), 0.1);
+                font-weight: 800;
 
                 ion-icon {
                     margin-right: 4px;
@@ -397,12 +411,7 @@ $touch-target: 44px;
             }
 
             &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-            }
-
-            &:active {
-                transform: translateY(0);
+                --background: rgba(0, 0, 0, 0.03);
             }
         }
     }
@@ -723,18 +732,18 @@ $touch-target: 44px;
 .student-selection-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
+    gap: 8px;
+    padding: 6px 8px;
     background: #f9fbff;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid rgba(0, 0, 0, 0.02);
     cursor: pointer;
     transition: all 0.2s ease;
 
     .item-selection {
         ion-checkbox {
-            --size: 20px;
-            --border-radius: 6px;
+            --size: 16px;
+            --border-radius: 4px;
         }
     }
 
@@ -742,17 +751,20 @@ $touch-target: 44px;
         flex: 1;
         display: flex;
         flex-direction: column;
+        gap: 0;
 
         .name {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: $azul-oscuro;
+            line-height: 1.2;
         }
 
         .meta {
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             color: #888;
             font-weight: 500;
+            line-height: 1.1;
         }
     }
 
@@ -1028,4 +1040,68 @@ $touch-target: 44px;
     .registro-fab {
         display: none;
     }
+}
+// === MEJORAS RESPONSIVE MOBILE/TABLET ===
+@media (max-width: 991px) {
+  .page-header {
+    padding: 8px 10px;
+    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+
+    .header-top {
+      margin-bottom: 6px;
+    }
+
+    .tipos-filtro-chips {
+      gap: 4px;
+      
+      ion-chip {
+        height: 28px;
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .main-content-grid {
+    padding: 6px 4px;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .course-card-premium {
+    ion-card-header {
+      padding: 10px 12px;
+      padding-left: 18px;
+
+      ion-card-title {
+        font-size: 0.95rem;
+      }
+
+      ion-card-subtitle {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .student-selection-item {
+    padding: 5px 6px;
+    gap: 6px;
+
+    .item-info .name {
+      font-size: 0.75rem;
+    }
+
+    .item-info .meta {
+      font-size: 0.65rem;
+    }
+  }
+}
+
+// === TABLET OPTIMIZATIONS ===
+@media (min-width: 768px) and (max-width: 991px) {
+  .main-content-grid {
+    padding: 10px 8px;
+  }
+
+  .column-container {
+    min-height: 300px;
+  }
 }

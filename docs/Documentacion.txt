@@ -1,0 +1,7 @@
+https://ionicframework.com/docs/
+https://sass-lang.com/
+https://angular.dev/overview
+https://developer.mozilla.org/es/docs/Web/HTML
+https://www.typescriptlang.org/docs/
+https://developer.mozilla.org/en-US/docs/Web/SVG
+https://ionic.io/ionicons
