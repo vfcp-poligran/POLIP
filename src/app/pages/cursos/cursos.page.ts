@@ -69,7 +69,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, appsOutline, folderOpenOutline
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -331,7 +331,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   readonly BUTTON_CONFIG = BUTTON_CONFIG;
 
   constructor() {
-    addIcons({ peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, codeSlash, calendar, people, grid, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, createOutline, trashOutline, cloudUpload, calendarOutline, appsOutline, listOutline, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, codeSlash, calendar, people, grid, alertCircle, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, createOutline, trashOutline, cloudUpload, calendarOutline, appsOutline, listOutline, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
