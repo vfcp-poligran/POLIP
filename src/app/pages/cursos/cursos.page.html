@@ -187,28 +187,66 @@
 
       <!-- Contenido del curso seleccionado -->
       @if (cursoSeleccionadoInfo(); as info) {
-      <ion-card>
-        <!-- Header con acciones -->
-        <ion-card-header>
-          <ion-card-title>
-            {{ info.nombre }}
-            <ion-chip [color]="info.tieneCalificaciones ? 'success' : 'warning'">
-              {{ info.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
+      <ion-card class="curso-card" [class.active]="info.tieneCalificaciones" [class.no-data]="!info.tieneCalificaciones"
+        [style.--curso-color]="info.color">
+
+        <!-- Header con título y acciones -->
+        <div class="curso-card-header">
+          <div class="curso-title-row">
+            <h3 class="curso-nombre">{{ info.nombre }}</h3>
+            <ion-chip class="curso-status-chip" [color]="info.tieneCalificaciones ? 'success' : 'warning'" size="small">
+              <ion-icon [name]="info.tieneCalificaciones ? 'checkmark-circle' : 'alert-circle'" size="small"></ion-icon>
+              <ion-label>{{ info.tieneCalificaciones ? 'Activo' : 'Sin datos' }}</ion-label>
             </ion-chip>
-          </ion-card-title>
+          </div>
+
+          <!-- Información secundaria -->
+          <div class="curso-info-row">
+            <div class="info-item">
+              <ion-icon name="code-slash"></ion-icon>
+              <span><strong>Código:</strong> {{ info.codigo }}</span>
+            </div>
+            @if (info.bloque) {
+            <div class="info-item">
+              <ion-icon name="calendar"></ion-icon>
+              <span><strong>Bloque:</strong> {{ info.bloque }}</span>
+            </div>
+            }
+          </div>
+
+          <!-- Estadísticas -->
+          <div class="curso-stats">
+            <div class="stat-item">
+              <ion-icon name="people"></ion-icon>
+              <div>
+                <div class="stat-value">{{ estudiantesCurso().length }}</div>
+                <div class="stat-label">Estudiantes</div>
+              </div>
+            </div>
+            <div class="stat-item">
+              <ion-icon name="grid"></ion-icon>
+              <div>
+                <div class="stat-value">{{ gruposCurso().length }}</div>
+                <div class="stat-label">Grupos</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones -->
           <div class="card-actions">
             <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.EDITAR.color" (click)="editarCurso(info)"
-              [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel">
+              [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel" [attr.data-tooltip]="BUTTON_CONFIG.EDITAR.label">
               <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.EDITAR.icon"></ion-icon>
             </ion-button>
             <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.ELIMINAR.color"
-              (click)="confirmarEliminarCurso(info)" [attr.aria-label]="BUTTON_CONFIG.ELIMINAR.ariaLabel">
+              (click)="confirmarEliminarCurso(info)" [attr.aria-label]="BUTTON_CONFIG.ELIMINAR.ariaLabel"
+              [attr.data-tooltip]="BUTTON_CONFIG.ELIMINAR.label">
               <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.ELIMINAR.icon"></ion-icon>
             </ion-button>
           </div>
-        </ion-card-header>
+        </div>
 
-        <ion-card-content>
+        <div class="curso-card-content">
           <!-- Subtabs: Detalle / Integrantes / Importar -->
           <ion-segment [value]="subtabActivo()" (ionChange)="subtabActivo.set($any($event).detail.value)" scrollable>
             <ion-segment-button value="detalle">
@@ -324,7 +362,7 @@
             </ion-button>
           </div>
           }
-        </ion-card-content>
+          </ion-card-content>
       </ion-card>
       }
     </div>

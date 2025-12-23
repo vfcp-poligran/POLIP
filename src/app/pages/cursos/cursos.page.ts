@@ -331,7 +331,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   readonly BUTTON_CONFIG = BUTTON_CONFIG;
 
   constructor() {
-    addIcons({ add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, createOutline, trashOutline, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, cloudUpload, calendarOutline, appsOutline, listOutline, people, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, codeSlash, calendar, people, grid, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, createOutline, trashOutline, cloudUpload, calendarOutline, appsOutline, listOutline, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
