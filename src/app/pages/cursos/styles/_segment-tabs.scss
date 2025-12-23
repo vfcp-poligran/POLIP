@@ -1,0 +1,191 @@
+/**
+ * Estilos para Ion-Segment (Tabs)
+ * Usa el sistema de variables y mixins para consistencia
+ */
+
+@use 'sass:color';
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+// ============================================
+// TABS PRINCIPALES DE CURSOS
+// ============================================
+
+.cursos-container>ion-segment {
+    background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: 10%) 100%);
+    border-radius: $radius-md;
+    padding: spacing('xs');
+    margin-bottom: spacing('md');
+    @include card-elevation(2);
+
+    ion-segment-button {
+        --background: transparent;
+        --background-checked: rgba(255, 255, 255, 0.2);
+        --background-hover: rgba(255, 255, 255, 0.1);
+        --color: rgba(255, 255, 255, 0.8);
+        --color-checked: #ffffff;
+        --indicator-color: $azul-claro;
+        --indicator-height: 3px;
+        --border-radius: #{$radius-sm};
+
+        min-width: 120px;
+        @include typography('sm', 'medium');
+        @include transition(all, $transition-fast);
+
+        &:hover {
+            --background: rgba(255, 255, 255, 0.15);
+        }
+
+        ion-label {
+            text-transform: none;
+            @include truncate;
+            max-width: 150px;
+        }
+    }
+}
+
+// ============================================
+// SUBTABS (Detalle / Integrantes / Importar)
+// ============================================
+
+ion-card-content>ion-segment {
+    --background: rgba($azul-oscuro, 0.04);
+    margin-bottom: spacing('md');
+    border-radius: $radius-sm;
+
+    ion-segment-button {
+        --color: $azul-oscuro;
+        --color-checked: $azul-claro;
+        --indicator-color: $azul-claro;
+        --background-checked: rgba($azul-claro, 0.1);
+        --border-radius: #{$radius-sm};
+
+        @include typography('sm', 'normal');
+        @include transition(all, $transition-fast);
+
+        &:hover {
+            --background: rgba($azul-claro, 0.05);
+        }
+
+        ion-icon {
+            font-size: 1.1rem;
+            margin-bottom: spacing('xs');
+        }
+
+        ion-label {
+            text-transform: none;
+        }
+    }
+}
+
+// ============================================
+// TABS DE GRUPOS
+// ============================================
+
+.subtab-content>ion-segment {
+    --background: $gris-claro;
+    margin-bottom: spacing('md');
+    border-radius: $radius-sm;
+    padding: spacing('xs');
+
+    ion-segment-button {
+        --indicator-color: $azul-oscuro;
+        --color: $gris-oscuro;
+        --color-checked: $azul-oscuro;
+        --background-checked: white;
+        --border-radius: #{$radius-sm};
+
+        min-width: 80px;
+        @include typography('sm', 'medium');
+        @include transition(all, $transition-fast);
+        @include card-elevation(1);
+
+        &:hover {
+            --background: rgba(255, 255, 255, 0.5);
+        }
+
+        &::part(native) {
+            padding: spacing('sm') spacing('md');
+        }
+    }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@include respond-to-max('md') {
+
+    // Tabs principales más compactos en móvil
+    .cursos-container>ion-segment {
+        padding: spacing('xs');
+
+        ion-segment-button {
+            min-width: 100px;
+            font-size: font-size('xs');
+
+            ion-label {
+                max-width: 120px;
+            }
+        }
+    }
+
+    // Subtabs con iconos más pequeños
+    ion-card-content>ion-segment {
+        ion-segment-button {
+            font-size: font-size('xs');
+
+            ion-icon {
+                font-size: 1rem;
+                margin-bottom: 2px;
+            }
+
+            ion-label {
+                font-size: font-size('xs');
+            }
+        }
+    }
+
+    // Tabs de grupos más compactos
+    .subtab-content>ion-segment {
+        padding: 2px;
+
+        ion-segment-button {
+            min-width: 60px;
+            font-size: font-size('xs');
+
+            &::part(native) {
+                padding: spacing('xs') spacing('sm');
+            }
+        }
+    }
+}
+
+// ============================================
+// ACCESIBILIDAD
+// ============================================
+
+ion-segment-button {
+    @include focus-visible($azul-claro, 2px);
+
+    // Touch target mínimo en móvil
+    @include respond-to-max('md') {
+        min-height: $touch-target-min;
+    }
+}
+
+// ============================================
+// ANIMACIONES
+// ============================================
+
+ion-segment {
+    ion-segment-button {
+        &::part(indicator) {
+            @include transition(transform, $transition-base);
+        }
+
+        &::part(indicator-background) {
+            border-radius: $radius-sm;
+        }
+    }
+}

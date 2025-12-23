@@ -25,6 +25,13 @@ import {
   IonRadioGroup,
   IonPopover,
   IonDatetimeButton,
+  IonTabs,
+  IonTab,
+  IonTabBar,
+  IonTabButton,
+  IonSegment,
+  IonSegmentButton,
+  IonNote,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -45,6 +52,7 @@ import {
   checkmarkCircle,
   ellipseOutline,
   closeCircle,
+  closeCircleOutline,
   documentTextOutline,
   schoolOutline,
   pricetagOutline,
@@ -61,12 +69,27 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, appsOutline
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, appsOutline, folderOpenOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
 import { IonFab, IonFabButton } from '@ionic/angular/standalone';
+import { BUTTON_CONFIG } from '@app/constants/button-config';
+
+
+interface EstudianteConNotas {
+  canvasUserId?: string;
+  nombres: string;
+  apellidos: string;
+  correo: string;
+  grupo: string;
+  notas: {
+    e1: string;
+    e2: string;
+    ef: string;
+  };
+}
 
 @Component({
   selector: 'app-cursos',
@@ -99,7 +122,14 @@ import { IonFab, IonFabButton } from '@ionic/angular/standalone';
     IonRadio,
     IonRadioGroup,
     IonPopover,
-    IonDatetimeButton]
+    IonDatetimeButton,
+    IonTabs,
+    IonTab,
+    IonTabBar,
+    IonTabButton,
+    IonSegment,
+    IonSegmentButton,
+    IonNote]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -108,6 +138,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   @ViewChild('estudiantesFileInput') estudiantesFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('calificacionesFileInput') calificacionesFileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('importEstudiantesInput') importEstudiantesInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('importCalificacionesInput') importCalificacionesInput!: ElementRef<HTMLInputElement>;
   @ViewChild('rubricaFileInput') rubricaFileInput!: ElementRef<HTMLInputElement>;
 
   // Señales para el estado del componente (Reactividad Angular 17+)
@@ -115,6 +147,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
   cursoSeleccionado = signal<string | null>(null);
   private cursoSeleccionadoClave = signal<string | null>(null);
   modoEdicion = signal<boolean>(false);
+  subtabActivo = signal<string>('detalle');
+  grupoActivo = signal<string>('todos');
   vistaActiva = signal<'general' | string>('general');
 
   rubricasAsociadas: any[] = [];
@@ -127,9 +161,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
   calificacionesParseadas: any[] = [];
   rubricaCargada: any = null;
 
-  cursoParseado: any = null;
   codigoCursoEnEdicion = '';
   infoExpanded = false;
+  cursoParseado: any = null;
 
   // Variables para detectar cambios
   estadoOriginalCurso: {
@@ -148,9 +182,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   // Computed signals para reactividad automática
   cursoSeleccionadoInfo = computed(() => {
     const seleccion = this.cursoSeleccionado();
-    if (!seleccion) {
-      return null;
-    }
+    if (!seleccion) return null;
     return this.cursosDisponibles().find(curso => curso.codigo === seleccion) || null;
   });
 
@@ -158,60 +190,58 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const seleccion = this.cursoSeleccionado();
     const claveCurso = this.resolverClaveCurso(seleccion);
     if (!claveCurso) return [];
-
-    // Al acceder a uiState() y cursoSeleccionado(), esta señal se recalcula automáticamente
-    const uiState = this.dataService.uiState();
     const estudiantes = this.dataService.getCurso(claveCurso);
     return Array.isArray(estudiantes) ? estudiantes : [];
   });
 
   gruposCurso = computed(() => {
-    const gruposSet = new Set(
-      this.estudiantesCurso()
-        .map(est => (est?.grupo !== undefined && est?.grupo !== null ? String(est.grupo) : ''))
-        .filter(grupo => grupo !== '')
-    );
-
-    return Array.from(gruposSet).sort((a, b) => {
-      const numA = parseInt(a, 10);
-      const numB = parseInt(b, 10);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        return numA - numB;
-      }
-      return a.localeCompare(b);
-    });
+    const estudiantes = this.estudiantesCurso();
+    const grupos = [...new Set(estudiantes.map(e => (e?.grupo !== undefined && e?.grupo !== null ? String(e.grupo) : '')))]
+      .filter(g => g !== '')
+      .sort((a, b) => {
+        const numA = parseInt(a, 10);
+        const numB = parseInt(b, 10);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return a.localeCompare(b);
+      });
+    return grupos;
   });
 
-  integrantesGrupo = computed(() => {
-    const vista = this.vistaActiva();
+  estudiantesFiltrados = computed<EstudianteConNotas[]>(() => {
     const estudiantes = this.estudiantesCurso();
+    const grupo = this.grupoActivo();
+    const filtrados = grupo === 'todos'
+      ? estudiantes
+      : estudiantes.filter(e => String(e.grupo) === String(grupo));
+
+    // Obtener archivo de calificaciones de forma reactiva
     const seleccion = this.cursoSeleccionado();
     const claveCurso = this.resolverClaveCurso(seleccion);
-
-    // Obtener archivo de calificaciones de forma reactiva a través del uiState
     const archivo = claveCurso ? this.dataService.obtenerArchivoCalificaciones(claveCurso) : null;
-    const notasMap = new Map<string, any>();
 
-    if (archivo?.calificaciones) {
-      archivo.calificaciones.forEach(c => {
-        if (c.id) notasMap.set(String(c.id), c);
-      });
+    // Normalizar retorno si no hay archivo
+    if (!archivo?.calificaciones) {
+      return filtrados.map(est => ({
+        ...est,
+        notas: { e1: '', e2: '', ef: '' }
+      }));
     }
 
-    const integrantes = vista === 'general'
-      ? estudiantes
-      : estudiantes.filter(est => String(est?.grupo ?? '') === String(vista));
+    const notasMap = new Map();
+    archivo.calificaciones.forEach((c: any) => {
+      if (c.id) notasMap.set(String(c.id), c);
+    });
 
-    // Mapear cada integrante con sus notas si están disponibles
-    return integrantes.map(est => {
-      const notas = notasMap.get(String(est.canvasUserId || ''));
+    return filtrados.map(est => {
+      const canvasId = est.canvasUserId ? String(est.canvasUserId) : '';
+      const notas = canvasId ? notasMap.get(canvasId) : null;
       return {
         ...est,
-        notas: notas ? {
-          e1: notas.e1 || '',
-          e2: notas.e2 || '',
-          ef: notas.ef || ''
-        } : null
+        notas: {
+          e1: notas?.e1 || '',
+          e2: notas?.e2 || '',
+          ef: notas?.ef || ''
+        }
       };
     });
   });
@@ -297,8 +327,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
     return codigo;
   }
 
+  // Exponer configuración de botones para el template
+  readonly BUTTON_CONFIG = BUTTON_CONFIG;
+
   constructor() {
-    addIcons({ add, saveOutline, closeOutline, addCircleOutline, informationCircleOutline, cloudUpload, closeCircle, calendarOutline, colorPalette, checkmark, createOutline, trashOutline, peopleOutline, appsOutline, listOutline, people, cloudUploadOutline, documentTextOutline, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, checkmarkCircle, ellipseOutline, timeOutline, school, documentText, library, statsChartOutline, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, createOutline, trashOutline, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, cloudUpload, calendarOutline, appsOutline, listOutline, people, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, calendar, schoolOutline, save, documentsOutline, codeSlash, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -556,6 +589,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   seleccionarVista(vista: 'general' | string) {
     this.vistaActiva.set(vista);
+  }
+
+  // Cambiar subtab dentro del curso seleccionado
+  cambiarSubtab(subtab: string) {
+    this.vistaActiva.set(subtab);
   }
 
   contarIntegrantes(grupo: string): number {
@@ -1619,8 +1657,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       }
 
       this.rubricaCargada = rubrica;
-
-      await this.mostrarToastExito(`Rúbrica "${rubrica.nombre}" cargada exitosamente`);
+      await this.mostrarToastExito(`Rúbrica "${rubrica?.nombre || 'desconocida'}" cargada exitosamente`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       Logger.error('[CursosPage] Error cargando rúbrica:', {
@@ -1649,7 +1686,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     try {
       await this.dataService.guardarRubrica(this.rubricaCargada);
 
-      await this.mostrarToastExito(`Rúbrica "${this.rubricaCargada.nombre}" guardada exitosamente`);
+      await this.mostrarToastExito(`Rúbrica "${this.rubricaCargada?.nombre || 'desconocida'}" guardada exitosamente`);
 
       // Limpiar estado
       this.rubricaCargada = null;

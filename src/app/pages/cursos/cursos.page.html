@@ -1,414 +1,340 @@
 <ion-content [fullscreen]="true">
-  <!-- FAB flotante para crear curso (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso">
-    @if (!modoEdicion()) {
-    <ion-fab-button color="success" (click)="iniciarCreacionCurso()" aria-label="Crear nuevo curso">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-    }
-  </ion-fab>
+  <!-- Skip link para accesibilidad -->
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-  <!-- FAB Guardar (móvil/tablet) - Verde, inferior derecha -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-guardar-curso">
+  <!-- ======================================== -->
+  <!-- 1. FABs FLOTANTES -->
+  <!-- ======================================== -->
+
+  <!-- FAB Crear Curso -->
+  @if (!modoEdicion()) {
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
+      [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
+      <ion-icon [name]="BUTTON_CONFIG.CREAR.icon"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
+
+  <!-- FABs de edición -->
+  @if (modoEdicion()) {
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 16px">
+    <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
+      [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
+      <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 80px">
+    <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
+      [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
+      <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
+
+  <div class="page-container" id="main-content" role="main">
+    <!-- ======================================== -->
+    <!-- 2. HEADER DE PÁGINA -->
+    <!-- ======================================== -->
+    <div class="page-header">
+      <h2>Cursos</h2>
+      <div class="header-actions">
+        @if (!modoEdicion()) {
+        <ion-button size="small" [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
+          [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
+          <ion-icon [name]="BUTTON_CONFIG.CREAR.icon" slot="start"></ion-icon>
+          {{ BUTTON_CONFIG.CREAR.label }}
+        </ion-button>
+        } @else {
+        <ion-button size="small" [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
+          [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
+          <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon" slot="start"></ion-icon>
+          {{ BUTTON_CONFIG.GUARDAR.label }}
+        </ion-button>
+        <ion-button size="small" [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
+          [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
+          {{ BUTTON_CONFIG.CANCELAR.label }}
+        </ion-button>
+        }
+      </div>
+    </div>
+
+    <!-- ======================================== -->
+    <!-- 3. SECCIÓN DE EDICIÓN/CREACIÓN -->
+    <!-- ======================================== -->
     @if (modoEdicion()) {
-    <ion-fab-button color="success" (click)="guardarCurso()" aria-label="Guardar curso">
-      <ion-icon name="save-outline"></ion-icon>
-    </ion-fab-button>
-    }
-  </ion-fab>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ codigoCursoEnEdicion ? 'Editar Curso' : 'Nuevo Curso' }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Inputs ocultos para archivos -->
+        <input type="file" #estudiantesFileInput accept=".csv" (change)="onEstudiantesFileSelected($event)" hidden />
+        <input type="file" #calificacionesFileInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
+          hidden />
 
-  <!-- FAB Cancelar (móvil/tablet) - Amarillo con X, inferior derecha (más arriba) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-cancelar-curso">
-    @if (modoEdicion()) {
-    <ion-fab-button color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
-      <ion-icon name="close-outline"></ion-icon>
-    </ion-fab-button>
-    }
-  </ion-fab>
+        <!-- Botones de importación -->
+        <div class="import-buttons">
+          <ion-button fill="outline" (click)="estudiantesFileInput.click()">
+            <ion-icon name="people-outline" slot="start"></ion-icon>
+            Importar Estudiantes
+          </ion-button>
+          @if (estudiantesFileName) {
+          <ion-chip color="success">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <ion-label>{{ estudiantesFileName }}</ion-label>
+            <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
+          </ion-chip>
+          }
 
-  <div class="page-container">
-    <div class="tab-content cursos-tab-content">
-
-      <!-- Título de la página -->
-      <div class="page-title-header">
-        <div class="title-wrapper">
-          <h2>Cursos</h2>
-        </div>
-        <div class="header-actions ion-hide-md-down">
-          @if (!modoEdicion()) {
-          <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()" class="btn-add-curso">
-            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-            Crear
+          <ion-button fill="outline" (click)="calificacionesFileInput.click()">
+            <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+            Importar Calificaciones
           </ion-button>
-          } @else {
-          <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()">
-            <ion-icon name="save-outline" slot="start"></ion-icon>
-            Guardar
-          </ion-button>
-          <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()">
-            Cancelar
-          </ion-button>
+          @if (calificacionesFileName) {
+          <ion-chip color="success">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <ion-label>{{ calificacionesFileName }}</ion-label>
+            <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
+          </ion-chip>
           }
         </div>
-        <!-- Botones removidos - ahora se usan FABs flotantes -->
-      </div>
 
-      @if (modoEdicion()) {
-      <!-- ============================================ -->
-      <!-- 1. SECCIÓN DE IMPORTACIÓN (Prioridad Visual) -->
-      <!-- ============================================ -->
-      <div class="upload-wrapper" [class.expanded]="infoExpanded">
-        <!-- Mensaje instructivo con icono -->
-        <div class="upload-instructions">
-          <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
-          <span class="info-text">Cargue los archivos en formato CSV de Personas y Calificaciones del LMS Canvas</span>
-        </div>
-
-        <!-- Barra de info (Personas y Calificaciones) -->
-        <div class="tabla-info-bar">
-          <!-- Input oculto para archivo de estudiantes -->
-          <input type="file" #estudiantesFileInput accept=".csv" (change)="onEstudiantesFileSelected($event)"
-            class="file-input-hidden" aria-label="Cargar archivo CSV de estudiantes" />
-
-          <!-- Input oculto para archivo de calificaciones -->
-          <input type="file" #calificacionesFileInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
-            class="file-input-hidden" aria-label="Cargar archivo CSV de calificaciones" />
-
-          <div class="upload-section">
-            <div class="upload-btn-container" (click)="estudiantesFileInput.click()">
-              <ion-icon name="cloud-upload"></ion-icon>
-              <span class="btn-label">Personas</span>
-            </div>
-            @if (estudiantesFileName) {
-            <div class="file-loaded-info">
-              <div class="file-details">
-                <span class="file-full-name">{{ estudiantesFileName }}</span>
-                <ion-icon name="close-circle" (click)="limpiarEstudiantes()" class="remove-file"></ion-icon>
-              </div>
-            </div>
-            }
-          </div>
-
-          <div class="upload-section">
-            <div class="upload-btn-container" (click)="calificacionesFileInput.click()">
-              <ion-icon name="cloud-upload"></ion-icon>
-              <span class="btn-label">Calificaciones</span>
-            </div>
-            @if (calificacionesFileName) {
-            <div class="file-loaded-info">
-              <div class="file-details">
-                <span class="file-full-name">{{ calificacionesFileName }}</span>
-                <ion-icon name="close-circle" (click)="limpiarCalificaciones()" class="remove-file"></ion-icon>
-              </div>
-            </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================ -->
-      <!-- FORMULARIO COMPACTO DE COHORTE (UNA FILA) -->
-      <!-- ============================================ -->
-      <div class="cohorte-compact-section">
-        <div class="cohorte-header-compact">
-          <ion-icon name="calendar-outline"></ion-icon>
-          <span>Configuración de Cohorte</span>
+        <!-- Configuración de Cohorte -->
+        <div class="cohorte-config">
+          <h4>Configuración de Cohorte</h4>
           @if (nombreCohorteGenerado()) {
           <ion-badge color="primary">{{ nombreCohorteGenerado() }}</ion-badge>
           }
-        </div>
 
-        <div class="cohorte-compact-row">
-          <!-- 1. Color: Botón que abre paleta -->
-          <div class="color-btn-container">
-            <button class="color-btn" [style.background]="colorCursoSeleccionado" id="color-trigger"
-              (click)="showColorPicker = !showColorPicker">
-              <ion-icon name="color-palette"></ion-icon>
-            </button>
-            <ion-popover trigger="color-trigger" [isOpen]="showColorPicker" (didDismiss)="showColorPicker = false">
-              <ng-template>
-                <div class="color-popover-grid">
-                  @for (color of coloresDisponibles; track color) {
-                  <div class="color-option" [style.background-color]="color"
-                    [class.selected]="colorCursoSeleccionado === color"
-                    (click)="seleccionarColorCurso(color); showColorPicker = false">
-                    @if (colorCursoSeleccionado === color) {
-                    <ion-icon name="checkmark"></ion-icon>
+          <div class="config-row">
+            <!-- Color -->
+            <div class="color-picker">
+              <button [style.background]="colorCursoSeleccionado" id="color-trigger"
+                (click)="showColorPicker = !showColorPicker">
+                <ion-icon name="color-palette"></ion-icon>
+              </button>
+              <ion-popover trigger="color-trigger" [isOpen]="showColorPicker" (didDismiss)="showColorPicker = false">
+                <ng-template>
+                  <div class="color-grid">
+                    @for (color of coloresDisponibles; track color) {
+                    <div class="color-option" [style.background-color]="color"
+                      [class.selected]="colorCursoSeleccionado === color"
+                      (click)="seleccionarColorCurso(color); showColorPicker = false">
+                      @if (colorCursoSeleccionado === color) {
+                      <ion-icon name="checkmark"></ion-icon>
+                      }
+                    </div>
                     }
                   </div>
-                  }
-                </div>
-              </ng-template>
-            </ion-popover>
-          </div>
+                </ng-template>
+              </ion-popover>
+            </div>
 
-          <!-- 2. Año: Selector compacto -->
-          <div class="year-selector">
+            <!-- Año -->
             <ion-select [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" interface="popover"
               placeholder="Año">
               <ion-select-option value="2024">2024</ion-select-option>
               <ion-select-option value="2025">2025</ion-select-option>
               <ion-select-option value="2026">2026</ion-select-option>
             </ion-select>
-          </div>
 
-          <!-- 3. Ingreso: Radio buttons apilados -->
-          <div class="ingreso-radios">
+            <!-- Ingreso -->
             <ion-radio-group [(ngModel)]="cohorteForm.ingreso" (ionChange)="onCambioCohorte(); onIngresoChange()">
-              <ion-radio value="A" labelPlacement="end">A</ion-radio>
-              <ion-radio value="B" labelPlacement="end">B</ion-radio>
-              <ion-radio value="C" labelPlacement="end">C</ion-radio>
+              <ion-radio value="A">A</ion-radio>
+              <ion-radio value="B">B</ion-radio>
+              <ion-radio value="C">C</ion-radio>
             </ion-radio-group>
-          </div>
 
-          <!-- 4. Fecha Inicio: Botón + OK/Cancel -->
-          <div class="fecha-picker-container">
-            <ion-datetime-button datetime="fecha-inicio-picker"></ion-datetime-button>
+            <!-- Fecha Inicio -->
+            <ion-datetime-button datetime="fecha-inicio"></ion-datetime-button>
             <ion-popover [keepContentsMounted]="true">
               <ng-template>
-                <ion-datetime id="fecha-inicio-picker" [(ngModel)]="cohorteForm.fechaInicio"
-                  (ionChange)="onFechaInicioChange()" presentation="date" locale="es-ES" [showDefaultButtons]="true"
-                  doneText="✓" cancelText="✗">
-                </ion-datetime>
+                <ion-datetime id="fecha-inicio" [(ngModel)]="cohorteForm.fechaInicio"
+                  (ionChange)="onFechaInicioChange()" presentation="date" locale="es-ES"
+                  [showDefaultButtons]="true"></ion-datetime>
               </ng-template>
             </ion-popover>
-          </div>
 
-          <!-- 5. Fecha Fin: Botón + OK/Cancel -->
-          <div class="fecha-picker-container">
-            <ion-datetime-button datetime="fecha-fin-picker"></ion-datetime-button>
+            <!-- Fecha Fin -->
+            <ion-datetime-button datetime="fecha-fin"></ion-datetime-button>
             <ion-popover [keepContentsMounted]="true">
               <ng-template>
-                <ion-datetime id="fecha-fin-picker" [(ngModel)]="cohorteForm.fechaFin"
-                  (ionChange)="onFechaFinManualChange()" presentation="date" locale="es-ES" [showDefaultButtons]="true"
-                  doneText="✓" cancelText="✗">
-                </ion-datetime>
+                <ion-datetime id="fecha-fin" [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()"
+                  presentation="date" locale="es-ES" [showDefaultButtons]="true"></ion-datetime>
               </ng-template>
             </ion-popover>
           </div>
         </div>
-      </div>
+      </ion-card-content>
+    </ion-card>
+    }
 
+    <!-- ======================================== -->
+    <!-- 4. LISTA DE CURSOS (TABS) -->
+    <!-- ======================================== -->
+    @if (cursosDisponibles().length > 0) {
+    <div class="cursos-container">
+      <!-- Tabs principales de cursos -->
+      <ion-segment [value]="cursoSeleccionado() || cursosDisponibles()[0]?.codigo"
+        (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable>
+        @for (curso of cursosDisponibles(); track curso.codigo) {
+        <ion-segment-button [value]="curso.codigo">
+          <ion-label>{{ curso.nombre }}</ion-label>
+        </ion-segment-button>
+        }
+      </ion-segment>
 
-
-      }
-
-      <!-- Área principal: Tarjetas de cursos -->
-      <div class="cards-area">
-        @if (cursosDisponibles().length > 0) {
-        <ion-list class="curso-list">
-          @for (curso of cursosDisponibles(); track curso.codigo) {
-          <ion-item-sliding>
-            <ion-item class="curso-card-item" [class.selected]="cursoSeleccionado() === curso.codigo"
-              (click)="seleccionarCurso(curso.codigo)" button>
-              <div class="curso-card-content" slot="start">
-                <div class="curso-card-header">
-                  <div class="curso-card-top">
-                    <ion-chip class="estado-chip" [color]="curso.tieneCalificaciones ? 'success' : 'warning'">
-                      <ion-icon
-                        [name]="curso.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
-                    </ion-chip>
-                    <ion-chip class="color-indicator" [style.background]="getCursoColor(curso.codigo)"></ion-chip>
-                  </div>
-                  <div class="curso-info">
-                    <h3 class="curso-nombre">{{ curso.nombre }}</h3>
-                    <p class="curso-codigo-label">{{ curso.codigo }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="curso-actions-right" slot="end">
-                <ion-button size="small" fill="clear" color="primary"
-                  (click)="editarCurso(curso); $event.stopPropagation()" title="Editar curso">
-                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                </ion-button>
-                <ion-button size="small" fill="clear" color="danger"
-                  (click)="confirmarEliminarCurso(curso); $event.stopPropagation()" title="Eliminar curso">
-                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                </ion-button>
-              </div>
-            </ion-item>
-
-            <ion-item-options side="end">
-              <ion-item-option color="primary" (click)="editarCurso(curso)">
-                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-              </ion-item-option>
-              <ion-item-option color="danger" (click)="confirmarEliminarCurso(curso)">
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              </ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
-          }
-        </ion-list>
-
-        @if (cursoSeleccionadoInfo()) {
-        <ion-card class="curso-detail-card">
-          <ion-card-header>
-            <ion-card-title>Detalle de {{ cursoSeleccionadoInfo()!.nombre }}</ion-card-title>
-            <ion-chip class="estado-chip"
-              [color]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'success' : 'warning'">
-              <ion-icon
-                [name]="cursoSeleccionadoInfo()!.tieneCalificaciones ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon>
-              {{ cursoSeleccionadoInfo()!.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
+      <!-- Contenido del curso seleccionado -->
+      @if (cursoSeleccionadoInfo(); as info) {
+      <ion-card>
+        <!-- Header con acciones -->
+        <ion-card-header>
+          <ion-card-title>
+            {{ info.nombre }}
+            <ion-chip [color]="info.tieneCalificaciones ? 'success' : 'warning'">
+              {{ info.tieneCalificaciones ? 'Activo' : 'Sin datos' }}
             </ion-chip>
-          </ion-card-header>
-          <ion-card-content>
-            <div class="detalle-grid">
-              <div class="detalle-item">
-                <span class="detalle-label">Código base</span>
-                <span class="detalle-value">{{ cursoSeleccionadoInfo()!.codigoBase || '—' }}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Bloque</span>
-                <span class="detalle-value">{{ cursoSeleccionadoInfo()!.bloque || '—' }}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Color</span>
-                <span class="detalle-value color-dot"
-                  [style.background]="getCursoColor(cursoSeleccionadoInfo()!.codigo)"></span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Estudiantes</span>
-                <span class="detalle-value">{{ estudiantesCurso().length }}</span>
-              </div>
-              <div class="detalle-item">
-                <span class="detalle-label">Grupos</span>
-                <span class="detalle-value">{{ gruposCurso().length }}</span>
-              </div>
-            </div>
+          </ion-card-title>
+          <div class="card-actions">
+            <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.EDITAR.color" (click)="editarCurso(info)"
+              [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel">
+              <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.EDITAR.icon"></ion-icon>
+            </ion-button>
+            <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.ELIMINAR.color"
+              (click)="confirmarEliminarCurso(info)" [attr.aria-label]="BUTTON_CONFIG.ELIMINAR.ariaLabel">
+              <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.ELIMINAR.icon"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-header>
 
-            <!-- Sección de Grupos como Tabs -->
-            <div class="grupos-tabs-section">
-              <div class="grupos-tabs-header">
-                <h4>
-                  <ion-icon name="people-outline"></ion-icon>
-                  Integrantes del Curso ({{ estudiantesCurso().length }} estudiantes, {{ gruposCurso().length }} grupos)
-                </h4>
-              </div>
+        <ion-card-content>
+          <!-- Subtabs: Detalle / Integrantes / Importar -->
+          <ion-segment [value]="subtabActivo()" (ionChange)="subtabActivo.set($any($event).detail.value)" scrollable>
+            <ion-segment-button value="detalle">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <ion-label>Detalle</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="integrantes">
+              <ion-icon name="people-outline"></ion-icon>
+              <ion-label>Integrantes</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="importar">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <ion-label>Importar</ion-label>
+            </ion-segment-button>
+          </ion-segment>
 
-              @if (estudiantesCurso().length > 0) {
-              <!-- Tabs de grupos -->
-              <div class="grupos-tabs-bar">
-                <button type="button" class="grupo-tab" [class.active]="vistaActiva() === 'general'"
-                  (click)="seleccionarVista('general')">
-                  <ion-icon name="apps-outline"></ion-icon>
-                  <span>Todos</span>
-                  <span class="badge">{{ estudiantesCurso().length }}</span>
-                </button>
-                @for (grupo of gruposCurso(); track grupo) {
-                <button type="button" class="grupo-tab" [class.active]="vistaActiva() === grupo"
-                  (click)="seleccionarVista(grupo)">
-                  <span class="grupo-numero">{{ grupo }}</span>
-                  <span class="badge">{{ contarIntegrantes(grupo) }}</span>
-                </button>
-                }
-              </div>
+          <!-- SUBTAB: Detalle -->
+          @if (subtabActivo() === 'detalle') {
+          <div class="subtab-content">
+            <ion-list>
+              <ion-item>
+                <ion-label>Código</ion-label>
+                <ion-note slot="end">{{ info.codigo }}</ion-note>
+              </ion-item>
+              <ion-item>
+                <ion-label>Código Base</ion-label>
+                <ion-note slot="end">{{ info.codigoBase || '—' }}</ion-note>
+              </ion-item>
+              <ion-item>
+                <ion-label>Bloque</ion-label>
+                <ion-note slot="end">{{ info.bloque || '—' }}</ion-note>
+              </ion-item>
+              <ion-item>
+                <ion-label>Estudiantes</ion-label>
+                <ion-note slot="end">{{ estudiantesCurso().length }}</ion-note>
+              </ion-item>
+              <ion-item>
+                <ion-label>Grupos</ion-label>
+                <ion-note slot="end">{{ gruposCurso().length }}</ion-note>
+              </ion-item>
+            </ion-list>
 
-              <!-- Contenido del tab seleccionado -->
-              <div class="grupo-tab-content">
-                <div class="tab-content-header">
-                  @if (vistaActiva() === 'general') {
-                  <ion-icon name="list-outline"></ion-icon>
-                  <span>Todos los estudiantes ({{ estudiantesCurso().length }})</span>
-                  } @else {
-                  <ion-icon name="people"></ion-icon>
-                  <span>Grupo {{ vistaActiva() }} - {{ integrantesGrupo().length }} integrantes</span>
-                  }
-                </div>
-
-                <!-- Lista de integrantes -->
-                @if (integrantesGrupo().length > 0) {
-                <div class="tabla-wrapper tabla-completa">
-                  <table class="tabla-calificaciones">
-                    <thead>
-                      <tr>
-                        <th class="tabla-header col-grupo col-sticky">Grupo</th>
-                        <th class="tabla-header col-estudiante">Estudiante</th>
-                        <th class="tabla-header col-id">ID</th>
-                        <th class="tabla-header col-numeric">E1</th>
-                        <th class="tabla-header col-numeric">E2</th>
-                        <th class="tabla-header col-numeric">EF</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (estudiante of integrantesGrupo(); track estudiante.correo; let isOdd = $odd) {
-                      <tr [class.fila-par]="!isOdd" [class.fila-impar]="isOdd">
-                        <td class="tabla-cell col-grupo col-sticky">
-                          <ion-badge color="light" class="grupo-badge">{{ estudiante.grupo }}</ion-badge>
-                        </td>
-                        <td class="tabla-cell col-estudiante">
-                          <div class="integrante-info-table">
-                            <span class="nombre">{{ estudiante.nombres }} {{ estudiante.apellidos }}</span>
-                            <span class="correo">{{ estudiante.correo }}</span>
-                          </div>
-                        </td>
-                        <td class="tabla-cell col-id">{{ estudiante.canvasUserId || '-' }}</td>
-                        <td class="tabla-cell col-numeric" [class.low]="estudiante.notas?.e1 < 3"
-                          [class.empty]="!estudiante.notas?.e1">
-                          {{ estudiante.notas?.e1 || '-' }}
-                        </td>
-                        <td class="tabla-cell col-numeric" [class.low]="estudiante.notas?.e2 < 3"
-                          [class.empty]="!estudiante.notas?.e2">
-                          {{ estudiante.notas?.e2 || '-' }}
-                        </td>
-                        <td class="tabla-cell col-numeric" [class.low]="estudiante.notas?.ef < 3"
-                          [class.empty]="!estudiante.notas?.ef">
-                          {{ estudiante.notas?.ef || '-' }}
-                        </td>
-                      </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-                } @else {
-                <div class="empty-tab-content">
-                  <ion-icon name="people-outline"></ion-icon>
-                  <p>No hay estudiantes en este grupo</p>
-                </div>
-                }
-              </div>
-              } @else {
-              <div class="empty-tab-content">
-                <ion-icon name="cloud-upload-outline"></ion-icon>
-                <p>Este curso no tiene estudiantes cargados</p>
-                <p class="hint">Cargue un archivo de calificaciones para ver los integrantes</p>
-              </div>
+            <!-- Rúbricas asociadas -->
+            <h4>Rúbricas asociadas</h4>
+            @if (rubricasAsociadas.length > 0) {
+            <div class="rubricas-list">
+              @for (rubrica of rubricasAsociadas; track rubrica.id) {
+              <ion-chip>
+                <ion-icon name="document-text-outline"></ion-icon>
+                <ion-label>{{ rubrica.nombre }}</ion-label>
+              </ion-chip>
               }
             </div>
+            } @else {
+            <p>No hay rúbricas asociadas</p>
+            }
+          </div>
+          }
 
-            <div class="detalle-rubricas">
-              <div class="detalle-section-header">
-                <h4>Rúbricas asociadas</h4>
-                <ion-button fill="clear" size="small" color="medium" (click)="deseleccionarCurso()">
-                  <ion-icon slot="start" name="close-outline"></ion-icon>
-                  Cerrar detalle
-                </ion-button>
-              </div>
-              @if (rubricasAsociadas.length > 0) {
-              <div class="rubricas-chip-list">
-                @for (rubrica of rubricasAsociadas; track rubrica.id) {
-                <ion-chip>
-                  <ion-icon name="document-text-outline"></ion-icon>
-                  <ion-label>{{ rubrica.nombre }}</ion-label>
-                </ion-chip>
-                }
-              </div>
-              } @else {
-              <p class="detalle-empty">No hay rúbricas asociadas a este curso.</p>
+          <!-- SUBTAB: Integrantes -->
+          @if (subtabActivo() === 'integrantes') {
+          <div class="subtab-content">
+            <!-- Tabs de grupos -->
+            <ion-segment [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)" scrollable>
+              <ion-segment-button value="todos">
+                Todos ({{ estudiantesCurso().length }})
+              </ion-segment-button>
+              @for (grupo of gruposCurso(); track grupo) {
+              <ion-segment-button [value]="grupo">
+                Grupo {{ grupo }} ({{ contarIntegrantes(grupo) }})
+              </ion-segment-button>
               }
-            </div>
-          </ion-card-content>
-        </ion-card>
-        }
+            </ion-segment>
 
-        } @else {
-        <!-- Empty state -->
-        <div class="empty-state">
-          <h3>No hay Cursos Registrados</h3>
-          <p>Seleccione "Crear" para agregar un nuevo curso</p>
-        </div>
-        }
-      </div>
+            <!-- Lista de estudiantes -->
+            @if (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {
+            <ion-list>
+              @for (est of estudiantesFiltrados(); track est.correo) {
+              <ion-item>
+                <ion-badge slot="start" color="light">{{ est?.grupo || '-' }}</ion-badge>
+                <ion-label>
+                  <h3>{{ est?.nombres }} {{ est?.apellidos }}</h3>
+                  <p>{{ est?.correo }}</p>
+                </ion-label>
+                <ion-note slot="end">
+                  E1: {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}
+                </ion-note>
+              </ion-item>
+              }
+            </ion-list>
+            } @else {
+            <p>No hay estudiantes en este grupo</p>
+            }
+          </div>
+          }
 
+          <!-- SUBTAB: Importar -->
+          @if (subtabActivo() === 'importar') {
+          <div class="subtab-content">
+            <input type="file" #importEstudiantesInput accept=".csv" (change)="onEstudiantesFileSelected($event)"
+              hidden />
+            <input type="file" #importCalificacionesInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
+              hidden />
+
+            <ion-button expand="block" fill="outline" (click)="importEstudiantesInput.click()">
+              <ion-icon name="people-outline" slot="start"></ion-icon>
+              Importar Estudiantes (CSV)
+            </ion-button>
+
+            <ion-button expand="block" fill="outline" (click)="importCalificacionesInput.click()">
+              <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+              Importar Calificaciones (CSV)
+            </ion-button>
+          </div>
+          }
+        </ion-card-content>
+      </ion-card>
+      }
     </div>
+    } @else {
+    <!-- Empty state -->
+    <div class="empty-state">
+      <ion-icon name="folder-open-outline"></ion-icon>
+      <h3>No hay cursos registrados</h3>
+      <p>Presione "Crear" para agregar un nuevo curso</p>
+    </div>
+    }
   </div>
 </ion-content>

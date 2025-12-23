@@ -1,0 +1,332 @@
+/**
+ * Estilos de Accesibilidad - WCAG 2.1 Level AA/AAA
+ * Garantiza touch targets mínimos y mejoras de usabilidad
+ */
+
+@use 'sass:color';
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+// ============================================
+// TOUCH TARGETS MÍNIMOS
+// ============================================
+
+/**
+ * WCAG 2.1 Level AAA: 44x44px para móvil
+ * Permite targets más pequeños en desktop
+ */
+ion-button,
+ion-fab-button,
+ion-chip,
+ion-item {
+    min-width: $touch-target-min;
+    min-height: $touch-target-min;
+}
+
+// Desktop puede ser más compacto
+@include respond-to('md') {
+    ion-button {
+        min-width: $touch-target-desktop;
+        min-height: $touch-target-desktop;
+    }
+}
+
+/**
+ * Área de toque extendida en móvil
+ * Aumenta el área clickeable sin cambiar el visual
+ */
+@include respond-to-max('md') {
+
+    ion-button,
+    ion-chip {
+        @include extended-touch-area(8px);
+    }
+}
+
+// ============================================
+// TIPOGRAFÍA ACCESIBLE
+// ============================================
+
+/**
+ * Garantiza legibilidad mínima en dispositivos móviles
+ * Mínimo 16px para texto principal, 14px para secundario
+ */
+@include respond-to-max('md') {
+
+    // Texto principal mínimo 16px
+    .curso-nombre,
+    ion-card-title,
+    h1,
+    h2,
+    h3 {
+        font-size: font-size('base') !important;
+        line-height: map-get($line-heights, 'normal');
+    }
+
+    // Texto secundario mínimo 14px
+    .curso-codigo-label,
+    ion-card-subtitle,
+    ion-note {
+        font-size: font-size('sm') !important;
+        line-height: map-get($line-heights, 'normal');
+    }
+
+    // Headers
+    .page-header h2 {
+        font-size: font-size('lg');
+        line-height: map-get($line-heights, 'tight');
+    }
+}
+
+// ============================================
+// NAVEGACIÓN POR TECLADO
+// ============================================
+
+/**
+ * Focus Visible mejorado
+ * Indicador claro para navegación por teclado
+ */
+ion-button,
+ion-fab-button,
+ion-segment-button,
+ion-chip,
+ion-item,
+ion-card {
+    @include focus-visible($azul-claro, 2px);
+}
+
+// Focus para elementos interactivos
+a,
+button,
+[tabindex]:not([tabindex="-1"]) {
+    @include focus-visible($azul-claro, 2px);
+
+    &:focus {
+        outline-offset: 2px;
+    }
+}
+
+// Remover outline en click (solo mantener en keyboard focus)
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+// ============================================
+// CONTRASTE DE COLORES
+// ============================================
+
+/**
+ * Asegura ratios WCAG AA (4.5:1 para texto normal, 3:1 para texto grande)
+ */
+
+// Texto principal
+.curso-nombre,
+ion-card-title {
+    color: $azul-oscuro;
+    font-weight: map-get($font-weights, 'semibold');
+}
+
+// Texto secundario con contraste mínimo 4.5:1
+.curso-codigo-label,
+ion-card-subtitle {
+    color: rgba($azul-oscuro, 0.7);
+}
+
+// Asegurar contraste en estados
+ion-chip {
+    &[color="warning"] {
+        --color: #000; // Mejor contraste que blanco sobre amarillo
+    }
+}
+
+// ============================================
+// SKIP LINKS
+// ============================================
+
+/**
+ * Permite saltar al contenido principal
+ * Útil para usuarios de screen readers
+ */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: $azul-oscuro;
+    color: white;
+    padding: spacing('sm') spacing('md');
+    text-decoration: none;
+    z-index: z('tooltip');
+    border-radius: 0 0 $radius-sm 0;
+    @include transition(top, $transition-fast);
+
+    &:focus {
+        top: 0;
+    }
+}
+
+// ============================================
+// SCREEN READER ONLY
+// ============================================
+
+/**
+ * Oculta visualmente pero mantiene accesible para screen readers
+ */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+// Variante que se muestra en focus
+.sr-only-focusable {
+    @extend .sr-only;
+
+    &:active,
+    &:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+    }
+}
+
+// ============================================
+// ESTADOS DE CARGA
+// ============================================
+
+/**
+ * Indicadores accesibles de carga
+ */
+[aria-busy="true"] {
+    cursor: wait;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+// ============================================
+// REDUCCIÓN DE MOVIMIENTO
+// ============================================
+
+/**
+ * Respeta preferencias de reducción de movimiento
+ * WCAG 2.1 Success Criterion 2.3.3
+ */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+// ============================================
+// ALTO CONTRASTE
+// ============================================
+
+/**
+ * Mejoras para modo de alto contraste
+ */
+@media (prefers-contrast: high) {
+
+    ion-button,
+    ion-chip,
+    ion-card {
+        border: 2px solid currentColor;
+    }
+
+    ion-segment-button {
+        --border-width: 2px;
+    }
+}
+
+// ============================================
+// MODO OSCURO ACCESIBLE
+// ============================================
+
+/**
+ * Ajustes de contraste para modo oscuro
+ */
+@media (prefers-color-scheme: dark) {
+
+    .curso-nombre,
+    ion-card-title {
+        color: color.adjust($azul-claro, $lightness: 20%);
+    }
+
+    .curso-codigo-label,
+    ion-card-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+// ============================================
+// MENSAJES DE ERROR ACCESIBLES
+// ============================================
+
+/**
+ * Estilos para mensajes de error y validación
+ */
+[aria-invalid="true"] {
+    border-color: $color-danger !important;
+
+    &:focus {
+        outline-color: $color-danger;
+    }
+}
+
+.error-message {
+    color: $color-danger;
+    font-size: font-size('sm');
+    margin-top: spacing('xs');
+
+    &::before {
+        content: '⚠ ';
+        font-weight: map-get($font-weights, 'bold');
+    }
+}
+
+// ============================================
+// TOOLTIPS ACCESIBLES
+// ============================================
+
+/**
+ * Tooltips que funcionan con teclado
+ */
+[data-tooltip] {
+    position: relative;
+
+    &::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: $gris-oscuro;
+        color: white;
+        padding: spacing('xs') spacing('sm');
+        border-radius: $radius-sm;
+        font-size: font-size('xs');
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        @include transition(opacity, $transition-fast);
+        z-index: z('tooltip');
+    }
+
+    &:hover::after,
+    &:focus::after {
+        opacity: 1;
+    }
+}

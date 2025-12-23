@@ -1,0 +1,289 @@
+// ============================================
+// TABS DE CURSOS - Usando Ion-Segment
+// ============================================
+
+// Contenedor del segment principal (cursos)
+.cursos-segment-container {
+    margin: 12px 0;
+    padding: 0 8px;
+
+    ion-segment {
+        --background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+        border-radius: 8px;
+        padding: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        min-height: 48px;
+
+        ion-segment-button {
+            --background: transparent;
+            --background-checked: rgba(255, 255, 255, 0.2);
+            --background-hover: rgba(255, 255, 255, 0.1);
+            --color: rgba(255, 255, 255, 0.8);
+            --color-checked: #ffffff;
+            --indicator-color: var(--azul-claro, #1fb2de);
+            --indicator-height: 3px;
+            --border-radius: 6px;
+
+            min-width: 120px;
+            font-weight: 500;
+            font-size: 0.85rem;
+
+            ion-label {
+                text-transform: none;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+// ============================================
+// CONTENIDO DEL TAB DE CURSO
+// ============================================
+
+.curso-tab-content {
+    background: #ffffff;
+    margin: 12px 0;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+// Header con acciones en esquina
+.curso-header-with-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+
+    .curso-header-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .curso-actions-corner {
+        display: flex;
+        gap: 4px;
+
+        ion-button {
+            --padding-start: 8px;
+            --padding-end: 8px;
+        }
+    }
+}
+
+// ============================================
+// SUBTABS DEL CURSO
+// ============================================
+
+.curso-subtabs-container {
+    padding: 8px 12px;
+    background: #f0f4f8;
+
+    ion-segment {
+        --background: transparent;
+
+        ion-segment-button {
+            --color: var(--azul-oscuro, #0f385a);
+            --color-checked: var(--azul-claro, #1fb2de);
+            --indicator-color: var(--azul-claro, #1fb2de);
+            --background-checked: rgba(31, 178, 222, 0.1);
+            font-size: 0.85rem;
+
+            ion-icon {
+                font-size: 1.1rem;
+                margin-right: 4px;
+            }
+
+            ion-label {
+                text-transform: none;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+.subtab-content {
+    padding: 16px;
+}
+
+// ============================================
+// SUBTAB: DETALLE
+// ============================================
+
+.detalle-subtab {
+    .detalle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .detalle-item {
+        display: flex;
+        flex-direction: column;
+
+        .detalle-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .detalle-value {
+            font-size: 0.95rem;
+            color: var(--azul-oscuro, #0f385a);
+            font-weight: 500;
+
+            &.color-dot {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    .detalle-rubricas-section {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+        h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--azul-oscuro, #0f385a);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+
+            ion-icon {
+                font-size: 1.1rem;
+            }
+        }
+
+        .rubricas-chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .detalle-empty {
+            color: #888;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+    }
+}
+
+// ============================================
+// SUBTAB: INTEGRANTES
+// ============================================
+
+.integrantes-subtab {
+    .grupos-tabs-section {
+        // Estilos ya definidos  
+    }
+}
+
+// ============================================
+// SUBTAB: IMPORTAR
+// ============================================
+
+.importar-subtab {
+    .importar-section {
+        text-align: center;
+        padding: 24px;
+
+        h4 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--azul-oscuro, #0f385a);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+
+            ion-icon {
+                font-size: 1.3rem;
+            }
+        }
+
+        .importar-hint {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .importar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+
+            ion-button {
+                --border-radius: 8px;
+            }
+        }
+
+        .file-loaded {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--ion-color-success);
+            font-size: 0.85rem;
+
+            ion-icon {
+                font-size: 1.1rem;
+            }
+        }
+    }
+}
+
+// ============================================
+// EMPTY STATES
+// ============================================
+
+.curso-content-wrapper.empty-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+
+    ion-icon {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 16px;
+    }
+
+    p {
+        color: #888;
+        font-size: 1rem;
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .curso-header-with-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .curso-subtabs-container ion-segment ion-segment-button {
+        font-size: 0.75rem;
+
+        ion-label {
+            font-size: 0.75rem;
+        }
+    }
+
+    .detalle-subtab .detalle-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

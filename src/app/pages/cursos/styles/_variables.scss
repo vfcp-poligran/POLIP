@@ -1,0 +1,177 @@
+/**
+ * Variables de Diseño - Sistema de Tokens
+ * Define todos los valores reutilizables del diseño
+ */
+
+// ============================================
+// COLORES
+// ============================================
+
+// Colores principales del tema
+$azul-oscuro: #0f385a;
+$azul-claro: #1fb2de;
+$cyan: #15bece;
+$verde: #c8e165;
+
+// Colores de estado
+$color-success: #2dd36f;
+$color-warning: #ffc409;
+$color-danger: #eb445a;
+$color-info: #3880ff;
+
+// Grises
+$gris-claro: #f8f9fa;
+$gris-medio: #6c757d;
+$gris-oscuro: #343a40;
+
+// ============================================
+// BREAKPOINTS (Ionic Standard)
+// ============================================
+
+$breakpoints: (
+    'xs': 0,
+    'sm': 576px,
+    'md': 768px,
+    'lg': 992px,
+    'xl': 1200px
+);
+
+// ============================================
+// SPACING (8dp Grid System)
+// ============================================
+
+$spacing: (
+    'xs': 4px,
+    'sm': 8px,
+    'md': 16px,
+    'lg': 24px,
+    'xl': 32px,
+    '2xl': 48px,
+    '3xl': 64px
+);
+
+// ============================================
+// TYPOGRAPHY
+// ============================================
+
+// Escala tipográfica modular (1.125 - Major Second)
+$font-sizes: (
+    'xs': 0.75rem,
+    // 12px
+    'sm': 0.875rem,
+    // 14px
+    'base': 1rem,
+    // 16px
+    'lg': 1.125rem,
+    // 18px
+    'xl': 1.25rem,
+    // 20px
+    '2xl': 1.5rem,
+    // 24px
+    '3xl': 1.875rem,
+    // 30px
+    '4xl': 2.25rem // 36px
+);
+
+// Line heights
+$line-heights: (
+    'tight': 1.2,
+    'normal': 1.5,
+    'relaxed': 1.75
+);
+
+// Font weights
+$font-weights: (
+    'light': 300,
+    'normal': 400,
+    'medium': 500,
+    'semibold': 600,
+    'bold': 700
+);
+
+// ============================================
+// SHADOWS
+// ============================================
+
+$shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.18);
+
+// ============================================
+// BORDER RADIUS
+// ============================================
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 9999px;
+
+// ============================================
+// TRANSITIONS
+// ============================================
+
+$transition-fast: 0.15s ease;
+$transition-base: 0.2s ease;
+$transition-slow: 0.3s ease;
+
+// Easing functions
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0.0, 0, 0.2, 1);
+$ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+// ============================================
+// ACCESIBILIDAD
+// ============================================
+
+$touch-target-min: 44px;
+$touch-target-desktop: 36px;
+
+// ============================================
+// Z-INDEX SCALE
+// ============================================
+
+$z-index: (
+    'dropdown': 1000,
+    'sticky': 1020,
+    'fixed': 1030,
+    'modal-backdrop': 1040,
+    'modal': 1050,
+    'popover': 1060,
+    'tooltip': 1070
+);
+
+// ============================================
+// LAYOUT
+// ============================================
+
+$max-width-container: 1200px;
+$header-height: 56px;
+$footer-height: 56px;
+
+// ============================================
+// FUNCIONES HELPER
+// ============================================
+
+@use 'sass:map';
+
+// Obtener valor de spacing
+@function spacing($key) {
+    @return map.get($spacing, $key);
+}
+
+// Obtener valor de font-size
+@function font-size($key) {
+    @return map.get($font-sizes, $key);
+}
+
+// Obtener valor de breakpoint
+@function breakpoint($key) {
+    @return map.get($breakpoints, $key);
+}
+
+// Obtener valor de z-index
+@function z($key) {
+    @return map.get($z-index, $key);
+}
