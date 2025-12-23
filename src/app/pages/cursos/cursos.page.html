@@ -1,59 +1,57 @@
 <ion-content [fullscreen]="true">
-  <!-- Skip link para accesibilidad -->
-  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
-
   <!-- ======================================== -->
-  <!-- 1. FABs FLOTANTES -->
+  <!-- 1. FABs FLOTANTES (Mobile/Tablet) -->
   <!-- ======================================== -->
 
-  <!-- FAB Crear Curso -->
-  @if (!modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
-      [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
-      <ion-icon [name]="BUTTON_CONFIG.CREAR.icon"></ion-icon>
+  <!-- FAB Crear Curso (cuando no está editando) -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-curso ion-hide-lg-up">
+    @if (!modoEdicion()) {
+    <ion-fab-button color="success" (click)="iniciarCreacionCurso()" aria-label="Crear nuevo curso">
+      <ion-icon name="add"></ion-icon>
     </ion-fab-button>
+    }
   </ion-fab>
-  }
 
-  <!-- FABs de edición -->
-  @if (modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 16px">
-    <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
-      [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
-      <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
+  <!-- FAB con lista de acciones (cuando está editando) -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-curso ion-hide-lg-up">
+    @if (modoEdicion()) {
+    <ion-fab-button color="primary" aria-label="Acciones de curso">
+      <ion-icon name="ellipsis-vertical"></ion-icon>
     </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button color="success" (click)="guardarCurso()" aria-label="Guardar curso">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
+        <ion-icon name="close"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+    }
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 80px">
-    <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
-      [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
-      <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  }
 
-  <div class="page-container" id="main-content" role="main">
+  <div class="page-container" role="main">
     <!-- ======================================== -->
     <!-- 2. HEADER DE PÁGINA -->
     <!-- ======================================== -->
-    <div class="page-header">
-      <h2>Cursos</h2>
+    <div class="page-title-header">
+      <div class="title-wrapper">
+        <h2>Cursos</h2>
+      </div>
       <div class="header-actions ion-hide-md-down">
         @if (!modoEdicion()) {
         <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()"
-          [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
+          aria-label="Crear nuevo curso" class="btn-add-curso">
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
           Crear
         </ion-button>
         } @else {
-        <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()"
-          [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
-          <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon" slot="start"></ion-icon>
-          {{ BUTTON_CONFIG.GUARDAR.label }}
+        <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()" aria-label="Guardar curso">
+          <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+          Guardar
         </ion-button>
-        <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()"
-          [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
-          {{ BUTTON_CONFIG.CANCELAR.label }}
+        <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()" aria-label="Cancelar">
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Cancelar
         </ion-button>
         }
       </div>
@@ -73,31 +71,35 @@
         <input type="file" #calificacionesFileInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
           hidden />
 
-        <!-- Botones de importación -->
+        <!-- Botones de importación - Patrón Rúbricas -->
         <div class="import-buttons">
-          <ion-button fill="outline" (click)="estudiantesFileInput.click()">
-            <ion-icon name="people-outline" slot="start"></ion-icon>
-            Importar Estudiantes
-          </ion-button>
-          @if (estudiantesFileName) {
-          <ion-chip color="success">
-            <ion-icon name="checkmark-circle"></ion-icon>
-            <ion-label>{{ estudiantesFileName }}</ion-label>
-            <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
-          </ion-chip>
-          }
+          <!-- Importar Estudiantes -->
+          <div class="import-btn-container" [class.file-loaded]="estudiantesFileName"
+            (click)="estudiantesFileInput.click()" role="button" tabindex="0"
+            [attr.aria-label]="estudiantesFileName ? 'Archivo cargado: ' + estudiantesFileName : 'Importar estudiantes CSV'">
+            <ion-icon [name]="estudiantesFileName ? 'checkmark-circle' : 'cloud-upload'"></ion-icon>
+            <span class="btn-label">Estudiantes</span>
+            @if (estudiantesFileName) {
+            <div class="file-chip">
+              <span>{{ estudiantesFileName }}</span>
+              <ion-icon name="close-circle" (click)="limpiarEstudiantes(); $event.stopPropagation()"></ion-icon>
+            </div>
+            }
+          </div>
 
-          <ion-button fill="outline" (click)="calificacionesFileInput.click()">
-            <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-            Importar Calificaciones
-          </ion-button>
-          @if (calificacionesFileName) {
-          <ion-chip color="success">
-            <ion-icon name="checkmark-circle"></ion-icon>
-            <ion-label>{{ calificacionesFileName }}</ion-label>
-            <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
-          </ion-chip>
-          }
+          <!-- Importar Calificaciones -->
+          <div class="import-btn-container" [class.file-loaded]="calificacionesFileName"
+            (click)="calificacionesFileInput.click()" role="button" tabindex="0"
+            [attr.aria-label]="calificacionesFileName ? 'Archivo cargado: ' + calificacionesFileName : 'Importar calificaciones CSV'">
+            <ion-icon [name]="calificacionesFileName ? 'checkmark-circle' : 'cloud-upload'"></ion-icon>
+            <span class="btn-label">Calificaciones</span>
+            @if (calificacionesFileName) {
+            <div class="file-chip">
+              <span>{{ calificacionesFileName }}</span>
+              <ion-icon name="close-circle" (click)="limpiarCalificaciones(); $event.stopPropagation()"></ion-icon>
+            </div>
+            }
+          </div>
         </div>
 
         <!-- ======================================== -->

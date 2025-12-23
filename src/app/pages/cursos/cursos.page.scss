@@ -14,20 +14,316 @@
 @use '../../shared/styles/empty-state'; // Estados vacíos
 @use '../../shared/styles/card-system'; // Sistema de tarjetas
 
-
-/* Contenedor principal de la página */
-.page-container {
-  padding: spacing('md');
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
+// ============================================
+// CONTENEDOR PRINCIPAL - Estandarizado con Rúbricas
+// ============================================
+ion-content {
+  --background: #f8f9fa;
 }
 
-/* Botones de importación */
+/* Contenedor principal de la página - Estandarizado con Rúbricas */
+.page-container {
+  padding: 0.5rem; // 8px - igual que Rúbricas
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+
+  // Mobile (< 768px) - igual que Rúbricas
+  @media (max-width: 768px) {
+    padding: 0.25rem; // 4px
+    height: auto;
+    min-height: 100%;
+  }
+
+  // Landscape móvil - muy compacto
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 0.125rem; // 2px
+  }
+}
+
+/* Header de página - NORMALIZADO con Rúbricas (rem) */
+.page-title-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.25rem;
+  min-height: 2.75rem; // ~44px - altura consistente Desktop
+  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 5;
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-left: auto;
+  }
+
+  ion-icon {
+    font-size: 1.1rem;
+    color: #ffffff;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.02rem;
+  }
+
+  ion-button {
+    --padding-start: 0.75rem;
+    --padding-end: 0.75rem;
+    font-size: 0.75rem;
+    height: 1.75rem;
+  }
+
+  // Tablet (768px - 1024px)
+  @media (max-width: 1024px) and (min-width: 769px) {
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.3125rem;
+
+    h2 {
+      font-size: 0.8rem;
+    }
+
+    ion-icon {
+      font-size: 1rem;
+    }
+
+    ion-button {
+      --padding-start: 0.375rem;
+      --padding-end: 0.375rem;
+      font-size: 0.68rem;
+      height: 1.625rem;
+    }
+  }
+
+  // Mobile (< 768px)
+  @media (max-width: 768px) {
+    padding: 0.3125rem 0.5rem;
+    margin-bottom: 0.125rem;
+    border-radius: 0.25rem;
+
+    .title-wrapper {
+      gap: 0.25rem;
+    }
+
+    .header-actions {
+      gap: 0.1875rem;
+    }
+
+    h2 {
+      font-size: 0.72rem;
+    }
+
+    ion-icon {
+      font-size: 0.9rem;
+    }
+
+    ion-button {
+      --padding-start: 0.3125rem;
+      --padding-end: 0.3125rem;
+      font-size: 0.62rem;
+      height: 1.5rem;
+    }
+  }
+
+  // Landscape móvil
+  @media (max-height: 500px) and (orientation: landscape) {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.0625rem;
+
+    h2 {
+      font-size: 0.68rem;
+    }
+
+    ion-icon {
+      font-size: 0.85rem;
+    }
+
+    ion-button {
+      --padding-start: 0.25rem;
+      --padding-end: 0.25rem;
+      font-size: 0.56rem;
+      height: 1.375rem;
+    }
+  }
+}
+
+/* FABs - estilos base siguiendo sistema compartido */
+.fab-crear-curso,
+.fab-actions-curso {
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  // CRÍTICO: Margen aumentado para evitar solapamiento con tab bar
+  margin-bottom: calc(4rem + var(--ion-safe-area-bottom)); // 64px - espacio para tab bar
+  margin-right: 1rem; // 16px
+  z-index: 1000;
+
+  ion-fab-button {
+    --background: var(--ion-color-success); // Verde para Crear
+    --background-hover: var(--ion-color-success-shade);
+    --box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: var(--azul-oscuro, #0F385A); // Azul oscuro para el icono "+"
+    }
+  }
+
+  ion-fab-list ion-fab-button {
+    --box-shadow: var(--ion-box-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+
+  // Mobile: margen grande para evitar solapamiento con tab bar
+  @media (max-width: 768px) {
+    margin-bottom: calc(5rem + var(--ion-safe-area-bottom)); // 80px - clears tab bar (~56px)
+  }
+
+  // Landscape móvil: margen moderado
+  @media (max-height: 500px) and (orientation: landscape) {
+    margin-bottom: calc(4rem + var(--ion-safe-area-bottom)); // 64px
+
+    ion-fab-button {
+      --size: 48px;
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
+
+/* Contenedor de botones de importación - Patrón Rúbricas */
 .import-buttons {
-  @include flex-gap(spacing('sm'));
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: spacing('lg');
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+/* Botón de importación individual - Patrón vertical icon/label */
+.import-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 0.125rem solid var(--magenta, #EC0677); // Magenta SRS por defecto
+  border-radius: 0.5rem;
+  cursor: pointer;
+  min-height: 3.75rem;
+  min-width: 5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+    transform: translateY(-0.125rem);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // Estado: archivo cargado
+  &.file-loaded {
+    border-color: var(--ion-color-success);
+    background: rgba(var(--ion-color-success-rgb), 0.08);
+  }
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--magenta, #EC0677); // Magenta SRS por defecto
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+  }
+
+  &.file-loaded ion-icon {
+    color: var(--ion-color-success);
+  }
+
+  .btn-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    white-space: nowrap;
+    text-align: center;
+    max-width: 6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Chip de archivo cargado
+  .file-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.625rem;
+    color: var(--ion-color-success);
+    max-width: 100%;
+    overflow: hidden;
+
+    ion-icon {
+      font-size: 0.75rem;
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  // Responsive - Tablet
+  @media (max-width: 1024px) and (min-width: 769px) {
+    padding: 0.375rem 0.75rem;
+    min-height: 3.25rem;
+    min-width: 4.5rem;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+
+    .btn-label {
+      font-size: 0.6875rem;
+    }
+  }
+
+  // Responsive - Mobile
+  @media (max-width: 768px) {
+    padding: 0.25rem 0.5rem;
+    min-height: 2.75rem;
+    min-width: 4rem;
+
+    ion-icon {
+      font-size: 1.125rem;
+    }
+
+    .btn-label {
+      font-size: 0.625rem;
+    }
+  }
 }
 
 /* Configuración de cohorte */
@@ -43,6 +339,7 @@
     color: $azul-oscuro;
   }
 }
+
 
 .config-row {
   @include flex-gap(spacing('md'));
@@ -118,35 +415,36 @@
 
 /* Contenido de subtab */
 .subtab-content {
-  padding-top: spacing('md');
+  padding-top: 1rem;
 }
 
 /* Rubricas list */
 .rubricas-list {
-  @include bp.flex-gap(spacing('sm'));
+  display: flex;
+  gap: 0.5rem;
   flex-wrap: wrap;
-  margin-top: spacing('sm');
+  margin-top: 0.5rem;
 }
 
 /* Empty state - usando estilos compartidos de _empty-state.scss */
 // Los estilos de .empty-state están definidos en src/app/shared/styles/_empty-state.scss
 
 // ============================================
-// RESPONSIVE - usando sistema de breakpoints
+// RESPONSIVE - Normalizado (rem)
 // ============================================
 
-@include bp.mobile-only {
+@media (max-width: 768px) {
   .page-container {
-    padding: spacing('sm');
+    padding: 0.5rem;
   }
 
   .page-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: spacing('sm');
+    gap: 0.5rem;
 
     h2 {
-      font-size: font-size('lg');
+      font-size: 0.875rem;
     }
 
     .header-actions {
@@ -158,6 +456,6 @@
   .config-row {
     flex-direction: column;
     align-items: stretch;
-    gap: spacing('sm');
+    gap: 0.5rem;
   }
 }

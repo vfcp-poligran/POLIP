@@ -1,4 +1,9 @@
 // ============================================
+// IMPORTS - Estilos compartidos
+// ============================================
+@use '../../shared/styles/empty-state'; // Estados vacíos compartidos
+
+// ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
 ion-content {
@@ -806,8 +811,13 @@ ion-content {
       padding: 6px 6px;
       font-size: 0.7rem;
 
-      &.col-id { font-size: 0.65rem; }
-      &.col-grupo ion-badge.grupo-badge { font-size: 0.7rem; }
+      &.col-id {
+        font-size: 0.65rem;
+      }
+
+      &.col-grupo ion-badge.grupo-badge {
+        font-size: 0.7rem;
+      }
     }
 
     // Responsive mobile
@@ -815,7 +825,10 @@ ion-content {
       padding: 5px 5px;
       font-size: 0.65rem;
 
-      &.col-id { font-size: 0.6rem; }
+      &.col-id {
+        font-size: 0.6rem;
+      }
+
       &.col-grupo {
         padding: 5px 3px;
 
@@ -823,6 +836,7 @@ ion-content {
           font-size: 0.65rem;
         }
       }
+
       &.col-estudiante {
         font-size: 0.62rem;
         max-width: 140px;
@@ -838,6 +852,7 @@ ion-content {
         font-size: 0.55rem;
         min-width: 50px;
       }
+
       &.col-grupo {
         padding: 4px 2px;
         min-width: 35px;
@@ -848,6 +863,7 @@ ion-content {
           --padding-end: 4px;
         }
       }
+
       &.col-estudiante {
         font-size: 0.58rem;
         max-width: 120px;
@@ -935,6 +951,7 @@ ion-content {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -953,61 +970,10 @@ ion-content {
 }
 
 // ============================================
-// EMPTY STATE
+// EMPTY STATE - Usando estilos globales
 // ============================================
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 300px;
-  color: #6c757d;
-  text-align: center;
-  padding: 40px 20px;
+// Los estilos de .empty-state están definidos en src/shared/styles/_empty-state.scss
 
-  @media (max-width: 768px) {
-    min-height: 200px;
-    padding: 30px 16px;
-  }
-
-  @media (max-height: 500px) and (orientation: landscape) {
-    min-height: 150px;
-    padding: 20px 12px;
-  }
-
-  ion-icon {
-    font-size: 4rem;
-    opacity: 0.3;
-    margin-bottom: 16px;
-
-    @media (max-width: 768px) {
-      font-size: 3rem;
-      margin-bottom: 12px;
-    }
-
-    @media (max-height: 500px) and (orientation: landscape) {
-      font-size: 2.5rem;
-      margin-bottom: 8px;
-    }
-  }
-
-  p {
-    font-size: 1rem;
-    margin: 0;
-    max-width: 300px;
-
-    @media (max-width: 768px) {
-      font-size: 0.88rem;
-      max-width: 250px;
-    }
-
-    @media (max-height: 500px) and (orientation: landscape) {
-      font-size: 0.78rem;
-      max-width: 200px;
-    }
-  }
-}
 
 // ============================================
 // RESPONSIVE - Ionic Breakpoints
@@ -1225,6 +1191,7 @@ ion-content {
 // PRINT STYLES
 // ============================================
 @media print {
+
   .header-selector-cursos,
   .cursos-botones-bar,
   .tabla-info-bar {
