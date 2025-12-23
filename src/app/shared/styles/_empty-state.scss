@@ -1,0 +1,167 @@
+// ============================================
+// EMPTY STATE COMPONENT
+// ============================================
+// https://ionicframework.com/docs/layout/structure
+
+/**
+ * Componente reutilizable para estados vacíos
+ * Usado cuando no hay datos para mostrar
+ * Responsive: Desktop, Tablet, Mobile
+ */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--ion-padding-lg, 60px) var(--ion-padding, 16px);
+    color: var(--ion-color-medium);
+    min-height: 300px;
+
+    // Icono
+    ion-icon {
+        font-size: 64px;
+        margin-bottom: var(--ion-margin, 16px);
+        opacity: 0.5;
+        color: var(--ion-color-medium-shade);
+    }
+
+    // Título
+    h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 var(--ion-margin-sm, 8px) 0;
+        color: var(--ion-color-medium-shade);
+    }
+
+    // Descripción
+    p {
+        font-size: 0.875rem;
+        opacity: 0.7;
+        max-width: 400px;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    // Botón de acción opcional
+    ion-button {
+        margin-top: var(--ion-margin, 16px);
+    }
+
+    // ============================================
+    // VARIANTES
+    // ============================================
+
+    // Variante fullscreen (ocupa toda la pantalla)
+    &.empty-state-fullscreen {
+        min-height: calc(100vh - 200px);
+        padding: var(--ion-padding-lg, 60px) var(--ion-padding, 16px);
+    }
+
+    // Variante compacta
+    &.empty-state-compact {
+        min-height: 200px;
+        padding: var(--ion-padding, 32px) var(--ion-padding-sm, 12px);
+
+        ion-icon {
+            font-size: 48px;
+        }
+
+        h3 {
+            font-size: 1.125rem;
+        }
+
+        p {
+            font-size: 0.8125rem;
+        }
+    }
+
+    // ============================================
+    // RESPONSIVE
+    // ============================================
+
+    // Tablet (768px - 991px)
+    @media (min-width: 768px) and (max-width: 991px) {
+        padding: calc(var(--ion-padding-lg, 60px) * 0.8) var(--ion-padding, 16px);
+        min-height: 280px;
+
+        ion-icon {
+            font-size: 56px;
+        }
+
+        h3 {
+            font-size: 1.1875rem;
+        }
+
+        p {
+            font-size: 0.8438rem;
+        }
+    }
+
+    // Mobile (< 768px)
+    @media (max-width: 767px) {
+        padding: var(--ion-padding, 40px) var(--ion-padding-sm, 12px);
+        min-height: 200px;
+
+        ion-icon {
+            font-size: 48px;
+            margin-bottom: var(--ion-margin-sm, 12px);
+        }
+
+        h3 {
+            font-size: 1.125rem;
+        }
+
+        p {
+            font-size: 0.8125rem;
+            max-width: 300px;
+        }
+    }
+
+    // Landscape móvil - muy compacto
+    @media (max-height: 500px) and (orientation: landscape) {
+        padding: var(--ion-padding-sm, 24px) var(--ion-padding-sm, 12px);
+        min-height: 150px;
+        flex-direction: row;
+        text-align: left;
+
+        ion-icon {
+            font-size: 40px;
+            margin-bottom: 0;
+            margin-right: var(--ion-margin, 16px);
+        }
+
+        h3 {
+            font-size: 1rem;
+        }
+
+        p {
+            font-size: 0.75rem;
+        }
+    }
+}
+
+// ============================================
+// CONTENEDOR DE EMPTY STATE
+// ============================================
+
+/**
+ * Contenedor que centra el empty state
+ * Útil cuando el empty state está dentro de un grid o flex container
+ */
+.empty-state-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 400px;
+
+    @media (max-width: 767px) {
+        min-height: 300px;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+        min-height: 200px;
+    }
+}

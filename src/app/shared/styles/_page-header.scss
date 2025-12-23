@@ -1,0 +1,153 @@
+// ============================================
+// SHARED PAGE HEADER COMPONENT STYLES
+// ============================================
+// Siguiendo mejores prácticas de Ionic Framework
+// https://ionicframework.com/docs/theming/css-variables
+
+/**
+ * Estilos compartidos para headers de página
+ * Usado en: Cursos, Rúbricas, y otras páginas
+ * 
+ * Implementa un sistema consistente usando CSS custom properties
+ * para mantener homogeneidad visual en toda la aplicación
+ */
+
+.page-header,
+.page-title-header {
+    // Layout
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    // Spacing - valores exactos para consistencia
+    padding: var(--page-header-padding) var(--page-header-padding-horizontal);
+    margin-bottom: var(--page-header-margin-bottom);
+
+    // Visual styling
+    background: linear-gradient(135deg,
+            var(--ion-color-primary) 0%,
+            var(--ion-color-primary-shade) 100%);
+    border-radius: var(--page-header-border-radius);
+    box-shadow: var(--page-header-box-shadow);
+
+    // Positioning
+    position: relative;
+    z-index: 5;
+
+    // Title wrapper
+    .title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--ion-padding, 8px) * 0.75);
+    }
+
+    // Actions container
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: calc(var(--ion-padding, 8px) * 0.75);
+        margin-left: auto;
+    }
+
+    // Icons styling
+    ion-icon {
+        font-size: 1.1rem;
+        color: var(--ion-color-primary-contrast);
+    }
+
+    // Title styling
+    h2 {
+        margin: 0;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--ion-color-primary-contrast);
+        letter-spacing: 0.3px;
+    }
+
+    // Button styling - usando CSS custom properties de Ionic
+    ion-button {
+        --padding-top: 4px;
+        --padding-bottom: 4px;
+        --padding-start: 16px;
+        --padding-end: 16px;
+
+        font-size: 0.875rem;
+
+        // Ionic maneja automáticamente el height basado en size="small"
+        // No necesitamos forzar valores específicos
+    }
+
+    // ============================================
+    // RESPONSIVE BREAKPOINTS
+    // ============================================
+
+    // Tablet (768px - 1024px)
+    @media (max-width: 1024px) and (min-width: 769px) {
+        padding: calc(var(--ion-padding, 8px) * 0.75) calc(var(--ion-padding, 8px) * 1.25);
+        border-radius: 5px;
+
+        h2 {
+            font-size: 0.8rem;
+        }
+
+        ion-icon {
+            font-size: 1rem;
+        }
+
+        ion-button {
+            --padding-start: 6px;
+            --padding-end: 6px;
+            font-size: 0.68rem;
+        }
+    }
+
+    // Mobile (< 768px)
+    @media (max-width: 768px) {
+        padding: calc(var(--ion-padding, 8px) * 0.625) var(--ion-padding, 8px);
+        margin-bottom: calc(var(--ion-margin, 4px) * 0.5);
+        border-radius: 4px;
+
+        .title-wrapper {
+            gap: calc(var(--ion-padding, 8px) * 0.5);
+        }
+
+        .header-actions {
+            gap: calc(var(--ion-padding, 8px) * 0.375);
+        }
+
+        h2 {
+            font-size: 0.72rem;
+        }
+
+        ion-icon {
+            font-size: 0.9rem;
+        }
+
+        ion-button {
+            --padding-start: 5px;
+            --padding-end: 5px;
+            font-size: 0.62rem;
+        }
+    }
+
+    // Landscape móvil - accesibilidad táctil
+    @media (max-height: 500px) and (orientation: landscape) {
+        padding: calc(var(--ion-padding, 8px) * 0.5) var(--ion-padding, 8px);
+        margin-bottom: 1px;
+
+        h2 {
+            font-size: 0.68rem;
+        }
+
+        ion-icon {
+            font-size: 0.85rem;
+        }
+
+        ion-button {
+            // Mantener min-height para accesibilidad táctil iOS
+            --min-height: 44px;
+            height: auto;
+            font-size: 0.58rem;
+        }
+    }
+}

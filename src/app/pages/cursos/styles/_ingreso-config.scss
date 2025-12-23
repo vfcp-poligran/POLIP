@@ -1,0 +1,105 @@
+// Información parseada del CSV
+.curso-parsed-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    margin-top: 1rem;
+    background: var(--ion-color-primary); // Azul oscuro
+    border-left: 4px solid var(--ion-color-primary-shade);
+    border-radius: 4px;
+    flex-wrap: wrap;
+
+    .parsed-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+
+        .label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9); // Blanco con opacidad para etiquetas
+        }
+
+        .value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #ffffff; // Blanco puro para valores
+        }
+    }
+
+    .separator {
+        color: rgba(255, 255, 255, 0.6); // Blanco semi-transparente para separadores
+        font-weight: 300;
+    }
+}
+
+// Configuración de Ingreso en una sola fila
+.ingreso-config-row {
+    background: var(--ion-color-light);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+
+    h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--ion-text-color);
+        margin: 0 0 0.75rem 0;
+        display: inline-block;
+        margin-right: 0.75rem;
+    }
+
+    ion-badge {
+        vertical-align: middle;
+    }
+
+    .ingreso-fields {
+        display: flex;
+        align-items: flex-end;
+        gap: 1rem;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+
+        ion-input,
+        ion-select {
+            flex: 1;
+            min-width: 120px;
+            max-width: 180px;
+        }
+
+        .date-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            label {
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--ion-color-medium);
+                margin-bottom: 0.25rem;
+            }
+
+            ion-datetime-button {
+                --background: var(--ion-color-light-shade);
+                --border-radius: 4px;
+            }
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .ingreso-config-row {
+        .ingreso-fields {
+            flex-direction: column;
+            align-items: stretch;
+
+            ion-input,
+            ion-select,
+            .date-field {
+                max-width: 100%;
+            }
+        }
+    }
+}

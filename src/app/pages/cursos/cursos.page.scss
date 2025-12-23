@@ -6,36 +6,20 @@
 @use './styles/accessibility';
 @use './styles/segment-tabs';
 @use './styles/curso-card';
+@use './styles/curso-info-compact';
+@use './styles/verification-panel';
+@use './styles/ingreso-config';
+@use '../../shared/styles/page-header'; // Estilos compartidos de header
+@use '../../shared/styles/breakpoints' as bp; // Sistema de breakpoints
+@use '../../shared/styles/empty-state'; // Estados vacíos
+@use '../../shared/styles/card-system'; // Sistema de tarjetas
 
-// ============================================
-// PÁGINA CURSOS - ESTILOS BASE
-// ============================================
 
 /* Contenedor principal de la página */
 .page-container {
   padding: spacing('md');
   max-width: $max-width-container;
   margin: 0 auto;
-}
-
-/* Header de la página */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: spacing('lg');
-  border-bottom: 1px solid var(--ion-color-light-shade);
-  padding-bottom: spacing('sm');
-
-  h2 {
-    @include typography('2xl', 'semibold', 'tight');
-    color: $azul-oscuro;
-    margin: 0;
-  }
-
-  .header-actions {
-    @include flex-gap(spacing('sm'));
-  }
 }
 
 /* Botones de importación */
@@ -136,41 +120,21 @@
   padding-top: spacing('md');
 }
 
-/* Lista de rúbricas */
+/* Rubricas list */
 .rubricas-list {
-  @include flex-gap(spacing('sm'));
+  @include bp.flex-gap(spacing('sm'));
   flex-wrap: wrap;
   margin-top: spacing('sm');
 }
 
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 60px spacing('lg');
-  color: var(--ion-color-medium);
-
-  ion-icon {
-    font-size: 64px;
-    margin-bottom: spacing('md');
-    opacity: 0.5;
-  }
-
-  h3 {
-    @include typography('xl', 'semibold');
-    margin-bottom: spacing('sm');
-  }
-
-  p {
-    @include typography('base', 'normal');
-    opacity: 0.7;
-  }
-}
+/* Empty state - usando estilos compartidos de _empty-state.scss */
+// Los estilos de .empty-state están definidos en src/app/shared/styles/_empty-state.scss
 
 // ============================================
-// RESPONSIVE
+// RESPONSIVE - usando sistema de breakpoints
 // ============================================
 
-@include respond-to-max('md') {
+@include bp.mobile-only {
   .page-container {
     padding: spacing('sm');
   }

@@ -29,9 +29,10 @@ export interface CourseState {
     bloque: string;
     fechaCreacion: string;
     profesor: string;
-    cohorte?: {                        // Cohorte/período académico del curso
-      nombre: string;                  // Nombre de la cohorte (ej: "202410 B2")
-      ingreso?: 'A' | 'B' | 'C';       // Tipo de ingreso (opcional)
+    ingreso?: {                        // Ingreso/período académico del curso
+      nombre: string;                  // Nombre del ingreso (ej: "202410 B2")
+      tipo: 'A' | 'B' | 'C';          // Tipo de ingreso (A: 120 días, B: 132 días, C: 105 días)
+      bloque: 'PRIMERO' | 'SEGUNDO';  // Bloque académico
       fechaInicio: Date;               // Fecha de inicio del período
       fechaFin: Date;                  // Fecha de fin del período
     };

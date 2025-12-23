@@ -85,12 +85,12 @@ export interface Estudiante {
   groupName?: string;
 
   /**
-   * Historial de cohortes en las que el estudiante ha cursado materias.
+   * Historial de ingresos en los que el estudiante ha cursado materias.
    * Formato: { "EPM": ["202410 B2", "202510 B1"], "RC": ["202410 B1"] }
    * Permite detectar si un estudiante es repitente en un curso.
    * La clave es el código base del curso (ej: "EPM", "SO", "BD").
    */
-  historialCohortes?: Record<string, string[]>;
+  historialIngresos?: Record<string, string[]>;
 }
 
 /**

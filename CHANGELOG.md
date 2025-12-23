@@ -52,6 +52,14 @@ Registro de cambios del proyecto POLI.
   - Tooltips que funcionan con teclado
   - **Cumplimiento WCAG 2.1**: Level A (6/6), Level AA (5/5), Level AAA (3/3)
 
+- **Fase 6: Optimización de Rendimiento**
+  - Refactorizado `estudiantesFiltrados` computed signal con función pura
+  - Separada lógica de mapeo en `mapEstudiantesConNotas()` para mejor testabilidad
+  - Optimizada complejidad de O(n²) a O(n) usando Map para lookup de notas
+  - Implementado early return para evitar procesamiento innecesario
+  - Agregados comentarios de rendimiento y documentación JSDoc
+  - Mejorada legibilidad con pasos numerados en comentarios
+
 #### ✨ Added (Agregado)
 - `src/app/constants/button-config.ts`: Configuración centralizada de botones CRUD
 - `src/app/pages/cursos/styles/_variables.scss`: Sistema de tokens de diseño

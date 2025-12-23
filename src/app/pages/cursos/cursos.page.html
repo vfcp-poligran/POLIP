@@ -38,20 +38,20 @@
     <!-- ======================================== -->
     <div class="page-header">
       <h2>Cursos</h2>
-      <div class="header-actions">
+      <div class="header-actions ion-hide-md-down">
         @if (!modoEdicion()) {
-        <ion-button size="small" [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
+        <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()"
           [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
-          <ion-icon [name]="BUTTON_CONFIG.CREAR.icon" slot="start"></ion-icon>
-          {{ BUTTON_CONFIG.CREAR.label }}
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Crear
         </ion-button>
         } @else {
-        <ion-button size="small" [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
+        <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()"
           [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
           <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon" slot="start"></ion-icon>
           {{ BUTTON_CONFIG.GUARDAR.label }}
         </ion-button>
-        <ion-button size="small" [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
+        <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()"
           [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
           {{ BUTTON_CONFIG.CANCELAR.label }}
         </ion-button>
@@ -100,70 +100,84 @@
           }
         </div>
 
-        <!-- Configuración de Cohorte -->
-        <div class="cohorte-config">
-          <h4>Configuración de Cohorte</h4>
-          @if (nombreCohorteGenerado()) {
-          <ion-badge color="primary">{{ nombreCohorteGenerado() }}</ion-badge>
+        <!-- ======================================== -->
+        <!-- INFORMACIÓN PARSEADA DEL CSV -->
+        <!-- ======================================== -->
+        @if (cursoParseado && estudiantesCargados.length > 0) {
+        <div class="curso-parsed-info">
+          <div class="parsed-info-item">
+            <span class="label">Nombre:</span>
+            <span class="value">{{ cursoParseado.nombre }}</span>
+          </div>
+          <div class="separator">|</div>
+          <div class="parsed-info-item">
+            <span class="label">Código Base:</span>
+            <span class="value">{{ cursoParseado.codigoBase }}</span>
+          </div>
+          <div class="separator">|</div>
+          <div class="parsed-info-item">
+            <span class="label">Código Curso:</span>
+            <span class="value">{{ cursoParseado.codigo }}</span>
+          </div>
+          <div class="separator">|</div>
+          <div class="parsed-info-item">
+            <span class="label">Estudiantes:</span>
+            <span class="value">{{ estudiantesCargados.length }}</span>
+          </div>
+        </div>
+        }
+
+        <!-- ======================================== -->
+        <!-- CONFIGURACIÓN DE INGRESO (Una sola fila) -->
+        <!-- ======================================== -->
+        <div class="ingreso-config-row">
+          <h4>Configuración de Ingreso</h4>
+          @if (nombreIngresoGenerado()) {
+          <ion-badge color="primary">{{ nombreIngresoGenerado() }}</ion-badge>
           }
 
-          <div class="config-row">
-            <!-- Color -->
-            <div class="color-picker">
-              <button [style.background]="colorCursoSeleccionado" id="color-trigger"
-                (click)="showColorPicker = !showColorPicker">
-                <ion-icon name="color-palette"></ion-icon>
-              </button>
-              <ion-popover trigger="color-trigger" [isOpen]="showColorPicker" (didDismiss)="showColorPicker = false">
+          <div class="ingreso-fields">
+            <!-- Ingreso -->
+            <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" label="Ingreso"
+              labelPlacement="floating" interface="popover" fill="outline">
+              <ion-select-option value="A">A (~120 días)</ion-select-option>
+              <ion-select-option value="B">B (~132 días)</ion-select-option>
+              <ion-select-option value="C">C (~105 días)</ion-select-option>
+            </ion-select>
+
+            <!-- Bloque -->
+            <ion-select [(ngModel)]="cohorteForm.bloque" (ionChange)="onBloqueChange()" label="Bloque"
+              labelPlacement="floating" interface="popover" fill="outline">
+              <ion-select-option value="PRIMERO">PRIMERO</ion-select-option>
+              <ion-select-option value="SEGUNDO">SEGUNDO</ion-select-option>
+              <ion-select-option value="TRANSVERSAL">TRANSVERSAL</ion-select-option>
+            </ion-select>
+
+            <!-- Fecha Inicio -->
+            <div class="date-field">
+              <label>Inicio</label>
+              <ion-datetime-button datetime="fecha-inicio"></ion-datetime-button>
+              <ion-popover [keepContentsMounted]="true">
                 <ng-template>
-                  <div class="color-grid">
-                    @for (color of coloresDisponibles; track color) {
-                    <div class="color-option" [style.background-color]="color"
-                      [class.selected]="colorCursoSeleccionado === color"
-                      (click)="seleccionarColorCurso(color); showColorPicker = false">
-                      @if (colorCursoSeleccionado === color) {
-                      <ion-icon name="checkmark"></ion-icon>
-                      }
-                    </div>
-                    }
-                  </div>
+                  <ion-datetime id="fecha-inicio" [(ngModel)]="cohorteForm.fechaInicio"
+                    (ionChange)="onFechaInicioChange()" presentation="date" locale="es-ES" [showDefaultButtons]="true">
+                  </ion-datetime>
                 </ng-template>
               </ion-popover>
             </div>
 
-            <!-- Año -->
-            <ion-select [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" interface="popover"
-              placeholder="Año">
-              <ion-select-option value="2024">2024</ion-select-option>
-              <ion-select-option value="2025">2025</ion-select-option>
-              <ion-select-option value="2026">2026</ion-select-option>
-            </ion-select>
-
-            <!-- Ingreso -->
-            <ion-radio-group [(ngModel)]="cohorteForm.ingreso" (ionChange)="onCambioCohorte(); onIngresoChange()">
-              <ion-radio value="A">A</ion-radio>
-              <ion-radio value="B">B</ion-radio>
-              <ion-radio value="C">C</ion-radio>
-            </ion-radio-group>
-
-            <!-- Fecha Inicio -->
-            <ion-datetime-button datetime="fecha-inicio"></ion-datetime-button>
-            <ion-popover [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime id="fecha-inicio" [(ngModel)]="cohorteForm.fechaInicio"
-                  (ionChange)="onFechaInicioChange()" presentation="date" locale="es-ES"
-                  [showDefaultButtons]="true"></ion-datetime>
-              </ng-template>
-            </ion-popover>
-
             <!-- Fecha Fin -->
-            <ion-datetime-button datetime="fecha-fin"></ion-datetime-button>
-            <ion-popover [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime id="fecha-fin" [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()"
-                  presentation="date" locale="es-ES" [showDefaultButtons]="true"></ion-datetime>
-              </ng-template>
-            </ion-popover>
+            <div class="date-field">
+              <label>Fin</label>
+              <ion-datetime-button datetime="fecha-fin"></ion-datetime-button>
+              <ion-popover [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="fecha-fin" [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()"
+                    presentation="date" locale="es-ES" [showDefaultButtons]="true">
+                  </ion-datetime>
+                </ng-template>
+              </ion-popover>
+            </div>
           </div>
         </div>
       </ion-card-content>

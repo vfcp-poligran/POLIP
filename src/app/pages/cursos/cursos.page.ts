@@ -32,6 +32,9 @@ import {
   IonSegment,
   IonSegmentButton,
   IonNote,
+  IonFab,
+  IonFabButton,
+  IonFabList,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -69,12 +72,11 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktopOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
-import { IonFab, IonFabButton } from '@ionic/angular/standalone';
 import { BUTTON_CONFIG } from '@app/constants/button-config';
 
 
@@ -110,6 +112,7 @@ interface EstudianteConNotas {
     IonCardContent,
     IonFab,
     IonFabButton,
+    IonFabList,
     IonList,
     IonItem,
     IonItemSliding,
@@ -207,19 +210,39 @@ export class CursosPage implements OnInit, ViewWillEnter {
     return grupos;
   });
 
+  /**
+   * Computed signal optimizado para estudiantes filtrados con notas
+   * Usa función pura para mejorar rendimiento y facilitar testing
+   */
   estudiantesFiltrados = computed<EstudianteConNotas[]>(() => {
     const estudiantes = this.estudiantesCurso();
     const grupo = this.grupoActivo();
-    const filtrados = grupo === 'todos'
-      ? estudiantes
-      : estudiantes.filter(e => String(e.grupo) === String(grupo));
-
-    // Obtener archivo de calificaciones de forma reactiva
     const seleccion = this.cursoSeleccionado();
     const claveCurso = this.resolverClaveCurso(seleccion);
     const archivo = claveCurso ? this.dataService.obtenerArchivoCalificaciones(claveCurso) : null;
 
-    // Normalizar retorno si no hay archivo
+    return this.mapEstudiantesConNotas(estudiantes, grupo, archivo);
+  });
+
+  /**
+   * Función pura para mapear estudiantes con sus notas
+   * Separada del computed para mejor testabilidad y rendimiento
+   * @param estudiantes Lista de estudiantes del curso
+   * @param grupo Grupo activo para filtrar ('todos' o número de grupo)
+   * @param archivo Archivo de calificaciones (puede ser null)
+   * @returns Array de estudiantes con notas mapeadas
+   */
+  private mapEstudiantesConNotas(
+    estudiantes: any[],
+    grupo: string,
+    archivo: any
+  ): EstudianteConNotas[] {
+    // 1. Filtrar por grupo (operación rápida)
+    const filtrados = grupo === 'todos'
+      ? estudiantes
+      : estudiantes.filter(e => String(e.grupo) === String(grupo));
+
+    // 2. Early return si no hay archivo (evita procesamiento innecesario)
     if (!archivo?.calificaciones) {
       return filtrados.map(est => ({
         ...est,
@@ -227,14 +250,17 @@ export class CursosPage implements OnInit, ViewWillEnter {
       }));
     }
 
-    const notasMap = new Map();
+    // 3. Crear Map una sola vez (O(n) en lugar de O(n²))
+    const notasMap = new Map<string, any>();
     archivo.calificaciones.forEach((c: any) => {
       if (c.id) notasMap.set(String(c.id), c);
     });
 
+    // 4. Mapear estudiantes con notas (O(n) con lookup O(1))
     return filtrados.map(est => {
       const canvasId = est.canvasUserId ? String(est.canvasUserId) : '';
       const notas = canvasId ? notasMap.get(canvasId) : null;
+
       return {
         ...est,
         notas: {
@@ -244,16 +270,18 @@ export class CursosPage implements OnInit, ViewWillEnter {
         }
       };
     });
-  });
+  }
 
   // Formulario de cohorte - datos de período académico
   cohorteForm: {
+    bloque: 'PRIMERO' | 'SEGUNDO' | 'TRANSVERSAL' | undefined;
     anio: string | undefined;
     ingreso: 'A' | 'B' | 'C' | undefined;
     fechaInicio: string | undefined;
     fechaFin: string | undefined;
     fechaFinManual: boolean;
   } = {
+      bloque: undefined,
       anio: new Date().getFullYear().toString(),
       ingreso: undefined,
       fechaInicio: undefined,
@@ -265,11 +293,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
   showColorPicker = false;
 
   /**
-   * Computed property que genera el nombre de la cohorte automáticamente
+   * Computed property que genera el nombre del ingreso automáticamente
    * Formato: {año} {ingreso O bloque}
    * Ejemplo: "2024 A" o "2024 Segundo"
    */
-  nombreCohorteGenerado = computed(() => {
+  nombreIngresoGenerado = computed(() => {
     if (!this.cohorteForm.anio) return '';
 
     const anio = new Date(this.cohorteForm.anio).getFullYear();
@@ -331,7 +359,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   readonly BUTTON_CONFIG = BUTTON_CONFIG;
 
   constructor() {
-    addIcons({ peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, codeSlash, calendar, people, grid, alertCircle, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, createOutline, trashOutline, cloudUpload, calendarOutline, appsOutline, listOutline, close, ellipsisVertical, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ ellipsisVertical, peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, codeSlash, calendar, desktopOutline, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, people, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, createOutline, trashOutline, cloudUpload, calendarOutline, appsOutline, listOutline, close, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -383,19 +411,61 @@ export class CursosPage implements OnInit, ViewWillEnter {
    */
   onCambioCohorte(): void {
     // El nombre se actualiza automáticamente por el computed property
-    Logger.log('[Cohorte] Nombre actualizado:', this.nombreCohorteGenerado());
+    Logger.log('[Cohorte] Nombre actualizado:', this.nombreIngresoGenerado());
+  }
+
+  /**
+   * Maneja el cambio de bloque y calcula automáticamente la fecha fin
+   * - PRIMERO: 8 semanas (~56 días)
+   * - SEGUNDO: 8 semanas (~56 días)
+   * - TRANSVERSAL: 16 semanas (~112 días) - abarca todo el período
+   */
+  onBloqueChange(): void {
+    if (!this.cohorteForm.fechaInicio) {
+      return;
+    }
+
+    const fechaInicio = new Date(this.cohorteForm.fechaInicio);
+    let diasDuracion = 0;
+
+    switch (this.cohorteForm.bloque) {
+      case 'PRIMERO':
+      case 'SEGUNDO':
+        diasDuracion = 56; // 8 semanas
+        break;
+      case 'TRANSVERSAL':
+        diasDuracion = 112; // 16 semanas (todo el período)
+        break;
+      default:
+        diasDuracion = 56;
+    }
+
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setDate(fechaFin.getDate() + diasDuracion);
+    this.cohorteForm.fechaFin = fechaFin.toISOString();
+
+    this.onCambioCohorte();
   }
 
   /**
    * Maneja el cambio en el tipo de ingreso
-   * Recalcula la fecha de fin si hay una fecha de inicio
+   * Ajusta fecha de inicio según offset y recalcula fecha fin
+   * - Ingreso A: Base (0 semanas)
+   * - Ingreso B: +4 semanas después de A
+   * - Ingreso C: +11 semanas después de A (7 semanas después de B)
    */
   onIngresoChange(): void {
     // Resetear flag de edición manual al cambiar ingreso
     this.cohorteForm.fechaFinManual = false;
 
-    // Recalcular fecha de fin
-    this.onFechaInicioChange();
+    // Si no hay fecha de inicio, solo recalcular fecha fin normal
+    if (!this.cohorteForm.fechaInicio) {
+      this.onFechaInicioChange();
+      return;
+    }
+
+    // Recalcular fecha fin basándose en el bloque
+    this.onBloqueChange();
   }
 
   /**
@@ -1325,7 +1395,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     try {
       // Construir objeto de cohorte si se proporcionó información
       let cohorteData: any = undefined;
-      const nombreGenerado = this.nombreCohorteGenerado();
+      const nombreGenerado = this.nombreIngresoGenerado();
       if (nombreGenerado && this.cohorteForm.fechaInicio && this.cohorteForm.fechaFin) {
         cohorteData = {
           nombre: nombreGenerado,  // Nombre generado automáticamente
@@ -1349,12 +1419,12 @@ export class CursosPage implements OnInit, ViewWillEnter {
           correo: est.correo || '',
           grupo: est.grupo || '', // Ya fue extraído en el parser del CSV
           groupName: est.groupName || '',
-          historialCohortes: (est as any).historialCohortes || {}
+          historialIngresos: (est as any).historialIngresos || {}
         };
 
         // Si hay cohorte definida, actualizar historial del estudiante
         if (cohorteData && codigoBaseCurso) {
-          const historial = { ...estudianteBase.historialCohortes };
+          const historial = { ...estudianteBase.historialIngresos };
           if (!historial[codigoBaseCurso]) {
             historial[codigoBaseCurso] = [];
           }
@@ -1362,7 +1432,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
           if (!historial[codigoBaseCurso].includes(cohorteData.nombre)) {
             historial[codigoBaseCurso].push(cohorteData.nombre);
           }
-          estudianteBase.historialCohortes = historial;
+          estudianteBase.historialIngresos = historial;
         }
 
         return estudianteBase;
@@ -1394,7 +1464,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
             profesor: metadataExistente?.profesor || '',
             nombreAbreviado: metadataExistente?.nombreAbreviado,
             codigoUnico: metadataExistente?.codigoUnico,
-            cohorte: cohorteData
+            ingreso: cohorteData
           }
         });
 
@@ -1432,6 +1502,12 @@ export class CursosPage implements OnInit, ViewWillEnter {
       }
 
       this.cargarCursos();
+
+      // ✅ FIX: Seleccionar automáticamente el curso recién creado/editado
+      // Esto asegura que se muestre el detalle del curso después de guardarlo
+      setTimeout(() => {
+        this.seleccionarCurso(codigoCurso);
+      }, 150);
 
       // Detectar si hubo cambios
       let huboCambios = false;
@@ -1503,6 +1579,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
     // Limpiar formulario de cohorte
     this.cohorteForm = {
+      bloque: undefined,
       anio: undefined,
       ingreso: undefined,
       fechaInicio: undefined,
@@ -1757,7 +1834,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const uiState = this.dataService.getUIState();
     const metadata = uiState.courseStates?.[claveCurso]?.metadata;
 
-    return metadata?.cohorte || null;
+    return metadata?.ingreso || null;
   }
 
   /**

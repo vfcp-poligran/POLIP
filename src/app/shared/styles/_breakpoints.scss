@@ -1,0 +1,177 @@
+// ============================================
+// RESPONSIVE BREAKPOINTS SYSTEM
+// ============================================
+// Basado en Ionic Grid Breakpoints
+// https://ionicframework.com/docs/layout/grid#grid-breakpoints
+
+/**
+ * Sistema de breakpoints alineado con Ionic Framework
+ * Asegura consistencia en responsive design
+ */
+
+// Breakpoints estándar de Ionic
+$breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px
+);
+
+// ============================================
+// MIXINS PARA MEDIA QUERIES
+// ============================================
+
+/**
+ * Aplica estilos desde un breakpoint hacia arriba (mobile-first)
+ * @param {string} $breakpoint - Nombre del breakpoint (xs, sm, md, lg, xl)
+ * 
+ * Ejemplo:
+ * @include respond-to(md) {
+ *   padding: 24px; // Se aplica en tablet y desktop
+ * }
+ */
+@mixin respond-to($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        @media (min-width: map-get($breakpoints, $breakpoint)) {
+            @content;
+        }
+    }
+
+    @else {
+        @warn "Breakpoint '#{$breakpoint}' no existe. Usa: xs, sm, md, lg, xl";
+    }
+}
+
+/**
+ * Aplica estilos hasta un breakpoint (desktop-first)
+ * @param {string} $breakpoint - Nombre del breakpoint
+ * 
+ * Ejemplo:
+ * @include respond-to-max(md) {
+ *   padding: 8px; // Se aplica solo en mobile
+ * }
+ */
+@mixin respond-to-max($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        $breakpoint-value: map-get($breakpoints, $breakpoint);
+
+        @media (max-width: #{$breakpoint-value - 1px}) {
+            @content;
+        }
+    }
+
+    @else {
+        @warn "Breakpoint '#{$breakpoint}' no existe. Usa: xs, sm, md, lg, xl";
+    }
+}
+
+/**
+ * Aplica estilos solo en un rango de breakpoints
+ * @param {string} $min - Breakpoint mínimo
+ * @param {string} $max - Breakpoint máximo
+ * 
+ * Ejemplo:
+ * @include respond-between(md, lg) {
+ *   padding: 16px; // Solo en tablet
+ * }
+ */
+@mixin respond-between($min, $max) {
+    @if map-has-key($breakpoints, $min) and map-has-key($breakpoints, $max) {
+        $min-value: map-get($breakpoints, $min);
+        $max-value: map-get($breakpoints, $max);
+
+        @media (min-width: #{$min-value}) and (max-width: #{$max-value - 1px}) {
+            @content;
+        }
+    }
+
+    @else {
+        @warn "Uno de los breakpoints no existe. Usa: xs, sm, md, lg, xl";
+    }
+}
+
+/**
+ * Landscape móvil - para dispositivos en orientación horizontal
+ * Importante para accesibilidad táctil
+ */
+@mixin mobile-landscape {
+    @media (max-height: 500px) and (orientation: landscape) {
+        @content;
+    }
+}
+
+/**
+ * Solo tablet (entre md y lg)
+ */
+@mixin tablet-only {
+    @include respond-between(md, lg) {
+        @content;
+    }
+}
+
+/**
+ * Solo mobile (menor a md)
+ */
+@mixin mobile-only {
+    @include respond-to-max(md) {
+        @content;
+    }
+}
+
+/**
+ * Solo desktop (mayor o igual a lg)
+ */
+@mixin desktop-only {
+    @include respond-to(lg) {
+        @content;
+    }
+}
+
+// ============================================
+// UTILITY CLASSES (Opcional)
+// ============================================
+
+// Ocultar en diferentes dispositivos
+.hide-mobile {
+    @include mobile-only {
+        display: none !important;
+    }
+}
+
+.hide-tablet {
+    @include tablet-only {
+        display: none !important;
+    }
+}
+
+.hide-desktop {
+    @include desktop-only {
+        display: none !important;
+    }
+}
+
+// Mostrar solo en dispositivos específicos
+.show-mobile-only {
+    display: none !important;
+
+    @include mobile-only {
+        display: block !important;
+    }
+}
+
+.show-tablet-only {
+    display: none !important;
+
+    @include tablet-only {
+        display: block !important;
+    }
+}
+
+.show-desktop-only {
+    display: none !important;
+
+    @include desktop-only {
+        display: block !important;
+    }
+}
