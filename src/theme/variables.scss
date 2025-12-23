@@ -1,154 +1,191 @@
 // Ionic CSS Variables Optimized
 :root {
-  /** ========================================
+    /** ========================================
       SAFE AREA INSETS (iOS Notch, Android Cutouts)
       ======================================== **/
-  --ion-safe-area-top: env(safe-area-inset-top, 0px);
-  --ion-safe-area-right: env(safe-area-inset-right, 0px);
-  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  --ion-safe-area-left: env(safe-area-inset-left, 0px);
+    --ion-safe-area-top: env(safe-area-inset-top, 0px);
+    --ion-safe-area-right: env(safe-area-inset-right, 0px);
+    --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --ion-safe-area-left: env(safe-area-inset-left, 0px);
 
-  /** ========================================
+    /** ========================================
       PALETA DE COLORES SRS (Base)
       ======================================== **/
-  --azul-oscuro: #0F385A;
-  --azul-claro: #1FB2DE;
-  --naranja: #FBAF17;
-  --verde: #A6CE38;
-  --verde-claro: #E8F5D0;
-  --magenta: #EC0677;
-  --cyan: #15BECE;
+    --azul-oscuro: #0F385A;
+    --azul-claro: #1FB2DE;
+    --naranja: #FBAF17;
+    --verde: #A6CE38;
+    --verde-claro: #E8F5D0;
+    --magenta: #EC0677;
+    --cyan: #15BECE;
 
-  /** ========================================
+    /** ========================================
       COLORES SEMANTICOS (derivados de SRS)
       ======================================== **/
-  /* Backgrounds */
-  --bg-color: #f7f9fa;
-  --bg-card: #ffffff;
+    /* Backgrounds */
+    --bg-color: #f7f9fa;
+    --bg-card: #ffffff;
 
-  /* Textos */
-  --texto-principal: #333333;
-  --texto-secundario: #555555;
+    /* Textos */
+    --texto-principal: #333333;
+    --texto-secundario: #555555;
 
-  /* Bordes */
-  --border-color: #e0e0e0;
+    /* Bordes */
+    --border-color: #e0e0e0;
 
-  /** ========================================
+    /** ========================================
       IONIC FRAMEWORK VARIABLES
       ======================================== **/
-  /* Primary (Azul Oscuro SRS) */
-  --ion-color-primary: var(--azul-oscuro);
-  --ion-color-primary-rgb: 15, 56, 90;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #0d314f;
-  --ion-color-primary-tint: #254462;
+    /* Primary (Azul Oscuro SRS) */
+    --ion-color-primary: var(--azul-oscuro);
+    --ion-color-primary-rgb: 15, 56, 90;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #0d314f;
+    --ion-color-primary-tint: #254462;
 
-  /* Secondary (Azul Claro SRS) */
-  --ion-color-secondary: var(--azul-claro);
-  --ion-color-secondary-rgb: 31, 178, 222;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #1ba1c7;
-  --ion-color-secondary-tint: #32bbe1;
+    /* Secondary (Azul Claro SRS) */
+    --ion-color-secondary: var(--azul-claro);
+    --ion-color-secondary-rgb: 31, 178, 222;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-contrast-rgb: 255, 255, 255;
+    --ion-color-secondary-shade: #1ba1c7;
+    --ion-color-secondary-tint: #32bbe1;
 
-  /* Success (Verde SRS) */
-  --ion-color-success: var(--verde);
-  --ion-color-success-rgb: 166, 206, 56;
-  --ion-color-success-contrast: #000000;
-  --ion-color-success-contrast-rgb: 0, 0, 0;
-  --ion-color-success-shade: #92b731;
-  --ion-color-success-tint: #afd267;
+    /* Success (Verde SRS) */
+    --ion-color-success: var(--verde);
+    --ion-color-success-rgb: 166, 206, 56;
+    --ion-color-success-contrast: #000000;
+    --ion-color-success-contrast-rgb: 0, 0, 0;
+    --ion-color-success-shade: #92b731;
+    --ion-color-success-tint: #afd267;
 
-  /* Warning (Naranja SRS) */
-  --ion-color-warning: var(--naranja);
-  --ion-color-warning-rgb: 251, 175, 23;
-  --ion-color-warning-contrast: #000000;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #dd9a14;
-  --ion-color-warning-tint: #fcb639;
+    /* Warning (Naranja SRS) */
+    --ion-color-warning: var(--naranja);
+    --ion-color-warning-rgb: 251, 175, 23;
+    --ion-color-warning-contrast: #000000;
+    --ion-color-warning-contrast-rgb: 0, 0, 0;
+    --ion-color-warning-shade: #dd9a14;
+    --ion-color-warning-tint: #fcb639;
 
-  /* Danger (Magenta SRS) */
-  --ion-color-danger: var(--magenta);
-  --ion-color-danger-rgb: 236, 6, 119;
-  --ion-color-danger-contrast: #ffffff;
-  --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #d00568;
-  --ion-color-danger-tint: #ee1f7e;
+    /* Danger (Magenta SRS) */
+    --ion-color-danger: var(--magenta);
+    --ion-color-danger-rgb: 236, 6, 119;
+    --ion-color-danger-contrast: #ffffff;
+    --ion-color-danger-contrast-rgb: 255, 255, 255;
+    --ion-color-danger-shade: #d00568;
+    --ion-color-danger-tint: #ee1f7e;
 
-  /* Global Ionic Overrides */
-  --ion-background-color: var(--bg-color);
-  --ion-text-color: var(--texto-principal);
-  --ion-text-color-rgb: 51, 51, 51;
-  --ion-toolbar-background: var(--azul-oscuro);
-  --ion-toolbar-color: #ffffff;
-  --ion-card-background: var(--bg-card);
+    /* Global Ionic Overrides */
+    --ion-background-color: var(--bg-color);
+    --ion-text-color: var(--texto-principal);
+    --ion-text-color-rgb: 51, 51, 51;
+    --ion-toolbar-background: var(--azul-oscuro);
+    --ion-toolbar-color: #ffffff;
+    --ion-card-background: var(--bg-card);
 
-  /** ========================================
+    /** ========================================
       SPACING OPTIMIZATIONS (Ionic CSS Variables)
       ======================================== **/
-  /* Padding estándar para consistencia */
-  --ion-padding: 16px;
-  --ion-padding-sm: 8px;
-  --ion-padding-lg: 24px;
+    /* Padding estándar para consistencia */
+    --ion-padding: 16px;
+    --ion-padding-sm: 8px;
+    --ion-padding-lg: 24px;
 
-  /* Margin estándar */
-  --ion-margin: 16px;
-  --ion-margin-sm: 8px;
-  --ion-margin-lg: 24px;
+    /* Margin estándar */
+    --ion-margin: 16px;
+    --ion-margin-sm: 8px;
+    --ion-margin-lg: 24px;
 
-  /* Border radius estándar */
-  --ion-border-radius: 8px;
-  --ion-border-radius-sm: 4px;
-  --ion-border-radius-lg: 12px;
+    /* Border radius estándar */
+    --ion-border-radius: 8px;
+    --ion-border-radius-sm: 4px;
+    --ion-border-radius-lg: 12px;
 
-  /** ========================================
+    /** ========================================
       PERFORMANCE OPTIMIZATIONS
       ======================================== **/
-  /* Transiciones optimizadas */
-  --ion-transition-duration: 0.2s;
-  --ion-transition-timing: ease;
+    /* Transiciones optimizadas */
+    --ion-transition-duration: 0.2s;
+    --ion-transition-timing: ease;
 
-  /* Sombras optimizadas */
-  --ion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --ion-box-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
-  --ion-box-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+    /* Sombras optimizadas */
+    --ion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --ion-box-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+    --ion-box-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
 
-  /** ========================================
+    /** ========================================
       PAGE HEADER COMPONENT
       ======================================== **/
-  /* Variables específicas para headers de página */
-  --page-header-padding: 8px;
-  --page-header-padding-horizontal: 12px;
-  --page-header-margin-bottom: 4px;
-  --page-header-border-radius: 6px;
-  --page-header-box-shadow: var(--ion-box-shadow-md);
+    /* Variables específicas para headers de página */
+    --page-header-padding: 8px;
+    --page-header-padding-horizontal: 12px;
+    --page-header-margin-bottom: 4px;
+    --page-header-border-radius: 6px;
+    --page-header-box-shadow: var(--ion-box-shadow-md);
 
-  /** ========================================
+    /** ========================================
       CARD SYSTEM
       ======================================== **/
-  /* Border Radius Tokens */
-  --card-border-radius: var(--ion-border-radius-lg, 12px);
-  --card-border-radius-sm: var(--ion-border-radius, 8px);
+    /* Border Radius Tokens */
+    --card-border-radius: var(--ion-border-radius-lg, 12px);
+    --card-border-radius-sm: var(--ion-border-radius, 8px);
 
-  /* Shadow Tokens */
-  --card-shadow: var(--ion-box-shadow-md);
-  --card-shadow-hover: 0 10px 20px rgba(15, 56, 90, 0.12);
-  --card-shadow-sm: var(--ion-box-shadow-sm);
+    /* Shadow Tokens */
+    --card-shadow: var(--ion-box-shadow-md);
+    --card-shadow-hover: 0 10px 20px rgba(15, 56, 90, 0.12);
+    --card-shadow-sm: var(--ion-box-shadow-sm);
 
-  /* Padding Tokens */
-  --card-header-padding: 12px 16px;
-  --card-content-padding: 16px;
-  --card-header-padding-sm: 10px 12px 6px;
-  --card-content-padding-sm: 8px 12px 10px;
+    /* Padding Tokens */
+    --card-header-padding: 12px 16px;
+    --card-content-padding: 16px;
+    --card-header-padding-sm: 10px 12px 6px;
+    --card-content-padding-sm: 8px 12px 10px;
 
-  /** ========================================
+    /** ========================================
       OPACITY TOKENS
       ======================================== **/
-  /* Para uso con rgba() */
-  --opacity-subtle: 0.04;
-  --opacity-light: 0.08;
-  --opacity-medium: 0.12;
-  --opacity-strong: 0.6;
-  --opacity-disabled: 0.5;
+    /* Para uso con rgba() */
+    --opacity-subtle: 0.04;
+    --opacity-light: 0.08;
+    --opacity-medium: 0.12;
+    --opacity-strong: 0.6;
+    --opacity-disabled: 0.5;
+
+    /** ========================================
+      COLOR TOKENS - SEMANTIC
+      ======================================== **/
+    /* Colores con opacidad para fondos y bordes */
+    --color-primary-subtle: rgba(var(--ion-color-primary-rgb), var(--opacity-subtle));
+    --color-primary-light: rgba(var(--ion-color-primary-rgb), var(--opacity-light));
+    --color-primary-medium: rgba(var(--ion-color-primary-rgb), var(--opacity-medium));
+
+    --color-success-subtle: rgba(var(--ion-color-success-rgb), var(--opacity-subtle));
+    --color-success-light: rgba(var(--ion-color-success-rgb), var(--opacity-light));
+    --color-success-medium: rgba(var(--ion-color-success-rgb), var(--opacity-medium));
+
+    --color-warning-subtle: rgba(var(--ion-color-warning-rgb), var(--opacity-subtle));
+    --color-warning-light: rgba(var(--ion-color-warning-rgb), var(--opacity-light));
+    --color-warning-medium: rgba(var(--ion-color-warning-rgb), var(--opacity-medium));
+
+    --color-danger-subtle: rgba(var(--ion-color-danger-rgb), var(--opacity-subtle));
+    --color-danger-light: rgba(var(--ion-color-danger-rgb), var(--opacity-light));
+    --color-danger-medium: rgba(var(--ion-color-danger-rgb), var(--opacity-medium));
+
+    /** ========================================
+      SPACING SYSTEM (8dp Grid)
+      ======================================== **/
+    /* Sistema de espaciado consistente */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+
+    /* Aliases semánticos */
+    --spacing-tight: var(--spacing-xs);
+    --spacing-normal: var(--spacing-md);
+    --spacing-loose: var(--spacing-lg);
 }

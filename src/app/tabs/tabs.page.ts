@@ -143,8 +143,9 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     { path: '/tabs/inicio-draft', icon: 'construct', iconOutline: 'construct-outline', label: 'Draft', shortLabel: '🔧' },
     { path: '/tabs/cursos', icon: 'library', iconOutline: 'library-outline', label: 'Cursos' },
     { path: '/tabs/rubricas', icon: 'speedometer', iconOutline: 'speedometer-outline', label: 'Rúbricas' },
-    { path: '/tabs/calificaciones', icon: 'ribbon', iconOutline: 'ribbon-outline', label: 'Calificaciones', shortLabel: 'Notas' },
-    { path: '/tabs/sistema', icon: 'settings', iconOutline: 'settings-outline', label: 'Sistema', shortLabel: 'Config' }
+    { path: '/tabs/calificaciones', icon: 'ribbon', iconOutline: 'ribbon-outline', label: 'Calificaciones', shortLabel: 'Calif' },
+    { path: '/tabs/sistema', icon: 'settings', iconOutline: 'settings-outline', label: 'Ajustes', shortLabel: 'Ajustes' }
+
   ];
 
   public router = inject(Router);

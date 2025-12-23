@@ -18,8 +18,9 @@
 /* Contenedor principal de la página */
 .page-container {
   padding: spacing('md');
-  max-width: $max-width-container;
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Botones de importación */

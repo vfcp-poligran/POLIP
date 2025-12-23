@@ -1,0 +1,97 @@
+  /* Sombras optimizadas */
+  --ion-box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --ion-box-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --ion-box-shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  /** ========================================
+      PAGE HEADER COMPONENT
+      ======================================== **/
+  /* Variables específicas para headers de página */
+  --page-header-padding: 8px;
+  --page-header-padding-horizontal: 12px;
+  --page-header-margin-bottom: 4px;
+  --page-header-border-radius: 6px;
+  --page-header-box-shadow: var(--ion-box-shadow-md);
+
+  /** ========================================
+      CARD SYSTEM
+      ======================================== **/
+  /* Border Radius Tokens */
+  --card-border-radius: var(--ion-border-radius-lg, 12px);
+  --card-border-radius-sm: var(--ion-border-radius, 8px);
+  
+  /* Shadow Tokens */
+  --card-shadow: var(--ion-box-shadow-md);
+  --card-shadow-hover: 0 10px 20px rgba(15, 56, 90, 0.12);
+  --card-shadow-sm: var(--ion-box-shadow-sm);
+  
+  /* Padding Tokens */
+  --card-header-padding: 12px 16px;
+  --card-content-padding: 16px;
+  --card-header-padding-sm: 10px 12px 6px;
+  --card-content-padding-sm: 8px 12px 10px;
+
+  /** ========================================
+      OPACITY TOKENS
+      ======================================== **/
+  /* Para uso con rgba() */
+  --opacity-subtle: 0.04;
+  --opacity-light: 0.08;
+  --opacity-medium: 0.12;
+  --opacity-strong: 0.6;
+  --opacity-disabled: 0.5;
+
+  /** ========================================
+      COLOR TOKENS - SEMANTIC
+      ======================================== **/
+  /* Colores con opacidad para fondos y bordes */
+  --color-primary-subtle: rgba(var(--ion-color-primary-rgb), var(--opacity-subtle));
+  --color-primary-light: rgba(var(--ion-color-primary-rgb), var(--opacity-light));
+  --color-primary-medium: rgba(var(--ion-color-primary-rgb), var(--opacity-medium));
+  
+  --color-success-subtle: rgba(var(--ion-color-success-rgb), var(--opacity-subtle));
+  --color-success-light: rgba(var(--ion-color-success-rgb), var(--opacity-light));
+  --color-success-medium: rgba(var(--ion-color-success-rgb), var(--opacity-medium));
+  
+  --color-warning-subtle: rgba(var(--ion-color-warning-rgb), var(--opacity-subtle));
+  --color-warning-light: rgba(var(--ion-color-warning-rgb), var(--opacity-light));
+  --color-warning-medium: rgba(var(--ion-color-warning-rgb), var(--opacity-medium));
+  
+  --color-danger-subtle: rgba(var(--ion-color-danger-rgb), var(--opacity-subtle));
+  --color-danger-light: rgba(var(--ion-color-danger-rgb), var(--opacity-light));
+  --color-danger-medium: rgba(var(--ion-color-danger-rgb), var(--opacity-medium));
+
+  /** ========================================
+      COLOR TOKENS - BRAND (SRS)
+      ======================================== **/
+  /* Paleta de colores del Politécnico Grancolombiano */
+  --color-azul-claro: #1FB2DE;
+  --color-azul-oscuro: #0F385A;
+  --color-naranja: #FBAF17;
+  --color-verde: #A6CE38;
+  --color-magenta: #EC0677;
+  --color-cyan: #15BECE;
+  
+  /* Variantes con opacidad */
+  --color-azul-claro-light: rgba(31, 178, 222, 0.1);
+  --color-azul-oscuro-light: rgba(15, 56, 90, 0.08);
+  --color-naranja-light: rgba(251, 175, 23, 0.1);
+  --color-verde-light: rgba(166, 206, 56, 0.1);
+
+  /** ========================================
+      SPACING SYSTEM (8dp Grid)
+      ======================================== **/
+  /* Sistema de espaciado consistente */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  
+  /* Aliases semánticos */
+  --spacing-tight: var(--spacing-xs);
+  --spacing-normal: var(--spacing-md);
+  --spacing-loose: var(--spacing-lg);
+}
