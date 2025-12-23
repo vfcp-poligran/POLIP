@@ -1,0 +1,242 @@
+// ============================================
+// FAB SYSTEM - Floating Action Buttons
+// ============================================
+// https://ionicframework.com/docs/api/fab
+
+/**
+ * Sistema estandarizado de FABs
+ * Asegura consistencia en posicionamiento, tamaños y comportamiento
+ * Responsive: Desktop, Tablet, Mobile
+ */
+
+// ============================================
+// CONFIGURACIÓN BASE
+// ============================================
+
+.fab-primary {
+    --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+    // Posicionamiento con safe area para iOS/Android
+    margin-bottom: calc(16px + var(--ion-safe-area-bottom));
+    z-index: 1000;
+
+    ion-fab-button {
+        --size: 56px;
+        --box-shadow: var(--ion-box-shadow-lg, 0 4px 16px rgba(0, 0, 0, 0.15));
+        --border-radius: 50%;
+
+        ion-icon {
+            font-size: 1.75rem;
+        }
+    }
+
+    // Ocultar en desktop (usar botones en header)
+    @media (min-width: 992px) {
+        display: none;
+    }
+
+    // Responsive mobile
+    @media (max-width: 480px) {
+        margin-bottom: calc(12px + var(--ion-safe-area-bottom));
+
+        ion-fab-button {
+            --size: 52px;
+
+            ion-icon {
+                font-size: 1.5rem;
+            }
+        }
+    }
+
+    // Landscape móvil - más compacto
+    @media (max-height: 500px) and (orientation: landscape) {
+        margin-bottom: calc(8px + var(--ion-safe-area-bottom));
+
+        ion-fab-button {
+            --size: 48px;
+
+            ion-icon {
+                font-size: 1.25rem;
+            }
+        }
+    }
+}
+
+// ============================================
+// FAB CON LISTA DE ACCIONES
+// ============================================
+
+.fab-actions {
+    @extend .fab-primary;
+
+    ion-fab-list {
+        ion-fab-button {
+            --size: 48px;
+            --box-shadow: var(--ion-box-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.12));
+
+            ion-icon {
+                font-size: 1.5rem;
+            }
+
+            @media (max-width: 480px) {
+                --size: 44px;
+
+                ion-icon {
+                    font-size: 1.25rem;
+                }
+            }
+
+            @media (max-height: 500px) and (orientation: landscape) {
+                --size: 40px;
+
+                ion-icon {
+                    font-size: 1.125rem;
+                }
+            }
+        }
+    }
+}
+
+// ============================================
+// VARIANTES POR COLOR DE ACCIÓN
+// ============================================
+
+/**
+ * Colores estandarizados por tipo de acción
+ * - success: Crear, Guardar, Confirmar
+ * - primary: Acciones principales, Menú
+ * - warning: Cancelar, Deshacer
+ * - danger: Eliminar, Rechazar
+ */
+
+.fab-crear {
+    @extend .fab-primary;
+
+    ion-fab-button {
+        --background: var(--ion-color-success);
+        --background-hover: var(--ion-color-success-shade);
+        --background-activated: var(--ion-color-success-tint);
+    }
+}
+
+.fab-guardar {
+    @extend .fab-primary;
+
+    ion-fab-button {
+        --background: var(--ion-color-success);
+        --background-hover: var(--ion-color-success-shade);
+        --background-activated: var(--ion-color-success-tint);
+    }
+}
+
+.fab-cancelar {
+    @extend .fab-primary;
+
+    ion-fab-button {
+        --background: var(--ion-color-warning);
+        --background-hover: var(--ion-color-warning-shade);
+        --background-activated: var(--ion-color-warning-tint);
+    }
+}
+
+.fab-eliminar {
+    @extend .fab-primary;
+
+    ion-fab-button {
+        --background: var(--ion-color-danger);
+        --background-hover: var(--ion-color-danger-shade);
+        --background-activated: var(--ion-color-danger-tint);
+    }
+}
+
+// ============================================
+// ESTADOS ESPECIALES
+// ============================================
+
+// FAB deshabilitado
+.fab-primary ion-fab-button[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+// FAB con badge de notificación
+.fab-with-badge {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 12px;
+        height: 12px;
+        background: var(--ion-color-danger);
+        border-radius: 50%;
+        border: 2px solid var(--ion-background-color, #fff);
+        z-index: 1001;
+    }
+}
+
+// ============================================
+// ANIMACIONES
+// ============================================
+
+.fab-primary ion-fab-button {
+    transition: transform var(--ion-transition-duration, 0.2s) var(--ion-transition-timing, ease),
+        box-shadow var(--ion-transition-duration, 0.2s) var(--ion-transition-timing, ease);
+
+    &:hover {
+        transform: scale(1.05);
+        --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// Animación de entrada
+@keyframes fab-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.fab-primary {
+    animation: fab-enter 0.3s ease-out;
+}
+
+// ============================================
+// ACCESIBILIDAD
+// ============================================
+
+// Focus visible para navegación por teclado
+.fab-primary ion-fab-button:focus-visible {
+    outline: 3px solid var(--ion-color-primary);
+    outline-offset: 4px;
+}
+
+// Reducir animaciones si el usuario lo prefiere
+@media (prefers-reduced-motion: reduce) {
+    .fab-primary {
+        animation: none;
+    }
+
+    .fab-primary ion-fab-button {
+        transition: none;
+
+        &:hover {
+            transform: none;
+        }
+
+        &:active {
+            transform: none;
+        }
+    }
+}
