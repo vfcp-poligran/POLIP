@@ -1,0 +1,287 @@
+/**
+ * Estilos para Cards de Curso
+ * Diseño moderno con barra de color, jerarquía visual y estadísticas
+ */
+
+@use 'sass:color';
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+// ============================================
+// CARD PRINCIPAL
+// ============================================
+
+.curso-card {
+    margin-bottom: spacing('md');
+    border-radius: $radius-lg;
+    overflow: hidden;
+    @include card-elevation(2);
+    @include transition(all, $transition-base);
+
+    &:hover {
+        @include card-elevation(3);
+        transform: translateY(-2px);
+    }
+
+    // Barra de color superior (4px)
+    &::before {
+        content: '';
+        display: block;
+        height: 4px;
+        background: var(--curso-color, $azul-claro);
+    }
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.curso-card-header {
+    position: relative;
+    padding: spacing('md');
+
+    .curso-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: spacing('sm');
+    }
+
+    .curso-nombre {
+        @include typography('lg', 'semibold', 'tight');
+        color: $azul-oscuro;
+        margin: 0;
+        flex: 1;
+        @include truncate;
+    }
+
+    .curso-status-chip {
+        margin-left: spacing('sm');
+        flex-shrink: 0;
+    }
+}
+
+// ============================================
+// ESTADÍSTICAS
+// ============================================
+
+.curso-stats {
+    display: flex;
+    gap: spacing('lg');
+    margin-top: spacing('sm');
+    padding-top: spacing('sm');
+    border-top: 1px solid rgba($azul-oscuro, 0.1);
+
+    .stat-item {
+        @include flex-center-vertical;
+        gap: spacing('xs');
+        color: rgba($azul-oscuro, 0.7);
+
+        ion-icon {
+            font-size: 1.25rem;
+            color: $azul-claro;
+        }
+
+        .stat-label {
+            @include typography('sm', 'normal');
+        }
+
+        .stat-value {
+            @include typography('lg', 'semibold');
+            color: $azul-oscuro;
+        }
+    }
+}
+
+// ============================================
+// INFORMACIÓN SECUNDARIA
+// ============================================
+
+.curso-info-row {
+    display: flex;
+    gap: spacing('md');
+    margin-top: spacing('sm');
+    flex-wrap: wrap;
+
+    .info-item {
+        @include flex-center-vertical;
+        gap: spacing('xs');
+        @include typography('sm', 'normal');
+        color: rgba($azul-oscuro, 0.6);
+
+        ion-icon {
+            font-size: 1rem;
+            color: rgba($azul-claro, 0.7);
+        }
+
+        strong {
+            color: $azul-oscuro;
+            font-weight: map-get($font-weights, 'medium');
+        }
+    }
+}
+
+// ============================================
+// ACCIONES
+// ============================================
+
+.card-actions {
+    position: absolute;
+    top: spacing('md');
+    right: spacing('md');
+    @include flex-gap(spacing('xs'));
+
+    ion-button {
+        --padding-start: #{spacing('sm')};
+        --padding-end: #{spacing('sm')};
+
+        &::part(native) {
+            @include touch-target;
+        }
+    }
+}
+
+// ============================================
+// CONTENT
+// ============================================
+
+.curso-card-content {
+    padding: 0 spacing('md') spacing('md');
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@include respond-to-max('md') {
+    .curso-card-header {
+        padding: spacing('sm');
+
+        .curso-nombre {
+            font-size: font-size('base');
+        }
+    }
+
+    .curso-stats {
+        flex-direction: column;
+        gap: spacing('sm');
+
+        .stat-item {
+            .stat-label {
+                font-size: font-size('xs');
+            }
+
+            .stat-value {
+                font-size: font-size('base');
+            }
+        }
+    }
+
+    .curso-info-row {
+        flex-direction: column;
+        gap: spacing('xs');
+
+        .info-item {
+            font-size: font-size('xs');
+        }
+    }
+
+    .card-actions {
+        top: spacing('sm');
+        right: spacing('sm');
+
+        ion-button {
+            --padding-start: #{spacing('xs')};
+            --padding-end: #{spacing('xs')};
+        }
+    }
+
+    .curso-card-content {
+        padding: 0 spacing('sm') spacing('sm');
+    }
+}
+
+// ============================================
+// ESTADOS
+// ============================================
+
+.curso-card {
+
+    // Estado activo
+    &.active {
+        border: 2px solid $azul-claro;
+
+        &::before {
+            height: 6px;
+        }
+    }
+
+    // Estado sin datos
+    &.no-data {
+        opacity: 0.8;
+
+        &::before {
+            background: linear-gradient(90deg, $color-warning, color.adjust($color-warning, $lightness: 10%));
+        }
+    }
+
+    // Estado de carga
+    &[aria-busy="true"] {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+}
+
+// ============================================
+// ANIMACIONES
+// ============================================
+
+@keyframes pulse-border {
+
+    0%,
+    100% {
+        border-color: $azul-claro;
+    }
+
+    50% {
+        border-color: color.adjust($azul-claro, $lightness: 20%);
+    }
+}
+
+.curso-card.active {
+    animation: pulse-border 2s ease-in-out infinite;
+}
+
+// ============================================
+// ACCESIBILIDAD
+// ============================================
+
+.curso-card {
+    @include focus-visible($azul-claro, 3px);
+
+    // Mejorar contraste en modo oscuro
+    @media (prefers-color-scheme: dark) {
+        background: rgba(255, 255, 255, 0.05);
+
+        .curso-nombre {
+            color: color.adjust($azul-claro, $lightness: 20%);
+        }
+
+        .curso-stats .stat-item {
+            color: rgba(255, 255, 255, 0.7);
+
+            .stat-value {
+                color: white;
+            }
+        }
+    }
+
+    // Alto contraste
+    @media (prefers-contrast: high) {
+        border: 2px solid currentColor;
+
+        &::before {
+            height: 6px;
+        }
+    }
+}
