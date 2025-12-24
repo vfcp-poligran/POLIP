@@ -1,5 +1,12 @@
 <ion-content [fullscreen]="true">
   <div class="page-container">
+    <!-- Header de Página -->
+    <div class="page-title-header">
+      <div class="title-wrapper">
+        <h2>Sistema</h2>
+      </div>
+    </div>
+
     <div class="containers-grid">
       <!-- Sistema de Almacenamiento -->
       <ion-card>
@@ -12,18 +19,15 @@
         <ion-card-content>
           <ion-list>
             <ion-item>
-              <ion-icon
-                [name]="storageInfo.platform === 'web' ? 'desktop-outline' : 'phone-portrait-outline'"
-                slot="start"
-                [color]="storageInfo.platform === 'web' ? 'primary' : 'success'">
+              <ion-icon [name]="storageInfo.platform === 'web' ? 'desktop-outline' : 'phone-portrait-outline'"
+                slot="start" [color]="storageInfo.platform === 'web' ? 'primary' : 'success'">
               </ion-icon>
               <ion-label>
                 <h3 class="h3-plataforma-blue">Plataforma Detectada</h3>
-                <p class="text-gray-medium">{{ storageInfo.platform === 'web' ? 'Navegador Web' : 'Dispositivo Móvil' }}</p>
+                <p class="text-gray-medium">{{ storageInfo.platform === 'web' ? 'Navegador Web' : 'Dispositivo Móvil' }}
+                </p>
               </ion-label>
-              <ion-badge
-                [color]="storageInfo.platform === 'web' ? 'primary' : 'success'"
-                slot="end">
+              <ion-badge [color]="storageInfo.platform === 'web' ? 'primary' : 'success'" slot="end">
                 {{ storageInfo.platform.toUpperCase() }}
               </ion-badge>
             </ion-item>
@@ -32,11 +36,10 @@
               <ion-icon name="build-outline" slot="start" color="secondary"></ion-icon>
               <ion-label>
                 <h3 class="h3-plataforma-blue">Motor de Almacenamiento</h3>
-                <p class="text-gray-medium">{{ storageInfo.storage === 'sqlite' ? 'SQLite Database' : 'Ionic Storage' }}</p>
+                <p class="text-gray-medium">{{ storageInfo.storage === 'sqlite' ? 'SQLite Database' : 'Ionic Storage' }}
+                </p>
               </ion-label>
-              <ion-badge
-                [color]="storageInfo.storage === 'sqlite' ? 'warning' : 'tertiary'"
-                slot="end">
+              <ion-badge [color]="storageInfo.storage === 'sqlite' ? 'warning' : 'tertiary'" slot="end">
                 {{ storageInfo.storage.toUpperCase() }}
               </ion-badge>
             </ion-item>
@@ -60,9 +63,7 @@
                 <h3 class="h3-plataforma-blue">Mensajes Emergentes</h3>
                 <p class="text-gray-medium">Mostrar notificaciones de confirmación y alertas</p>
               </ion-label>
-              <ion-toggle
-                slot="end"
-                [checked]="mostrarMensajesEmergentes"
+              <ion-toggle slot="end" [checked]="mostrarMensajesEmergentes"
                 (ionChange)="toggleMensajesEmergentes($event)">
               </ion-toggle>
             </ion-item>
@@ -72,7 +73,8 @@
               <ion-icon name="time-outline" slot="start" color="secondary"></ion-icon>
               <ion-label>
                 <h3 class="h3-plataforma-blue">Duración en Pantalla</h3>
-                <p class="text-gray-medium">Tiempo visible: {{ duracionToast }} segundo{{ duracionToast !== 1 ? 's' : '' }}</p>
+                <p class="text-gray-medium">Tiempo visible: {{ duracionToast }} segundo{{ duracionToast !== 1 ? 's' : ''
+                  }}</p>
               </ion-label>
               <div slot="end" class="duration-control">
                 <ion-button fill="clear" size="small" [disabled]="duracionToast <= 1" (click)="decrementarDuracion()">
@@ -102,40 +104,30 @@
             <div>
               <h3 class="h3-system-section">Respaldo y Restauración</h3>
               <p class="text-gray-small">
-                Exporta toda la base de datos (cursos, estudiantes, calificaciones, rúbricas) a un archivo JSON para hacer respaldo o transferir entre dispositivos.
+                Exporta toda la base de datos (cursos, estudiantes, calificaciones, rúbricas) a un archivo JSON para
+                hacer respaldo o transferir entre dispositivos.
               </p>
               <div class="flex-gap-12-wrap">
-                <ion-button
-                  fill="solid"
-                  size="default"
-                  (click)="exportarBaseDatosCompleta()"
+                <ion-button fill="solid" size="default" (click)="exportarBaseDatosCompleta()"
                   class="button-backup-export">
                   <ion-icon name="cloud-download-outline" slot="start"></ion-icon>
                   Exportar DB
                 </ion-button>
 
-                <ion-button
-                  fill="solid"
-                  size="default"
-                  (click)="fileInputDB.click()"
-                  class="button-backup-import">
+                <ion-button fill="solid" size="default" (click)="fileInputDB.click()" class="button-backup-import">
                   <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
                   Importar DB
                 </ion-button>
-                <input
-                  #fileInputDB
-                  type="file"
-                  accept=".json"
-                  aria-label="Importar DB"
-                  (change)="onBaseDatosFileSelected($event)"
-                  class="display-none">
+                <input #fileInputDB type="file" accept=".json" aria-label="Importar DB"
+                  (change)="onBaseDatosFileSelected($event)" class="display-none">
               </div>
               <ion-list class="list-margin-top">
                 <ion-item lines="none">
                   <ion-icon name="information-circle-outline" slot="start" color="primary"></ion-icon>
                   <ion-label class="ion-text-wrap">
                     <p class="text-info-blue">
-                      <strong>Móvil:</strong> El archivo se descargará en Downloads (exportar) o deberá colocarse en Documents como "backup.json" (importar).
+                      <strong>Móvil:</strong> El archivo se descargará en Downloads (exportar) o deberá colocarse en
+                      Documents como "backup.json" (importar).
                     </p>
                   </ion-label>
                 </ion-item>
@@ -145,12 +137,10 @@
             <div>
               <h3 class="h3-system-section">Limpieza de Datos</h3>
               <p class="text-gray-small">
-                Elimina todas las evaluaciones y estados de la interfaz, manteniendo los cursos, estudiantes y rúbricas predeterminadas.
+                Elimina todas las evaluaciones y estados de la interfaz, manteniendo los cursos, estudiantes y rúbricas
+                predeterminadas.
               </p>
-              <ion-button
-                fill="solid"
-                size="default"
-                (click)="limpiarBaseDatosEstadoCero()"
+              <ion-button fill="solid" size="default" (click)="limpiarBaseDatosEstadoCero()"
                 class="button-limpiar-danger">
                 <ion-icon name="trash-outline" slot="start"></ion-icon>
                 Limpiar Base de Datos
@@ -162,7 +152,8 @@
                 <ion-icon name="warning-outline" slot="start" color="warning"></ion-icon>
                 <ion-label class="ion-text-wrap">
                   <p class="text-warning-yellow">
-                    <strong>Nota:</strong> Esta acción eliminará todas las evaluaciones guardadas. Los cursos y estudiantes no se verán afectados.
+                    <strong>Nota:</strong> Esta acción eliminará todas las evaluaciones guardadas. Los cursos y
+                    estudiantes no se verán afectados.
                   </p>
                 </ion-label>
               </ion-item>
@@ -172,13 +163,10 @@
             <div>
               <h3 class="h3-system-section">Mantenimiento PWA</h3>
               <p class="text-gray-small">
-                Limpia la caché del Service Worker para forzar la actualización de la aplicación. Útil si la app muestra una versión desactualizada.
+                Limpia la caché del Service Worker para forzar la actualización de la aplicación. Útil si la app muestra
+                una versión desactualizada.
               </p>
-              <ion-button
-                fill="outline"
-                size="default"
-                (click)="limpiarCachePWA()"
-                class="button-cache-warning">
+              <ion-button fill="outline" size="default" (click)="limpiarCachePWA()" class="button-cache-warning">
                 <ion-icon name="refresh-outline" slot="start"></ion-icon>
                 Limpiar Caché PWA
               </ion-button>
@@ -189,7 +177,8 @@
                 <ion-icon name="information-circle-outline" slot="start" color="tertiary"></ion-icon>
                 <ion-label class="ion-text-wrap">
                   <p class="text-info-blue">
-                    <strong>Info:</strong> Esta acción NO elimina tus datos. Solo limpia archivos estáticos (JS, CSS, imágenes) para forzar una recarga desde el servidor.
+                    <strong>Info:</strong> Esta acción NO elimina tus datos. Solo limpia archivos estáticos (JS, CSS,
+                    imágenes) para forzar una recarga desde el servidor.
                   </p>
                 </ion-label>
               </ion-item>
