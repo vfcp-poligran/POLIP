@@ -13,19 +13,25 @@ ion-content {
 }
 
 .page-container {
-  // Ancho completo
-  padding: 16px;
+  // Ancho completo con padding responsivo estandarizado
+  padding: 24px; // Desktop
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
 
-  @media (max-width: 768px) {
-    padding: 8px;
+  // Tablet (768-991px)
+  @media (min-width: 768px) and (max-width: 991px) {
+    padding: 16px;
   }
 
-  // Landscape móvil - compacto
+  // Mobile (<768px)
+  @media (max-width: 767px) {
+    padding: 12px;
+  }
+
+  // Landscape móvil
   @media (max-height: 500px) and (orientation: landscape) {
-    padding: 4px;
+    padding: 8px;
   }
 }
 
