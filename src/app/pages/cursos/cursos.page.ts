@@ -14,27 +14,17 @@ import {
   IonCardContent,
   IonList,
   IonItem,
-  IonItemSliding,
-  IonItemOptions,
-  IonItemOption,
   IonBadge,
   IonDatetime,
   IonSelect,
   IonSelectOption,
-  IonRadio,
-  IonRadioGroup,
   IonPopover,
   IonDatetimeButton,
-  IonTabs,
-  IonTab,
-  IonTabBar,
-  IonTabButton,
   IonSegment,
   IonSegmentButton,
   IonNote,
   IonFab,
   IonFabButton,
-  IonFabList,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -112,24 +102,14 @@ interface EstudianteConNotas {
     IonCardContent,
     IonFab,
     IonFabButton,
-    IonFabList,
     IonList,
     IonItem,
-    IonItemSliding,
-    IonItemOptions,
-    IonItemOption,
     IonBadge,
     IonDatetime,
     IonSelect,
     IonSelectOption,
-    IonRadio,
-    IonRadioGroup,
     IonPopover,
     IonDatetimeButton,
-    IonTabs,
-    IonTab,
-    IonTabBar,
-    IonTabButton,
     IonSegment,
     IonSegmentButton,
     IonNote]
@@ -1025,6 +1005,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
       let nombreCompleto = '';
       let codigoAbreviado = '';
       let bloqueTexto = '';
+      let enfasisCodigo = '';
 
       if (primeraSeccion) {
         // Extraer nombre completo del énfasis (todo lo que está entre / y -)
@@ -1033,7 +1014,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
         // Generar siglas del énfasis usando algoritmo mejorado
         // (ej: ÉNFASIS EN PROGRAMACIÓN MÓVIL → EPM)
-        const enfasisCodigo = this.generarAcronimoCurso(nombreCompleto);
+        enfasisCodigo = this.generarAcronimoCurso(nombreCompleto);
 
         // Extraer grupo (ej: B01)
         const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z0-9]+)\]/i);
@@ -1059,11 +1040,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
         nombreCompleto = nombreArchivo;
         codigoAbreviado = codigoMatch?.[0] || '';
         bloqueTexto = bloqueMatch?.[1] || '';
+        enfasisCodigo = codigoAbreviado; // En fallback usamos lo mismo
       }
 
       this.estudiantesCargados = estudiantes;
+      // Ajuste solicitado: Nombre Corto = Siglas + Código de curso
       this.cursoParseado = {
-        nombre: nombreCompleto,
+        nombre: `${enfasisCodigo} ${codigoAbreviado}`,
         codigo: codigoAbreviado,
         bloque: bloqueTexto
       };
