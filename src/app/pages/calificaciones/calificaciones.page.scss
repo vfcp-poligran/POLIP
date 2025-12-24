@@ -10,48 +10,8 @@ ion-content {
   --background: #f8f9fa;
 }
 
-// ============================================
-// TÍTULO DE PÁGINA - Estandarizado
-// ============================================
-.page-title-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  margin-bottom: 4px;
-  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  position: relative;
-  z-index: 5;
+// Estilos de .page-title-header se aplican desde global.scss
 
-  .title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .header-actions,
-  .header-course-selector {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: auto;
-  }
-
-  ion-icon {
-    font-size: 1.1rem;
-    color: #ffffff;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: 0.3px;
-  }
-}
 
 .page-container {
   padding: 8px;
@@ -66,25 +26,16 @@ ion-content {
 }
 
 // ============================================
-// TÍTULO DE PÁGINA / SELECTOR DE CURSOS
+// SELECTOR DE CURSOS EN HEADER
+// (Los estilos de .page-title-header vienen de global.scss)
 // ============================================
 .page-title-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  margin-bottom: 6px;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
 
-  @media (max-width: 768px) {
-    margin-bottom: 4px;
+  // Estilos adicionales específicos para calificaciones
+  .header-course-selector {
+    margin-left: auto; // Mover selector a la derecha
   }
 
-  @media (max-height: 500px) and (orientation: landscape) {
-    margin-bottom: 2px;
-  }
 
   // Contenedor del segment de cursos
   .header-course-selector {
