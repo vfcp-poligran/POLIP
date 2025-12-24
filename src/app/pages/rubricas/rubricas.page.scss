@@ -6,28 +6,29 @@
 // ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
+// CONTENEDOR PRINCIPAL - Normalizado con Cursos
+// ============================================
 ion-content {
   --background: #f8f9fa;
 }
 
 .page-container {
-  padding: 8px;
-  width: 100%;
-  height: 100%;
+  // Valores normalizados con Cursos
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  // Layout
   box-sizing: border-box;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
 
   @media (max-width: 768px) {
-    padding: 4px;
-    height: auto;
-    min-height: 100%;
+    padding: 8px;
   }
 
-  // Landscape móvil - muy compacto
+  // Landscape móvil - compacto
   @media (max-height: 500px) and (orientation: landscape) {
-    padding: 2px;
+    padding: 4px;
   }
 }
 
