@@ -1308,9 +1308,7 @@
       padding-left: 6px;
     }
 
-    .codigo-badge {
-      // Styles inherited from parent .col-codigo
-    }
+
 
     &:hover {
       background-color: rgba(74, 144, 226, 0.22);
@@ -1847,89 +1845,6 @@
 
 // ============================================
 // EMPTY STATE - Estandarizado con responsive
-// ============================================
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-
-  h3 {
-    margin: 0 0 8px 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #495057;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #6c757d;
-    line-height: 1.5;
-  }
-
-  // Tablet (768px - 1024px)
-  @media (max-width: 1024px) and (min-width: 769px) {
-    padding: 40px 20px;
-
-    h3 {
-      font-size: 1rem;
-    }
-
-    p {
-      font-size: 0.85rem;
-    }
-  }
-
-  // Mobile (< 768px)
-  @media (max-width: 768px) {
-    padding: 32px 16px;
-
-    h3 {
-      font-size: 0.95rem;
-    }
-
-    p {
-      font-size: 0.8rem;
-    }
-  }
-}
-
-// ===== HEADER STYLES (COPIA EXACTA DE GESTION-CURSOS) =====
-ion-card {
-  width: 100%;
-  margin: 0;
-  max-width: 100%;
-
-  ion-card-header {
-    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
-    color: #ffffff;
-    padding: 12px;
-    border-radius: 7.2px 7.2px 0 0;
-    text-align: left !important;
-    display: block !important;
-
-    ion-card-title {
-      color: #ffffff !important;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 4.8px;
-      min-width: 130px;
-      margin: 0;
-      font-size: 0.6rem;
-      text-align: left;
-
-      @media (max-width: 768px) {
-        font-size: 14.4px;
-      }
-    }
-  }
-}
-
 // ===== UTILIDADES =====
 .display-none {
   display: none !important;
@@ -2489,99 +2404,70 @@ ion-content {
   }
 }
 
-// ===== ESTILOS GLOBALES DE ION-LIST E ION-ITEM (COPIA DE GESTION-CURSOS) =====
-ion-list {
-  background: transparent;
-  padding: 0;
+
+
+
+
+.rubrica-info-wrapper,
+.curso-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4.8px;
+  width: 100%;
 }
 
-ion-item {
-  --background: #ffffff;
-  --border-color: rgba(15, 56, 90, 0.08);
-  --padding-start: 9.6px;
-  --padding-end: 9.6px;
-  --min-height: 48px;
-  margin-bottom: 4.8px;
-  border-radius: 4.8px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    --background: rgba(31, 178, 222, 0.04);
-    transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(15, 56, 90, 0.08);
+.rubrica-main-info,
+.curso-main-info {
+  h2 {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--azul-oscuro);
+    margin-bottom: 3.6px;
   }
 
-  &.item-selected {
-    --background: linear-gradient(135deg, rgba(31, 178, 222, 0.08) 0%, rgba(31, 178, 222, 0.12) 100%);
-    border-left: 2.4px solid var(--azul-claro);
+  p.curso-code {
+    font-size: 0.51rem;
+    color: var(--texto-secundario);
+    margin: 0;
 
-    &:hover {
-      --background: linear-gradient(135deg, rgba(31, 178, 222, 0.12) 0%, rgba(31, 178, 222, 0.16) 100%);
-    }
-  }
-
-  .rubrica-info-wrapper,
-  .curso-info-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 4.8px;
-    width: 100%;
-  }
-
-  .rubrica-main-info,
-  .curso-main-info {
-    h2 {
-      font-size: 0.6rem;
-      font-weight: 600;
+    strong {
+      font-weight: 700;
       color: var(--azul-oscuro);
-      margin-bottom: 3.6px;
-    }
-
-    p.curso-code {
-      font-size: 0.51rem;
-      color: var(--texto-secundario);
-      margin: 0;
-
-      strong {
-        font-weight: 700;
-        color: var(--azul-oscuro);
-      }
     }
   }
+}
 
-  .rubrica-meta-row,
-  .curso-meta-row {
+.rubrica-meta-row,
+.curso-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 7.2px;
+  flex-wrap: wrap;
+
+  p.rubrica-fecha,
+  p.curso-fecha {
+    font-size: 0.51rem;
+    color: var(--texto-secundario);
     display: flex;
     align-items: center;
-    gap: 7.2px;
-    flex-wrap: wrap;
+    gap: 3.6px;
+    margin: 0;
 
-    p.rubrica-fecha,
-    p.curso-fecha {
-      font-size: 0.51rem;
-      color: var(--texto-secundario);
-      display: flex;
-      align-items: center;
-      gap: 3.6px;
-      margin: 0;
-
-      ion-icon {
-        font-size: 8.4px;
-        color: var(--azul-claro);
-      }
+    ion-icon {
+      font-size: 8.4px;
+      color: var(--azul-claro);
     }
+  }
 
-    p.rubrica-curso {
-      font-size: 0.51rem;
-      color: var(--texto-secundario);
-      margin: 0;
-    }
+  p.rubrica-curso {
+    font-size: 0.51rem;
+    color: var(--texto-secundario);
+    margin: 0;
+  }
 
-    ion-badge {
-      font-size: 0.45rem;
-      padding: 2.4px 4.8px;
-    }
+  ion-badge {
+    font-size: 0.45rem;
+    padding: 2.4px 4.8px;
   }
 }
 
