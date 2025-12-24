@@ -60,194 +60,46 @@
     </div>
 
     <!-- ======================================== -->
-    <!-- 3. SECCIÓN DE EDICIÓN/CREACIÓN -->
+    <!-- 3. CONTENEDOR PRINCIPAL DE CURSOS -->
     <!-- ======================================== -->
-    @if (modoEdicion()) {
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>{{ codigoCursoEnEdicion ? 'Editar Curso' : 'Nuevo Curso' }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <!-- Inputs ocultos para archivos -->
-        <input type="file" #estudiantesFileInput accept=".csv" (change)="onEstudiantesFileSelected($event)" hidden />
-        <input type="file" #calificacionesFileInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
-          hidden />
+    @if (cursosDisponibles().length > 0 || (modoEdicion() && !cursoSeleccionado())) {
+    <div class="cursos-container" [class.solo-uno]="cursosDisponibles().length === 0 && modoEdicion()">
+      <!-- Tabs superiores de selección de curso -->
+      <ion-segment
+        [value]="cursoSeleccionado() || (modoEdicion() && !cursoSeleccionado() ? 'NUEVO' : cursosDisponibles()[0]?.codigo)"
+        (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable layout="icon-top">
 
-        <!-- Botones de importación -->
-        <div class="import-buttons">
-          <ion-button fill="outline" (click)="estudiantesFileInput.click()">
-            <ion-icon name="people-outline" slot="start"></ion-icon>
-            Importar Estudiantes
-          </ion-button>
-          @if (estudiantesFileName) {
-          <ion-chip color="success">
-            <ion-icon name="checkmark-circle"></ion-icon>
-            <ion-label>{{ estudiantesFileName }}</ion-label>
-            <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
-          </ion-chip>
-          }
-
-          <ion-button fill="outline" (click)="calificacionesFileInput.click()">
-            <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-            Importar Calificaciones
-          </ion-button>
-          @if (calificacionesFileName) {
-          <ion-chip color="success">
-            <ion-icon name="checkmark-circle"></ion-icon>
-            <ion-label>{{ calificacionesFileName }}</ion-label>
-            <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
-          </ion-chip>
-          }
-        </div>
-
-        <!-- ======================================== -->
-        <!-- INFORMACIÓN PARSEADA DEL CSV -->
-        <!-- ======================================== -->
-        @if (cursoParseado && estudiantesCargados.length > 0) {
-        <div class="curso-parsed-info">
-          <div class="parsed-info-item">
-            <span class="label">Nombre:</span>
-            <span class="value">{{ cursoParseado.nombre }}</span>
-          </div>
-          <div class="separator">|</div>
-          <div class="parsed-info-item">
-            <span class="label">Código Base:</span>
-            <span class="value">{{ cursoParseado.codigoBase }}</span>
-          </div>
-          <div class="separator">|</div>
-          <div class="parsed-info-item">
-            <span class="label">Código Curso:</span>
-            <span class="value">{{ cursoParseado.codigo }}</span>
-          </div>
-          <div class="separator">|</div>
-          <div class="parsed-info-item">
-            <span class="label">Estudiantes:</span>
-            <span class="value">{{ estudiantesCargados.length }}</span>
-          </div>
-        </div>
+        <!-- Tab Virtual de Nuevo Curso -->
+        @if (modoEdicion() && !cursoSeleccionado()) {
+        <ion-segment-button value="NUEVO">
+          <ion-icon name="add-circle" color="success"></ion-icon>
+          <ion-label>
+            <span class="nombre-curso">{{ cursoParseado?.nombre || 'Nuevo Curso' }}</span>
+            <span class="codigo-curso">CONFIGURANDO</span>
+          </ion-label>
+        </ion-segment-button>
         }
 
-        <!-- ======================================== -->
-        <!-- CONFIGURACIÓN DE INGRESO (Una sola fila) -->
-        <!-- ======================================== -->
-        <div class="ingreso-config-row">
-          <h4>Configuración de Ingreso</h4>
-          @if (nombreIngresoGenerado()) {
-          <ion-badge color="primary">{{ nombreIngresoGenerado() }}</ion-badge>
-          }
-
-          <div class="ingreso-fields">
-            <!-- Ingreso -->
-            <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" label="Ingreso"
-              labelPlacement="floating" interface="popover" fill="outline">
-              <ion-select-option value="A">A (~120 días)</ion-select-option>
-              <ion-select-option value="B">B (~132 días)</ion-select-option>
-              <ion-select-option value="C">C (~105 días)</ion-select-option>
-            </ion-select>
-
-            <!-- Bloque -->
-            <ion-select [(ngModel)]="cohorteForm.bloque" (ionChange)="onBloqueChange()" label="Bloque"
-              labelPlacement="floating" interface="popover" fill="outline">
-              <ion-select-option value="PRIMERO">PRIMERO</ion-select-option>
-              <ion-select-option value="SEGUNDO">SEGUNDO</ion-select-option>
-              <ion-select-option value="TRANSVERSAL">TRANSVERSAL</ion-select-option>
-            </ion-select>
-
-            <!-- Fecha Inicio -->
-            <div class="date-field">
-              <label>Inicio</label>
-              <ion-datetime-button datetime="fecha-inicio"></ion-datetime-button>
-              <ion-popover [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="fecha-inicio" [(ngModel)]="cohorteForm.fechaInicio"
-                    (ionChange)="onFechaInicioChange()" presentation="date" locale="es-ES" [showDefaultButtons]="true">
-                  </ion-datetime>
-                </ng-template>
-              </ion-popover>
-            </div>
-
-            <!-- Fecha Fin -->
-            <div class="date-field">
-              <label>Fin</label>
-              <ion-datetime-button datetime="fecha-fin"></ion-datetime-button>
-              <ion-popover [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="fecha-fin" [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()"
-                    presentation="date" locale="es-ES" [showDefaultButtons]="true">
-                  </ion-datetime>
-                </ng-template>
-              </ion-popover>
-            </div>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-    }
-
-    <!-- ======================================== -->
-    <!-- 4. LISTA DE CURSOS (TABS) -->
-    <!-- ======================================== -->
-    @if (cursosDisponibles().length > 0) {
-    <div class="cursos-container">
-      <!-- Tabs principales de cursos -->
-      <ion-segment [value]="cursoSeleccionado() || cursosDisponibles()[0]?.codigo"
-        (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable>
+        <!-- Tabs de cursos existentes -->
         @for (curso of cursosDisponibles(); track curso.codigo) {
         <ion-segment-button [value]="curso.codigo">
-          <ion-label>{{ curso.nombre }}</ion-label>
+          <ion-label>
+            <span class="nombre-curso">{{ curso.nombre }}</span>
+            <span class="codigo-curso">{{ curso.codigo }}</span>
+          </ion-label>
         </ion-segment-button>
         }
       </ion-segment>
 
-      <!-- Contenido del curso seleccionado -->
-      @if (cursoSeleccionadoInfo(); as info) {
+      <!-- Contenido de la tarjeta del curso seleccionado o en creación -->
+      @if (infoParaMostrar(); as info) {
       <ion-card class="curso-card" [class.active]="info.tieneCalificaciones" [class.no-data]="!info.tieneCalificaciones"
-        [style.--curso-color]="info.color">
+        [class.es-nuevo]="info.esNuevo" [style.--curso-color]="info.color">
 
-        <!-- Header con título y acciones -->
+        <!-- Header con acciones -->
         <div class="curso-card-header">
-          <div class="curso-title-row">
-            <h3 class="curso-nombre">{{ info.nombre }}</h3>
-            <ion-chip class="curso-status-chip" [color]="info.tieneCalificaciones ? 'success' : 'warning'" size="small">
-              <ion-icon [name]="info.tieneCalificaciones ? 'checkmark-circle' : 'alert-circle'" size="small"></ion-icon>
-              <ion-label>{{ info.tieneCalificaciones ? 'Activo' : 'Sin datos' }}</ion-label>
-            </ion-chip>
-          </div>
-
-          <!-- Información secundaria -->
-          <div class="curso-info-row">
-            <div class="info-item">
-              <ion-icon name="code-slash"></ion-icon>
-              <span><strong>Código:</strong> {{ info.codigo }}</span>
-            </div>
-            @if (info.bloque) {
-            <div class="info-item">
-              <ion-icon name="calendar"></ion-icon>
-              <span><strong>Bloque:</strong> {{ info.bloque }}</span>
-            </div>
-            }
-          </div>
-
-          <!-- Estadísticas -->
-          <div class="curso-stats">
-            <div class="stat-item">
-              <ion-icon name="people"></ion-icon>
-              <div>
-                <div class="stat-value">{{ estudiantesCurso().length }}</div>
-                <div class="stat-label">Estudiantes</div>
-              </div>
-            </div>
-            <div class="stat-item">
-              <ion-icon name="grid"></ion-icon>
-              <div>
-                <div class="stat-value">{{ gruposCurso().length }}</div>
-                <div class="stat-label">Grupos</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Acciones -->
           <div class="card-actions">
+            @if (!info.esNuevo) {
             <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.EDITAR.color" (click)="editarCurso(info)"
               [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel" [attr.data-tooltip]="BUTTON_CONFIG.EDITAR.label">
               <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.EDITAR.icon"></ion-icon>
@@ -257,66 +109,191 @@
               [attr.data-tooltip]="BUTTON_CONFIG.ELIMINAR.label">
               <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.ELIMINAR.icon"></ion-icon>
             </ion-button>
+            }
           </div>
         </div>
 
         <div class="curso-card-content">
-          <!-- Subtabs: Detalle / Integrantes / Importar -->
+          <!-- Subtabs: Detalle / Integrantes -->
           <ion-segment [value]="subtabActivo()" (ionChange)="subtabActivo.set($any($event).detail.value)" scrollable>
             <ion-segment-button value="detalle">
               <ion-icon name="information-circle-outline"></ion-icon>
               <ion-label>Detalle</ion-label>
             </ion-segment-button>
+
+            <!-- Solo mostrar Integrantes para cursos que ya existen -->
+            @if (!info.esNuevo) {
             <ion-segment-button value="integrantes">
               <ion-icon name="people-outline"></ion-icon>
               <ion-label>Integrantes</ion-label>
             </ion-segment-button>
-            <ion-segment-button value="importar">
-              <ion-icon name="cloud-upload-outline"></ion-icon>
-              <ion-label>Importar</ion-label>
-            </ion-segment-button>
+            }
           </ion-segment>
 
-          <!-- SUBTAB: Detalle -->
+          <!-- SUBTAB: Detalle (Unificado para Lectura/Edición/Creación) -->
           @if (subtabActivo() === 'detalle') {
-          <div class="subtab-content">
-            <ion-list>
-              <ion-item>
-                <ion-label>Código</ion-label>
-                <ion-note slot="end">{{ info.codigo }}</ion-note>
-              </ion-item>
-              <ion-item>
-                <ion-label>Código Base</ion-label>
-                <ion-note slot="end">{{ info.codigoBase || '—' }}</ion-note>
-              </ion-item>
-              <ion-item>
-                <ion-label>Bloque</ion-label>
-                <ion-note slot="end">{{ info.bloque || '—' }}</ion-note>
-              </ion-item>
-              <ion-item>
-                <ion-label>Estudiantes</ion-label>
-                <ion-note slot="end">{{ estudiantesCurso().length }}</ion-note>
-              </ion-item>
-              <ion-item>
-                <ion-label>Grupos</ion-label>
-                <ion-note slot="end">{{ gruposCurso().length }}</ion-note>
-              </ion-item>
-            </ion-list>
+          <div class="subtab-content detail-compact-layout">
+            <ion-card class="compact-info-card"
+              [class.editing-view]="modoEdicion() && (codigoCursoEnEdicion === info.codigo || info.esNuevo)">
 
-            <!-- Rúbricas asociadas -->
-            <h4>Rúbricas asociadas</h4>
-            @if (rubricasAsociadas.length > 0) {
-            <div class="rubricas-list">
-              @for (rubrica of rubricasAsociadas; track rubrica.id) {
-              <ion-chip>
-                <ion-icon name="document-text-outline"></ion-icon>
-                <ion-label>{{ rubrica.nombre }}</ion-label>
-              </ion-chip>
+              <!-- VISTA EDICIÓN O CREACIÓN -->
+              @if (modoEdicion() && (codigoCursoEnEdicion === info.codigo || info.esNuevo)) {
+              <div class="compact-form-section editing">
+                <div class="form-main-grid">
+
+                  <!-- Columna Izquierda: Configuración -->
+                  <div class="config-side">
+                    <h4 class="section-title">Parámetros de Cohorte</h4>
+                    <div class="form-grid">
+                      <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" label="Ingreso"
+                        labelPlacement="stacked" interface="popover" fill="outline">
+                        <ion-select-option value="A">A (~120 d)</ion-select-option>
+                        <ion-select-option value="B">B (~132 d)</ion-select-option>
+                        <ion-select-option value="C">C (~105 d)</ion-select-option>
+                      </ion-select>
+
+                      <ion-select [(ngModel)]="cohorteForm.bloque" (ionChange)="onBloqueChange()" label="Bloque"
+                        labelPlacement="stacked" interface="popover" fill="outline">
+                        <ion-select-option value="PRIMERO">PRIMERO</ion-select-option>
+                        <ion-select-option value="SEGUNDO">SEGUNDO</ion-select-option>
+                        <ion-select-option value="TRANSVERSAL">TRANSVERSAL</ion-select-option>
+                      </ion-select>
+                    </div>
+
+                    <div class="form-grid dates">
+                      <div class="date-input">
+                        <label>Inicio</label>
+                        <ion-datetime-button
+                          [datetime]="info.esNuevo ? 'nuevo-fecha-inicio' : 'edit-fecha-inicio'"></ion-datetime-button>
+                        <ion-popover [keepContentsMounted]="true">
+                          <ng-template>
+                            <ion-datetime [id]="info.esNuevo ? 'nuevo-fecha-inicio' : 'edit-fecha-inicio'"
+                              [(ngModel)]="cohorteForm.fechaInicio" (ionChange)="onFechaInicioChange()"
+                              presentation="date" locale="es-ES">
+                            </ion-datetime>
+                          </ng-template>
+                        </ion-popover>
+                      </div>
+                      <div class="date-input">
+                        <label>Fin</label>
+                        <ion-datetime-button
+                          [datetime]="info.esNuevo ? 'nuevo-fecha-fin' : 'edit-fecha-fin'"></ion-datetime-button>
+                        <ion-popover [keepContentsMounted]="true">
+                          <ng-template>
+                            <ion-datetime [id]="info.esNuevo ? 'nuevo-fecha-fin' : 'edit-fecha-fin'"
+                              [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()"
+                              presentation="date" locale="es-ES">
+                            </ion-datetime>
+                          </ng-template>
+                        </ion-popover>
+                      </div>
+                    </div>
+
+                    @if (cursoParseado) {
+                    <ion-list lines="none" class="parsed-preview">
+                      <ion-item>
+                        <ion-label>
+                          <p>Nombre Detectado</p>
+                          <h3>{{ cursoParseado.nombre }}</h3>
+                        </ion-label>
+                      </ion-item>
+                      <ion-item>
+                        <ion-label>
+                          <p>Código Generado</p>
+                          <h3>{{ cursoParseado.codigo }}</h3>
+                        </ion-label>
+                      </ion-item>
+                    </ion-list>
+                    }
+                  </div>
+
+                  <!-- Columna Derecha: Importación -->
+                  <div class="import-side">
+                    <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
+
+                    <div class="compact-import-section no-border-top no-padding-top">
+                      <input type="file" #importEstudiantesInput accept=".csv"
+                        (change)="onEstudiantesFileSelected($event)" hidden />
+                      <ion-button expand="block" fill="outline" size="small" (click)="importEstudiantesInput.click()">
+                        <ion-icon name="people-outline" slot="start"></ion-icon>
+                        {{ info.esNuevo ? 'Importar Estudiantes (CSV)' : 'Actualizar Estudiantes' }}
+                      </ion-button>
+                      @if (estudiantesFileName) {
+                      <ion-chip color="success" size="small">
+                        <ion-label>{{ estudiantesFileName }}</ion-label>
+                        <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
+                      </ion-chip>
+                      }
+                    </div>
+
+                    <div class="compact-import-section no-border-top no-padding-top">
+                      <input type="file" #importCalificacionesInput accept=".csv"
+                        (change)="onCalificacionesFileSelected($event)" hidden />
+                      <ion-button expand="block" fill="outline" size="small"
+                        (click)="importCalificacionesInput.click()">
+                        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+                        {{ info.esNuevo ? 'Importar Calificaciones' : 'Importar Notas (Canvas)' }}
+                      </ion-button>
+                      @if (calificacionesFileName) {
+                      <ion-chip color="success" size="small">
+                        <ion-label>{{ calificacionesFileName }}</ion-label>
+                        <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
+                      </ion-chip>
+                      }
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              } @else {
+              <!-- VISTA LECTURA -->
+              <ion-list lines="none">
+                <ion-item>
+                  <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <p>Código</p>
+                    <h3>{{ info.codigo }}</h3>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="grid-outline" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <p>Código Base</p>
+                    <h3>{{ info.codigoBase || '—' }}</h3>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <p>Bloque</p>
+                    <h3>{{ info.bloque || '—' }}</h3>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <p>Ingreso</p>
+                    <h3>{{ info.ingreso || '—' }}</h3>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+
+              <div class="compact-rubricas-section">
+                <h4 class="section-title">Rúbricas asociadas</h4>
+                @if (rubricasAsociadas.length > 0) {
+                <div class="compact-rubricas-list">
+                  @for (rubrica of rubricasAsociadas; track rubrica.id) {
+                  <ion-chip outline="true" size="small">
+                    <ion-label>{{ rubrica.nombre }}</ion-label>
+                  </ion-chip>
+                  }
+                </div>
+                } @else {
+                <p class="no-data">No hay rúbricas</p>
+                }
+              </div>
               }
-            </div>
-            } @else {
-            <p>No hay rúbricas asociadas</p>
-            }
+            </ion-card>
           </div>
           }
 
@@ -352,28 +329,10 @@
               }
             </ion-list>
             } @else {
-            <p>No hay estudiantes en este grupo</p>
+            <div class="empty-state-mini">
+              <p>No hay estudiantes en este grupo</p>
+            </div>
             }
-          </div>
-          }
-
-          <!-- SUBTAB: Importar -->
-          @if (subtabActivo() === 'importar') {
-          <div class="subtab-content">
-            <input type="file" #importEstudiantesInput accept=".csv" (change)="onEstudiantesFileSelected($event)"
-              hidden />
-            <input type="file" #importCalificacionesInput accept=".csv" (change)="onCalificacionesFileSelected($event)"
-              hidden />
-
-            <ion-button expand="block" fill="outline" (click)="importEstudiantesInput.click()">
-              <ion-icon name="people-outline" slot="start"></ion-icon>
-              Importar Estudiantes (CSV)
-            </ion-button>
-
-            <ion-button expand="block" fill="outline" (click)="importCalificacionesInput.click()">
-              <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-              Importar Calificaciones (CSV)
-            </ion-button>
           </div>
           }
         </div>
@@ -381,7 +340,7 @@
       }
     </div>
     } @else {
-    <!-- Empty state -->
+    <!-- Estado vacío (No hay cursos y no estamos creando) -->
     <div class="empty-state">
       <ion-icon name="library"></ion-icon>
       <h3>No hay cursos registrados</h3>

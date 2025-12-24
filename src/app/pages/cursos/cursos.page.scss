@@ -116,6 +116,198 @@
 /* Contenido de subtab */
 .subtab-content {
   padding-top: spacing('md');
+
+  &.detail-compact-layout {
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: spacing('lg');
+  }
+}
+
+.compact-info-card {
+  margin: 0;
+  width: 100%;
+  max-width: 350px; // Default reading width
+  border: 1px solid rgba($azul-oscuro, 0.08);
+  box-shadow: $shadow-sm;
+  background: white;
+  @include transition(max-width, $transition-base);
+
+  &.editing-view {
+    max-width: 750px;
+  }
+
+  ion-list {
+    background: transparent;
+    padding: spacing('xs');
+  }
+
+  ion-item {
+    --padding-start: #{spacing('sm')};
+    --inner-padding-end: #{spacing('sm')};
+    --min-height: 56px;
+
+    ion-icon {
+      font-size: 1.2rem;
+      margin-inline-end: spacing('md');
+    }
+
+    p {
+      @include typography('xs', 'normal');
+      color: $gris-medio;
+      margin-bottom: 2px;
+    }
+
+    h3 {
+      @include typography('sm', 'medium');
+      color: $azul-oscuro;
+      margin: 0;
+    }
+  }
+}
+
+.compact-rubricas-section {
+  padding: spacing('md');
+  border-top: 1px solid rgba($azul-oscuro, 0.05);
+  background: rgba($azul-oscuro, 0.02);
+
+  .section-title {
+    @include typography('xs', 'semibold');
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $gris-medio;
+    margin-bottom: spacing('sm');
+  }
+
+  .compact-rubricas-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    ion-chip {
+      margin: 0;
+      height: 24px;
+      font-size: 0.75rem;
+    }
+  }
+
+  .no-data {
+    @include typography('xs', 'normal');
+    color: $gris-medio;
+    font-style: italic;
+  }
+}
+
+.compact-import-section {
+  padding: spacing('md');
+  border-top: 1px solid rgba($azul-oscuro, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: spacing('sm');
+
+  ion-button {
+    margin: 0;
+    --border-radius: #{$radius-sm};
+    @include typography('xs', 'medium');
+  }
+
+  &.no-border-top {
+    border-top: none;
+  }
+
+  &.no-padding-top {
+    padding-top: 0;
+  }
+}
+
+.empty-state-mini {
+  padding: spacing('xl');
+  text-align: center;
+  color: $gris-medio;
+  @include typography('sm', 'normal');
+}
+
+
+
+.compact-form-section {
+  padding: spacing('md');
+  border-top: 1px solid rgba($azul-oscuro, 0.05);
+
+  &.editing {
+    border-top: none;
+  }
+
+  .form-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: spacing('xl');
+    align-items: flex-start;
+
+    .import-side {
+      border-left: 1px solid rgba($azul-oscuro, 0.05);
+      padding-left: spacing('lg');
+      display: flex;
+      flex-direction: column;
+      gap: spacing('md');
+    }
+  }
+
+  .section-title {
+    @include typography('xs', 'semibold');
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $gris-medio;
+    margin-bottom: spacing('sm');
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: spacing('md');
+    margin-bottom: spacing('md');
+
+    &.dates {
+      margin-bottom: 0;
+    }
+  }
+
+  .date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      @include typography('xs', 'semibold');
+      color: $gris-medio;
+    }
+
+    ion-datetime-button {
+      &::part(native) {
+        background: $gris-claro;
+        border: 1px solid rgba($azul-oscuro, 0.1);
+        border-radius: $radius-sm;
+        color: $azul-oscuro;
+        @include typography('sm', 'medium');
+        padding: 4px 8px;
+        min-height: 38px;
+      }
+    }
+  }
+
+  ion-select {
+    --padding-start: #{spacing('sm')};
+    font-size: 0.875rem;
+  }
+}
+
+.parsed-preview {
+  background: rgba($azul-oscuro, 0.02);
+  margin-bottom: spacing('sm');
+
+  ion-item {
+    --background: transparent;
+    --min-height: 48px;
+  }
 }
 
 /* Rubricas list */

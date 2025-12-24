@@ -429,7 +429,8 @@ export class DataService implements OnDestroy {
           codigo: cursoData.codigo,              // Código base sin timestamp
           bloque: cursoData.bloque,
           fechaCreacion: cursoData.fechaCreacion,
-          profesor: cursoData.profesor || ''
+          profesor: cursoData.profesor || '',
+          ingreso: cursoData.cohorte             // Agregar información de cohorte
         },
         // Heredar rúbricas si existen cursos relacionados
         ...(rubricasHeredadas && { rubricasAsociadas: rubricasHeredadas })

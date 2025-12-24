@@ -32,6 +32,7 @@ import { addIcons } from 'ionicons';
 import {
   listOutline,
   add,
+  addCircle,
   addCircleOutline,
   createOutline,
   save,
@@ -62,7 +63,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktopOutline
+  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktopOutline, libraryOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -166,7 +167,40 @@ export class CursosPage implements OnInit, ViewWillEnter {
   cursoSeleccionadoInfo = computed(() => {
     const seleccion = this.cursoSeleccionado();
     if (!seleccion) return null;
-    return this.cursosDisponibles().find(curso => curso.codigo === seleccion) || null;
+
+    // Búsqueda robusta (igual que resolverClaveCurso)
+    return this.cursosDisponibles().find(c =>
+      c.codigo === seleccion ||
+      c.claveCurso === seleccion ||
+      c.nombreAbreviado === seleccion ||
+      c.codigoBase === seleccion
+    ) || null;
+  });
+
+  /**
+   * Información unificada para mostrar en la card principal.
+   * Si es un curso real, devuelve sus datos.
+   * Si estamos creando uno nuevo, devuelve un objeto temporal basado en el parseo.
+   */
+  infoParaMostrar = computed(() => {
+    const real = this.cursoSeleccionadoInfo();
+    if (real) return real;
+
+    // Si estamos en modo creación (no hay selección pero sí modo edición)
+    if (this.modoEdicion() && !this.cursoSeleccionado()) {
+      return {
+        nombre: this.cursoParseado?.nombre || 'Nuevo Curso',
+        codigo: this.cursoParseado?.codigo || 'Pendiente de importar',
+        codigoBase: this.cursoParseado?.codigoBase || '—',
+        bloque: this.cursoParseado?.bloque || '—',
+        ingreso: (this.cohorteForm as any).ingreso || '—', // Usamos el form actual
+        color: this.colorCursoSeleccionado,
+        tieneCalificaciones: false,
+        esNuevo: true // Flag para lógica de UI
+      };
+    }
+
+    return null;
   });
 
   estudiantesCurso = computed(() => {
@@ -339,7 +373,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   readonly BUTTON_CONFIG = BUTTON_CONFIG;
 
   constructor() {
-    addIcons({ ellipsisVertical, peopleOutline, checkmarkCircle, closeCircle, statsChartOutline, colorPalette, checkmark, codeSlash, calendar, desktopOutline, informationCircleOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, people, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, addCircleOutline, createOutline, trashOutline, cloudUpload, calendarOutline, appsOutline, listOutline, close, colorPaletteOutline, gridOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, pricetagOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ addCircleOutline, addCircle, informationCircleOutline, peopleOutline, closeCircle, statsChartOutline, codeSlash, gridOutline, calendarOutline, pricetagOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, checkmark, calendar, desktopOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, people, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, cloudUpload, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -540,8 +574,11 @@ export class CursosPage implements OnInit, ViewWillEnter {
               nombre: state.metadata?.nombre || nombreCurso,
               nombreAbreviado: state.metadata?.nombreAbreviado || '',
               codigo: codigoUnico,
-              codigoBase: state.metadata?.codigo || '',
+              codigoBase: (state.metadata as any)?.codigo || '',
+              siglas: (state.metadata as any)?.siglas || '',
+              grupo: (state.metadata as any)?.grupo || '',
               bloque: state.metadata?.bloque || '',
+              ingreso: (state.metadata as any)?.ingreso?.ingreso || '',
               fechaCreacion: state.metadata?.fechaCreacion || '',
               tieneCalificaciones: tieneArchivo
             };
@@ -560,7 +597,29 @@ export class CursosPage implements OnInit, ViewWillEnter {
       Logger.log(`[CursosPage] 🔍 DEBUG - cursosDisponibles FINAL:`, this.cursosDisponibles());
       Logger.log(`[CursosPage] ${this.cursosDisponibles().length} cursos cargados exitosamente`);
 
-      // Forzar detección de cambios (opcional con signals, pero ayuda en casos complejos)
+      // GESTIÓN DE SELECCIÓN INICIAL:
+      // 1. Intentar restaurar desde UIState si no hay selección local
+      if (!this.cursoSeleccionado() && uiState.cursoActivo) {
+        const existe = mappedCursos.some(c => c.codigo === uiState.cursoActivo || c.claveCurso === uiState.cursoActivo);
+        if (existe) {
+          Logger.log(`[CursosPage] 🎯 Restaurando selección desde UIState: ${uiState.cursoActivo}`);
+          this.seleccionarCurso(uiState.cursoActivo);
+        }
+      }
+
+      // 2. Si sigue sin haber selección (o era inválida), seleccionar el primero
+      if (!this.cursoSeleccionado() && mappedCursos.length > 0) {
+        const primerCurso = mappedCursos[0].codigo;
+        Logger.log(`[CursosPage] 🎯 Seleccionando curso inicial automáticamente: ${primerCurso}`);
+        this.seleccionarCurso(primerCurso);
+      }
+
+      // 3. Verificación final: Si el curso seleccionado no está en los disponibles, limpiar o re-seleccionar
+      if (this.cursoSeleccionado() && !this.cursoSeleccionadoInfo() && mappedCursos.length > 0) {
+        Logger.warn('[CursosPage] ⚠️ Selección actual inválida, re-seleccionando el primero');
+        this.seleccionarCurso(mappedCursos[0].codigo);
+      }
+      // Forzar detección de cambios
       this.cd.detectChanges();
     } catch (error) {
       Logger.error('[CursosPage] Error crítico al cargar cursos:', error);
@@ -573,6 +632,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     Logger.log('🔘 [CursosPage] Click en Crear Curso - Iniciando...');
     try {
       this.modoEdicion.set(true);
+      this.subtabActivo.set('detalle');
       this.cursoSeleccionado.set(null);
       this.cursoSeleccionadoClave.set(null);
       this.limpiarFormulario();
@@ -653,14 +713,31 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   seleccionarCurso(codigo: string) {
+    // 1. Manejar caso de creación
+    if (codigo === 'NUEVO') {
+      if (!this.modoEdicion() || this.cursoSeleccionado() !== null) {
+        this.iniciarCreacionCurso();
+      }
+      return;
+    }
+
+    // 2. Si es el mismo curso y ya estamos en modo correcto, no hacer nada
+    if (this.cursoSeleccionado() === codigo && this.vistaActiva() === 'general') {
+      return;
+    }
+
+    // 3. Selección normal de curso existente
     this.cursoSeleccionado.set(codigo);
     const clave = this.resolverClaveCurso(codigo);
     this.cursoSeleccionadoClave.set(clave);
     this.vistaActiva.set('general');
+    this.subtabActivo.set('detalle'); // Siempre volver a detalle al cambiar de curso
     this.modoEdicion.set(false);
     this.cargarRubricasAsociadas(clave || codigo);
+
     // Limpiar estado en UIState
     this.dataService.updateUIState({ cursosModoEdicion: false });
+    this.cd.detectChanges();
   }
 
   deseleccionarCurso() {
@@ -711,7 +788,34 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const claveCurso = this.cursoSeleccionadoClave() || this.resolverClaveCurso(curso.codigo) || curso.codigo;
 
     this.modoEdicion.set(true);
+    this.subtabActivo.set('detalle');
     this.codigoCursoEnEdicion = claveCurso;
+
+    // Cargar metadatos de cohorte si existen
+    const uiState = this.dataService.getUIState();
+    const courseState = uiState.courseStates?.[claveCurso];
+    const cohorte = courseState?.metadata?.ingreso;
+
+    if (cohorte) {
+      this.cohorteForm = {
+        anio: cohorte.fechaInicio ? new Date(cohorte.fechaInicio).toISOString() : new Date().toISOString(),
+        bloque: (courseState?.metadata as any)?.bloque || 'PRIMERO',
+        ingreso: (cohorte as any).ingreso || 'A',
+        fechaInicio: cohorte.fechaInicio ? new Date(cohorte.fechaInicio).toISOString() : undefined,
+        fechaFin: cohorte.fechaFin ? new Date(cohorte.fechaFin).toISOString() : undefined,
+        fechaFinManual: true
+      };
+    } else {
+      this.cohorteForm = {
+        anio: new Date().toISOString(),
+        bloque: curso.bloque || 'PRIMERO',
+        ingreso: 'A',
+        fechaInicio: new Date().toISOString(),
+        fechaFin: undefined,
+        fechaFinManual: false
+      };
+    }
+
     this.cursoParseado = {
       nombre: curso.nombre,
       codigo: curso.codigo,
@@ -741,6 +845,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
       estudiantes: JSON.parse(JSON.stringify(estudiantes || [])),
       calificaciones: archivo ? JSON.parse(JSON.stringify(archivo)) : null
     };
+
+    this.cd.detectChanges();
   }
 
   async onEstudiantesFileSelected(event: Event) {
@@ -1024,8 +1130,6 @@ export class CursosPage implements OnInit, ViewWillEnter {
         const bloqueMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i);
         bloqueTexto = bloqueMatch?.[1] || '';
         const bloqueNum = this.convertirBloqueTextoANumero(bloqueTexto);
-
-        // Extraer modalidad (ej: VIRTUAL → V)
         const modalidadMatch = primeraSeccion.match(/BLOQUE-([A-Z]+)\//i);
         const modalidad = modalidadMatch?.[1]?.[0] || 'P';
 
@@ -1033,20 +1137,26 @@ export class CursosPage implements OnInit, ViewWillEnter {
         codigoAbreviado = `${enfasisCodigo}-${grupo}-BLQ${bloqueNum}-${modalidad}`;
       } else {
         // Fallback: usar nombre del archivo
-        const nombreArchivo = file.name.replace('.csv', '');
-        const codigoMatch = nombreArchivo.match(/^([A-Z]{2,4})(?=B\d+)|([A-Z]{2,4})(?=_)|([A-Z]{2,4})$/);
-        const bloqueMatch = nombreArchivo.match(/(B\d+)/i);
+        const nombreArchivo = (file as any).name.replace('.csv', '');
+        const codigoMatch = nombreArchivo.match(/^([A-Z]{2,4})(?=\d+)|([A-Z]{2,4})(?=_)|([A-Z]{2,4})$/i);
+        const bloqueMatch = nombreArchivo.match(/([A-Z]\d+)/i);
 
         nombreCompleto = nombreArchivo;
-        codigoAbreviado = codigoMatch?.[0] || '';
+        codigoAbreviado = codigoMatch?.[0] || nombreArchivo;
         bloqueTexto = bloqueMatch?.[1] || '';
-        enfasisCodigo = codigoAbreviado; // En fallback usamos lo mismo
+        enfasisCodigo = codigoAbreviado;
       }
 
+      // Extraer grupo limpio para visualización (ej: B01)
+      const grupoSoloMatch = codigoAbreviado.match(/([A-Z]\d+)/);
+      const grupoSolo = grupoSoloMatch ? grupoSoloMatch[1] : '';
+
       this.estudiantesCargados = estudiantes;
-      // Ajuste solicitado: Nombre Corto = Siglas + Código de curso
+      // Ajuste solicitado: Nombre Corto = Siglas + Grupo (para tabs)
       this.cursoParseado = {
-        nombre: `${enfasisCodigo} ${codigoAbreviado}`,
+        nombre: nombreCompleto,
+        siglas: enfasisCodigo,
+        grupo: grupoSolo,
         codigo: codigoAbreviado,
         bloque: bloqueTexto
       };
@@ -1438,17 +1548,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
         const metadataExistente = courseState?.metadata;
 
         // Actualizar metadata del curso preservando campos existentes
+        const newMetadata: any = {
+          nombre: this.cursoParseado.nombre,
+          siglas: (this.cursoParseado as any).siglas,
+          grupo: (this.cursoParseado as any).grupo,
+          codigo: this.cursoParseado.codigo,
+          bloque: this.cursoParseado.bloque,
+          fechaCreacion: metadataExistente?.fechaCreacion || new Date().toISOString(),
+          profesor: metadataExistente?.profesor || '',
+          nombreAbreviado: metadataExistente?.nombreAbreviado,
+          codigoUnico: metadataExistente?.codigoUnico,
+          ingreso: cohorteData
+        };
+
         await this.dataService.updateCourseState(codigoCurso, {
-          metadata: {
-            nombre: this.cursoParseado.nombre,
-            codigo: this.cursoParseado.codigo,
-            bloque: this.cursoParseado.bloque,
-            fechaCreacion: metadataExistente?.fechaCreacion || new Date().toISOString(),
-            profesor: metadataExistente?.profesor || '',
-            nombreAbreviado: metadataExistente?.nombreAbreviado,
-            codigoUnico: metadataExistente?.codigoUnico,
-            ingreso: cohorteData
-          }
+          metadata: newMetadata
         });
 
         // Actualizar el color si se cambió

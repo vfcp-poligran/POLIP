@@ -231,6 +231,29 @@
         pointer-events: none;
         opacity: 0.6;
     }
+
+    // Estado nuevo (Creación)
+    &.es-nuevo {
+        border: 2px dashed rgba($color-success, 0.4);
+        background: rgba($color-success, 0.02);
+        animation: pulse-border-new 2s ease-in-out infinite;
+
+        &::before {
+            background: $color-success;
+        }
+    }
+}
+
+@keyframes pulse-border-new {
+
+    0%,
+    100% {
+        border-color: rgba($color-success, 0.4);
+    }
+
+    50% {
+        border-color: rgba($color-success, 0.8);
+    }
 }
 
 // ============================================
