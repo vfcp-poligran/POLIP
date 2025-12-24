@@ -4,6 +4,7 @@
  */
 
 @use 'sass:color';
+@use 'sass:map';
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
 
@@ -116,7 +117,7 @@
 
         strong {
             color: $azul-oscuro;
-            font-weight: map-get($font-weights, 'medium');
+            font-weight: map.get($font-weights, 'medium');
         }
     }
 }

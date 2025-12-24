@@ -4,6 +4,7 @@
  */
 
 @use 'sass:color';
+@use 'sass:map';
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
 
@@ -56,16 +57,16 @@ ion-item {
     // Texto principal mínimo 16px
     .curso-nombre,
     ion-card-title {
-        font-size: font-size('base') !important;
-        line-height: map-get($line-heights, 'normal');
+        font-size: font-size('base');
+        line-height: map.get($line-heights, 'normal');
     }
 
     // Texto secundario mínimo 14px
     .curso-codigo-label,
     ion-card-subtitle,
     ion-note {
-        font-size: font-size('sm') !important;
-        line-height: map-get($line-heights, 'normal');
+        font-size: font-size('sm');
+        line-height: map.get($line-heights, 'normal');
     }
 
     // Headers - Usar estilos globales de _page-header.scss
@@ -117,7 +118,7 @@ button,
 .curso-nombre,
 ion-card-title {
     color: $azul-oscuro;
-    font-weight: map-get($font-weights, 'semibold');
+    font-weight: map.get($font-weights, 'semibold');
 }
 
 // Texto secundario con contraste mínimo 4.5:1
@@ -287,7 +288,7 @@ ion-chip {
 
     &::before {
         content: '⚠ ';
-        font-weight: map-get($font-weights, 'bold');
+        font-weight: map.get($font-weights, 'bold');
     }
 }
 
