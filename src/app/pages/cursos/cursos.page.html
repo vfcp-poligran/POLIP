@@ -6,7 +6,7 @@
 
   <!-- FAB Crear Curso -->
   @if (!modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-hide-md-up">
     <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CREAR.icon"></ion-icon>
@@ -16,13 +16,13 @@
 
   <!-- FABs de edición -->
   @if (modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 16px">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 16px" class="ion-hide-md-up">
     <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
       [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 80px">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 80px" class="ion-hide-md-up">
     <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
