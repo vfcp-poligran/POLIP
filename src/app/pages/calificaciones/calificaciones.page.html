@@ -27,9 +27,11 @@
       </div>
 
       @if (cursosConCalificaciones.length === 0) {
-      <div class="no-cursos-container">
+      <!-- Empty state - Usando estilos globales de _empty-state.scss -->
+      <div class="empty-state">
         <ion-icon name="stats-chart"></ion-icon>
-        <span>No hay archivos de calificaciones cargados</span>
+        <h3>No hay calificaciones cargadas</h3>
+        <p>Importe archivos de calificaciones desde la página de Cursos</p>
       </div>
       }
 
