@@ -1,4 +1,9 @@
 // ============================================
+// IMPORTS - Estilos compartidos
+// ============================================
+@use '../../shared/styles/page-header'; // Estilos compartidos de header
+
+// ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
 ion-content {
