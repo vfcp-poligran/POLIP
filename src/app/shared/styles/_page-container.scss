@@ -1,0 +1,41 @@
+// ============================================
+// SHARED PAGE CONTAINER STYLES
+// ============================================
+// Estilos globales para contenedores de página
+// Usado en: Cursos, Rúbricas, Calificaciones, etc.
+
+/**
+ * ion-content background
+ * Fondo consistente en todas las páginas
+ */
+ion-content {
+    --background: #f8f9fa;
+}
+
+/**
+ * Contenedor principal de página
+ * Sistema de padding responsivo estandarizado
+ */
+.page-container {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+
+    // Desktop (≥992px): 24px
+    padding: 24px;
+
+    // Tablet (768-991px): 16px
+    @media (min-width: 768px) and (max-width: 991px) {
+        padding: 16px;
+    }
+
+    // Mobile (<768px): 12px
+    @media (max-width: 767px) {
+        padding: 12px;
+    }
+
+    // Landscape móvil: 8px
+    @media (max-height: 500px) and (orientation: landscape) {
+        padding: 8px;
+    }
+}

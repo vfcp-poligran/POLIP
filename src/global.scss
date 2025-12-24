@@ -18,6 +18,7 @@
    ============================================================ */
 @use "app/shared/styles/page-header"; // Headers de página
 @use "app/shared/styles/empty-state"; // Estados vacíos
+@use "app/shared/styles/page-container"; // Contenedores de página
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";

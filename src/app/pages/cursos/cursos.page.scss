@@ -14,28 +14,11 @@
 @use '../../shared/styles/empty-state'; // Estados vacíos
 @use '../../shared/styles/card-system'; // Sistema de tarjetas
 
-
-/* Contenedor principal de la página - Ancho completo */
-.page-container {
-  padding: spacing('lg'); // 24px Desktop
-  width: 100%;
-  box-sizing: border-box;
-
-  // Tablet (768-991px)
-  @include respond-to-max('lg') {
-    padding: spacing('md'); // 16px
-  }
-
-  // Mobile (<768px)
-  @include respond-to-max('md') {
-    padding: 12px;
-  }
-
-  // Landscape móvil
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding: spacing('sm'); // 8px
-  }
-}
+// ============================================
+// CONTENEDOR PRINCIPAL - Usa estilos globales
+// ============================================
+// ion-content y .page-container estilos en:
+// src/app/shared/styles/_page-container.scss
 
 /* Botones de importación */
 .import-buttons {

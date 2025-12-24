@@ -6,34 +6,10 @@
 // ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
-// CONTENEDOR PRINCIPAL - Normalizado con Cursos
+// CONTENEDOR PRINCIPAL - Usa estilos globales
 // ============================================
-ion-content {
-  --background: #f8f9fa;
-}
-
-.page-container {
-  // Ancho completo con padding responsivo estandarizado
-  padding: 24px; // Desktop
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-
-  // Tablet (768-991px)
-  @media (min-width: 768px) and (max-width: 991px) {
-    padding: 16px;
-  }
-
-  // Mobile (<768px)
-  @media (max-width: 767px) {
-    padding: 12px;
-  }
-
-  // Landscape móvil
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding: 8px;
-  }
-}
+// ion-content y .page-container estilos en:
+// src/app/shared/styles/_page-container.scss
 
 // ============================================
 // GRID PRINCIPAL - LAYOUT FLEXBOX VERTICAL
