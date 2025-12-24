@@ -13,12 +13,9 @@ ion-content {
 }
 
 .page-container {
-  // Valores normalizados con Cursos
+  // Ancho completo
   padding: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-
-  // Layout
+  width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
 

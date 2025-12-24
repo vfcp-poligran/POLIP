@@ -15,11 +15,11 @@
 @use '../../shared/styles/card-system'; // Sistema de tarjetas
 
 
-/* Contenedor principal de la página */
+/* Contenedor principal de la página - Ancho completo */
 .page-container {
   padding: spacing('md');
-  max-width: $max-width-container;
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Botones de importación */

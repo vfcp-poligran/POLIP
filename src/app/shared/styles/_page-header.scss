@@ -18,17 +18,18 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%; // Ocupar todo el ancho disponible
+    width: 100%;
+    box-sizing: border-box;
 
-    // Spacing - valores exactos para consistencia
-    padding: var(--page-header-padding) var(--page-header-padding-horizontal);
-    margin-bottom: var(--page-header-margin-bottom);
+    // Spacing
+    padding: var(--page-header-padding, 8px) var(--page-header-padding-horizontal, 16px);
+    margin-bottom: var(--page-header-margin-bottom, 8px);
 
     // Visual styling
     background: linear-gradient(135deg,
             var(--ion-color-primary) 0%,
             var(--ion-color-primary-shade) 100%);
-    border-radius: var(--page-header-border-radius);
+    border-radius: var(--page-header-border-radius, 6px);
     box-shadow: var(--page-header-box-shadow);
 
     // Positioning
