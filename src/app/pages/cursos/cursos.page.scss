@@ -122,7 +122,7 @@
 
 /* Rubricas list */
 .rubricas-list {
-  @include bp.flex-gap(spacing('sm'));
+  gap: 0.5rem; // 8px
   flex-wrap: wrap;
   margin-top: spacing('sm');
 }
