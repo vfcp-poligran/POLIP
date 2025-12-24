@@ -18,6 +18,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%; // Ocupar todo el ancho disponible
 
     // Spacing - valores exactos para consistencia
     padding: var(--page-header-padding) var(--page-header-padding-horizontal);
