@@ -5,6 +5,7 @@
 
 /* Importar estilos modulares como partials */
 @use './seguimiento';
+@use '../../shared/styles/page-header'; // Estilos compartidos de header
 
 /* Variables locales simplificadas con ajustes dinámicos para móviles */
 :host {
@@ -233,6 +234,7 @@ ion-content {
   z-index: 10;
   width: 100%;
   box-sizing: border-box;
+
   // Barra de navegación de grupos en la parte superior
   .grupos-nav-bar-top {
     display: flex;
@@ -876,6 +878,7 @@ ion-card {
             ion-label {
               display: none;
             }
+
             ion-icon {
               margin-right: 0;
             }
@@ -905,6 +908,7 @@ ion-card {
             ion-label {
               display: none;
             }
+
             ion-icon {
               margin-right: 0;
             }
@@ -1281,6 +1285,7 @@ ion-card {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1588,7 +1593,8 @@ ion-card {
   position: relative;
   width: 100%;
   max-width: 100%;
-  height: 100%; /* Ajuste exacto al espacio disponible */
+  height: 100%;
+  /* Ajuste exacto al espacio disponible */
   /* Usar todo el espacio del ion-content */
   padding: 0;
   margin: 0;
@@ -1600,7 +1606,8 @@ ion-card {
 
   @media (max-width: 768px) {
     padding: 0;
-    height: auto; /* En móvil permite altura dinámica para scroll */
+    height: auto;
+    /* En móvil permite altura dinámica para scroll */
     min-height: 100%;
   }
 
@@ -3888,6 +3895,7 @@ ion-chip {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -4355,9 +4363,17 @@ ion-chip {
               min-width: 180px;
             }
 
-            &.col-evaluados ion-icon { color: #86efac; }
-            &.col-pendientes ion-icon { color: #fde047; }
-            &.col-atencion ion-icon { color: #fca5a5; }
+            &.col-evaluados ion-icon {
+              color: #86efac;
+            }
+
+            &.col-pendientes ion-icon {
+              color: #fde047;
+            }
+
+            &.col-atencion ion-icon {
+              color: #fca5a5;
+            }
           }
         }
       }
@@ -4434,9 +4450,17 @@ ion-chip {
             font-size: 0.9rem;
             color: white;
 
-            &.e1 { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-            &.e2 { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-            &.ef { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+            &.e1 {
+              background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            }
+
+            &.e2 {
+              background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            }
+
+            &.ef {
+              background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            }
           }
 
           .entrega-nombre {
@@ -4452,8 +4476,15 @@ ion-chip {
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
     }
 
     // Estilos legacy para entregas-grid (mantener compatibilidad)
@@ -4524,20 +4555,35 @@ ion-chip {
           }
 
           &.evaluados {
-            ion-icon { color: #10b981; }
-            .stat-numero { color: #059669; }
+            ion-icon {
+              color: #10b981;
+            }
+
+            .stat-numero {
+              color: #059669;
+            }
           }
 
           &.pendientes {
-            ion-icon { color: #f59e0b; }
-            .stat-numero { color: #d97706; }
+            ion-icon {
+              color: #f59e0b;
+            }
+
+            .stat-numero {
+              color: #d97706;
+            }
           }
 
           &.atencion {
             opacity: 0.4;
 
-            ion-icon { color: #ef4444; }
-            .stat-numero { color: #dc2626; }
+            ion-icon {
+              color: #ef4444;
+            }
+
+            .stat-numero {
+              color: #dc2626;
+            }
 
             &.visible {
               opacity: 1;
@@ -4595,8 +4641,13 @@ ion-chip {
         &.atencion {
           opacity: 0.4;
 
-          ion-icon { color: #ef4444; }
-          .total-valor { color: #dc2626; }
+          ion-icon {
+            color: #ef4444;
+          }
+
+          .total-valor {
+            color: #dc2626;
+          }
 
           &.visible {
             opacity: 1;
@@ -4783,14 +4834,33 @@ ion-chip {
       }
 
       // Estados visuales
-      &.estado-ok::before { background: var(--verde); }
-      &.estado-alerta::before { background: #ffc107; }
-      &.estado-problema::before { background: #dc3545; }
-      &.estado-sin-datos::before { background: #aaa; }
+      &.estado-ok::before {
+        background: var(--verde);
+      }
 
-      &.estado-ok { border-color: rgba(51, 153, 102, 0.3); }
-      &.estado-alerta { border-color: rgba(255, 193, 7, 0.3); }
-      &.estado-problema { border-color: rgba(220, 53, 69, 0.3); }
+      &.estado-alerta::before {
+        background: #ffc107;
+      }
+
+      &.estado-problema::before {
+        background: #dc3545;
+      }
+
+      &.estado-sin-datos::before {
+        background: #aaa;
+      }
+
+      &.estado-ok {
+        border-color: rgba(51, 153, 102, 0.3);
+      }
+
+      &.estado-alerta {
+        border-color: rgba(255, 193, 7, 0.3);
+      }
+
+      &.estado-problema {
+        border-color: rgba(220, 53, 69, 0.3);
+      }
 
       .card-header {
         display: flex;
@@ -4855,22 +4925,47 @@ ion-chip {
           }
 
           &.stat-ok {
-            ion-icon, .stat-value { color: var(--verde); }
-            &.activo { background: rgba(51, 153, 102, 0.1); }
+
+            ion-icon,
+            .stat-value {
+              color: var(--verde);
+            }
+
+            &.activo {
+              background: rgba(51, 153, 102, 0.1);
+            }
           }
 
           &.stat-solo {
-            ion-icon, .stat-value { color: #ffc107; }
-            &.activo { background: rgba(255, 193, 7, 0.1); }
+
+            ion-icon,
+            .stat-value {
+              color: #ffc107;
+            }
+
+            &.activo {
+              background: rgba(255, 193, 7, 0.1);
+            }
           }
 
           &.stat-ausente {
-            ion-icon, .stat-value { color: #dc3545; }
-            &.activo { background: rgba(220, 53, 69, 0.1); }
+
+            ion-icon,
+            .stat-value {
+              color: #dc3545;
+            }
+
+            &.activo {
+              background: rgba(220, 53, 69, 0.1);
+            }
           }
 
           &.stat-pendiente {
-            ion-icon, .stat-value { color: #888; }
+
+            ion-icon,
+            .stat-value {
+              color: #888;
+            }
           }
         }
       }
@@ -4888,9 +4983,17 @@ ion-chip {
           .progress-segment {
             transition: width 0.3s ease;
 
-            &.ok { background: var(--verde); }
-            &.solo { background: #ffc107; }
-            &.ausente { background: #dc3545; }
+            &.ok {
+              background: var(--verde);
+            }
+
+            &.solo {
+              background: #ffc107;
+            }
+
+            &.ausente {
+              background: #dc3545;
+            }
           }
         }
       }
@@ -4946,9 +5049,17 @@ ion-chip {
             letter-spacing: 0.5px;
           }
 
-          &.ok .resumen-numero { color: #90ee90; }
-          &.alerta .resumen-numero { color: #ffd700; }
-          &.problema .resumen-numero { color: #ff6b6b; }
+          &.ok .resumen-numero {
+            color: #90ee90;
+          }
+
+          &.alerta .resumen-numero {
+            color: #ffd700;
+          }
+
+          &.problema .resumen-numero {
+            color: #ff6b6b;
+          }
         }
       }
     }
@@ -5160,6 +5271,7 @@ ion-chip {
       font-size: 0.6rem;
 
       thead {
+
         .header-entrega,
         .header-grupo {
           padding: 3px 4px;

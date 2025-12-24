@@ -1,4 +1,9 @@
 // ============================================
+// IMPORTS - Estilos compartidos
+// ============================================
+@use '../../shared/styles/page-header'; // Estilos compartidos de header
+
+// ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
 ion-content {
@@ -806,8 +811,13 @@ ion-content {
       padding: 6px 6px;
       font-size: 0.7rem;
 
-      &.col-id { font-size: 0.65rem; }
-      &.col-grupo ion-badge.grupo-badge { font-size: 0.7rem; }
+      &.col-id {
+        font-size: 0.65rem;
+      }
+
+      &.col-grupo ion-badge.grupo-badge {
+        font-size: 0.7rem;
+      }
     }
 
     // Responsive mobile
@@ -815,7 +825,10 @@ ion-content {
       padding: 5px 5px;
       font-size: 0.65rem;
 
-      &.col-id { font-size: 0.6rem; }
+      &.col-id {
+        font-size: 0.6rem;
+      }
+
       &.col-grupo {
         padding: 5px 3px;
 
@@ -823,6 +836,7 @@ ion-content {
           font-size: 0.65rem;
         }
       }
+
       &.col-estudiante {
         font-size: 0.62rem;
         max-width: 140px;
@@ -838,6 +852,7 @@ ion-content {
         font-size: 0.55rem;
         min-width: 50px;
       }
+
       &.col-grupo {
         padding: 4px 2px;
         min-width: 35px;
@@ -848,6 +863,7 @@ ion-content {
           --padding-end: 4px;
         }
       }
+
       &.col-estudiante {
         font-size: 0.58rem;
         max-width: 120px;
@@ -935,6 +951,7 @@ ion-content {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1225,6 +1242,7 @@ ion-content {
 // PRINT STYLES
 // ============================================
 @media print {
+
   .header-selector-cursos,
   .cursos-botones-bar,
   .tabla-info-bar {
