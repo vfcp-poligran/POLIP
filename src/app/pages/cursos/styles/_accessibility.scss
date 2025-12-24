@@ -55,10 +55,7 @@ ion-item {
 
     // Texto principal mínimo 16px
     .curso-nombre,
-    ion-card-title,
-    h1,
-    h2,
-    h3 {
+    ion-card-title {
         font-size: font-size('base') !important;
         line-height: map-get($line-heights, 'normal');
     }
@@ -71,11 +68,8 @@ ion-item {
         line-height: map-get($line-heights, 'normal');
     }
 
-    // Headers
-    .page-header h2 {
-        font-size: font-size('lg');
-        line-height: map-get($line-heights, 'tight');
-    }
+    // Headers - Usar estilos globales de _page-header.scss
+    // .page-header h2 styles moved to global _page-header.scss
 }
 
 // ============================================
