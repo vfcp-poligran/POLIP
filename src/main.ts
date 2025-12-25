@@ -2,7 +2,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, ErrorHandler } from '@angular/core';
+import { provideHttpClient, withInterceptors, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { addIcons } from 'ionicons';
 import {
@@ -48,6 +49,8 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { isDevMode } from '@angular/core';
 import { provideServiceWorker } from '@angular/service-worker';
+import { GlobalErrorHandler } from './app/core/errors/global-error-handler';
+import { HttpErrorInterceptor } from './app/core/interceptors/http-error.interceptor';
 
 // Registrar iconos de Ionicons
 addIcons({
@@ -99,8 +102,15 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes, withPreloading(PreloadAllModules)),
     importProvidersFrom(IonicStorageModule.forRoot()),
     provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
-          }),
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+
+    // Manejo global de errores
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+
+    // HTTP Client con interceptor de errores
+    provideHttpClient(),
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
   ],
 });
