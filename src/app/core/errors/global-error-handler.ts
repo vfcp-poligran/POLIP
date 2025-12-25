@@ -19,7 +19,7 @@ export class GlobalErrorHandler implements ErrorHandler {
 
         // Mostrar mensaje al usuario
         if (userMessage) {
-            this.toastService.showToast(userMessage, 'danger', 4000);
+            this.toastService.error(userMessage);
         }
 
         // TODO: Enviar a servicio de telemetría (Sentry, LogRocket, etc.)
