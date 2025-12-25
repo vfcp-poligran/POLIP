@@ -102,7 +102,16 @@
 
 /* Contenedor de cursos */
 .cursos-container {
-  margin-top: spacing('lg');
+  // Espaciado responsivo entre header y tabs de cursos
+  margin-top: 0.75rem; // Mobile: compacto (12px)
+
+  @include bp.tablet-only {
+    margin-top: 1rem; // Tablet: medio (16px)
+  }
+
+  @include bp.desktop-only {
+    margin-top: 1.5rem; // Desktop: amplio (24px)
+  }
 }
 
 /* Acciones en card */

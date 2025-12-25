@@ -16,7 +16,7 @@
 .curso-card {
     margin-bottom: spacing('md');
     border-radius: $radius-lg;
-    overflow: hidden;
+    overflow: visible; // Permite que los tooltips se vean fuera de la card
     @include card-elevation(2);
     @include transition(all, $transition-base);
 

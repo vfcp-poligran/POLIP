@@ -13,11 +13,8 @@ import {
   IonList,
   IonItem,
   IonBadge,
-  IonDatetime,
   IonSelect,
   IonSelectOption,
-  IonPopover,
-  IonDatetimeButton,
   IonSegment,
   IonSegmentButton,
   IonNote,
@@ -102,11 +99,8 @@ interface EstudianteConNotas {
     IonList,
     IonItem,
     IonBadge,
-    IonDatetime,
     IonSelect,
     IonSelectOption,
-    IonPopover,
-    IonDatetimeButton,
     IonSegment,
     IonSegmentButton,
     IonNote]
@@ -178,21 +172,116 @@ export class CursosPage implements OnInit, ViewWillEnter {
    * Si es un curso real, devuelve sus datos.
    * Si estamos creando uno nuevo, devuelve un objeto temporal basado en el parseo.
    */
+  /**
+   * Genera el código estandarizado: SIGLAS-B##-BLQ##-MOD
+   * Ejemplo: HPM1-B01-BLQ01-V
+   */
+  public getStandardizedCode(c: any): string {
+    Logger.log('🔍 getStandardizedCode INPUT:', c);
+
+    if (!c) return '—';
+    const siglas = c.siglas || this.generarAcronimoCurso(c.nombre || '');
+    const ingreso = c.ingreso || '';
+
+    Logger.log('  📌 Siglas:', siglas);
+    Logger.log('  📌 Ingreso:', ingreso);
+    Logger.log('  📌 Bloque original:', c.bloque);
+    Logger.log('  📌 Grupo original:', c.grupo);
+    Logger.log('  📌 Modalidad original:', c.modalidad);
+
+    // Extraer bloque y formatear como BLQ01, BLQ02, BLQTRV
+    const bloqueRaw = this.convertirBloqueTextoANumero(c.bloque || '');
+    Logger.log('  📌 Bloque convertido:', bloqueRaw);
+
+    let bloqueFormatted = '';
+    if (bloqueRaw) {
+      // Si es un número, formatearlo con ceros a la izquierda
+      const bloqueMatch = bloqueRaw.match(/\d+/);
+      if (bloqueMatch) {
+        const bloqueNum = bloqueMatch[0].padStart(2, '0');
+        bloqueFormatted = `BLQ${bloqueNum}`;
+      } else {
+        // Si no es número (ej: TRV), usar tal cual
+        bloqueFormatted = `BLQ${bloqueRaw}`;
+      }
+    }
+    Logger.log('  📌 Bloque formateado:', bloqueFormatted);
+
+    // Extraer iniciales de la modalidad
+    const modalidadTexto = c.modalidad || '';
+    const modalidadInitials = this.getModalityInitials(modalidadTexto);
+    Logger.log('  📌 Modalidad iniciales:', modalidadInitials);
+
+    // Extraer grupo con su letra de ingreso y asegurar 2 dígitos (ej: B01)
+    const grupo = c.grupo || '';
+    const matchCod = grupo.match(/([A-Z])?(\d+)/i);
+    const letra = matchCod?.[1]?.toUpperCase() || ingreso;
+    const numero = matchCod?.[2]?.padStart(2, '0') || '01';
+    const ingresoGrupo = `${letra}${numero}`;
+    Logger.log('  📌 Ingreso+Grupo:', ingresoGrupo);
+
+    // Unir con guiones: SIGLAS, B##, BLQ##, MOD
+    const resultado = [siglas, ingresoGrupo, bloqueFormatted, modalidadInitials]
+      .filter(s => !!s)
+      .join('-');
+
+    Logger.log('  ✅ CÓDIGO FINAL:', resultado);
+    return resultado;
+  }
+
+  /**
+   * Extrae iniciales de la modalidad de forma robusta
+   * Ej: "TEORICO-PRACTICO - VIRTUAL" -> "TPV"
+   */
+  private getModalityInitials(texto: string): string {
+    if (!texto) return '';
+    const t = texto.toUpperCase();
+
+    // Casos simples directos
+    if (t === 'VIRTUAL') return 'V';
+    if (t === 'TEORICO-PRACTICO') return 'TP';
+    if (t === 'PROYECTO') return 'P';
+    if (t === 'CIENCIAS BASICAS') return 'CB';
+
+    // Algoritmo para casos compuestos:
+    // 1. Dividir por espacios y guiones
+    // 2. Tomar la primera letra de cada palabra significativa (>2 letras)
+    return t
+      .split(/[-\s]+/)
+      .filter(p => p.length > 2)
+      .map(p => p.charAt(0))
+      .join('');
+  }
+
+  /**
+   * Información unificada para mostrar en la card principal.
+   */
   infoParaMostrar = computed(() => {
     const real = this.cursoSeleccionadoInfo();
-    if (real) return real;
+    if (real) return {
+      ...real,
+      codigoEstandarizado: this.getStandardizedCode(real)
+    };
 
-    // Si estamos en modo creación (no hay selección pero sí modo edición)
+    // Si estamos en modo creación
     if (this.modoEdicion() && !this.cursoSeleccionado()) {
-      return {
+      const tempCourse = {
         nombre: this.cursoParseado?.nombre || 'Nuevo Curso',
+        siglas: this.cursoParseado?.siglas || this.generarAcronimoCurso(this.cursoParseado?.nombre || ''),
+        ingreso: this.cohorteForm.ingreso || '',
+        grupo: this.cursoParseado?.grupo || ''
+      };
+
+      return {
+        ...tempCourse,
         codigo: this.cursoParseado?.codigo || 'Pendiente de importar',
         codigoBase: this.cursoParseado?.codigoBase || '—',
         bloque: this.cursoParseado?.bloque || '—',
-        ingreso: (this.cohorteForm as any).ingreso || '—', // Usamos el form actual
+        ingreso: tempCourse.ingreso || '—',
         color: this.colorCursoSeleccionado,
         tieneCalificaciones: false,
-        esNuevo: true // Flag para lógica de UI
+        esNuevo: true,
+        codigoEstandarizado: this.getStandardizedCode(tempCourse)
       };
     }
 
@@ -287,16 +376,10 @@ export class CursosPage implements OnInit, ViewWillEnter {
     bloque: 'PRIMERO' | 'SEGUNDO' | 'TRANSVERSAL' | undefined;
     anio: string | undefined;
     ingreso: 'A' | 'B' | 'C' | undefined;
-    fechaInicio: string | undefined;
-    fechaFin: string | undefined;
-    fechaFinManual: boolean;
   } = {
       bloque: undefined,
       anio: new Date().getFullYear().toString(),
-      ingreso: undefined,
-      fechaInicio: undefined,
-      fechaFin: undefined,
-      fechaFinManual: false
+      ingreso: undefined
     };
 
   // Flag para mostrar/ocultar color picker
@@ -379,44 +462,6 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   /**
-   * Calcula la duración en días según el tipo de ingreso
-   * @param ingreso Tipo de ingreso (A, B, o C)
-   * @returns Duración en días
-   */
-  private calcularDuracionIngreso(ingreso: 'A' | 'B' | 'C'): number {
-    const duraciones = {
-      'A': 120,  // Ingreso A: ~120 días
-      'B': 132,  // Ingreso B: ~132 días (incluye nivelatorios)
-      'C': 105   // Ingreso C: ~105 días
-    };
-    return duraciones[ingreso];
-  }
-
-  /**
-   * Maneja el cambio en la fecha de inicio de la cohorte
-   * Calcula automáticamente la fecha de fin basándose en el ingreso seleccionado
-   */
-  onFechaInicioChange(): void {
-    // Solo calcular automáticamente si:
-    // 1. Hay una fecha de inicio
-    // 2. Hay un ingreso seleccionado
-    // 3. La fecha de fin NO fue editada manualmente
-    if (this.cohorteForm.fechaInicio && this.cohorteForm.ingreso && !this.cohorteForm.fechaFinManual) {
-      const fechaInicio = new Date(this.cohorteForm.fechaInicio);
-      const duracionDias = this.calcularDuracionIngreso(this.cohorteForm.ingreso);
-
-      // Calcular fecha de fin
-      const fechaFin = new Date(fechaInicio);
-      fechaFin.setDate(fechaFin.getDate() + duracionDias);
-
-      // Formatear a ISO string para el datetime
-      this.cohorteForm.fechaFin = fechaFin.toISOString();
-
-      Logger.log(`[Cohorte] Fecha fin calculada automáticamente: ${fechaFin.toLocaleDateString()} (Ingreso ${this.cohorteForm.ingreso}, ${duracionDias} días)`);
-    }
-  }
-
-  /**
    * Maneja cambios en año o ingreso para actualizar el nombre generado
    */
   onCambioCohorte(): void {
@@ -425,67 +470,20 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   /**
-   * Maneja el cambio de bloque y calcula automáticamente la fecha fin
-   * - PRIMERO: 8 semanas (~56 días)
-   * - SEGUNDO: 8 semanas (~56 días)
-   * - TRANSVERSAL: 16 semanas (~112 días) - abarca todo el período
+   * Maneja el cambio de bloque
    */
   onBloqueChange(): void {
-    if (!this.cohorteForm.fechaInicio) {
-      return;
-    }
-
-    const fechaInicio = new Date(this.cohorteForm.fechaInicio);
-    let diasDuracion = 0;
-
-    switch (this.cohorteForm.bloque) {
-      case 'PRIMERO':
-      case 'SEGUNDO':
-        diasDuracion = 56; // 8 semanas
-        break;
-      case 'TRANSVERSAL':
-        diasDuracion = 112; // 16 semanas (todo el período)
-        break;
-      default:
-        diasDuracion = 56;
-    }
-
-    const fechaFin = new Date(fechaInicio);
-    fechaFin.setDate(fechaFin.getDate() + diasDuracion);
-    this.cohorteForm.fechaFin = fechaFin.toISOString();
-
     this.onCambioCohorte();
   }
 
   /**
    * Maneja el cambio en el tipo de ingreso
-   * Ajusta fecha de inicio según offset y recalcula fecha fin
-   * - Ingreso A: Base (0 semanas)
-   * - Ingreso B: +4 semanas después de A
-   * - Ingreso C: +11 semanas después de A (7 semanas después de B)
    */
   onIngresoChange(): void {
-    // Resetear flag de edición manual al cambiar ingreso
-    this.cohorteForm.fechaFinManual = false;
-
-    // Si no hay fecha de inicio, solo recalcular fecha fin normal
-    if (!this.cohorteForm.fechaInicio) {
-      this.onFechaInicioChange();
-      return;
-    }
-
-    // Recalcular fecha fin basándose en el bloque
-    this.onBloqueChange();
+    this.onCambioCohorte();
   }
 
-  /**
-   * Maneja la edición manual de la fecha de fin
-   * Marca que la fecha fue editada manualmente para evitar sobreescritura automática
-   */
-  onFechaFinManualChange(): void {
-    this.cohorteForm.fechaFinManual = true;
-    Logger.log('[Cohorte] Fecha fin editada manualmente - desactivando cálculo automático');
-  }
+
 
   /**
    * Toggle para expandir/colapsar card de curso en móvil
@@ -795,21 +793,15 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
     if (cohorte) {
       this.cohorteForm = {
-        anio: cohorte.fechaInicio ? new Date(cohorte.fechaInicio).toISOString() : new Date().toISOString(),
+        anio: (courseState?.metadata as any)?.fechaCreacion || new Date().toISOString(),
         bloque: (courseState?.metadata as any)?.bloque || 'PRIMERO',
-        ingreso: (cohorte as any).ingreso || 'A',
-        fechaInicio: cohorte.fechaInicio ? new Date(cohorte.fechaInicio).toISOString() : undefined,
-        fechaFin: cohorte.fechaFin ? new Date(cohorte.fechaFin).toISOString() : undefined,
-        fechaFinManual: true
+        ingreso: (cohorte as any).ingreso || 'A'
       };
     } else {
       this.cohorteForm = {
         anio: new Date().toISOString(),
         bloque: curso.bloque || 'PRIMERO',
-        ingreso: 'A',
-        fechaInicio: new Date().toISOString(),
-        fechaFin: undefined,
-        fechaFinManual: false
+        ingreso: 'A'
       };
     }
 
@@ -1110,30 +1102,49 @@ export class CursosPage implements OnInit, ViewWillEnter {
       let nombreCompleto = '';
       let codigoAbreviado = '';
       let bloqueTexto = '';
-      let enfasisCodigo = '';
+      let enfasisSiglas = '';
+      let modalidadTexto = 'VIRTUAL';
+      let grupoSolo = '';
 
       if (primeraSeccion) {
-        // Extraer nombre completo del énfasis (todo lo que está entre / y -)
-        const enfasisMatch = primeraSeccion.match(/\/([^-]+)-/);
-        nombreCompleto = enfasisMatch?.[1]?.trim() || '';
+        // OPTIMIZACIÓN: Un solo regex para capturar todos los componentes
+        const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
 
-        // Generar siglas del énfasis usando algoritmo mejorado
-        // (ej: ÉNFASIS EN PROGRAMACIÓN MÓVIL → EPM)
-        enfasisCodigo = this.generarAcronimoCurso(nombreCompleto);
+        if (fullMatch) {
+          bloqueTexto = fullMatch[1].trim();
+          modalidadTexto = fullMatch[2].trim();
+          nombreCompleto = fullMatch[3].trim();
+          const letraGrupo = fullMatch[4].trim();
+          const numeroGrupo = fullMatch[5].trim();
+          grupoSolo = numeroGrupo; // Solo el número (ej: "01")
 
-        // Extraer grupo (ej: B01)
-        const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z0-9]+)\]/i);
-        const grupo = grupoMatch?.[1] || 'B01';
+          // Actualizar el ingreso basado en la letra del grupo
+          if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
+            this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
+          }
+        } else {
+          // Fallback manual si el formato varía ligeramente
+          bloqueTexto = (primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i)?.[1] || '').trim();
+          modalidadTexto = (primeraSeccion.match(/BLOQUE-([^\/]+)\//i)?.[1] || 'VIRTUAL').trim();
+          nombreCompleto = (primeraSeccion.match(/\/([^-]+)-/)?.[1] || '').trim();
 
-        // Extraer bloque (ej: SEGUNDO → 2)
-        const bloqueMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i);
-        bloqueTexto = bloqueMatch?.[1] || '';
-        const bloqueNum = this.convertirBloqueTextoANumero(bloqueTexto);
-        const modalidadMatch = primeraSeccion.match(/BLOQUE-([A-Z]+)\//i);
-        const modalidad = modalidadMatch?.[1]?.[0] || 'P';
+          // Extraer grupo completo y separar letra de número
+          const grupoCompleto = (primeraSeccion.match(/\[GRUPO\s+([A-Z]\d+)\]/i)?.[1] || '').trim();
+          if (grupoCompleto) {
+            const grupoMatch = grupoCompleto.match(/([A-Z])(\d+)/i);
+            if (grupoMatch) {
+              const letraGrupo = grupoMatch[1].toUpperCase();
+              grupoSolo = grupoMatch[2]; // Solo el número (ej: "01")
 
-        // Generar código abreviado: EPM-B01-BLQ2-V
-        codigoAbreviado = `${enfasisCodigo}-${grupo}-BLQ${bloqueNum}-${modalidad}`;
+              // Actualizar el ingreso basado en la letra del grupo
+              if (['A', 'B', 'C', 'E'].includes(letraGrupo)) {
+                this.cohorteForm.ingreso = letraGrupo as any;
+              }
+            }
+          }
+        }
+
+        enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
       } else {
         // Fallback: usar nombre del archivo
         const nombreArchivo = (file as any).name.replace('.csv', '');
@@ -1141,32 +1152,15 @@ export class CursosPage implements OnInit, ViewWillEnter {
         const bloqueMatch = nombreArchivo.match(/([A-Z]\d+)/i);
 
         nombreCompleto = nombreArchivo;
-        codigoAbreviado = codigoMatch?.[0] || nombreArchivo;
+        enfasisSiglas = codigoMatch?.[0] || nombreArchivo;
         bloqueTexto = bloqueMatch?.[1] || '';
-        enfasisCodigo = codigoAbreviado;
+        grupoSolo = (nombreArchivo.match(/([A-Z]\d+)/)?.[0] || '').trim();
       }
-
-      // Extraer grupo limpio para visualización (ej: B01)
-      const grupoSoloMatch = codigoAbreviado.match(/([A-Z]\d+)/);
-      const grupoSolo = grupoSoloMatch ? grupoSoloMatch[1] : '';
 
       this.estudiantesCargados = estudiantes;
 
-      // AUTO-PARSING: Actualizar cohorteForm basándose en el grupo detectado (ej: B01)
-      if (grupoSolo) {
-        const letraIngreso = grupoSolo[0].toUpperCase();
-        if (['A', 'B', 'C'].includes(letraIngreso)) {
-          this.cohorteForm.ingreso = letraIngreso as any;
-          this.onIngresoChange(); // Actualizar fechas automáticas
-        }
-
-        const numBloque = parseInt(grupoSolo.substring(1));
-        if (numBloque === 1) this.cohorteForm.bloque = 'PRIMERO';
-        else if (numBloque === 2) this.cohorteForm.bloque = 'SEGUNDO';
-        // else keep previous or detected from primeraSeccion
-      }
-
-      // Si se detectó bloqueTexto explícitamente en la sección (ej: "SEGUNDO BLOQUE")
+      // AUTO-PARSING: Actualizar cohorteForm basado en el bloque detectado
+      // El ingreso ya fue establecido durante el parsing del grupo
       if (bloqueTexto) {
         const bt = bloqueTexto.toUpperCase();
         if (bt.includes('PRIMER')) this.cohorteForm.bloque = 'PRIMERO';
@@ -1174,33 +1168,26 @@ export class CursosPage implements OnInit, ViewWillEnter {
         else if (bt.includes('TRANSVERSAL')) this.cohorteForm.bloque = 'TRANSVERSAL';
       }
 
-      // Ajuste solicitado: Nombre Corto = Siglas + Grupo (para tabs)
-      // Extraer el ingreso (primera letra del código de grupo: A, B, C)
-      const ingresoLetra = grupoSolo ? grupoSolo[0].toUpperCase() : '';
-
-      // Extraer modalidad y generar código de iniciales
-      // Ejemplos: VIRTUAL → V, TEÓRICO-PRÁCTICO → TP, CIENCIAS BASICAS → CB
-      const modalidadMatch2 = primeraSeccion.match(/BLOQUE-([A-Z\u00C0-\u00FF-\s]+)\//i);
-      const modalidadTexto = modalidadMatch2?.[1]?.trim().replace(/\s*-\s*/g, '-') || 'VIRTUAL';
-
-      // Generar código de iniciales de la modalidad
-      const generarCodigoModalidad = (texto: string): string => {
-        // Dividir por guiones y espacios, tomar inicial de cada palabra
-        const palabras = texto.split(/[-\s]+/).filter(p => p.length > 0);
-        return palabras.map(p => p.charAt(0).toUpperCase()).join('');
-      };
-      const modalidadCodigo = generarCodigoModalidad(modalidadTexto);
+      this.onIngresoChange(); // Actualizar fechas compartidas
 
       this.cursoParseado = {
         nombre: nombreCompleto,
-        siglas: enfasisCodigo,
-        grupo: grupoSolo,
-        codigo: codigoAbreviado,
-        bloque: bloqueTexto,
-        ingreso: ingresoLetra,
-        modalidad: modalidadTexto,    // Palabra completa (VIRTUAL, TEÓRICO-PRÁCTICO)
-        modalidadCodigo: modalidadCodigo // Código de iniciales (V, TP, CB) para el código del curso
+        siglas: enfasisSiglas,
+        grupo: grupoSolo, // Solo el número: "01", "02", etc.
+        codigo: '', // Se asignará a continuación
+        bloque: this.cohorteForm.bloque || bloqueTexto, // Usar el bloque normalizado del form
+        ingreso: this.cohorteForm.ingreso || '',
+        modalidad: modalidadTexto,
+        modalidadCodigo: this.getModalityInitials(modalidadTexto)
       };
+
+      // Generar y asignar el código estandarizado
+      this.cursoParseado.codigo = this.getStandardizedCode(this.cursoParseado);
+
+      // Log para debugging
+      Logger.log('📋 Curso parseado:', this.cursoParseado);
+      Logger.log('🔢 Código generado:', this.cursoParseado.codigo);
+
       await this.mostrarToastExito(`${estudiantes.length} estudiantes cargados`);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
@@ -1527,15 +1514,14 @@ export class CursosPage implements OnInit, ViewWillEnter {
     }
 
     try {
-      // Construir objeto de cohorte si se proporcionó información
+      // Construir objeto de cohorte si se proporcionó información básica
       let cohorteData: any = undefined;
       const nombreGenerado = this.nombreIngresoGenerado();
-      if (nombreGenerado && this.cohorteForm.fechaInicio && this.cohorteForm.fechaFin) {
+      if (nombreGenerado && this.cohorteForm.ingreso) {
         cohorteData = {
           nombre: nombreGenerado,  // Nombre generado automáticamente
           ingreso: this.cohorteForm.ingreso,  // Incluir tipo de ingreso (opcional)
-          fechaInicio: new Date(this.cohorteForm.fechaInicio),
-          fechaFin: new Date(this.cohorteForm.fechaFin)
+          fechaCarga: new Date().toISOString()
         };
       }
 
@@ -1723,10 +1709,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.cohorteForm = {
       bloque: undefined,
       anio: undefined,
-      ingreso: undefined,
-      fechaInicio: undefined,
-      fechaFin: undefined,
-      fechaFinManual: false
+      ingreso: undefined
     };
 
     if (this.estudiantesFileInput) {
@@ -1775,7 +1758,31 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
     const alert = await this.alertController.create({
       header: '🗑️ Confirmar Eliminación',
-      message: `¿Estás seguro de eliminar el curso "${curso.nombre}" (${curso.nombreAbreviado})?<br><br><strong>Se eliminarán:</strong><br>• Todos los estudiantes del curso<br>• Todas las evaluaciones asociadas<br>• Comentarios y seguimiento<br><br>Esta acción no se puede deshacer.`,
+      message: `
+        ¿Estás seguro de eliminar el curso "${curso.nombre}" (${curso.nombreAbreviado})?
+        <ion-list lines="none" class="ion-no-padding ion-margin-top">
+          <ion-item class="ion-no-padding">
+            <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <p>Código</p>
+              <h3>${curso.codigo}</h3>
+            </ion-label>
+          </ion-item>
+          <ion-item class="ion-no-padding">
+            <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <p>Bloque</p>
+              <h3>${curso.bloque || '—'}</h3>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        <br>
+        <strong>Se eliminarán:</strong><br>
+        • Todos los estudiantes del curso<br>
+        • Todas las evaluaciones asociadas<br>
+        • Comentarios y seguimiento<br><br>
+        Esta acción no se puede deshacer.
+      `,
       cssClass: 'alert-danger',
       buttons: [
         {
@@ -2044,7 +2051,13 @@ export class CursosPage implements OnInit, ViewWillEnter {
         return;
       }
 
-      // Saltar palabras muy cortas (1-2 letras)
+      // CASO ESPECIAL: Si es un número (ej: "1", "2"), mantenerlo aunque sea corto
+      if (/^\d+$/.test(palabraNormalizada)) {
+        letrasSignificativas.push(palabraNormalizada);
+        return;
+      }
+
+      // Saltar palabras muy cortas (1-2 letras) que no sean números
       if (palabra.length <= 2) {
         return;
       }
@@ -2058,28 +2071,16 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   /**
    * Formatea el label para los tabs de curso siguiendo el patrón:
-   * Nombre del Curso + Siglas + Bloque + #Grupo
+   * Nombre completo del Curso (SIGLAS+Ingreso+GrupoNum)
    * @param curso Objeto del curso
    */
   getLabelTabCurso(curso: any): string {
     if (!curso) return '';
 
     const nombre = curso.nombre || '';
-    const siglas = curso.siglas || this.generarAcronimoCurso(nombre);
+    const codigoClean = this.getStandardizedCode(curso);
 
-    // El bloque puede venir como texto (SEGUNDO) o número (2)
-    let bloque = curso.bloque || '';
-    if (bloque) {
-      const num = this.convertirBloqueTextoANumero(bloque);
-      bloque = `BLQ${num}`;
-    }
-
-    // Extraer solo números del grupo (ej: B01 -> 01)
-    let grupo = curso.grupo || '';
-    const groupMatch = grupo.match(/\d+/);
-    const grupoNum = groupMatch ? `#${groupMatch[0]}` : '';
-
-    return `${nombre} ${siglas} ${bloque} ${grupoNum}`.trim();
+    return `${nombre} (${codigoClean})`;
   }
 
   private convertirBloqueTextoANumero(texto: string): string {

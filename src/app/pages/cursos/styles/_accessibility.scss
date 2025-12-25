@@ -299,29 +299,3 @@ ion-chip {
 /**
  * Tooltips que funcionan con teclado
  */
-[data-tooltip] {
-    position: relative;
-
-    &::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: $gris-oscuro;
-        color: white;
-        padding: spacing('xs') spacing('sm');
-        border-radius: $radius-sm;
-        font-size: font-size('xs');
-        white-space: nowrap;
-        opacity: 0;
-        pointer-events: none;
-        @include transition(opacity, $transition-fast);
-        z-index: z('tooltip');
-    }
-
-    &:hover::after,
-    &:focus::after {
-        opacity: 1;
-    }
-}

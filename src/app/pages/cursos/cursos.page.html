@@ -79,8 +79,9 @@
         <!-- Tabs de cursos existentes -->
         @for (curso of cursosDisponibles(); track curso.codigo) {
         <ion-segment-button [value]="curso.codigo">
-          <ion-label>
-            {{ getLabelTabCurso(curso) }}
+          <ion-label class="tab-label-container">
+            <span class="tab-nombre">{{ curso.nombre }}</span>
+            <span class="tab-codigo">{{ getStandardizedCode(curso) }}</span>
           </ion-label>
         </ion-segment-button>
         }
@@ -195,7 +196,7 @@
                         <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
                         <ion-label>
                           <p>Código</p>
-                          <h3>{{ cursoParseado.codigo }}</h3>
+                          <h3>{{ getStandardizedCode(cursoParseado) }}</h3>
                         </ion-label>
                       </ion-item>
                       <ion-item>
@@ -235,9 +236,9 @@
                     <div class="form-grid">
                       <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" label="Ingreso"
                         labelPlacement="stacked" interface="popover" fill="outline">
-                        <ion-select-option value="A">A (~120 d)</ion-select-option>
-                        <ion-select-option value="B">B (~132 d)</ion-select-option>
-                        <ion-select-option value="C">C (~105 d)</ion-select-option>
+                        <ion-select-option value="A">A</ion-select-option>
+                        <ion-select-option value="B">B</ion-select-option>
+                        <ion-select-option value="C">C</ion-select-option>
                       </ion-select>
 
                       <ion-select [(ngModel)]="cohorteForm.bloque" (ionChange)="onBloqueChange()" label="Bloque"
@@ -246,35 +247,6 @@
                         <ion-select-option value="SEGUNDO">SEGUNDO</ion-select-option>
                         <ion-select-option value="TRANSVERSAL">TRANSVERSAL</ion-select-option>
                       </ion-select>
-                    </div>
-
-                    <div class="form-grid dates">
-                      <div class="date-input">
-                        <label>Inicio</label>
-                        <ion-datetime-button
-                          [datetime]="info.esNuevo ? 'nuevo-fecha-inicio' : 'edit-fecha-inicio'"></ion-datetime-button>
-                        <ion-popover [keepContentsMounted]="true">
-                          <ng-template>
-                            <ion-datetime [id]="info.esNuevo ? 'nuevo-fecha-inicio' : 'edit-fecha-inicio'"
-                              [(ngModel)]="cohorteForm.fechaInicio" (ionChange)="onFechaInicioChange()"
-                              presentation="date" locale="es-ES">
-                            </ion-datetime>
-                          </ng-template>
-                        </ion-popover>
-                      </div>
-                      <div class="date-input">
-                        <label>Fin</label>
-                        <ion-datetime-button
-                          [datetime]="info.esNuevo ? 'nuevo-fecha-fin' : 'edit-fecha-fin'"></ion-datetime-button>
-                        <ion-popover [keepContentsMounted]="true">
-                          <ng-template>
-                            <ion-datetime [id]="info.esNuevo ? 'nuevo-fecha-fin' : 'edit-fecha-fin'"
-                              [(ngModel)]="cohorteForm.fechaFin" (ionChange)="onFechaFinManualChange()"
-                              presentation="date" locale="es-ES">
-                            </ion-datetime>
-                          </ng-template>
-                        </ion-popover>
-                      </div>
                     </div>
                   </div>
                   }
@@ -288,14 +260,7 @@
                   <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
                   <ion-label>
                     <p>Código</p>
-                    <h3>{{ info.codigo }}</h3>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="grid-outline" slot="start" color="primary"></ion-icon>
-                  <ion-label>
-                    <p>Código Base</p>
-                    <h3>{{ info.codigoBase || '—' }}</h3>
+                    <h3>{{ info.codigoEstandarizado }}</h3>
                   </ion-label>
                 </ion-item>
                 <ion-item>
