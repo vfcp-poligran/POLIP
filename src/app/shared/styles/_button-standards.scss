@@ -1,0 +1,79 @@
+/**
+ * Estandarización Global de Botones
+ * Basado en el botón Crear (32px de altura)
+ */
+
+// ============================================
+// ALTURA ESTÁNDAR DE BOTONES
+// ============================================
+
+// Altura estándar para todos los botones de acción
+$button-height-standard: 32px;
+$button-height-small: 28px;
+$button-height-large: 40px;
+
+// ============================================
+// REGLAS GLOBALES PARA ION-BUTTON
+// ============================================
+
+ion-button {
+
+    // Altura estándar para todos los botones
+    &[size="default"],
+    &:not([size]) {
+        height: $button-height-standard;
+        min-height: $button-height-standard;
+    }
+
+    &[size="small"] {
+        height: $button-height-small;
+        min-height: $button-height-small;
+    }
+
+    &[size="large"] {
+        height: $button-height-large;
+        min-height: $button-height-large;
+    }
+}
+
+// ============================================
+// BOTONES EN TOOLBAR Y HEADER
+// ============================================
+
+ion-toolbar,
+ion-header,
+.page-header,
+.toolbar-container {
+    ion-button {
+        height: $button-height-standard;
+        min-height: $button-height-standard;
+
+        &[size="small"] {
+            height: $button-height-small;
+            min-height: $button-height-small;
+        }
+    }
+}
+
+// ============================================
+// BOTONES EN TABS Y SEGMENTS
+// ============================================
+
+ion-segment-button,
+.tab-actions {
+    ion-button {
+        height: $button-height-standard;
+        min-height: $button-height-standard;
+
+        &[size="small"] {
+            height: $button-height-small;
+            min-height: $button-height-small;
+        }
+    }
+}
+
+// ============================================
+// FAB BUTTONS
+// ============================================
+// Los FAB mantienen su tamaño estándar de Ionic (56px)
+// No aplicar la regla de estandarización de 32px aquí

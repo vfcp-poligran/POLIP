@@ -287,8 +287,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const real = this.cursoSeleccionadoInfo();
     if (real) return {
       ...real,
-      codigoEstandarizado: this.getStandardizedCode(real),
-      codigoDisplay: this.getDisplayCode(real),
+      codigoEstandarizado: real.codigo, // Usar código único directamente
+      codigoDisplay: real.codigo, // Usar código único directamente (EPM-B01-BLQ02)
       anio: real.anio || new Date().getFullYear()
     };
 
@@ -566,6 +566,35 @@ export class CursosPage implements OnInit, ViewWillEnter {
     await this.eliminarCurso(curso, dummyEvent);
   }
 
+  /**
+   * Obtiene el objeto del curso actualmente seleccionado
+   */
+  getCursoSeleccionadoObj(): any | null {
+    const codigo = this.cursoSeleccionado();
+    if (!codigo) return null;
+    return this.cursosDisponibles().find(c => c.codigo === codigo) || null;
+  }
+
+  /**
+   * Editar el curso seleccionado desde el header
+   */
+  editarCursoSeleccionadoDesdeHeader(): void {
+    const curso = this.getCursoSeleccionadoObj();
+    if (curso) {
+      this.editarCurso(curso);
+    }
+  }
+
+  /**
+   * Eliminar el curso seleccionado desde el header
+   */
+  async eliminarCursoSeleccionadoDesdeHeader(): Promise<void> {
+    const curso = this.getCursoSeleccionadoObj();
+    if (curso) {
+      await this.confirmarEliminarCurso(curso);
+    }
+  }
+
   cargarCursos(): void {
     try {
       const uiState = this.dataService.getUIState();
@@ -592,14 +621,16 @@ export class CursosPage implements OnInit, ViewWillEnter {
           }
 
           try {
-            const codigoUnico = state.metadata?.codigoUnico || nombreCurso;
             const tieneArchivo = this.dataService.obtenerArchivoCalificaciones(nombreCurso) !== null;
+
+            // Remover año del código (último segmento después del último guión)
+            const codigoSinAnio = nombreCurso.split('-').slice(0, -1).join('-') || nombreCurso;
 
             const cursoObj = {
               claveCurso: nombreCurso,
-              nombre: state.metadata?.nombre || nombreCurso,
+              nombre: state.metadata?.nombre || nombreCurso, // NOMBRE COMPLETO DEL CURSO
               nombreAbreviado: state.metadata?.nombreAbreviado || '',
-              codigo: codigoUnico,
+              codigo: codigoSinAnio, // CÓDIGO SIN AÑO (EPM-B01-BLQ02-V)
               codigoBase: (state.metadata as any)?.codigo || '',
               siglas: (state.metadata as any)?.siglas || '',
               grupo: (state.metadata as any)?.grupo || '',
@@ -709,6 +740,14 @@ export class CursosPage implements OnInit, ViewWillEnter {
   seleccionarColorCurso(color: string): void {
     this.colorCursoSeleccionado = color;
     Logger.log(`[CursosPage] Color seleccionado: ${color}`);
+  }
+
+  /**
+   * Toggle para mostrar/ocultar el color picker
+   */
+  toggleColorPicker(): void {
+    this.showColorPicker = !this.showColorPicker;
+    Logger.log(`[CursosPage] Color picker ${this.showColorPicker ? 'abierto' : 'cerrado'}`);
   }
 
   async cancelarCreacionCurso() {

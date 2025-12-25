@@ -29,7 +29,7 @@ export const BUTTON_CONFIG = {
     },
     CANCELAR: {
         icon: 'close-circle-outline',
-        color: 'medium',
+        color: 'warning',
         label: 'Cancelar',
         ariaLabel: 'Cancelar operación'
     }

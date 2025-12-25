@@ -21,22 +21,60 @@
     margin-bottom: spacing('md');
     @include card-elevation(2);
 
-    ion-segment-button {
+    // Tabs de cursos
+    ion-segment {
         --background: transparent;
-        --background-checked: rgba(255, 255, 255, 0.2);
-        --background-hover: rgba(255, 255, 255, 0.1);
-        --color: rgba(255, 255, 255, 0.7);
-        --color-checked: #ffffff;
-        --indicator-color: #{$azul-claro};
+        padding: 0;
+        margin: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    // Botones de curso individuales
+    ion-segment-button {
+        --background: var(--bg-card, #ffffff);
+        --background-checked: var(--bg-card, #ffffff);
+        --color: var(--texto-secundario, #666666);
+        --color-checked: var(--azul-oscuro, #0f385a);
+        --indicator-color: var(--azul-claro, #1fb2de);
         --indicator-height: 3px;
-        --border-radius: #{$radius-sm};
-        --padding-top: #{spacing('sm')};
-        --padding-bottom: #{spacing('sm')};
+        --border-radius: var(--rad-sm, 8px);
+        --padding-start: spacing('sm');
+        --padding-end: 0; // ALINEACIÓN: Remover padding interno para igualar con botón Crear
+        --padding-top: spacing('xs');
+        --padding-bottom: spacing('xs');
+        --margin-end: spacing('xs');
+        min-width: 200px;
+        max-width: 280px; // Mobile: limitar ancho
+        flex: 0 0 auto;
+        text-transform: none;
+        font-weight: 600;
+        position: relative; // Para posicionar botones de acción
+        transition: all 0.2s ease;
+        box-shadow: var(--shadow-light, 0 2px 4px rgba(0, 0, 0, 0.1));
+        margin-bottom: spacing('xs');
 
-        min-width: 100px;
-        @include transition(all, $transition-fast);
+        // Desktop: permitir expansión completa
+        @media (min-width: 992px) {
+            max-width: none;
+        }
 
-        // Estilos específicos basados en clases solicitadas
+        &:hover {
+            box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
+            transform: translateY(-1px);
+        }
+
+        &.segment-button-checked {
+            box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
+            border: 2px solid var(--azul-claro, #1fb2de);
+        }
+
         &.segment-button-layout-icon-top {
             // Asegura que el contenido vertical esté bien alineado
             min-height: 4rem; // ~64px
@@ -48,13 +86,96 @@
         }
 
         &.segment-button-has-label-only {
-            ion-label {
-                margin: 0;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
+            // Ajustes para tabs con solo label
+            min-height: 3rem; // ~48px
+        }
+
+        // Contenedor de labels (nombre + código)
+        .tab-label-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: flex-start;
+            flex: 1 1 auto;
+
+            // Nombre del curso
+            .tab-nombre {
+                @include typo.typography-tab-nombre;
+                display: block;
+                word-wrap: break-word; // Mobile: permitir saltos de línea
+
+                // Desktop: una sola fila
+                @media (min-width: 992px) {
+                    white-space: nowrap;
+                }
             }
+
+            // Código del curso - SEGUNDA FILA
+            .tab-codigo {
+                @include typo.typography-tab-codigo;
+                opacity: 0.85;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 100%;
+                display: block;
+            }
+        }
+
+        // Botones de acción dentro del tab - ESQUINA SUPERIOR DERECHA
+        .tab-actions {
+            position: absolute;
+            top: 4px;
+            right: -4px; // ALINEACIÓN: Compensar 16px de padding interno del Shadow DOM (12px - 16px = -4px)
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+
+            ion-button {
+                --padding-start: 6px;
+                --padding-end: 6px;
+                height: 32px; // ESTANDARIZADO
+                min-height: 32px;
+                min-width: auto;
+                font-size: 0.875rem; // 14px - NORMALIZADO con botón Crear
+
+                ion-icon {
+                    font-size: 0.95rem;
+                }
+
+                // Desktop: Mostrar texto + ícono + ANCHO UNIFORME
+                @media (min-width: 992px) {
+                    min-width: 90px; // ANCHO UNIFORME para todos los botones
+                    width: 90px; // Forzar ancho fijo
+
+                    .button-text {
+                        display: inline;
+                        margin-left: 4px;
+                    }
+                }
+
+                // Tablet y Mobile: Solo ícono
+                @media (max-width: 991px) {
+                    --padding-start: 4px;
+                    --padding-end: 4px;
+                    min-width: 28px;
+
+                    .button-text {
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        // Mostrar botones al hover del tab
+        &:hover .tab-actions {
+            opacity: 1;
+        }
+
+        // Siempre mostrar botones en el tab activo
+        &.segment-button-checked .tab-actions {
+            opacity: 1;
         }
 
         ion-label {
@@ -64,21 +185,12 @@
             line-height: 1.2;
             display: flex;
             flex-direction: column;
-            align-items: flex-start; // Alineado a la izquierda (flex)
-            text-align: left; // Alineado a la izquierda (texto)
+            align-items: flex-start;
+            text-align: left;
             justify-content: center;
             gap: 1px;
             padding: spacing('xs') 0;
-
-            // USANDO NUEVO SISTEMA TIPOGRÁFICO
-            .tab-nombre {
-                @include typo.typography-tab-nombre;
-            }
-
-            .tab-codigo {
-                @include typo.typography-tab-codigo;
-                opacity: 0.85;
-            }
+            // Removido width: 100% para permitir que padding-right funcione
         }
 
         .crear-icon {

@@ -6,7 +6,7 @@
 
   <!-- FAB Crear Curso -->
   @if (!modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 70px" class="ion-hide-md-up">
     <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CREAR.icon"></ion-icon>
@@ -16,13 +16,13 @@
 
   <!-- FABs de edición -->
   @if (modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 16px" class="ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 70px" class="ion-hide-md-up">
     <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
       [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 80px" class="ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 134px" class="ion-hide-md-up">
     <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
@@ -38,13 +38,25 @@
       <div class="title-wrapper">
         <h2>Cursos</h2>
       </div>
-      <div class="header-actions ion-hide-md-down">
+      <div class="header-actions">
         @if (!modoEdicion()) {
         <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()"
           [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
           Crear
         </ion-button>
+        @if (cursoSeleccionado()) {
+        <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.EDITAR.color"
+          (click)="editarCursoSeleccionadoDesdeHeader()" [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel">
+          <ion-icon [name]="BUTTON_CONFIG.EDITAR.icon" slot="start"></ion-icon>
+          {{ BUTTON_CONFIG.EDITAR.label }}
+        </ion-button>
+        <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.ELIMINAR.color"
+          (click)="eliminarCursoSeleccionadoDesdeHeader()" [attr.aria-label]="BUTTON_CONFIG.ELIMINAR.ariaLabel">
+          <ion-icon [name]="BUTTON_CONFIG.ELIMINAR.icon" slot="start"></ion-icon>
+          {{ BUTTON_CONFIG.ELIMINAR.label }}
+        </ion-button>
+        }
         } @else {
         <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()"
           [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
@@ -78,10 +90,10 @@
 
         <!-- Tabs de cursos existentes -->
         @for (curso of cursosDisponibles(); track curso.codigo) {
-        <ion-segment-button [value]="curso.codigo">
+        <ion-segment-button [value]="curso.codigo" [style.--background]="getCursoColor(curso.codigo)">
           <ion-label class="tab-label-container">
             <span class="tab-nombre">{{ curso.nombre }}</span>
-            <span class="tab-codigo">{{ getDisplayCode(curso) }}</span>
+            <span class="tab-codigo">{{ curso.codigo }}</span>
           </ion-label>
         </ion-segment-button>
         }
@@ -92,26 +104,11 @@
       <ion-card class="curso-card" [class.active]="info.tieneCalificaciones" [class.no-data]="!info.tieneCalificaciones"
         [class.es-nuevo]="info.esNuevo" [style.--curso-color]="info.color">
 
-        <!-- Header con acciones -->
+        <!-- Header sin acciones (movidas al tab) -->
         <div class="curso-card-header">
           <div class="curso-header-info">
             <ion-icon name="information-circle-outline" class="header-icon"></ion-icon>
             <h2 class="header-main-title">Información del Curso</h2>
-            <!-- Labels moved to detail section below imports -->
-          </div>
-
-          <div class="card-actions">
-            @if (!info.esNuevo) {
-            <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.EDITAR.color" (click)="editarCurso(info)"
-              [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel" [attr.data-tooltip]="BUTTON_CONFIG.EDITAR.label">
-              <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.EDITAR.icon"></ion-icon>
-            </ion-button>
-            <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.ELIMINAR.color"
-              (click)="confirmarEliminarCurso(info)" [attr.aria-label]="BUTTON_CONFIG.ELIMINAR.ariaLabel"
-              [attr.data-tooltip]="BUTTON_CONFIG.ELIMINAR.label">
-              <ion-icon slot="icon-only" [name]="BUTTON_CONFIG.ELIMINAR.icon"></ion-icon>
-            </ion-button>
-            }
           </div>
         </div>
 
@@ -225,6 +222,32 @@
                     <div class="empty-import-state">
                       <ion-icon name="cloud-upload-outline" color="medium"></ion-icon>
                       <p>Importa un archivo para ver los datos del curso</p>
+                    </div>
+                    }
+                  </div>
+
+                  <!-- Selector de Color del Curso -->
+                  <div class="color-selector-section">
+                    <!-- Bot\u00f3n para abrir/cerrar color picker -->
+                    <button type="button" class="color-toggle-button" (click)="toggleColorPicker()">
+                      <div class="color-preview-swatch" [style.background-color]="colorCursoSeleccionado || '#1fb2de'">
+                      </div>
+                      <span class="color-label">Color del Curso</span>
+                      <ion-icon [name]="showColorPicker ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                    </button>
+
+                    <!-- Grid de colores (colapsable) -->
+                    @if (showColorPicker) {
+                    <div class="color-grid">
+                      @for (color of coloresDisponibles; track color) {
+                      <button type="button" class="color-button" [class.selected]="colorCursoSeleccionado === color"
+                        [style.background-color]="color" (click)="seleccionarColorCurso(color)"
+                        [attr.aria-label]="'Seleccionar color ' + color">
+                        @if (colorCursoSeleccionado === color) {
+                        <ion-icon name="checkmark" class="check-icon"></ion-icon>
+                        }
+                      </button>
+                      }
                     </div>
                     }
                   </div>
