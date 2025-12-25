@@ -13,6 +13,8 @@
 @use '../../shared/styles/breakpoints' as bp; // Sistema de breakpoints
 @use '../../shared/styles/empty-state'; // Estados vacíos
 @use '../../shared/styles/card-system'; // Sistema de tarjetas
+@use '../../shared/styles/typography-variables' as typo-vars; // Variables tipográficas
+@use '../../shared/styles/typography-mixins' as typo; // Mixins tipográficos
 
 // ============================================
 // CONTENEDOR PRINCIPAL - Usa estilos globales
@@ -176,18 +178,18 @@
   }
 
   ion-item {
-    --padding-start: 8px;
-    --inner-padding-end: 8px;
-    --min-height: 40px; // Más compacto
+    --padding-start: 6px;
+    --inner-padding-end: 6px;
+    --min-height: 32px; // Más compacto
 
     @include bp.tablet-only {
-      --min-height: 38px;
+      --min-height: 30px;
     }
 
     @include bp.mobile-only {
-      --padding-start: 6px;
-      --inner-padding-end: 6px;
-      --min-height: 36px;
+      --padding-start: 4px;
+      --inner-padding-end: 4px;
+      --min-height: 28px;
     }
 
     ion-icon {
@@ -200,21 +202,18 @@
       }
     }
 
+    // USANDO NUEVO SISTEMA TIPOGRÁFICO
     p {
-      @include typography('xs', 'normal');
+      @include typo.typography-char-label;
       color: $gris-medio;
-      margin-bottom: 1px;
+      margin-bottom: 0px;
     }
 
     h3 {
-      @include typography('sm', 'medium');
+      @include typo.typography-char-value;
       color: $azul-oscuro;
       margin: 0;
       word-break: break-word;
-
-      @include bp.mobile-only {
-        font-size: font-size('xs');
-      }
     }
   }
 }
@@ -604,8 +603,16 @@
         ion-item {
           --padding-start: 0;
           --inner-padding-end: 0;
-          --min-height: 36px;
+          --min-height: 30px;
           --background: transparent;
+
+          @include bp.tablet-only {
+            --min-height: 28px;
+          }
+
+          @include bp.mobile-only {
+            --min-height: 26px;
+          }
 
           ion-icon {
             font-size: 1rem;
@@ -623,33 +630,20 @@
             overflow: visible; // No cortar el contenido
           }
 
+          // USANDO NUEVO SISTEMA TIPOGRÁFICO
           p {
-            @include typography('xs', 'normal');
+            @include typo.typography-char-label;
             color: $gris-medio;
-            margin-bottom: 1px;
-            font-size: 0.65rem;
-
-            @include bp.mobile-only {
-              font-size: 0.6rem;
-            }
+            margin-bottom: 0px;
           }
 
           h3 {
-            @include typography('sm', 'medium');
+            @include typo.typography-char-value;
             color: $azul-oscuro;
             margin: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 0.75rem;
-
-            @include bp.tablet-only {
-              font-size: 0.7rem;
-            }
-
-            @include bp.mobile-only {
-              font-size: 0.65rem;
-            }
           }
         }
       }
@@ -691,9 +685,14 @@
 
   .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr; // 3 columnas para Ingreso, Bloque, Año
     gap: spacing('md');
     margin-bottom: spacing('md');
+
+    @include bp.mobile-only {
+      grid-template-columns: 1fr; // En mobile, apilados verticalmente
+      gap: spacing('sm');
+    }
 
     &.dates {
       margin-bottom: 0;

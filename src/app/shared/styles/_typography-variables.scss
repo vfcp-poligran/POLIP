@@ -1,0 +1,125 @@
+// ============================================
+// TYPOGRAPHY VARIABLES - PROPUESTA 2 (ESCALA MODERADA)
+// ============================================
+// Sistema de tipografía responsive con jerarquía clara
+// Desktop (≥992px) | Tablet (768px-991px) | Mobile (<768px)
+
+// ============================================
+// BREAKPOINTS (referencia desde _breakpoints.scss)
+// ============================================
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 992px;
+
+// ============================================
+// NIVEL 1: TÍTULOS PRINCIPALES
+// ============================================
+
+// Page Title (Título principal de página - ej: "Cursos")
+$font-size-page-title-desktop: 1.125rem; // 18px
+$font-size-page-title-tablet: 1.063rem; // 17px
+$font-size-page-title-mobile: 1.000rem; // 16px
+$font-weight-page-title: 700; // Bold
+$font-family-page-title: 'Montserrat', sans-serif;
+$line-height-page-title: 1.3;
+
+// Card Header (Encabezados de tarjetas - ej: "Información del Curso")
+$font-size-card-header-desktop: 1.000rem; // 16px
+$font-size-card-header-tablet: 0.938rem; // 15px
+$font-size-card-header-mobile: 0.875rem; // 14px
+$font-weight-card-header: 600; // Semibold
+$font-family-card-header: 'Montserrat', sans-serif;
+$line-height-card-header: 1.4;
+
+// ============================================
+// NIVEL 2: NAVEGACIÓN Y TABS
+// ============================================
+
+// Tab Nombre (Nombre del curso en tabs)
+$font-size-tab-nombre-desktop: 0.875rem; // 14px
+$font-size-tab-nombre-tablet: 0.813rem; // 13px
+$font-size-tab-nombre-mobile: 0.813rem; // 13px
+$font-weight-tab-nombre: 500; // Medium
+$font-family-tab-nombre: 'Open Sans', sans-serif;
+$line-height-tab-nombre: 1.3;
+
+// Tab Código (Código del curso en tabs)
+$font-size-tab-codigo: 0.750rem; // 12px (todos los dispositivos)
+$font-weight-tab-codigo: 500; // Medium
+$font-family-tab-codigo: 'Open Sans', sans-serif;
+$line-height-tab-codigo: 1.3;
+
+// ============================================
+// NIVEL 3: FORMULARIOS E INPUTS
+// ============================================
+
+// Input/Select Values (Valores ingresados o seleccionados)
+$font-size-input-value: 0.875rem; // 14px (todos los dispositivos)
+$font-weight-input-value: 400; // Regular
+$font-family-input-value: 'Open Sans', sans-serif;
+$line-height-input-value: 1.4;
+
+// Form Labels (Etiquetas de formularios)
+$font-size-form-label-desktop: 0.813rem; // 13px
+$font-size-form-label-tablet: 0.750rem; // 12px
+$font-size-form-label-mobile: 0.750rem; // 12px
+$font-weight-form-label: 500; // Medium
+$font-family-form-label: 'Open Sans', sans-serif;
+$line-height-form-label: 1.3;
+
+// Botones Primarios
+$font-size-button-primary: 0.875rem; // 14px (todos los dispositivos)
+$font-weight-button-primary: 700; // Bold
+$font-family-button-primary: 'Montserrat', sans-serif;
+$line-height-button-primary: 1.4;
+
+// Botones Secundarios
+$font-size-button-secondary: 0.875rem; // 14px (todos los dispositivos)
+$font-weight-button-secondary: 600; // Semibold
+$font-family-button-secondary: 'Montserrat', sans-serif;
+$line-height-button-secondary: 1.4;
+
+// ============================================
+// NIVEL 4: CARACTERÍSTICAS Y LISTAS
+// ============================================
+
+// Characteristic Values (Valores de características - ej: "VIRTUAL", "SEGUNDO")
+$font-size-char-value: 0.813rem; // 13px (todos los dispositivos)
+$font-weight-char-value: 500; // Medium
+$font-family-char-value: 'Montserrat', sans-serif;
+$line-height-char-value: 1.4;
+
+// Characteristic Labels (Etiquetas de características - ej: "Código", "Bloque")
+$font-size-char-label: 0.688rem; // 11px (todos los dispositivos)
+$font-weight-char-label: 400; // Regular
+$font-family-char-label: 'Open Sans', sans-serif;
+$line-height-char-label: 1.3;
+
+// ============================================
+// NIVEL 5: ELEMENTOS SECUNDARIOS
+// ============================================
+
+// Helper Text (Textos de ayuda, hints)
+$font-size-helper-text: 0.688rem; // 11px (todos los dispositivos)
+$font-weight-helper-text: 400; // Regular
+$font-family-helper-text: 'Open Sans', sans-serif;
+$line-height-helper-text: 1.3;
+
+// Footnotes/Timestamps (Notas al pie, marcas de tiempo)
+$font-size-footnote: 0.625rem; // 10px (todos los dispositivos)
+$font-weight-footnote: 400; // Regular
+$font-family-footnote: 'Open Sans', sans-serif;
+$line-height-footnote: 1.3;
+
+// ============================================
+// BODY TEXT (Texto general)
+// ============================================
+
+$font-size-body: 0.875rem; // 14px
+$font-weight-body: 400; // Regular
+$font-family-body: 'Open Sans', sans-serif;
+$line-height-body: 1.5;
+
+// ============================================
+// EXPORTAR PARA USO EN OTROS ARCHIVOS
+// ============================================
+// Este archivo debe ser importado en variables.scss principal

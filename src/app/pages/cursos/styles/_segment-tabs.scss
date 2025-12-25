@@ -8,6 +8,7 @@
 @use '../styles/mixins' as *;
 @use '../../../shared/styles/course-tabs' as *;
 @use '../../../shared/styles/breakpoints' as bp; // Import breakpoints
+@use '../../../shared/styles/typography-mixins' as typo; // Typography mixins
 
 // ============================================
 // TABS PRINCIPALES DE CURSOS
@@ -33,7 +34,6 @@
         --padding-bottom: #{spacing('sm')};
 
         min-width: 100px;
-        @include typography('sm', 'medium');
         @include transition(all, $transition-fast);
 
         // Estilos específicos basados en clases solicitadas
@@ -70,45 +70,14 @@
             gap: 1px;
             padding: spacing('xs') 0;
 
+            // USANDO NUEVO SISTEMA TIPOGRÁFICO
             .tab-nombre {
-                font-weight: font-weight('medium');
-
-                @include bp.desktop-only {
-                    font-size: 1rem;
-                }
-
-                // 16px
-                @include bp.tablet-only {
-                    font-size: 0.875rem;
-                }
-
-                // 14px
-                @include bp.mobile-only {
-                    font-size: 0.75rem;
-                }
-
-                // 12px
+                @include typo.typography-tab-nombre;
             }
 
             .tab-codigo {
-                font-weight: font-weight('normal');
+                @include typo.typography-tab-codigo;
                 opacity: 0.85;
-
-                @include bp.desktop-only {
-                    font-size: 0.75rem;
-                }
-
-                // 12px
-                @include bp.tablet-only {
-                    font-size: 0.6875rem;
-                }
-
-                // 11px
-                @include bp.mobile-only {
-                    font-size: 0.625rem;
-                }
-
-                // 10px
             }
         }
 

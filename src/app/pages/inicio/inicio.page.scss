@@ -7,6 +7,8 @@
 @use './seguimiento';
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
 @use '../../shared/styles/course-tabs' as *;
+@use '../../shared/styles/typography-variables' as typo-vars; // Variables tipográficas
+@use '../../shared/styles/typography-mixins' as typo; // Mixins tipográficos
 
 /* Variables locales simplificadas con ajustes dinámicos para móviles */
 :host {

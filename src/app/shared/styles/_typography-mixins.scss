@@ -1,0 +1,208 @@
+// ============================================
+// TYPOGRAPHY MIXINS - RESPONSIVE
+// ============================================
+// Mixins para aplicar tipografía responsive de forma consistente
+
+@use './typography-variables' as *;
+@use './breakpoints' as bp;
+
+// ============================================
+// MIXIN PRINCIPAL: RESPONSIVE FONT SIZE
+// ============================================
+
+/**
+ * Aplica font-size responsive según breakpoints
+ * @param {size} $desktop - Tamaño para desktop (≥992px)
+ * @param {size} $tablet - Tamaño para tablet (768px-991px)
+ * @param {size} $mobile - Tamaño para mobile (<768px)
+ * 
+ * Uso:
+ * .my-element {
+ *   @include responsive-font-size(1.125rem, 1.063rem, 1.000rem);
+ * }
+ */
+@mixin responsive-font-size($desktop, $tablet, $mobile) {
+    font-size: $desktop;
+
+    @include bp.tablet-only {
+        font-size: $tablet;
+    }
+
+    @include bp.mobile-only {
+        font-size: $mobile;
+    }
+}
+
+// ============================================
+// MIXINS ESPECÍFICOS POR NIVEL
+// ============================================
+
+/**
+ * Aplica estilos completos para Page Title
+ */
+@mixin typography-page-title {
+    @include responsive-font-size($font-size-page-title-desktop,
+        $font-size-page-title-tablet,
+        $font-size-page-title-mobile );
+    font-weight: $font-weight-page-title;
+    font-family: $font-family-page-title;
+    line-height: $line-height-page-title;
+}
+
+/**
+ * Aplica estilos completos para Card Header
+ */
+@mixin typography-card-header {
+    @include responsive-font-size($font-size-card-header-desktop,
+        $font-size-card-header-tablet,
+        $font-size-card-header-mobile );
+    font-weight: $font-weight-card-header;
+    font-family: $font-family-card-header;
+    line-height: $line-height-card-header;
+}
+
+/**
+ * Aplica estilos completos para Tab Nombre
+ */
+@mixin typography-tab-nombre {
+    @include responsive-font-size($font-size-tab-nombre-desktop,
+        $font-size-tab-nombre-tablet,
+        $font-size-tab-nombre-mobile );
+    font-weight: $font-weight-tab-nombre;
+    font-family: $font-family-tab-nombre;
+    line-height: $line-height-tab-nombre;
+}
+
+/**
+ * Aplica estilos completos para Tab Código
+ */
+@mixin typography-tab-codigo {
+    font-size: $font-size-tab-codigo;
+    font-weight: $font-weight-tab-codigo;
+    font-family: $font-family-tab-codigo;
+    line-height: $line-height-tab-codigo;
+}
+
+/**
+ * Aplica estilos completos para Input/Select Values
+ */
+@mixin typography-input-value {
+    font-size: $font-size-input-value;
+    font-weight: $font-weight-input-value;
+    font-family: $font-family-input-value;
+    line-height: $line-height-input-value;
+}
+
+/**
+ * Aplica estilos completos para Form Labels
+ */
+@mixin typography-form-label {
+    @include responsive-font-size($font-size-form-label-desktop,
+        $font-size-form-label-tablet,
+        $font-size-form-label-mobile );
+    font-weight: $font-weight-form-label;
+    font-family: $font-family-form-label;
+    line-height: $line-height-form-label;
+}
+
+/**
+ * Aplica estilos completos para Botón Primario
+ */
+@mixin typography-button-primary {
+    font-size: $font-size-button-primary;
+    font-weight: $font-weight-button-primary;
+    font-family: $font-family-button-primary;
+    line-height: $line-height-button-primary;
+}
+
+/**
+ * Aplica estilos completos para Botón Secundario
+ */
+@mixin typography-button-secondary {
+    font-size: $font-size-button-secondary;
+    font-weight: $font-weight-button-secondary;
+    font-family: $font-family-button-secondary;
+    line-height: $line-height-button-secondary;
+}
+
+/**
+ * Aplica estilos completos para Characteristic Value
+ */
+@mixin typography-char-value {
+    font-size: $font-size-char-value;
+    font-weight: $font-weight-char-value;
+    font-family: $font-family-char-value;
+    line-height: $line-height-char-value;
+}
+
+/**
+ * Aplica estilos completos para Characteristic Label
+ */
+@mixin typography-char-label {
+    font-size: $font-size-char-label;
+    font-weight: $font-weight-char-label;
+    font-family: $font-family-char-label;
+    line-height: $line-height-char-label;
+}
+
+/**
+ * Aplica estilos completos para Helper Text
+ */
+@mixin typography-helper-text {
+    font-size: $font-size-helper-text;
+    font-weight: $font-weight-helper-text;
+    font-family: $font-family-helper-text;
+    line-height: $line-height-helper-text;
+}
+
+/**
+ * Aplica estilos completos para Footnote/Timestamp
+ */
+@mixin typography-footnote {
+    font-size: $font-size-footnote;
+    font-weight: $font-weight-footnote;
+    font-family: $font-family-footnote;
+    line-height: $line-height-footnote;
+}
+
+/**
+ * Aplica estilos completos para Body Text
+ */
+@mixin typography-body {
+    font-size: $font-size-body;
+    font-weight: $font-weight-body;
+    font-family: $font-family-body;
+    line-height: $line-height-body;
+}
+
+// ============================================
+// MIXINS UTILITARIOS
+// ============================================
+
+/**
+ * Aplica solo font-weight y font-family sin cambiar tamaño
+ * Útil para mantener consistencia de fuentes
+ */
+@mixin font-style($weight, $family) {
+    font-weight: $weight;
+    font-family: $family;
+}
+
+/**
+ * Trunca texto con ellipsis
+ */
+@mixin text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/**
+ * Limita texto a N líneas con ellipsis
+ */
+@mixin text-clamp($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

@@ -168,13 +168,21 @@ export class CursosPage implements OnInit, ViewWillEnter {
   });
 
   /**
+   * Computed property que genera array de años disponibles (5 años desde el actual)
+   */
+  aniosDisponibles = computed(() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 5 }, (_, i) => currentYear + i);
+  });
+
+  /**
    * Información unificada para mostrar en la card principal.
    * Si es un curso real, devuelve sus datos.
    * Si estamos creando uno nuevo, devuelve un objeto temporal basado en el parseo.
    */
   /**
-   * Genera el código estandarizado: SIGLAS-B##-BLQ##-MOD
-   * Ejemplo: HPM1-B01-BLQ01-V
+   * Genera el código estandarizado con año al final: SIGLAS-B##-BLQ##-MOD-YYYY
+   * Ejemplo: HPM1-B01-BLQ01-V-2025
    */
   public getStandardizedCode(c: any): string {
     Logger.log('🔍 getStandardizedCode INPUT:', c);
@@ -188,6 +196,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     Logger.log('  📌 Bloque original:', c.bloque);
     Logger.log('  📌 Grupo original:', c.grupo);
     Logger.log('  📌 Modalidad original:', c.modalidad);
+    Logger.log('  📌 Año:', c.anio);
 
     // Extraer bloque y formatear como BLQ01, BLQ02, BLQTRV
     const bloqueRaw = this.convertirBloqueTextoANumero(c.bloque || '');
@@ -220,13 +229,31 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const ingresoGrupo = `${letra}${numero}`;
     Logger.log('  📌 Ingreso+Grupo:', ingresoGrupo);
 
-    // Unir con guiones: SIGLAS, B##, BLQ##, MOD
-    const resultado = [siglas, ingresoGrupo, bloqueFormatted, modalidadInitials]
+    // Obtener año (de cohorteForm si está en creación, o del curso si ya existe)
+    const anio = c.anio || this.cohorteForm.anio || new Date().getFullYear().toString();
+
+    // Unir con guiones: SIGLAS, B##, BLQ##, MOD, AÑO
+    const resultado = [siglas, ingresoGrupo, bloqueFormatted, modalidadInitials, anio]
       .filter(s => !!s)
       .join('-');
 
     Logger.log('  ✅ CÓDIGO FINAL:', resultado);
     return resultado;
+  }
+
+  /**
+   * Genera el código para mostrar en UI (SIN año al final)
+   * Ejemplo: HPM1-B01-BLQ01-V
+   */
+  public getDisplayCode(c: any): string {
+    const fullCode = this.getStandardizedCode(c);
+    // Remover el último segmento (año) del código
+    const parts = fullCode.split('-');
+    if (parts.length > 1) {
+      parts.pop(); // Remover último elemento (año)
+      return parts.join('-');
+    }
+    return fullCode;
   }
 
   /**
@@ -260,7 +287,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const real = this.cursoSeleccionadoInfo();
     if (real) return {
       ...real,
-      codigoEstandarizado: this.getStandardizedCode(real)
+      codigoEstandarizado: this.getStandardizedCode(real),
+      codigoDisplay: this.getDisplayCode(real),
+      anio: real.anio || new Date().getFullYear()
     };
 
     // Si estamos en modo creación
@@ -269,7 +298,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
         nombre: this.cursoParseado?.nombre || 'Nuevo Curso',
         siglas: this.cursoParseado?.siglas || this.generarAcronimoCurso(this.cursoParseado?.nombre || ''),
         ingreso: this.cohorteForm.ingreso || '',
-        grupo: this.cursoParseado?.grupo || ''
+        grupo: this.cursoParseado?.grupo || '',
+        anio: this.cohorteForm.anio ? parseInt(this.cohorteForm.anio) : new Date().getFullYear()
       };
 
       return {
@@ -281,7 +311,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
         color: this.colorCursoSeleccionado,
         tieneCalificaciones: false,
         esNuevo: true,
-        codigoEstandarizado: this.getStandardizedCode(tempCourse)
+        codigoEstandarizado: this.getStandardizedCode(tempCourse),
+        codigoDisplay: this.getDisplayCode(tempCourse),
+        anio: tempCourse.anio
       };
     }
 

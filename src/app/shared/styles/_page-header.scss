@@ -4,6 +4,11 @@
 // Siguiendo mejores prácticas de Ionic Framework
 // https://ionicframework.com/docs/theming/css-variables
 
+@use './typography-variables' as *;
+@use './typography-mixins' as typo;
+@use './breakpoints' as bp;
+// Force recompilation - Typography System v2
+
 /**
  * Estilos compartidos para headers de página
  * Usado en: Cursos, Rúbricas, y otras páginas
@@ -57,13 +62,24 @@
         color: var(--ion-color-primary-contrast);
     }
 
-    // Title styling
-    h2 {
+    // Title styling - USANDO NUEVO SISTEMA TIPOGRÁFICO
+    // Increased specificity to override any conflicting rules
+    h2,
+    .title-wrapper h2 {
         margin: 0;
-        font-size: 0.88rem;
-        font-weight: 700;
+        @include typo.typography-page-title;
         color: var(--ion-color-primary-contrast);
         letter-spacing: 0.3px;
+        // Force override if needed
+        font-size: $font-size-page-title-desktop !important;
+
+        @include bp.tablet-only {
+            font-size: $font-size-page-title-tablet !important;
+        }
+
+        @include bp.mobile-only {
+            font-size: $font-size-page-title-mobile !important;
+        }
     }
 
     // Button styling - usando CSS custom properties de Ionic
@@ -73,7 +89,7 @@
         --padding-start: 16px;
         --padding-end: 16px;
 
-        font-size: 0.875rem;
+        @include typo.typography-button-primary;
 
         // Forzar altura consistente para evitar diferencias entre páginas
         &[size="small"] {
@@ -86,17 +102,13 @@
     }
 
     // ============================================
-    // RESPONSIVE BREAKPOINTS
+    // RESPONSIVE BREAKPOINTS - Simplificado
     // ============================================
 
-    // Tablet (768px - 1024px)
-    @media (max-width: 1024px) and (min-width: 769px) {
+    // Tablet
+    @include bp.tablet-only {
         padding: calc(var(--ion-padding, 8px) * 0.75) calc(var(--ion-padding, 8px) * 1.25);
         border-radius: 5px;
-
-        h2 {
-            font-size: 0.8rem;
-        }
 
         ion-icon {
             font-size: 1rem;
@@ -105,12 +117,11 @@
         ion-button {
             --padding-start: 6px;
             --padding-end: 6px;
-            font-size: 0.68rem;
         }
     }
 
-    // Mobile (< 768px)
-    @media (max-width: 768px) {
+    // Mobile
+    @include bp.mobile-only {
         padding: calc(var(--ion-padding, 8px) * 0.625) var(--ion-padding, 8px);
         margin-bottom: calc(var(--ion-margin, 4px) * 0.5);
         border-radius: 4px;
@@ -123,10 +134,6 @@
             gap: calc(var(--ion-padding, 8px) * 0.375);
         }
 
-        h2 {
-            font-size: 0.72rem;
-        }
-
         ion-icon {
             font-size: 0.9rem;
         }
@@ -134,7 +141,6 @@
         ion-button {
             --padding-start: 5px;
             --padding-end: 5px;
-            font-size: 0.62rem;
         }
     }
 
@@ -142,10 +148,6 @@
     @media (max-height: 500px) and (orientation: landscape) {
         padding: calc(var(--ion-padding, 8px) * 0.5) var(--ion-padding, 8px);
         margin-bottom: 1px;
-
-        h2 {
-            font-size: 0.68rem;
-        }
 
         ion-icon {
             font-size: 0.85rem;
@@ -155,7 +157,6 @@
             // Mantener min-height para accesibilidad táctil iOS
             --min-height: 44px;
             height: auto;
-            font-size: 0.58rem;
         }
     }
 }

@@ -8,6 +8,7 @@
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
 @use '../../../shared/styles/breakpoints' as bp;
+@use '../../../shared/styles/typography-mixins' as typo; // Typography mixins
 
 // ============================================
 // CARD PRINCIPAL
@@ -60,9 +61,10 @@
             color: var(--ion-color-primary);
         }
 
+        // USANDO NUEVO SISTEMA TIPOGRÁFICO
         .header-main-title {
             margin: 0;
-            @include typography('sm', 'semibold');
+            @include typo.typography-card-header;
             color: $azul-oscuro;
             text-transform: uppercase;
             letter-spacing: 0.5px;
