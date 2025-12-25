@@ -64,10 +64,10 @@
         // USANDO NUEVO SISTEMA TIPOGRÁFICO
         .header-main-title {
             margin: 0;
-            @include typo.typography-card-header;
             color: $azul-oscuro;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            @include typo.typography-card-header;
         }
     }
 

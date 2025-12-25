@@ -1,8 +1,9 @@
 // ============================================
-// TYPOGRAPHY MIXINS - RESPONSIVE
+// TYPOGRAPHY MIXINS - MAP-BASED SYSTEM
 // ============================================
-// Mixins para aplicar tipografía responsive de forma consistente
+// Sistema de mixins tipográficos usando configuración centralizada
 
+@use 'sass:map';
 @use './typography-variables' as *;
 @use './breakpoints' as bp;
 
@@ -34,145 +35,115 @@
 }
 
 // ============================================
-// MIXINS ESPECÍFICOS POR NIVEL
+// MIXIN UNIVERSAL: APPLY TYPOGRAPHY
 // ============================================
 
 /**
- * Aplica estilos completos para Page Title
+ * Aplica estilos tipográficos completos desde el mapa de configuración
+ * @param {string} $type - Tipo de tipografía del mapa $typography-configs
+ * 
+ * Tipos disponibles:
+ * - 'page-title'       : Títulos principales de página
+ * - 'card-header'      : Encabezados de tarjetas
+ * - 'tab-nombre'       : Nombres en tabs
+ * - 'tab-codigo'       : Códigos en tabs
+ * - 'input-value'      : Valores de inputs/selects
+ * - 'form-label'       : Etiquetas de formularios
+ * - 'button-primary'   : Botones primarios
+ * - 'button-secondary' : Botones secundarios
+ * - 'char-value'       : Valores de características
+ * - 'char-label'       : Etiquetas de características
+ * - 'helper-text'      : Textos de ayuda
+ * - 'footnote'         : Notas al pie/timestamps
+ * - 'body'             : Texto general
+ * 
+ * Uso:
+ * .my-element {
+ *   @include apply-typography('page-title');
+ * }
  */
+@mixin apply-typography($type) {
+    $config: map.get($typography-configs, $type);
+
+    @if not $config {
+        @error "Typography type '#{$type}' not found in $typography-configs map.";
+    }
+
+    // Aplicar propiedades base PRIMERO (evita warnings de mixed declarations)
+    font-weight: map.get($config, 'weight');
+    font-family: map.get($config, 'family');
+    line-height: map.get($config, 'line-height');
+
+    // LUEGO aplicar font-size (responsive o fijo)
+    @if map.get($config, 'responsive')==true {
+        // Tipos responsive: usar breakpoints
+        @include responsive-font-size(map.get($config, 'desktop'),
+            map.get($config, 'tablet'),
+            map.get($config, 'mobile'));
+    }
+
+    @else {
+        // Tipos no-responsive: tamaño fijo
+        font-size: map.get($config, 'size');
+    }
+}
+
+// ============================================
+// MIXINS LEGACY (Mantener por compatibilidad)
+// ============================================
+// Estos mixins se mantienen para no romper código existente
+// que los use directamente. Ahora simplemente llaman al mixin universal.
+
 @mixin typography-page-title {
-    @include responsive-font-size($font-size-page-title-desktop,
-        $font-size-page-title-tablet,
-        $font-size-page-title-mobile );
-    font-weight: $font-weight-page-title;
-    font-family: $font-family-page-title;
-    line-height: $line-height-page-title;
+    @include apply-typography('page-title');
 }
 
-/**
- * Aplica estilos completos para Card Header
- */
 @mixin typography-card-header {
-    @include responsive-font-size($font-size-card-header-desktop,
-        $font-size-card-header-tablet,
-        $font-size-card-header-mobile );
-    font-weight: $font-weight-card-header;
-    font-family: $font-family-card-header;
-    line-height: $line-height-card-header;
+    @include apply-typography('card-header');
 }
 
-/**
- * Aplica estilos completos para Tab Nombre
- */
 @mixin typography-tab-nombre {
-    @include responsive-font-size($font-size-tab-nombre-desktop,
-        $font-size-tab-nombre-tablet,
-        $font-size-tab-nombre-mobile );
-    font-weight: $font-weight-tab-nombre;
-    font-family: $font-family-tab-nombre;
-    line-height: $line-height-tab-nombre;
+    @include apply-typography('tab-nombre');
 }
 
-/**
- * Aplica estilos completos para Tab Código
- */
 @mixin typography-tab-codigo {
-    font-size: $font-size-tab-codigo;
-    font-weight: $font-weight-tab-codigo;
-    font-family: $font-family-tab-codigo;
-    line-height: $line-height-tab-codigo;
+    @include apply-typography('tab-codigo');
 }
 
-/**
- * Aplica estilos completos para Input/Select Values
- */
 @mixin typography-input-value {
-    font-size: $font-size-input-value;
-    font-weight: $font-weight-input-value;
-    font-family: $font-family-input-value;
-    line-height: $line-height-input-value;
+    @include apply-typography('input-value');
 }
 
-/**
- * Aplica estilos completos para Form Labels
- */
 @mixin typography-form-label {
-    @include responsive-font-size($font-size-form-label-desktop,
-        $font-size-form-label-tablet,
-        $font-size-form-label-mobile );
-    font-weight: $font-weight-form-label;
-    font-family: $font-family-form-label;
-    line-height: $line-height-form-label;
+    @include apply-typography('form-label');
 }
 
-/**
- * Aplica estilos completos para Botón Primario
- */
 @mixin typography-button-primary {
-    font-size: $font-size-button-primary;
-    font-weight: $font-weight-button-primary;
-    font-family: $font-family-button-primary;
-    line-height: $line-height-button-primary;
+    @include apply-typography('button-primary');
 }
 
-/**
- * Aplica estilos completos para Botón Secundario
- */
 @mixin typography-button-secondary {
-    font-size: $font-size-button-secondary;
-    font-weight: $font-weight-button-secondary;
-    font-family: $font-family-button-secondary;
-    line-height: $line-height-button-secondary;
+    @include apply-typography('button-secondary');
 }
 
-/**
- * Aplica estilos completos para Characteristic Value
- */
 @mixin typography-char-value {
-    font-size: $font-size-char-value;
-    font-weight: $font-weight-char-value;
-    font-family: $font-family-char-value;
-    line-height: $line-height-char-value;
+    @include apply-typography('char-value');
 }
 
-/**
- * Aplica estilos completos para Characteristic Label
- */
 @mixin typography-char-label {
-    font-size: $font-size-char-label;
-    font-weight: $font-weight-char-label;
-    font-family: $font-family-char-label;
-    line-height: $line-height-char-label;
+    @include apply-typography('char-label');
 }
 
-/**
- * Aplica estilos completos para Helper Text
- */
 @mixin typography-helper-text {
-    font-size: $font-size-helper-text;
-    font-weight: $font-weight-helper-text;
-    font-family: $font-family-helper-text;
-    line-height: $line-height-helper-text;
+    @include apply-typography('helper-text');
 }
 
-/**
- * Aplica estilos completos para Footnote/Timestamp
- */
 @mixin typography-footnote {
-    font-size: $font-size-footnote;
-    font-weight: $font-weight-footnote;
-    font-family: $font-family-footnote;
-    line-height: $line-height-footnote;
+    @include apply-typography('footnote');
 }
 
-/**
- * Aplica estilos completos para Body Text
- */
 @mixin typography-body {
-    font-size: $font-size-body;
-    font-weight: $font-weight-body;
-    font-family: $font-family-body;
-    line-height: $line-height-body;
+    @include apply-typography('body');
 }
 
 // ============================================

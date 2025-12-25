@@ -24,6 +24,23 @@ $gris-claro: #f8f9fa;
 $gris-medio: #6c757d;
 $gris-oscuro: #343a40;
 
+// Colores con opacidad (para fondos y bordes)
+$azul-oscuro-03: rgba(15, 56, 90, 0.03);
+$azul-oscuro-08: rgba(15, 56, 90, 0.08);
+$azul-oscuro-10: rgba(15, 56, 90, 0.1);
+$azul-oscuro-12: rgba(15, 56, 90, 0.12);
+$azul-oscuro-80: rgba(15, 56, 90, 0.8);
+
+$azul-claro-03: rgba(31, 178, 222, 0.03);
+$azul-claro-30: rgba(31, 178, 222, 0.3);
+
+$blanco-70: rgba(255, 255, 255, 0.7);
+$blanco-90: rgba(255, 255, 255, 0.9);
+$negro-15: rgba(0, 0, 0, 0.15);
+$negro-25: rgba(0, 0, 0, 0.25);
+$negro-30: rgba(0, 0, 0, 0.3);
+$negro-50: rgba(0, 0, 0, 0.5);
+
 // ============================================
 // BREAKPOINTS (Ionic Standard)
 // ============================================

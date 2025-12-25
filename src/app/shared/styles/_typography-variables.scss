@@ -1,7 +1,7 @@
 // ============================================
-// TYPOGRAPHY VARIABLES - PROPUESTA 2 (ESCALA MODERADA)
+// TYPOGRAPHY CONFIGURATION MAP
 // ============================================
-// Sistema de tipografía responsive con jerarquía clara
+// Sistema de tipografía centralizado usando Sass Maps
 // Desktop (≥992px) | Tablet (768px-991px) | Mobile (<768px)
 
 // ============================================
@@ -11,115 +11,192 @@ $breakpoint-mobile: 768px;
 $breakpoint-tablet: 992px;
 
 // ============================================
-// NIVEL 1: TÍTULOS PRINCIPALES
+// MAPA DE CONFIGURACIÓN TIPOGRÁFICA
 // ============================================
 
-// Page Title (Título principal de página - ej: "Cursos")
-$font-size-page-title-desktop: 1.125rem; // 18px
-$font-size-page-title-tablet: 1.063rem; // 17px
-$font-size-page-title-mobile: 1.000rem; // 16px
-$font-weight-page-title: 700; // Bold
+$typography-configs: (
+    // NIVEL 1: TÍTULOS PRINCIPALES
+    'page-title': ('desktop': 1.125rem, // 18px
+        'tablet': 1.063rem, // 17px
+        'mobile': 1.000rem, // 16px
+        'weight': 700, // Bold
+        'family': ('Montserrat', sans-serif),
+        'line-height': 1.3,
+        'responsive': true),
+    'card-header': ('desktop': 1.000rem, // 16px
+        'tablet': 0.938rem, // 15px
+        'mobile': 0.875rem, // 14px
+        'weight': 600, // Semibold
+        'family': ('Montserrat', sans-serif),
+        'line-height': 1.4,
+        'responsive': true),
+
+    // NIVEL 2: NAVEGACIÓN Y TABS
+    'tab-nombre': ('desktop': 0.875rem, // 14px
+        'tablet': 0.813rem, // 13px
+        'mobile': 0.813rem, // 13px
+        'weight': 500, // Medium
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': true),
+    'tab-codigo': ('size': 0.750rem, // 12px (todos los dispositivos)
+        'weight': 500, // Medium
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': false),
+
+    // NIVEL 3: FORMULARIOS E INPUTS
+    'input-value': ('size': 0.875rem, // 14px (todos los dispositivos)
+        'weight': 400, // Regular
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.4,
+        'responsive': false),
+    'form-label': ('desktop': 0.813rem, // 13px
+        'tablet': 0.750rem, // 12px
+        'mobile': 0.750rem, // 12px
+        'weight': 500, // Medium
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': true),
+    'button-primary': ('size': 0.875rem, // 14px (todos los dispositivos)
+        'weight': 700, // Bold
+        'family': ('Montserrat', sans-serif),
+        'line-height': 1.4,
+        'responsive': false),
+    'button-secondary': ('size': 0.875rem, // 14px (todos los dispositivos)
+        'weight': 600, // Semibold
+        'family': ('Montserrat', sans-serif),
+        'line-height': 1.4,
+        'responsive': false),
+
+    // NIVEL 4: CARACTERÍSTICAS Y LISTAS
+    'char-value': ('size': 0.813rem, // 13px (todos los dispositivos)
+        'weight': 500, // Medium
+        'family': ('Montserrat', sans-serif),
+        'line-height': 1.4,
+        'responsive': false),
+    'char-label': ('size': 0.688rem, // 11px (todos los dispositivos)
+        'weight': 400, // Regular
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': false),
+
+    // NIVEL 5: ELEMENTOS SECUNDARIOS
+    'helper-text': ('size': 0.688rem, // 11px (todos los dispositivos)
+        'weight': 400, // Regular
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': false),
+    'footnote': ('size': 0.625rem, // 10px (todos los dispositivos)
+        'weight': 400, // Regular
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': false),
+
+    // BODY TEXT (Texto general)
+    'body': ('size': 0.875rem, // 14px
+        'weight': 400, // Regular
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.5,
+        'responsive': false),
+
+    // COHORTE SECTION TYPES
+    'section-header': ('desktop': 0.875rem, // 14px
+        'tablet': 0.813rem, // 13px
+        'mobile': 0.813rem, // 13px
+        'weight': 600, // Semibold
+        'family': ('Montserrat', sans-serif),
+        'line-height': 1.3,
+        'responsive': true),
+    'input-label-small': ('desktop': 0.700rem, // 11.2px
+        'tablet': 0.688rem, // 11px
+        'mobile': 0.688rem, // 11px
+        'weight': 600, // Semibold
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.3,
+        'responsive': true),
+    'input-text-small': ('size': 0.800rem, // 12.8px
+        'weight': 500, // Medium
+        'family': ('Open Sans', sans-serif),
+        'line-height': 1.4,
+        'responsive': false)
+);
+
+// ============================================
+// VARIABLES LEGACY (Mantener por compatibilidad)
+// ============================================
+// Estas variables se mantienen para no romper código existente
+// que las use directamente. Eventualmente pueden ser removidas.
+
+$font-size-page-title-desktop: 1.125rem;
+$font-size-page-title-tablet: 1.063rem;
+$font-size-page-title-mobile: 1.000rem;
+$font-weight-page-title: 700;
 $font-family-page-title: 'Montserrat', sans-serif;
 $line-height-page-title: 1.3;
 
-// Card Header (Encabezados de tarjetas - ej: "Información del Curso")
-$font-size-card-header-desktop: 1.000rem; // 16px
-$font-size-card-header-tablet: 0.938rem; // 15px
-$font-size-card-header-mobile: 0.875rem; // 14px
-$font-weight-card-header: 600; // Semibold
+$font-size-card-header-desktop: 1.000rem;
+$font-size-card-header-tablet: 0.938rem;
+$font-size-card-header-mobile: 0.875rem;
+$font-weight-card-header: 600;
 $font-family-card-header: 'Montserrat', sans-serif;
 $line-height-card-header: 1.4;
 
-// ============================================
-// NIVEL 2: NAVEGACIÓN Y TABS
-// ============================================
-
-// Tab Nombre (Nombre del curso en tabs)
-$font-size-tab-nombre-desktop: 0.875rem; // 14px
-$font-size-tab-nombre-tablet: 0.813rem; // 13px
-$font-size-tab-nombre-mobile: 0.813rem; // 13px
-$font-weight-tab-nombre: 500; // Medium
+$font-size-tab-nombre-desktop: 0.875rem;
+$font-size-tab-nombre-tablet: 0.813rem;
+$font-size-tab-nombre-mobile: 0.813rem;
+$font-weight-tab-nombre: 500;
 $font-family-tab-nombre: 'Open Sans', sans-serif;
 $line-height-tab-nombre: 1.3;
 
-// Tab Código (Código del curso en tabs)
-$font-size-tab-codigo: 0.750rem; // 12px (todos los dispositivos)
-$font-weight-tab-codigo: 500; // Medium
+$font-size-tab-codigo: 0.750rem;
+$font-weight-tab-codigo: 500;
 $font-family-tab-codigo: 'Open Sans', sans-serif;
 $line-height-tab-codigo: 1.3;
 
-// ============================================
-// NIVEL 3: FORMULARIOS E INPUTS
-// ============================================
-
-// Input/Select Values (Valores ingresados o seleccionados)
-$font-size-input-value: 0.875rem; // 14px (todos los dispositivos)
-$font-weight-input-value: 400; // Regular
+$font-size-input-value: 0.875rem;
+$font-weight-input-value: 400;
 $font-family-input-value: 'Open Sans', sans-serif;
 $line-height-input-value: 1.4;
 
-// Form Labels (Etiquetas de formularios)
-$font-size-form-label-desktop: 0.813rem; // 13px
-$font-size-form-label-tablet: 0.750rem; // 12px
-$font-size-form-label-mobile: 0.750rem; // 12px
-$font-weight-form-label: 500; // Medium
+$font-size-form-label-desktop: 0.813rem;
+$font-size-form-label-tablet: 0.750rem;
+$font-size-form-label-mobile: 0.750rem;
+$font-weight-form-label: 500;
 $font-family-form-label: 'Open Sans', sans-serif;
 $line-height-form-label: 1.3;
 
-// Botones Primarios
-$font-size-button-primary: 0.875rem; // 14px (todos los dispositivos)
-$font-weight-button-primary: 700; // Bold
+$font-size-button-primary: 0.875rem;
+$font-weight-button-primary: 700;
 $font-family-button-primary: 'Montserrat', sans-serif;
 $line-height-button-primary: 1.4;
 
-// Botones Secundarios
-$font-size-button-secondary: 0.875rem; // 14px (todos los dispositivos)
-$font-weight-button-secondary: 600; // Semibold
+$font-size-button-secondary: 0.875rem;
+$font-weight-button-secondary: 600;
 $font-family-button-secondary: 'Montserrat', sans-serif;
 $line-height-button-secondary: 1.4;
 
-// ============================================
-// NIVEL 4: CARACTERÍSTICAS Y LISTAS
-// ============================================
-
-// Characteristic Values (Valores de características - ej: "VIRTUAL", "SEGUNDO")
-$font-size-char-value: 0.813rem; // 13px (todos los dispositivos)
-$font-weight-char-value: 500; // Medium
+$font-size-char-value: 0.813rem;
+$font-weight-char-value: 500;
 $font-family-char-value: 'Montserrat', sans-serif;
 $line-height-char-value: 1.4;
 
-// Characteristic Labels (Etiquetas de características - ej: "Código", "Bloque")
-$font-size-char-label: 0.688rem; // 11px (todos los dispositivos)
-$font-weight-char-label: 400; // Regular
+$font-size-char-label: 0.688rem;
+$font-weight-char-label: 400;
 $font-family-char-label: 'Open Sans', sans-serif;
 $line-height-char-label: 1.3;
 
-// ============================================
-// NIVEL 5: ELEMENTOS SECUNDARIOS
-// ============================================
-
-// Helper Text (Textos de ayuda, hints)
-$font-size-helper-text: 0.688rem; // 11px (todos los dispositivos)
-$font-weight-helper-text: 400; // Regular
+$font-size-helper-text: 0.688rem;
+$font-weight-helper-text: 400;
 $font-family-helper-text: 'Open Sans', sans-serif;
 $line-height-helper-text: 1.3;
 
-// Footnotes/Timestamps (Notas al pie, marcas de tiempo)
-$font-size-footnote: 0.625rem; // 10px (todos los dispositivos)
-$font-weight-footnote: 400; // Regular
+$font-size-footnote: 0.625rem;
+$font-weight-footnote: 400;
 $font-family-footnote: 'Open Sans', sans-serif;
 $line-height-footnote: 1.3;
 
-// ============================================
-// BODY TEXT (Texto general)
-// ============================================
-
-$font-size-body: 0.875rem; // 14px
-$font-weight-body: 400; // Regular
+$font-size-body: 0.875rem;
+$font-weight-body: 400;
 $font-family-body: 'Open Sans', sans-serif;
 $line-height-body: 1.5;
-
-// ============================================
-// EXPORTAR PARA USO EN OTROS ARCHIVOS
-// ============================================
-// Este archivo debe ser importado en variables.scss principal

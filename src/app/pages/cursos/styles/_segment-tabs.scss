@@ -100,9 +100,9 @@
 
             // Nombre del curso
             .tab-nombre {
-                @include typo.typography-tab-nombre;
                 display: block;
                 word-wrap: break-word; // Mobile: permitir saltos de línea
+                @include typo.typography-tab-nombre;
 
                 // Desktop: una sola fila
                 @media (min-width: 992px) {
@@ -112,13 +112,13 @@
 
             // Código del curso - SEGUNDA FILA
             .tab-codigo {
-                @include typo.typography-tab-codigo;
                 opacity: 0.85;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 width: 100%;
                 display: block;
+                @include typo.typography-tab-codigo;
             }
         }
 

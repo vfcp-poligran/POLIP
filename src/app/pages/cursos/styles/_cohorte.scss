@@ -1,0 +1,206 @@
+// ============================================
+// COHORTE STYLES - Sistema Integrado
+// ============================================
+// Estilos para selector de color y formulario de cohorte
+// Integrado con sistema centralizado de variables y tipografía
+
+@use '../../../shared/styles/typography-mixins' as typo;
+@use '../../../shared/styles/breakpoints' as bp;
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+// ============================================
+// SECCIÓN DE SELECTOR DE COLOR
+// ============================================
+
+.color-selector-section {
+    background: linear-gradient(135deg, $azul-oscuro-03 0%, $azul-claro-03 100%);
+    border: 1px solid $azul-oscuro-12;
+    border-radius: $radius-lg;
+    padding: spacing('md') - 4px spacing('md') - 2px; // 12px 14px
+    margin-bottom: spacing('md');
+    transition: all $transition-slow;
+
+    &:hover {
+        box-shadow: 0 2px 8px $azul-oscuro-08;
+    }
+
+    .color-selector-header {
+        display: flex;
+        align-items: center;
+        gap: spacing('sm');
+        margin-bottom: spacing('sm') + 2px; // 10px
+        @include typo.apply-typography('section-header');
+        color: $azul-oscuro;
+
+        ion-icon {
+            font-size: 1.1rem;
+            color: $azul-claro;
+        }
+    }
+
+    .color-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+        gap: spacing('sm');
+        max-width: 100%;
+
+        @include bp.mobile-only {
+            grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+            gap: spacing('sm') - 2px; // 6px
+        }
+    }
+
+    .color-option {
+        width: 36px;
+        height: 36px;
+        border-radius: $radius-full;
+        cursor: pointer;
+        border: 2px solid $blanco-90;
+        box-shadow: 0 2px 4px $negro-15;
+        transition: all $transition-base;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px $negro-25;
+        }
+
+        &.selected {
+            border-color: $azul-oscuro;
+            border-width: 3px;
+            transform: scale(1.15);
+            box-shadow: 0 3px 12px $negro-30;
+
+            ion-icon {
+                color: white;
+                font-size: 1.2rem;
+                filter: drop-shadow(0 1px 2px $negro-50);
+            }
+        }
+
+        @include bp.mobile-only {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    @include bp.mobile-only {
+        padding: spacing('sm') + 2px spacing('md'); // 10px 12px
+        margin-bottom: spacing('sm') + 2px; // 10px
+    }
+}
+
+// ============================================
+// SECCIÓN DE COHORTE
+// ============================================
+
+.cohorte-section {
+    background: linear-gradient(135deg, $azul-oscuro-03 0%, $azul-claro-03 100%);
+    border: 1px solid $azul-oscuro-12;
+    border-radius: $radius-lg;
+    padding: spacing('md') - 4px spacing('md') - 2px; // 12px 14px
+    margin-bottom: spacing('md');
+    transition: all $transition-slow;
+
+    &:hover {
+        box-shadow: 0 2px 8px $azul-oscuro-08;
+    }
+
+    .cohorte-header {
+        display: flex;
+        align-items: center;
+        gap: spacing('sm');
+        margin-bottom: spacing('md');
+        @include typo.apply-typography('section-header');
+        color: $azul-oscuro;
+
+        ion-icon {
+            font-size: 1.1rem;
+            color: $azul-claro;
+        }
+    }
+
+    .cohorte-form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: spacing('sm') + 2px; // 10px
+
+        @include bp.respond-to(md) {
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: spacing('md');
+        }
+    }
+
+    .cohorte-input-item {
+        --background: #{$blanco-70};
+        --border-radius: #{$radius-md};
+        --padding-start: 0;
+        --padding-end: 0;
+        --inner-padding-end: 0;
+        border: 1px solid $azul-oscuro-10;
+        border-radius: $radius-md;
+        overflow: hidden;
+
+        ion-label {
+            @include typo.apply-typography('input-label-small');
+            color: $azul-oscuro-80;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+            padding-left: spacing('sm') + 2px; // 10px
+            padding-top: spacing('sm') - 2px; // 6px
+        }
+
+        ion-input {
+            --padding-start: #{spacing('sm') + 2px}; // 10px
+            --padding-end: #{spacing('sm') + 2px}; // 10px
+            @include typo.apply-typography('input-text-small');
+            color: $azul-oscuro;
+        }
+
+        ion-datetime {
+            --padding-start: #{spacing('sm') + 2px}; // 10px
+            --padding-end: #{spacing('sm') + 2px}; // 10px
+            font-size: 0.75rem;
+            color: $azul-oscuro;
+        }
+
+        &:hover {
+            background: $blanco-90;
+            border-color: $azul-claro-30;
+        }
+
+        @include bp.mobile-only {
+            ion-label {
+                font-size: 0.68rem;
+            }
+
+            ion-input,
+            ion-datetime {
+                font-size: 0.75rem;
+            }
+        }
+    }
+
+    @include bp.mobile-only {
+        padding: spacing('sm') + 2px spacing('md'); // 10px 12px
+        margin-bottom: spacing('sm') + 2px; // 10px
+
+        .cohorte-header {
+            font-size: 0.8rem;
+            margin-bottom: spacing('sm') + 2px; // 10px
+
+            ion-icon {
+                font-size: 1rem;
+            }
+        }
+
+        .cohorte-form-grid {
+            gap: spacing('sm');
+        }
+    }
+}

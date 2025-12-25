@@ -67,19 +67,9 @@
     h2,
     .title-wrapper h2 {
         margin: 0;
-        @include typo.typography-page-title;
         color: var(--ion-color-primary-contrast);
         letter-spacing: 0.3px;
-        // Force override if needed
-        font-size: $font-size-page-title-desktop !important;
-
-        @include bp.tablet-only {
-            font-size: $font-size-page-title-tablet !important;
-        }
-
-        @include bp.mobile-only {
-            font-size: $font-size-page-title-mobile !important;
-        }
+        @include typo.typography-page-title;
     }
 
     // Button styling - usando CSS custom properties de Ionic
