@@ -112,6 +112,16 @@ export interface CursoParseado {
      * @example "PV", "STV", "SCBV", "TV"
      */
     codigoBloqueModalidad: string;
+    /** 
+     * Ingreso académico (A, B, C)
+     * Primera letra del código de grupo (ej: de "B01" → "B")
+     */
+    ingreso: string;
+    /** 
+     * Código completo para mostrar
+     * Formato: codigoBase-ingreso+numero (ej: "EPM-B01")
+     */
+    codigo: string;
 }
 
 /**
@@ -244,18 +254,29 @@ export function generarCodigoBase(nombreCurso: string): string {
  * extraerCodigoCurso("[GRUPO B01]", "EPM") → "EPMB01"
  * extraerCodigoCurso("[GRUPO A03]", "SO2") → "SO2A03"
  */
-export function extraerCodigoCurso(textoBrackets: string, codigoBase: string): string {
+export function extraerCodigoCurso(textoBrackets: string, codigoBase: string): { codigoCurso: string; codigoGrupo: string; ingreso: string } {
     // Remover corchetes
     const contenido = textoBrackets.replace(/[\[\]]/g, '').trim();
 
     // Buscar "GRUPO " y tomar lo que sigue
     const match = contenido.match(/GRUPO\s+(.+)/i);
     if (!match) {
-        return codigoBase; // Fallback al código base
+        return {
+            codigoCurso: codigoBase,
+            codigoGrupo: '',
+            ingreso: ''
+        };
     }
 
     const codigoGrupo = normalizarTexto(match[1].trim());
-    return codigoBase + codigoGrupo;
+    // El ingreso es la primera letra del código de grupo (A, B, C)
+    const ingreso = codigoGrupo.charAt(0);
+
+    return {
+        codigoCurso: codigoBase + codigoGrupo,
+        codigoGrupo,
+        ingreso
+    };
 }
 
 /**
@@ -368,7 +389,7 @@ export function parsearNombreCurso(seccionesText: string): CursoParseado {
 
     // 4. Generar códigos
     const codigoBase = generarCodigoBase(nombreCurso);
-    const codigoCurso = extraerCodigoCurso(textoBrackets, codigoBase);
+    const { codigoCurso, codigoGrupo, ingreso } = extraerCodigoCurso(textoBrackets, codigoBase);
     const codigoUnico = generarCodigoUnico(codigoCurso);
 
     // 5. Extraer año del timestamp o usar actual
@@ -376,6 +397,9 @@ export function parsearNombreCurso(seccionesText: string): CursoParseado {
 
     // 6. Generar código bloque-modalidad
     const codigoBloqueModalidad = generarCodigoBloqueModalidad(bloque, modalidad);
+
+    // 7. Generar código para mostrar (ej: "EPM-B01")
+    const codigo = codigoGrupo ? `${codigoBase}-${codigoGrupo}` : codigoBase;
 
     return {
         bloque,
@@ -385,7 +409,9 @@ export function parsearNombreCurso(seccionesText: string): CursoParseado {
         codigoCurso,
         codigoUnico,
         anio,
-        codigoBloqueModalidad
+        codigoBloqueModalidad,
+        ingreso,
+        codigo
     };
 }
 

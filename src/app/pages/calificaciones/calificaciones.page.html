@@ -16,7 +16,8 @@
               class="course-segment-button">
               <div class="segment-button-content">
                 <ion-label class="segment-label">
-                  <span class="course-name">{{ curso.codigo }}</span>
+                  <span class="course-name">{{ getCursoNombre(curso.codigo) }}</span>
+                  <span class="course-code">{{ curso.codigo }}</span>
                 </ion-label>
               </div>
             </ion-segment-button>

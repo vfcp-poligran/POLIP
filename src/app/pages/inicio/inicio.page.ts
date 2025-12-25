@@ -1443,6 +1443,17 @@ export class InicioPage implements OnInit, OnDestroy, ViewWillEnter {
     return this.estudiantesSeleccionados.has(correo);
   }
 
+  getCursoNombre(codigo: string): string {
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
+
+    const cursoEntry = Object.entries(courseStates).find(
+      ([_, state]) => state.metadata?.codigo === codigo
+    );
+
+    return cursoEntry?.[1]?.metadata?.nombre || codigo;
+  }
+
   async renombrarCurso() {
     if (!this.cursoActivo) return;
 

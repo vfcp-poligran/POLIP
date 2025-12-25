@@ -9,9 +9,7 @@ import {
   IonChip,
   IonLabel,
   IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
+
   IonList,
   IonItem,
   IonBadge,
@@ -98,9 +96,7 @@ interface EstudianteConNotas {
     IonChip,
     IonLabel,
     IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
+
     IonFab,
     IonFabButton,
     IonList,
@@ -578,7 +574,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
               siglas: (state.metadata as any)?.siglas || '',
               grupo: (state.metadata as any)?.grupo || '',
               bloque: state.metadata?.bloque || '',
-              ingreso: (state.metadata as any)?.ingreso?.ingreso || '',
+              ingreso: state.metadata?.tipoIngreso || '', // Tipo simple: A, B, C
+              modalidad: state.metadata?.modalidad || '', // Código o texto: V, VIRTUAL, TP
               fechaCreacion: state.metadata?.fechaCreacion || '',
               tieneCalificaciones: tieneArchivo
             };
@@ -671,9 +668,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const uiState = this.dataService.getUIState();
     const claveCurso = this.resolverClaveCurso(codigoCurso);
     if (claveCurso && uiState?.courseStates?.[claveCurso]) {
-      return uiState.courseStates[claveCurso].color || '#ff2719';
+      return uiState.courseStates[claveCurso].color || '#1fb2de';
     }
-    return '#ff2719'; // Color por defecto
+    return '#1fb2de'; // Color por defecto
   }
 
   /**
@@ -819,7 +816,9 @@ export class CursosPage implements OnInit, ViewWillEnter {
     this.cursoParseado = {
       nombre: curso.nombre,
       codigo: curso.codigo,
-      bloque: curso.bloque
+      bloque: curso.bloque,
+      ingreso: curso.ingreso || curso.codigo?.match(/[A-Z]-([ABC])/)?.[1] || '',
+      modalidad: curso.modalidad || 'Virtual'
     };
 
     // Cargar el color actual del curso
@@ -1152,13 +1151,55 @@ export class CursosPage implements OnInit, ViewWillEnter {
       const grupoSolo = grupoSoloMatch ? grupoSoloMatch[1] : '';
 
       this.estudiantesCargados = estudiantes;
+
+      // AUTO-PARSING: Actualizar cohorteForm basándose en el grupo detectado (ej: B01)
+      if (grupoSolo) {
+        const letraIngreso = grupoSolo[0].toUpperCase();
+        if (['A', 'B', 'C'].includes(letraIngreso)) {
+          this.cohorteForm.ingreso = letraIngreso as any;
+          this.onIngresoChange(); // Actualizar fechas automáticas
+        }
+
+        const numBloque = parseInt(grupoSolo.substring(1));
+        if (numBloque === 1) this.cohorteForm.bloque = 'PRIMERO';
+        else if (numBloque === 2) this.cohorteForm.bloque = 'SEGUNDO';
+        // else keep previous or detected from primeraSeccion
+      }
+
+      // Si se detectó bloqueTexto explícitamente en la sección (ej: "SEGUNDO BLOQUE")
+      if (bloqueTexto) {
+        const bt = bloqueTexto.toUpperCase();
+        if (bt.includes('PRIMER')) this.cohorteForm.bloque = 'PRIMERO';
+        else if (bt.includes('SEGUNDO')) this.cohorteForm.bloque = 'SEGUNDO';
+        else if (bt.includes('TRANSVERSAL')) this.cohorteForm.bloque = 'TRANSVERSAL';
+      }
+
       // Ajuste solicitado: Nombre Corto = Siglas + Grupo (para tabs)
+      // Extraer el ingreso (primera letra del código de grupo: A, B, C)
+      const ingresoLetra = grupoSolo ? grupoSolo[0].toUpperCase() : '';
+
+      // Extraer modalidad y generar código de iniciales
+      // Ejemplos: VIRTUAL → V, TEÓRICO-PRÁCTICO → TP, CIENCIAS BASICAS → CB
+      const modalidadMatch2 = primeraSeccion.match(/BLOQUE-([A-Z\u00C0-\u00FF-\s]+)\//i);
+      const modalidadTexto = modalidadMatch2?.[1]?.trim().replace(/\s*-\s*/g, '-') || 'VIRTUAL';
+
+      // Generar código de iniciales de la modalidad
+      const generarCodigoModalidad = (texto: string): string => {
+        // Dividir por guiones y espacios, tomar inicial de cada palabra
+        const palabras = texto.split(/[-\s]+/).filter(p => p.length > 0);
+        return palabras.map(p => p.charAt(0).toUpperCase()).join('');
+      };
+      const modalidadCodigo = generarCodigoModalidad(modalidadTexto);
+
       this.cursoParseado = {
         nombre: nombreCompleto,
         siglas: enfasisCodigo,
         grupo: grupoSolo,
         codigo: codigoAbreviado,
-        bloque: bloqueTexto
+        bloque: bloqueTexto,
+        ingreso: ingresoLetra,
+        modalidad: modalidadTexto,    // Palabra completa (VIRTUAL, TEÓRICO-PRÁCTICO)
+        modalidadCodigo: modalidadCodigo // Código de iniciales (V, TP, CB) para el código del curso
       };
       await this.mostrarToastExito(`${estudiantes.length} estudiantes cargados`);
     } catch (error) {
@@ -1554,6 +1595,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
           grupo: (this.cursoParseado as any).grupo,
           codigo: this.cursoParseado.codigo,
           bloque: this.cursoParseado.bloque,
+          tipoIngreso: this.cursoParseado.ingreso || '', // A, B, C
+          modalidad: this.cursoParseado.modalidad || 'VIRTUAL',
           fechaCreacion: metadataExistente?.fechaCreacion || new Date().toISOString(),
           profesor: metadataExistente?.profesor || '',
           nombreAbreviado: metadataExistente?.nombreAbreviado,
@@ -1577,6 +1620,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
           nombre: this.cursoParseado.nombre,
           codigo: this.cursoParseado.codigo,
           bloque: this.cursoParseado.bloque,
+          tipoIngreso: this.cursoParseado.ingreso || '', // A, B, C
+          modalidad: this.cursoParseado.modalidad || 'VIRTUAL',
           fechaCreacion: new Date().toISOString(),
           profesor: '',
           estudiantes: estudiantesTransformados,
@@ -1763,7 +1808,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     await alert.present();
   }
 
-  convertirBloqueTextoANumero(texto: string): number {
+  convertirBloqueTextoANumeroOld(texto: string): number {
     const bloques: Record<string, number> = {
       'PRIMER': 1, 'PRIMERO': 1, 'FIRST': 1,
       'SEGUNDO': 2, 'SECOND': 2,
@@ -1966,7 +2011,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
    * generarAcronimoCurso("PROGRAMACIÓN MÓVIL") → "PM"
    * generarAcronimoCurso("REDES Y COMUNICACIONES") → "RC"
    */
-  private generarAcronimoCurso(nombreCompleto: string): string {
+  public generarAcronimoCurso(nombreCompleto: string): string {
     // Normalizar texto: quitar tildes y convertir a mayúsculas
     const normalizarTexto = (texto: string): string => {
       return texto
@@ -2011,4 +2056,38 @@ export class CursosPage implements OnInit, ViewWillEnter {
     return letrasSignificativas.join('');
   }
 
+  /**
+   * Formatea el label para los tabs de curso siguiendo el patrón:
+   * Nombre del Curso + Siglas + Bloque + #Grupo
+   * @param curso Objeto del curso
+   */
+  getLabelTabCurso(curso: any): string {
+    if (!curso) return '';
+
+    const nombre = curso.nombre || '';
+    const siglas = curso.siglas || this.generarAcronimoCurso(nombre);
+
+    // El bloque puede venir como texto (SEGUNDO) o número (2)
+    let bloque = curso.bloque || '';
+    if (bloque) {
+      const num = this.convertirBloqueTextoANumero(bloque);
+      bloque = `BLQ${num}`;
+    }
+
+    // Extraer solo números del grupo (ej: B01 -> 01)
+    let grupo = curso.grupo || '';
+    const groupMatch = grupo.match(/\d+/);
+    const grupoNum = groupMatch ? `#${groupMatch[0]}` : '';
+
+    return `${nombre} ${siglas} ${bloque} ${grupoNum}`.trim();
+  }
+
+  private convertirBloqueTextoANumero(texto: string): string {
+    const t = (texto || '').toUpperCase().trim();
+    if (t.includes('PRIMERO')) return '1';
+    if (t.includes('SEGUNDO')) return '2';
+    if (t.includes('TRANSVERSAL')) return 'TRV';
+    const match = t.match(/\d+/);
+    return match ? match[0] : '1';
+  }
 }

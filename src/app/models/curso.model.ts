@@ -146,6 +146,9 @@ export interface Curso {
   fechaModificacion: Date;
   color?: string; // Color del curso para UI (selector de curso)
 
+  /** Código del curso (ej: "EPM-B01-BLQ2-V") */
+  codigo?: string;
+
   /**
    * Año académico del curso
    * Extraído del timestamp o especificado manualmente
@@ -161,7 +164,23 @@ export interface Curso {
   grupos?: GrupoInfo[];
 
   /**
-   * Ingreso/período académico en el que se desarrolla el curso.
+   * Tipo de ingreso simple (A, B, C)
+   * Primera letra del código de grupo extraído del CSV
+   */
+  tipoIngreso?: TipoIngreso;
+
+  /**
+   * Bloque académico (PRIMERO, SEGUNDO, TRANSVERSAL)
+   */
+  bloque?: TipoBloque;
+
+  /**
+   * Modalidad del curso (VIRTUAL, PRESENCIAL, TEORICO-VIRTUAL, etc.)
+   */
+  modalidad?: string;
+
+  /**
+   * Ingreso/período académico completo (objeto con fechas).
    * Permite identificar el período específico y detectar estudiantes repitentes.
    * Opcional para retrocompatibilidad con cursos existentes.
    */

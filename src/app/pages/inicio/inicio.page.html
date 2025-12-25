@@ -27,14 +27,8 @@
       <div class="search-info-container">
         <div class="search-bar-wrapper">
           <div class="search-with-results">
-            <ion-searchbar
-              #searchbarElement
-              [(ngModel)]="busquedaGeneral"
-              (ionInput)="onBusquedaChange($event)"
-              placeholder="Buscar"
-              debounce="300"
-              mode="ios"
-              class="main-searchbar">
+            <ion-searchbar #searchbarElement [(ngModel)]="busquedaGeneral" (ionInput)="onBusquedaChange($event)"
+              placeholder="Buscar" debounce="300" mode="ios" class="main-searchbar">
             </ion-searchbar>
 
             <!-- Resultados de búsqueda -->
@@ -42,14 +36,13 @@
             <div class="search-results-dropdown">
               @for (resultado of resultadosBusqueda; track resultado.correo) {
               <div class="search-result-item" (click)="toggleSeleccionResultado(resultado, $event)">
-                <ion-checkbox
-                  [checked]="isEstudianteSeleccionado(resultado.correo)"
-                  (ionChange)="toggleSeleccionResultado(resultado, $event)"
-                  (click)="$event.stopPropagation()">
+                <ion-checkbox [checked]="isEstudianteSeleccionado(resultado.correo)"
+                  (ionChange)="toggleSeleccionResultado(resultado, $event)" (click)="$event.stopPropagation()">
                 </ion-checkbox>
                 <div class="result-info">
                   <div class="result-name">{{ resultado.nombres }} {{ resultado.apellidos }}</div>
-                  <div class="result-meta">{{ resultado.curso ? getCodigoCorto(resultado.curso) : '' }} - Grupo {{ resultado.grupo }}</div>
+                  <div class="result-meta">{{ resultado.curso ? getCodigoCorto(resultado.curso) : '' }} - Grupo {{
+                    resultado.grupo }}</div>
                 </div>
               </div>
               }
@@ -61,32 +54,26 @@
           <!-- Sección de información - Estudiantes seleccionados -->
           <div class="info-content">
             @if (estudiantesSeleccionadosBusqueda.size > 0) {
-              <div class="seleccionados-chips">
-                @for (correo of Array.from(estudiantesSeleccionadosBusqueda); track correo) {
-                  <div class="estudiante-chip">
-                    <span class="chip-text">{{ obtenerNombreEstudiante(correo) }}</span>
-                    <ion-icon
-                      name="close-circle"
-                      class="chip-remove"
-                      (click)="removerSeleccionado(correo)"
-                      aria-label="Eliminar">
-                    </ion-icon>
-                  </div>
-                }
+            <div class="seleccionados-chips">
+              @for (correo of Array.from(estudiantesSeleccionadosBusqueda); track correo) {
+              <div class="estudiante-chip">
+                <span class="chip-text">{{ obtenerNombreEstudiante(correo) }}</span>
+                <ion-icon name="close-circle" class="chip-remove" (click)="removerSeleccionado(correo)"
+                  aria-label="Eliminar">
+                </ion-icon>
               </div>
-              <!-- Botón Registrar -->
-              <button
-                type="button"
-                class="btn-registrar"
-                (click)="registrarEstudiantes()"
-                aria-label="Registrar estudiantes seleccionados">
-                <ion-icon name="add-circle-outline"></ion-icon>
-                <span>Registrar</span>
-              </button>
+              }
+            </div>
+            <!-- Botón Registrar -->
+            <button type="button" class="btn-registrar" (click)="registrarEstudiantes()"
+              aria-label="Registrar estudiantes seleccionados">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Registrar</span>
+            </button>
             } @else {
-              <div class="info-placeholder">
-                <ion-icon name="information-circle-outline"></ion-icon>
-              </div>
+            <div class="info-placeholder">
+              <ion-icon name="information-circle-outline"></ion-icon>
+            </div>
             }
           </div>
         </div>
@@ -97,11 +84,7 @@
           <ion-list class="registrados-list">
             <ion-list-header>
               <ion-label>Estudiantes Registrados ({{ estudiantesRegistrados.length }})</ion-label>
-              <ion-icon
-                name="trash-outline"
-                class="btn-limpiar"
-                (click)="limpiarRegistrados()"
-                title="Limpiar lista"
+              <ion-icon name="trash-outline" class="btn-limpiar" (click)="limpiarRegistrados()" title="Limpiar lista"
                 aria-label="Limpiar lista">
               </ion-icon>
             </ion-list-header>
@@ -111,12 +94,8 @@
                 <h3>{{ est.nombre }}</h3>
                 <p>{{ est.curso }} - G{{ est.grupo }}</p>
               </ion-label>
-              <ion-icon
-                name="close-circle-outline"
-                slot="end"
-                class="btn-eliminar"
-                (click)="eliminarRegistrado(est.correo)"
-                aria-label="Eliminar">
+              <ion-icon name="close-circle-outline" slot="end" class="btn-eliminar"
+                (click)="eliminarRegistrado(est.correo)" aria-label="Eliminar">
               </ion-icon>
             </ion-item>
             }
@@ -130,34 +109,24 @@
       <div class="page-title-header">
         <div class="header-course-selector">
           <!-- Botón Vista General -->
-          <button type="button"
-                  class="vista-general-toggle-btn"
-                  [class.activo]="vistaGeneralActiva()"
-                  (click)="irAVistaGeneral()"
-                  title="Vista General de todos los cursos"
-                  aria-label="Vista General">
+          <button type="button" class="vista-general-toggle-btn" [class.activo]="vistaGeneralActiva()"
+            (click)="irAVistaGeneral()" title="Vista General de todos los cursos" aria-label="Vista General">
             <ion-icon name="apps"></ion-icon>
           </button>
 
           <!-- Selectores de curso -->
           @if (cursosDisponibles.length > 0) {
-          <ion-segment
-            [scrollable]="true"
-            [value]="cursoActivo ?? undefined"
-            (ionChange)="onCursoChange($event)"
+          <ion-segment [scrollable]="true" [value]="cursoActivo ?? undefined" (ionChange)="onCursoChange($event)"
             class="course-segment">
             @for (curso of cursosDisponibles; track curso) {
-            <ion-segment-button
-              [value]="curso"
-              [style.--course-color]="getCourseColor(curso)"
+            <ion-segment-button [value]="curso" [style.--course-color]="getCourseColor(curso)"
               class="course-segment-button">
               <div class="segment-button-content">
                 <ion-label class="segment-label">
-                  <span class="course-name">{{ getCodigoCorto(curso) }}</span>
+                  <span class="course-name">{{ getCursoNombre(curso) }}</span>
+                  <span class="course-code">{{ getCodigoCorto(curso) }}</span>
                 </ion-label>
-                <ion-icon
-                  name="ellipsis-vertical"
-                  class="segment-menu-icon"
+                <ion-icon name="ellipsis-vertical" class="segment-menu-icon"
                   (click)="abrirMenuColor($event, curso); $event.stopPropagation()"
                   [attr.aria-label]="'Opciones de ' + curso"></ion-icon>
               </div>
@@ -175,15 +144,8 @@
       </div>
 
       <!-- Popover para cambiar color (Ionic nativo) - Botón 3 puntos -->
-      <ion-popover
-        [isOpen]="menuColorVisible"
-        [event]="colorPopoverEvent"
-        (didDismiss)="cerrarMenuColor()"
-        size="auto"
-        alignment="start"
-        class="color-picker-popover-wrapper"
-        role="dialog"
-        aria-label="Selector de color para curso">
+      <ion-popover [isOpen]="menuColorVisible" [event]="colorPopoverEvent" (didDismiss)="cerrarMenuColor()" size="auto"
+        alignment="start" class="color-picker-popover-wrapper" role="dialog" aria-label="Selector de color para curso">
         <ng-template>
           <div class="color-picker-popover">
             <div class="color-picker-header">
@@ -194,17 +156,11 @@
               <!-- Grid de colores predefinidos - clic aplica directamente -->
               <div class="color-picker-grid" role="radiogroup" aria-label="Colores disponibles">
                 @for (color of coloresDisponibles; track color) {
-                <div
-                  role="radio"
-                  aria-checked="false"
+                <div role="radio" aria-checked="false"
                   [attr.aria-checked]="cursoParaCambiarColor ? (getCourseColor(cursoParaCambiarColor) === color ? 'true' : 'false') : 'false'"
-                  [attr.aria-label]="'Color ' + color"
-                  class="color-option"
-                  [style.background-color]="color"
+                  [attr.aria-label]="'Color ' + color" class="color-option" [style.background-color]="color"
                   [class.selected]="cursoParaCambiarColor && getCourseColor(cursoParaCambiarColor) === color"
-                  [title]="color"
-                  tabindex="0"
-                  (click)="aplicarColorDirecto(color)"
+                  [title]="color" tabindex="0" (click)="aplicarColorDirecto(color)"
                   (keydown.enter)="aplicarColorDirecto(color)"
                   (keydown.space)="aplicarColorDirecto(color); $event.preventDefault()">
                   @if (cursoParaCambiarColor && getCourseColor(cursoParaCambiarColor) === color) {
@@ -223,7 +179,9 @@
       <div class="empty-state-fullscreen">
         <div class="empty-state-content">
           <h3>No hay información disponible</h3>
-          <p>Gestione la información a través de las opciones <strong><ion-icon name="library" class="icon-menu"></ion-icon> Cursos</strong> y <strong><ion-icon name="speedometer" class="icon-menu"></ion-icon> Rúbricas</strong></p>
+          <p>Gestione la información a través de las opciones <strong><ion-icon name="library"
+                class="icon-menu"></ion-icon> Cursos</strong> y <strong><ion-icon name="speedometer"
+                class="icon-menu"></ion-icon> Rúbricas</strong></p>
         </div>
       </div>
       }
@@ -262,36 +220,34 @@
           <ion-card-header class="header-con-toggle">
             <div class="breadcrumb-navigation">
               @if (cursoActivo) {
-                <span class="breadcrumb-item curso-name" [title]="cursoActivo">
-                  {{ getNombreCompletoConGrupo(cursoActivo) }}
-                </span>
-                @if (filtroGrupo !== 'todos') {
-                  <ion-icon name="chevron-forward-outline" class="breadcrumb-separator"></ion-icon>
-                  <span class="breadcrumb-item grupo-name" [style.color]="getCourseColor(cursoActivo)">Grupo {{ filtroGrupo }}</span>
-                  @if (entregaEvaluando) {
-                    <ion-icon name="chevron-forward-outline" class="breadcrumb-separator"></ion-icon>
-                    <span class="breadcrumb-item entrega-name">{{ entregaEvaluando }}</span>
-                  }
-                }
+              <span class="breadcrumb-item curso-name" [title]="cursoActivo">
+                {{ getNombreCompletoConGrupo(cursoActivo) }}
+              </span>
+              @if (filtroGrupo !== 'todos') {
+              <ion-icon name="chevron-forward-outline" class="breadcrumb-separator"></ion-icon>
+              <span class="breadcrumb-item grupo-name" [style.color]="getCourseColor(cursoActivo)">Grupo {{ filtroGrupo
+                }}</span>
+              @if (entregaEvaluando) {
+              <ion-icon name="chevron-forward-outline" class="breadcrumb-separator"></ion-icon>
+              <span class="breadcrumb-item entrega-name">{{ entregaEvaluando }}</span>
+              }
+              }
               }
             </div>
           </ion-card-header>
 
           <!-- Botones de filtro de grupo - DEBAJO del título - Usando ion-segment scrollable -->
           @if (gruposDisponibles.length > 0) {
-          <ion-segment
-            [scrollable]="true"
-            [value]="filtroGrupo"
-            (ionChange)="onGrupoSegmentChange($event)"
+          <ion-segment [scrollable]="true" [value]="filtroGrupo" (ionChange)="onGrupoSegmentChange($event)"
             class="grupos-segment-bar">
             <ion-segment-button value="todos" class="grupo-segment-btn grupo-segment-all">
               <ion-icon name="grid-outline"></ion-icon>
               <ion-label>Todos</ion-label>
             </ion-segment-button>
             @for (grupo of gruposDisponibles; track grupo) {
-              <ion-segment-button [value]="grupo" class="grupo-segment-btn">
-                <ion-label>{{ grupo }}</ion-label>
-              </ion-segment-button>
+            <ion-segment-button [value]="grupo" class="grupo-segment-btn">
+              <ion-label>{{ grupo }}</ion-label>
+            </ion-segment-button>
             }
           </ion-segment>
           }
@@ -313,20 +269,14 @@
               @if (estudiantesActuales.length > 0) {
               <!-- Tabs de grupos -->
               <div class="grupos-tabs-bar">
-                <button
-                  type="button"
-                  class="grupo-tab"
-                  [class.active]="vistaGrupoActiva === 'general'"
+                <button type="button" class="grupo-tab" [class.active]="vistaGrupoActiva === 'general'"
                   (click)="seleccionarVistaGrupo('general')">
                   <ion-icon name="apps-outline"></ion-icon>
                   <span>Vista General</span>
                   <span class="badge">{{ estudiantesActuales.length }}</span>
                 </button>
                 @for (grupo of gruposDisponibles; track grupo) {
-                <button
-                  type="button"
-                  class="grupo-tab"
-                  [class.active]="vistaGrupoActiva === grupo"
+                <button type="button" class="grupo-tab" [class.active]="vistaGrupoActiva === grupo"
                   (click)="seleccionarVistaGrupo(grupo)">
                   <span class="grupo-numero">{{ grupo }}</span>
                   <span class="badge">{{ contarIntegrantesGrupo(grupo) }}</span>
@@ -338,11 +288,11 @@
               <div class="grupo-tab-content">
                 <div class="tab-content-header">
                   @if (vistaGrupoActiva === 'general') {
-                    <ion-icon name="list-outline"></ion-icon>
-                    <span>Vista general del curso - {{ estudiantesActuales.length }} estudiantes</span>
+                  <ion-icon name="list-outline"></ion-icon>
+                  <span>Vista general del curso - {{ estudiantesActuales.length }} estudiantes</span>
                   } @else {
-                    <ion-icon name="people"></ion-icon>
-                    <span>Grupo {{ vistaGrupoActiva }} - {{ obtenerIntegrantesVistaActual().length }} integrantes</span>
+                  <ion-icon name="people"></ion-icon>
+                  <span>Grupo {{ vistaGrupoActiva }} - {{ obtenerIntegrantesVistaActual().length }} integrantes</span>
                   }
                 </div>
 
@@ -392,23 +342,24 @@
             <!-- Vista: Grupo específico seleccionado -->
             <div class="grupo-detail-content">
 
-                @if (obtenerIntegrantesGrupo().length > 0) {
-                <!-- Mensaje informativo - el seguimiento se hace en el panel lateral -->
-                <div class="grupo-info-placeholder">
-                  <ion-icon name="information-circle-outline" color="medium"></ion-icon>
-                  <ion-text color="medium">
-                    <p>Use el panel de seguimiento lateral para gestionar los integrantes del grupo <strong>{{ filtroGrupo }}</strong></p>
-                    <small>{{ obtenerIntegrantesGrupo().length }} integrantes</small>
-                  </ion-text>
-                </div>
-                } @else {
-                <ion-item lines="none">
-                  <ion-icon name="alert-circle" slot="start" color="medium"></ion-icon>
-                  <ion-label color="medium">
-                    <p>No hay integrantes en este grupo</p>
-                  </ion-label>
-                </ion-item>
-                }
+              @if (obtenerIntegrantesGrupo().length > 0) {
+              <!-- Mensaje informativo - el seguimiento se hace en el panel lateral -->
+              <div class="grupo-info-placeholder">
+                <ion-icon name="information-circle-outline" color="medium"></ion-icon>
+                <ion-text color="medium">
+                  <p>Use el panel de seguimiento lateral para gestionar los integrantes del grupo <strong>{{ filtroGrupo
+                      }}</strong></p>
+                  <small>{{ obtenerIntegrantesGrupo().length }} integrantes</small>
+                </ion-text>
+              </div>
+              } @else {
+              <ion-item lines="none">
+                <ion-icon name="alert-circle" slot="start" color="medium"></ion-icon>
+                <ion-label color="medium">
+                  <p>No hay integrantes en este grupo</p>
+                </ion-label>
+              </ion-item>
+              }
             </div>
             }
 

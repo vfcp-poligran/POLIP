@@ -7,6 +7,7 @@
 @use 'sass:map';
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
+@use '../../../shared/styles/breakpoints' as bp;
 
 // ============================================
 // CARD PRINCIPAL
@@ -23,14 +24,6 @@
         @include card-elevation(3);
         transform: translateY(-2px);
     }
-
-    // Barra de color superior (4px)
-    &::before {
-        content: '';
-        display: block;
-        height: 4px;
-        background: var(--curso-color, $azul-claro);
-    }
 }
 
 // ============================================
@@ -39,27 +32,80 @@
 
 .curso-card-header {
     position: relative;
-    padding: spacing('md');
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.375rem 0.625rem; // Mobile (XS) default ~6px 10px
 
-    .curso-title-row {
+    @include bp.respond-to(sm) {
+        padding: 0.5rem 0.75rem; // ~8px 12px
+    }
+
+    @include bp.respond-to(md) {
+        padding: 0.625rem 0.875rem; // ~10px 14px
+    }
+
+    @include bp.respond-to(lg) {
+        padding: 0.75rem 1rem; // ~12px 16px
+    }
+
+    .curso-header-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+
+        .header-icon {
+            font-size: 1.25rem;
+            color: var(--ion-color-primary);
+        }
+
+        .header-main-title {
+            margin: 0;
+            @include typography('sm', 'semibold');
+            color: $azul-oscuro;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .header-info-item {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: spacing('sm');
-    }
+        gap: 4px;
+        @include typography('xs', 'bold');
+        color: var(--ion-color-primary) !important;
 
-    .curso-nombre {
-        @include typography('lg', 'semibold', 'tight');
-        color: $azul-oscuro;
-        margin: 0;
-        flex: 1;
-        @include truncate;
-    }
+        .label {
+            color: inherit;
+            font-weight: font-weight('bold');
+        }
 
-    .curso-status-chip {
-        margin-left: spacing('sm');
-        flex-shrink: 0;
+        .value {
+            color: inherit;
+            font-weight: font-weight('bold');
+        }
     }
+}
+
+.curso-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: spacing('sm');
+}
+
+.curso-nombre {
+    @include typography('lg', 'semibold', 'tight');
+    color: $azul-oscuro;
+    margin: 0;
+    flex: 1;
+    @include truncate;
+}
+
+.curso-status-chip {
+    margin-left: spacing('sm');
+    flex-shrink: 0;
 }
 
 // ============================================
@@ -127,9 +173,7 @@
 // ============================================
 
 .card-actions {
-    position: absolute;
-    top: spacing('md');
-    right: spacing('md');
+    position: relative;
     @include flex-gap(spacing('xs'));
 
     ion-button {
@@ -147,7 +191,9 @@
 // ============================================
 
 .curso-card-content {
-    padding: 0 spacing('md') spacing('md');
+    padding: 0 spacing('sm') spacing('sm');
+    border: none !important;
+    box-shadow: none;
 }
 
 // ============================================
@@ -222,7 +268,7 @@
         opacity: 0.8;
 
         &::before {
-            background: linear-gradient(90deg, $color-warning, color.adjust($color-warning, $lightness: 10%));
+            background: linear-gradient(90deg, $azul-claro, color.adjust($azul-claro, $lightness: 10%));
         }
     }
 
@@ -234,13 +280,9 @@
 
     // Estado nuevo (Creación)
     &.es-nuevo {
-        border: 2px dashed rgba($color-success, 0.4);
-        background: rgba($color-success, 0.02);
-        animation: pulse-border-new 2s ease-in-out infinite;
-
-        &::before {
-            background: $color-success;
-        }
+        border: none;
+        background: rgba($azul-claro, 0.05);
+        @include card-elevation(4);
     }
 }
 

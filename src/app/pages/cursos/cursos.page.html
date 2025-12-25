@@ -72,11 +72,7 @@
         <!-- Tab Virtual de Nuevo Curso -->
         @if (modoEdicion() && !cursoSeleccionado()) {
         <ion-segment-button value="NUEVO">
-          <ion-icon name="add-circle" color="success"></ion-icon>
-          <ion-label>
-            <span class="nombre-curso">{{ cursoParseado?.nombre || 'Nuevo Curso' }}</span>
-            <span class="codigo-curso">CONFIGURANDO</span>
-          </ion-label>
+          <ion-label>Sin Nombre</ion-label>
         </ion-segment-button>
         }
 
@@ -84,8 +80,7 @@
         @for (curso of cursosDisponibles(); track curso.codigo) {
         <ion-segment-button [value]="curso.codigo">
           <ion-label>
-            <span class="nombre-curso">{{ curso.nombre }}</span>
-            <span class="codigo-curso">{{ curso.codigo }}</span>
+            {{ getLabelTabCurso(curso) }}
           </ion-label>
         </ion-segment-button>
         }
@@ -98,6 +93,12 @@
 
         <!-- Header con acciones -->
         <div class="curso-card-header">
+          <div class="curso-header-info">
+            <ion-icon name="information-circle-outline" class="header-icon"></ion-icon>
+            <h2 class="header-main-title">Información del Curso</h2>
+            <!-- Labels moved to detail section below imports -->
+          </div>
+
           <div class="card-actions">
             @if (!info.esNuevo) {
             <ion-button size="small" fill="clear" [color]="BUTTON_CONFIG.EDITAR.color" (click)="editarCurso(info)"
@@ -117,8 +118,7 @@
           <!-- Subtabs: Detalle / Integrantes -->
           <ion-segment [value]="subtabActivo()" (ionChange)="subtabActivo.set($any($event).detail.value)" scrollable>
             <ion-segment-button value="detalle">
-              <ion-icon name="information-circle-outline"></ion-icon>
-              <ion-label>Detalle</ion-label>
+              <ion-label>Características</ion-label>
             </ion-segment-button>
 
             <!-- Solo mostrar Integrantes para cursos que ya existen -->
@@ -141,7 +141,95 @@
               <div class="compact-form-section editing">
                 <div class="form-main-grid">
 
-                  <!-- Columna Izquierda: Configuración -->
+                  <!-- Columna Arriba/Izquierda: Importación (Prioridad) -->
+                  <div class="import-side">
+                    <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
+
+                    <div class="import-cloud-grid">
+                      <!-- Import Personas -->
+                      <div class="import-cloud-item" (click)="importEstudiantesInput.click()">
+                        <div class="cloud-icon-wrapper">
+                          <ion-icon name="cloud-upload"
+                            [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
+                          <div class="cloud-label">Importar (Personas)</div>
+                        </div>
+                        <input type="file" #importEstudiantesInput accept=".csv"
+                          (change)="onEstudiantesFileSelected($event)" hidden />
+                        @if (estudiantesFileName) {
+                        <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
+                          <ion-label>{{ estudiantesFileName }}</ion-label>
+                          <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
+                        </ion-chip>
+                        }
+                      </div>
+
+                      <!-- Import Calificaciones -->
+                      <div class="import-cloud-item" (click)="importCalificacionesInput.click()">
+                        <div class="cloud-icon-wrapper">
+                          <ion-icon name="cloud-upload"
+                            [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
+                          <div class="cloud-label">Importar (Calificaciones)</div>
+                        </div>
+                        <input type="file" #importCalificacionesInput accept=".csv"
+                          (change)="onCalificacionesFileSelected($event)" hidden />
+                        @if (calificacionesFileName) {
+                        <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
+                          <ion-label>{{ calificacionesFileName }}</ion-label>
+                          <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
+                        </ion-chip>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Datos del curso (mismo formato que vista lectura) -->
+                    @if (cursoParseado) {
+                    <ion-list lines="none" class="parsed-course-info">
+                      <ion-item>
+                        <ion-icon name="school-outline" slot="start" color="primary"></ion-icon>
+                        <ion-label>
+                          <p>Nombre del Curso</p>
+                          <h3>{{ cursoParseado.nombre }}</h3>
+                        </ion-label>
+                      </ion-item>
+                      <ion-item>
+                        <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
+                        <ion-label>
+                          <p>Código</p>
+                          <h3>{{ cursoParseado.codigo }}</h3>
+                        </ion-label>
+                      </ion-item>
+                      <ion-item>
+                        <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
+                        <ion-label>
+                          <p>Ingreso</p>
+                          <h3>{{ cursoParseado.ingreso || '—' }}</h3>
+                        </ion-label>
+                      </ion-item>
+                      <ion-item>
+                        <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+                        <ion-label>
+                          <p>Bloque</p>
+                          <h3>{{ cursoParseado.bloque || '—' }}</h3>
+                        </ion-label>
+                      </ion-item>
+                      <ion-item>
+                        <ion-icon name="desktop-outline" slot="start" color="primary"></ion-icon>
+                        <ion-label>
+                          <p>Modalidad</p>
+                          <h3>{{ cursoParseado.modalidad || 'Virtual' }}</h3>
+                        </ion-label>
+                      </ion-item>
+                    </ion-list>
+                    } @else {
+                    <div class="empty-import-state">
+                      <ion-icon name="cloud-upload-outline" color="medium"></ion-icon>
+                      <p>Importa un archivo para ver los datos del curso</p>
+                    </div>
+                    }
+                  </div>
+
+                  <!-- Columna Abajo/Derecha: Configuración (solo en edición, no en creación) -->
+                  @if (!info.esNuevo) {
                   <div class="config-side">
                     <h4 class="section-title">Parámetros de Cohorte</h4>
                     <div class="form-grid">
@@ -188,60 +276,8 @@
                         </ion-popover>
                       </div>
                     </div>
-
-                    @if (cursoParseado) {
-                    <ion-list lines="none" class="parsed-preview">
-                      <ion-item>
-                        <ion-label>
-                          <p>Nombre Detectado</p>
-                          <h3>{{ cursoParseado.nombre }}</h3>
-                        </ion-label>
-                      </ion-item>
-                      <ion-item>
-                        <ion-label>
-                          <p>Código Generado</p>
-                          <h3>{{ cursoParseado.codigo }}</h3>
-                        </ion-label>
-                      </ion-item>
-                    </ion-list>
-                    }
                   </div>
-
-                  <!-- Columna Derecha: Importación -->
-                  <div class="import-side">
-                    <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
-
-                    <div class="compact-import-section no-border-top no-padding-top">
-                      <input type="file" #importEstudiantesInput accept=".csv"
-                        (change)="onEstudiantesFileSelected($event)" hidden />
-                      <ion-button expand="block" fill="outline" size="small" (click)="importEstudiantesInput.click()">
-                        <ion-icon name="people-outline" slot="start"></ion-icon>
-                        {{ info.esNuevo ? 'Importar Estudiantes (CSV)' : 'Actualizar Estudiantes' }}
-                      </ion-button>
-                      @if (estudiantesFileName) {
-                      <ion-chip color="success" size="small">
-                        <ion-label>{{ estudiantesFileName }}</ion-label>
-                        <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
-                      </ion-chip>
-                      }
-                    </div>
-
-                    <div class="compact-import-section no-border-top no-padding-top">
-                      <input type="file" #importCalificacionesInput accept=".csv"
-                        (change)="onCalificacionesFileSelected($event)" hidden />
-                      <ion-button expand="block" fill="outline" size="small"
-                        (click)="importCalificacionesInput.click()">
-                        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-                        {{ info.esNuevo ? 'Importar Calificaciones' : 'Importar Notas (Canvas)' }}
-                      </ion-button>
-                      @if (calificacionesFileName) {
-                      <ion-chip color="success" size="small">
-                        <ion-label>{{ calificacionesFileName }}</ion-label>
-                        <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
-                      </ion-chip>
-                      }
-                    </div>
-                  </div>
+                  }
 
                 </div>
               </div>
@@ -274,6 +310,13 @@
                   <ion-label>
                     <p>Ingreso</p>
                     <h3>{{ info.ingreso || '—' }}</h3>
+                  </ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-icon name="desktop-outline" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <p>Modalidad</p>
+                    <h3>{{ info.modalidad || '—' }}</h3>
                   </ion-label>
                 </ion-item>
               </ion-list>

@@ -428,6 +428,8 @@ export class DataService implements OnDestroy {
           codigoUnico: codigoUnico,              // Código interno único: "EPM-B01-BLQ2-V-20251121"
           codigo: cursoData.codigo,              // Código base sin timestamp
           bloque: cursoData.bloque,
+          tipoIngreso: cursoData.tipoIngreso || '',  // A, B, C
+          modalidad: cursoData.modalidad || '',      // V, TP, CB
           fechaCreacion: cursoData.fechaCreacion,
           profesor: cursoData.profesor || '',
           ingreso: cursoData.cohorte             // Agregar información de cohorte

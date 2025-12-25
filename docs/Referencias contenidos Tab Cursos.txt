@@ -1,0 +1,15 @@
+subtab-content detail: Area del tab detalle en Tab Curso
+
+compact-info-card:Es el contenedor) Contiene los parámetros de Cohorte y la sección de importación
+
+form-main-grid: Consultar que contiene
+
+config-side: Parámetros de Cohorte
+
+parsed-preview: Información obtenida del parseo             de los archivos csv. Debería ir arriba.
+
+import-side: Los imports de los csv
+
+NUEVO
+
+SEGUNDO BLOQUE-VIRTUAL/ÉNFASIS EN PROGRAMACIÓN MÓVIL-[GRUPO B01]

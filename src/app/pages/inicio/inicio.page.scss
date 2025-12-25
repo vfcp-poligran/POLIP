@@ -6,6 +6,7 @@
 /* Importar estilos modulares como partials */
 @use './seguimiento';
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
+@use '../../shared/styles/course-tabs' as *;
 
 /* Variables locales simplificadas con ajustes dinámicos para móviles */
 :host {
@@ -1828,14 +1829,7 @@ ion-segment-button.course-segment-button {
   }
 
   .course-name {
-    font-size: 0.8rem;
-    font-weight: 700;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 120px;
-    // Texto siempre blanco sobre fondo de color
+    // Extends from shared styles
     color: #ffffff;
   }
 
@@ -1874,10 +1868,7 @@ ion-segment-button.course-segment-button {
     min-width: 70px;
     max-width: 130px;
 
-    .course-name {
-      font-size: 0.7rem;
-      max-width: 90px;
-    }
+    // course-name styles from shared styles
 
     .segment-menu-icon {
       font-size: 0.8rem;
@@ -1893,11 +1884,6 @@ ion-segment-button.course-segment-button {
     --padding-bottom: 2px;
     min-width: 60px;
     max-width: 110px;
-
-    .course-name {
-      font-size: 0.65rem;
-      max-width: 75px;
-    }
   }
 }
 

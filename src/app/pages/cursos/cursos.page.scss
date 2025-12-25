@@ -127,44 +127,89 @@
 .compact-info-card {
   margin: 0;
   width: 100%;
-  max-width: 350px; // Default reading width
   border: 1px solid rgba($azul-oscuro, 0.08);
   box-shadow: $shadow-sm;
   background: white;
-  @include transition(max-width, $transition-base);
+  @include transition(all, $transition-base);
+
+  // Desktop: ancho medio
+  max-width: 400px;
+
+  // Tablet: un poco más ancho
+  @include bp.tablet-only {
+    max-width: 90%;
+  }
+
+  // Mobile: ancho completo
+  @include bp.mobile-only {
+    max-width: 100%;
+  }
 
   &.editing-view {
-    max-width: 750px;
+    max-width: 650px;
+
+    @include bp.tablet-only {
+      max-width: 95%;
+    }
+
+    @include bp.mobile-only {
+      max-width: 100%;
+    }
   }
 
   ion-list {
     background: transparent;
-    padding: spacing('xs');
+    padding: 4px; // Mínimo
+
+    @include bp.mobile-only {
+      padding: 2px;
+    }
   }
 
   ion-item {
-    --padding-start: #{spacing('sm')};
-    --inner-padding-end: #{spacing('sm')};
-    --min-height: 56px;
+    --padding-start: 8px;
+    --inner-padding-end: 8px;
+    --min-height: 40px; // Más compacto
+
+    @include bp.tablet-only {
+      --min-height: 38px;
+    }
+
+    @include bp.mobile-only {
+      --padding-start: 6px;
+      --inner-padding-end: 6px;
+      --min-height: 36px;
+    }
 
     ion-icon {
-      font-size: 1.2rem;
-      margin-inline-end: spacing('md');
+      font-size: 1rem;
+      margin-inline-end: 8px;
+
+      @include bp.mobile-only {
+        font-size: 0.9rem;
+        margin-inline-end: 6px;
+      }
     }
 
     p {
       @include typography('xs', 'normal');
       color: $gris-medio;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
 
     h3 {
       @include typography('sm', 'medium');
       color: $azul-oscuro;
       margin: 0;
+      word-break: break-word;
+
+      @include bp.mobile-only {
+        font-size: font-size('xs');
+      }
     }
   }
 }
+
 
 .compact-rubricas-section {
   padding: spacing('md');
@@ -198,25 +243,118 @@
   }
 }
 
-.compact-import-section {
-  padding: spacing('md');
-  border-top: 1px solid rgba($azul-oscuro, 0.05);
+/* Cloud Icons for Import - Responsive */
+.import-cloud-grid {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: spacing('sm');
+  margin-top: spacing('xs');
+  width: 100%;
 
-  ion-button {
-    margin: 0;
-    --border-radius: #{$radius-sm};
+  // Desktop: dos columnas uniformes
+  @include bp.desktop-only {
+    gap: spacing('md');
+  }
+}
+
+.import-cloud-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: spacing('xs');
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: spacing('sm');
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  background: rgba($azul-oscuro, 0.04);
+  @include transition(all, $transition-base);
+
+  // Desktop
+  @include bp.desktop-only {
+    padding: spacing('sm') spacing('md');
+    gap: spacing('sm');
+  }
+
+  // Mobile: más compacto
+  @include bp.mobile-only {
+    padding: spacing('xs') spacing('sm');
+    gap: 4px;
+  }
+
+  &:hover {
+    background: rgba($azul-claro, 0.08);
+    transform: translateY(-1px);
+
+    ion-icon {
+      transform: scale(1.05);
+    }
+  }
+
+  .cloud-icon-wrapper {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.5rem;
+      @include transition(transform, $transition-fast);
+
+      @include bp.tablet-only {
+        font-size: 1.3rem;
+      }
+
+      @include bp.mobile-only {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .cloud-label {
     @include typography('xs', 'medium');
+    color: $azul-oscuro;
+    text-align: left;
+    white-space: nowrap;
+    flex-shrink: 0; // No encoge
+    max-width: 40%; // Máximo 40% para dejar 50%+ al chip
+
+    @include bp.tablet-only {
+      max-width: 35%;
+      font-size: 0.7rem;
+    }
+
+    @include bp.mobile-only {
+      max-width: 30%; // En mobile, más espacio para el archivo
+      font-size: 0.65rem;
+    }
   }
 
-  &.no-border-top {
-    border-top: none;
-  }
+  ion-chip {
+    margin: 0;
+    flex: 1 1 50%; // Mínimo 50% del espacio
+    min-width: 50%; // Garantiza al menos 50%
+    height: auto;
+    min-height: 18px;
+    overflow: hidden;
 
-  &.no-padding-top {
-    padding-top: 0;
+    ion-label {
+      @include typography('xs', 'medium');
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.65rem;
+
+      @include bp.mobile-only {
+        font-size: 0.6rem;
+      }
+    }
+
+    ion-icon {
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-left: 4px;
+    }
   }
 }
 
@@ -230,8 +368,8 @@
 
 
 .compact-form-section {
-  padding: spacing('md');
-  border-top: 1px solid rgba($azul-oscuro, 0.05);
+  padding: spacing('xs') spacing('sm');
+  border: none;
 
   &.editing {
     border-top: none;
@@ -239,16 +377,298 @@
 
   .form-main-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: spacing('xl');
+    grid-template-columns: 1fr; // Vertical stack for both desktop and mobile
+    gap: spacing('md');
     align-items: flex-start;
 
     .import-side {
-      border-left: 1px solid rgba($azul-oscuro, 0.05);
-      padding-left: spacing('lg');
       display: flex;
       flex-direction: column;
-      gap: spacing('md');
+      gap: spacing('sm');
+      border-bottom: 1px solid rgba($azul-oscuro, 0.05);
+      max-width: 60%;
+
+      // Base padding (mobile-first)
+      padding: spacing('xs') spacing('sm'); // 8px 12px
+
+      // Desktop: Más espacio para mejor legibilidad
+      @include bp.desktop-only {
+        max-width: 450px;
+        padding: spacing('md') spacing('lg'); // 16px 24px
+        gap: spacing('md');
+
+        .section-title {
+          margin-bottom: spacing('xs');
+          font-size: font-size('xs');
+        }
+
+        .import-cloud-grid {
+          display: flex;
+          flex-direction: row;
+          gap: spacing('md');
+        }
+
+        .cohort-metadata-row {
+          margin-top: spacing('sm');
+          padding-top: spacing('sm');
+          border-top: 1px dashed rgba($azul-oscuro, 0.1);
+        }
+      }
+
+      // Tablet: Balance entre espacio y compacidad
+      @include bp.tablet-only {
+        max-width: 400px;
+        padding: spacing('sm') spacing('md'); // 12px 16px
+        gap: spacing('sm');
+
+        .section-title {
+          font-size: font-size('xs');
+        }
+
+        .import-cloud-grid {
+          display: flex;
+          flex-direction: row;
+          gap: spacing('sm');
+        }
+
+        .cohort-metadata-row {
+          margin-top: spacing('xs');
+          padding-top: spacing('xs');
+          border-top: 1px dashed rgba($azul-oscuro, 0.1);
+        }
+      }
+
+      // Mobile: Muy compacto
+      @include bp.mobile-only {
+        max-width: 100%;
+        padding: spacing('xs'); // 8px
+        gap: spacing('xs');
+
+        .section-title {
+          font-size: font-size('xs');
+        }
+
+        .import-cloud-grid {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: spacing('xs');
+        }
+
+        .cohort-metadata-row {
+          flex-direction: column;
+          gap: spacing('xs');
+          margin-top: spacing('xs');
+          padding-top: spacing('xs');
+          border-top: 1px dashed rgba($azul-oscuro, 0.1);
+
+          .header-info-item {
+            width: 100%;
+          }
+        }
+
+        .course-info-display {
+          .course-main-row {
+            flex-direction: column;
+            gap: spacing('xs');
+          }
+        }
+      }
+    }
+
+    // Estilos para course-info-display
+    .course-info-display {
+      margin-top: spacing('sm');
+      padding: spacing('sm');
+      background: rgba($azul-oscuro, 0.02);
+      border-radius: $radius-sm;
+      border: 1px solid rgba($azul-oscuro, 0.05);
+
+      &.empty {
+        opacity: 0.6;
+        text-align: center;
+        padding: spacing('md');
+
+        .empty-message {
+          @include typography('sm', 'normal');
+          color: $gris-medio;
+          font-style: italic;
+          margin: 0;
+        }
+      }
+
+      // Fila principal: Nombre y Código
+      .course-main-row {
+        display: flex;
+        flex-wrap: wrap; // Permite wrap si no hay espacio
+        align-items: flex-start;
+        gap: spacing('md');
+        margin-bottom: spacing('sm');
+
+        @include bp.mobile-only {
+          flex-direction: column;
+          gap: spacing('xs');
+        }
+
+        .course-name,
+        .course-code {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+
+          .label {
+            @include typography('xs', 'semibold');
+            color: $gris-medio;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          .value {
+            @include typography('sm', 'bold');
+            color: $azul-oscuro;
+          }
+        }
+
+        .course-name {
+          flex: 1 1 auto; // Crece y se encoge naturalmente
+          min-width: 150px; // Mínimo antes de hacer wrap
+
+          .value {
+            line-height: 1.4;
+          }
+        }
+
+        .course-code {
+          flex: 0 0 auto; // No crece ni encoge
+
+          .value {
+            font-family: monospace;
+            color: var(--ion-color-primary);
+            background: rgba($azul-claro, 0.1);
+            padding: 4px 8px;
+            border-radius: $radius-sm;
+            font-size: font-size('sm');
+            white-space: nowrap;
+          }
+        }
+      }
+
+      // Parámetros compactos con badges
+      .course-params-compact {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: spacing('sm');
+        padding-top: spacing('xs');
+        margin-top: spacing('xs');
+        border-top: 1px dashed rgba($azul-oscuro, 0.08);
+
+        .param-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+
+          .param-label {
+            @include typography('xs', 'medium');
+            color: $gris-medio;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+
+          ion-badge {
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            min-width: 20px;
+            text-align: center;
+          }
+        }
+      }
+
+      // Lista de información del curso parseado (igual que vista lectura)
+      .parsed-course-info {
+        background: transparent;
+        padding: spacing('xs') 0;
+        margin-top: spacing('sm');
+        border-top: 1px dashed rgba($azul-oscuro, 0.08);
+        width: 100%; // Usa todo el ancho disponible
+
+        ion-item {
+          --padding-start: 0;
+          --inner-padding-end: 0;
+          --min-height: 36px;
+          --background: transparent;
+
+          ion-icon {
+            font-size: 1rem;
+            margin-inline-end: 6px;
+            flex-shrink: 0;
+
+            @include bp.mobile-only {
+              font-size: 0.9rem;
+              margin-inline-end: 4px;
+            }
+          }
+
+          ion-label {
+            margin: 0;
+            overflow: visible; // No cortar el contenido
+          }
+
+          p {
+            @include typography('xs', 'normal');
+            color: $gris-medio;
+            margin-bottom: 1px;
+            font-size: 0.65rem;
+
+            @include bp.mobile-only {
+              font-size: 0.6rem;
+            }
+          }
+
+          h3 {
+            @include typography('sm', 'medium');
+            color: $azul-oscuro;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.75rem;
+
+            @include bp.tablet-only {
+              font-size: 0.7rem;
+            }
+
+            @include bp.mobile-only {
+              font-size: 0.65rem;
+            }
+          }
+        }
+      }
+
+      // Estado vacío de importación
+      .empty-import-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: spacing('lg');
+        margin-top: spacing('sm');
+        border: 1px dashed rgba($azul-oscuro, 0.15);
+        border-radius: $radius-sm;
+        background: rgba($azul-oscuro, 0.02);
+
+        ion-icon {
+          font-size: 2rem;
+          margin-bottom: spacing('xs');
+        }
+
+        p {
+          @include typography('sm', 'normal');
+          color: $gris-medio;
+          text-align: center;
+          margin: 0;
+        }
+      }
     }
   }
 
@@ -297,6 +717,63 @@
   ion-select {
     --padding-start: #{spacing('sm')};
     font-size: 0.875rem;
+  }
+
+  .cohort-metadata-row {
+    display: flex;
+    flex-direction: column;
+    gap: spacing('xs');
+    padding: spacing('sm') 0;
+
+    &.empty {
+      opacity: 0.6;
+      font-style: italic;
+    }
+
+    .header-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+
+      &.course-name,
+      &.course-code {
+        flex-direction: column;
+        gap: 2px;
+
+        .label {
+          @include typography('xs', 'semibold');
+          color: $gris-medio;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .value {
+          @include typography('sm', 'bold');
+          color: $azul-oscuro;
+          word-break: break-word;
+        }
+      }
+
+      &.course-code .value {
+        font-family: monospace;
+        color: var(--ion-color-primary);
+        background: rgba($azul-claro, 0.08);
+        padding: 2px 6px;
+        border-radius: $radius-sm;
+      }
+
+      .label {
+        @include typography('xs', 'semibold');
+        color: $gris-medio;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .value {
+        @include typography('sm', 'bold');
+        color: var(--ion-color-primary);
+      }
+    }
   }
 }
 

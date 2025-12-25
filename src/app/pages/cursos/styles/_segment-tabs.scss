@@ -6,6 +6,7 @@
 @use 'sass:color';
 @use '../styles/variables' as *;
 @use '../styles/mixins' as *;
+@use '../../../shared/styles/course-tabs' as *;
 
 // ============================================
 // TABS PRINCIPALES DE CURSOS
@@ -37,7 +38,7 @@
         // Estilos específicos basados en clases solicitadas
         &.segment-button-layout-icon-top {
             // Asegura que el contenido vertical esté bien alineado
-            min-height: 64px;
+            min-height: 4rem; // ~64px
         }
 
         &.segment-button-checked {
@@ -67,22 +68,14 @@
             gap: 2px;
             padding: spacing('xs') 0;
 
-            .nombre-curso {
-                display: block;
-                font-size: font-size('xs');
-                font-weight: font-weight('medium');
-                white-space: nowrap; // Forzar una sola fila
-                opacity: 0.9;
-            }
+            // course-name and course-code are imported from shared styles
+        }
 
-            .codigo-curso {
-                display: block;
-                font-size: font-size('sm');
-                font-weight: font-weight('bold');
-                letter-spacing: 0.5px;
-                color: #ffffff;
-                white-space: nowrap;
-            }
+        .crear-icon {
+            font-size: 1.5rem;
+            color: $color-success !important;
+            --color: #{$color-success};
+            margin-bottom: 4px;
         }
 
         &::part(native) {

@@ -27,6 +27,8 @@ export interface CourseState {
     codigoUnico?: string;              // Código interno único: "EPM-B01-BLQ2-V-20251121"
     codigo: string;                    // Código base sin timestamp
     bloque: string;
+    tipoIngreso?: string;              // Tipo de ingreso simple: A, B, C
+    modalidad?: string;                // Código de modalidad: V, TP, CB
     fechaCreacion: string;
     profesor: string;
     ingreso?: {                        // Ingreso/período académico del curso
