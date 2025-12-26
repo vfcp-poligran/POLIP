@@ -38,10 +38,10 @@
 
     // Botones de curso individuales
     ion-segment-button {
-        --background: var(--bg-card, #ffffff);
-        --background-checked: var(--bg-card, #ffffff);
-        --color: var(--texto-secundario, #666666);
-        --color-checked: var(--azul-oscuro, #0f385a);
+        --background: #{$azul-oscuro};
+        --background-checked: #{$azul-oscuro};
+        --color: rgba(255, 255, 255, 0.7);
+        --color-checked: #ffffff;
         --indicator-color: var(--azul-claro, #1fb2de);
         --indicator-height: 3px;
         --border-radius: var(--rad-sm, 8px);
@@ -65,6 +65,8 @@
             max-width: none;
         }
 
+        border-left: 15px solid var(--course-stripe-color, var(--azul-oscuro));
+
         &:hover {
             box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
             transform: translateY(-1px);
@@ -72,7 +74,29 @@
 
         &.segment-button-checked {
             box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
-            border: 2px solid var(--azul-claro, #1fb2de);
+            border: 2px solid #ffffff; // El borde blanco externo se mantiene o se quita? 
+            // Si el fondo es blanco, borde blanco no se ve.
+            // El usuario dijo "el borde debe ser de color blanco" en el paso anterior.
+            // Pero si el fondo es blanco, quizas el borde deba ser transparente o gris?
+            // Asumiré que quiere que RESALTE. Si el fondo es azul osucro (pagina) y tab blanco, el borde blanco no hace nada.
+            // Pero el contenedor de tabs tiene gradiente azul oscuro.
+            // Entonces fondo blanco RESALTA sobre el gradiente.
+            border-left-width: 15px;
+            border-left-color: var(--course-stripe-color, var(--azul-claro));
+            --background: #ffffff;
+            --color: #{$azul-oscuro};
+            --color-checked: #{$azul-oscuro};
+
+            // Forzar estilos en elementos hijos para el estado seleccionado
+            .tab-nombre {
+                color: #{$azul-oscuro} !important;
+                font-weight: 800 !important; // Extra bold
+            }
+
+            .tab-codigo {
+                color: rgba($azul-oscuro, 0.85) !important;
+                font-weight: 500;
+            }
         }
 
         &.segment-button-layout-icon-top {
@@ -92,34 +116,64 @@
 
         // Contenedor de labels (nombre + código)
         .tab-label-container {
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: flex-start;
-            flex: 1 1 auto;
+            align-items: center;
+            justify-content: center;
+            padding: spacing('xs');
+            transition: all 0.2s ease;
+
+            .tab-content-wrapper {
+                background: transparent;
+                padding: 0;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+                border: none;
+                box-shadow: none;
+            }
 
             // Nombre del curso
             .tab-nombre {
                 display: block;
                 word-wrap: break-word; // Mobile: permitir saltos de línea
+                color: #ffffff;
                 @include typo.typography-tab-nombre;
+                text-align: left;
+                width: 100%;
 
                 // Desktop: una sola fila
                 @media (min-width: 992px) {
                     white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
             }
 
             // Código del curso - SEGUNDA FILA
             .tab-codigo {
-                opacity: 0.85;
+                opacity: 0.75;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 width: 100%;
                 display: block;
+                color: rgba(255, 255, 255, 0.8);
                 @include typo.typography-tab-codigo;
+                text-align: left;
             }
+        }
+
+        // Efecto hover/checked simplificado (sin contenedor interno)
+        &:hover {
+            --background: #{color.adjust($azul-oscuro, $lightness: 5%)};
+        }
+
+        &.segment-button-checked {
+            --background: #{color.adjust($azul-oscuro, $lightness: 8%)};
         }
 
         // Botones de acción dentro del tab - ESQUINA SUPERIOR DERECHA

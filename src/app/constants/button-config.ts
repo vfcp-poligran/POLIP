@@ -4,31 +4,31 @@
  */
 export const BUTTON_CONFIG = {
     CREAR: {
-        icon: 'add-circle-outline',
+        icon: 'add-circle',
         color: 'success',
         label: 'Crear',
         ariaLabel: 'Crear nuevo curso'
     },
     EDITAR: {
-        icon: 'create-outline',
+        icon: 'create',
         color: 'primary',
         label: 'Editar',
         ariaLabel: 'Editar curso'
     },
     ELIMINAR: {
-        icon: 'trash-outline',
+        icon: 'trash',
         color: 'danger',
         label: 'Eliminar',
         ariaLabel: 'Eliminar curso'
     },
     GUARDAR: {
-        icon: 'checkmark-circle-outline',
+        icon: 'checkmark-circle',
         color: 'primary',
         label: 'Guardar',
         ariaLabel: 'Guardar cambios'
     },
     CANCELAR: {
-        icon: 'close-circle-outline',
+        icon: 'close-circle',
         color: 'warning',
         label: 'Cancelar',
         ariaLabel: 'Cancelar operación'

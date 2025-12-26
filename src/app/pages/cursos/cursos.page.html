@@ -42,7 +42,7 @@
         @if (!modoEdicion()) {
         <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()"
           [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
-          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          <ion-icon name="add-circle" slot="start"></ion-icon>
           Crear
         </ion-button>
         @if (cursoSeleccionado()) {
@@ -90,10 +90,12 @@
 
         <!-- Tabs de cursos existentes -->
         @for (curso of cursosDisponibles(); track curso.codigo) {
-        <ion-segment-button [value]="curso.codigo" [style.--background]="getCursoColor(curso.codigo)">
+        <ion-segment-button [value]="curso.codigo" [style.--course-stripe-color]="getCursoColor(curso.codigo)">
           <ion-label class="tab-label-container">
-            <span class="tab-nombre">{{ curso.nombre }}</span>
-            <span class="tab-codigo">{{ curso.codigo }}</span>
+            <div class="tab-content-wrapper">
+              <span class="tab-nombre">{{ curso.nombre }}</span>
+              <span class="tab-codigo">{{ curso.codigo }}</span>
+            </div>
           </ion-label>
         </ion-segment-button>
         }
@@ -107,7 +109,7 @@
         <!-- Header sin acciones (movidas al tab) -->
         <div class="curso-card-header">
           <div class="curso-header-info">
-            <ion-icon name="information-circle-outline" class="header-icon"></ion-icon>
+            <ion-icon name="information-circle" class="header-icon"></ion-icon>
             <h2 class="header-main-title">Información del Curso</h2>
           </div>
         </div>
@@ -122,7 +124,7 @@
             <!-- Solo mostrar Integrantes para cursos que ya existen -->
             @if (!info.esNuevo) {
             <ion-segment-button value="integrantes">
-              <ion-icon name="people-outline"></ion-icon>
+              <ion-icon name="people"></ion-icon>
               <ion-label>Integrantes</ion-label>
             </ion-segment-button>
             }
@@ -132,10 +134,10 @@
           @if (subtabActivo() === 'detalle') {
           <div class="subtab-content detail-compact-layout">
             <ion-card class="compact-info-card"
-              [class.editing-view]="modoEdicion() && (codigoCursoEnEdicion === info.codigo || info.esNuevo)">
+              [class.editing-view]="modoEdicion() && (codigoCursoEnEdicion === info.claveCurso || info.esNuevo)">
 
               <!-- VISTA EDICIÓN O CREACIÓN -->
-              @if (modoEdicion() && (codigoCursoEnEdicion === info.codigo || info.esNuevo)) {
+              @if (modoEdicion() && (codigoCursoEnEdicion === info.claveCurso || info.esNuevo)) {
               <div class="compact-form-section editing">
                 <div class="form-main-grid">
 
@@ -183,7 +185,7 @@
                     @if (cursoParseado) {
                     <ion-list lines="none" class="parsed-course-info">
                       <ion-item>
-                        <ion-icon name="school-outline" slot="start" color="primary"></ion-icon>
+                        <ion-icon name="school" slot="start" color="primary"></ion-icon>
                         <ion-label>
                           <p>Nombre del Curso</p>
                           <h3>{{ cursoParseado.nombre }}</h3>
@@ -197,21 +199,21 @@
                         </ion-label>
                       </ion-item>
                       <ion-item>
-                        <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
+                        <ion-icon name="pricetag" slot="start" color="primary"></ion-icon>
                         <ion-label>
                           <p>Ingreso</p>
                           <h3>{{ cursoParseado.ingreso || '—' }}</h3>
                         </ion-label>
                       </ion-item>
                       <ion-item>
-                        <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+                        <ion-icon name="calendar" slot="start" color="primary"></ion-icon>
                         <ion-label>
                           <p>Bloque</p>
                           <h3>{{ cursoParseado.bloque || '—' }}</h3>
                         </ion-label>
                       </ion-item>
                       <ion-item>
-                        <ion-icon name="desktop-outline" slot="start" color="primary"></ion-icon>
+                        <ion-icon name="desktop" slot="start" color="primary"></ion-icon>
                         <ion-label>
                           <p>Modalidad</p>
                           <h3>{{ cursoParseado.modalidad || 'Virtual' }}</h3>
@@ -220,7 +222,7 @@
                     </ion-list>
                     } @else {
                     <div class="empty-import-state">
-                      <ion-icon name="cloud-upload-outline" color="medium"></ion-icon>
+                      <ion-icon name="cloud-upload" color="medium"></ion-icon>
                       <p>Importa un archivo para ver los datos del curso</p>
                     </div>
                     }
@@ -233,7 +235,7 @@
                       <div class="color-preview-swatch" [style.background-color]="colorCursoSeleccionado || '#1fb2de'">
                       </div>
                       <span class="color-label">Color del Curso</span>
-                      <ion-icon [name]="showColorPicker ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                      <ion-icon [name]="showColorPicker ? 'chevron-up' : 'chevron-down'"></ion-icon>
                     </button>
 
                     <!-- Grid de colores (colapsable) -->
@@ -315,7 +317,7 @@
                   </ion-label>
                 </ion-item>
                 <ion-item>
-                  <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+                  <ion-icon name="time" slot="start" color="primary"></ion-icon>
                   <ion-label>
                     <p>Año</p>
                     <h3>{{ info.anio || '—' }}</h3>

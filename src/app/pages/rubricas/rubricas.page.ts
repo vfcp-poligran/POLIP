@@ -53,34 +53,18 @@ import {
   list,
   trophy,
   clipboard,
+  gitBranch,
+  copy,
+  person,
+  people,
+  add,
+  removeCircle,
+  download,
+  brush,
   create,
-  // Iconos outline
-  documentTextOutline,
-  cloudUploadOutline,
-  createOutline,
-  saveOutline,
-  closeOutline,
-  addCircleOutline,
-  trashOutline,
-  documentsOutline,
-  eyeOutline,
-  eyeOffOutline,
-  informationCircleOutline,
-  listOutline,
-  calendarOutline,
-  timeOutline,
-  barChartOutline,
-  checkboxOutline,
-  peopleOutline,
-  schoolOutline,
-  trophyOutline,
-  documentOutline,
-  downloadOutline,
-  phonePortraitOutline,
-  pencilOutline,
-  addOutline,
-  gitBranchOutline,
-  copyOutline
+  construct,
+  ellipse,
+  checkmarkCircle,
 } from 'ionicons/icons';
 
 @Component({
@@ -263,13 +247,11 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
       // Filled icons
       phonePortrait, documentText, cloudUpload, closeCircle, addCircle, close, save,
       calendar, pencil, trash, informationCircle, school, library, checkbox, list, trophy, clipboard, create,
-      // Outline icons
-      addCircleOutline, closeOutline, saveOutline, calendarOutline, createOutline,
-      trashOutline, informationCircleOutline, schoolOutline, documentTextOutline,
-      listOutline, cloudUploadOutline, documentsOutline, eyeOutline, eyeOffOutline,
-      timeOutline, barChartOutline, peopleOutline, trophyOutline, documentOutline,
-      downloadOutline, phonePortraitOutline, checkboxOutline, pencilOutline, addOutline,
-      gitBranchOutline, copyOutline
+      download,
+      brush,
+      construct,
+      ellipse,
+      gitBranch, copy, people, person, add, checkmarkCircle
     });
   }
 
@@ -393,15 +375,14 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
         header: '⚠️ Desactivar Rúbrica',
         message: `¿Deseas desactivar <strong>${rubrica.codigo}</strong>?<br><br>
                   <small>La rúbrica quedará inactiva y no podrá ser usada para evaluaciones.</small>`,
-        cssClass: 'alert-warning',
+        cssClass: 'premium-alert premium-alert--warning',
         buttons: [
           {
-            text: 'Cancelar',
+            text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
             role: 'cancel'
           },
           {
-            text: 'Desactivar',
-            cssClass: 'alert-button-danger',
+            text: '<ion-icon name="remove-circle"></ion-icon> Desactivar',
             handler: async () => {
               rubrica.activa = false;
               await this.dataService.guardarRubrica(rubrica);
@@ -646,22 +627,22 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     }
   }
 
-  async eliminarRubrica(rubrica: RubricaDefinicion, event?: Event) {
+  async confirmarEliminarRubrica(rubrica: RubricaDefinicion, event?: Event) {
     if (event) {
       event.stopPropagation();
     }
 
     const alert = await this.alertController.create({
-      header: '🗑️ Confirmar Eliminación',
+      header: 'Confirmar Eliminación',
       message: `¿Estás seguro de eliminar la rúbrica "${rubrica.nombre}"?<br><br><strong>Información:</strong><br>• Tipo: ${rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Individual'}<br>• Entrega: ${rubrica.tipoEntrega || 'No especificada'}<br>• Puntos totales: ${rubrica.puntuacionTotal}<br>• Criterios: ${rubrica.criterios.length}<br><br>Esta acción no se puede deshacer.`,
-      cssClass: 'alert-danger',
+      cssClass: 'premium-alert premium-alert--danger',
       buttons: [
         {
-          text: 'Cancelar',
+          text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Eliminar',
+          text: '<ion-icon name="trash"></ion-icon> Eliminar',
           role: 'destructive',
           handler: async () => {
             if (rubrica.id) {
@@ -1594,9 +1575,6 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     }
   }
 
-  async confirmarEliminarRubrica(rubrica: RubricaDefinicion) {
-    await this.eliminarRubrica(rubrica);
-  }
 
   /**
    * Muestra el historial de versiones para una rúbrica en el área principal.
@@ -1695,7 +1673,7 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
           role: 'destructive',
           handler: async () => {
             if (this.rubricaSeleccionada) {
-              await this.eliminarRubrica(this.rubricaSeleccionada);
+              await this.confirmarEliminarRubrica(this.rubricaSeleccionada);
             }
           }
         }

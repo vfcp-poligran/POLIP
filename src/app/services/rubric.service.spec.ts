@@ -1,24 +1,28 @@
 import { TestBed } from '@angular/core/testing';
 import { RubricService } from './rubric.service';
 import { UnifiedStorageService } from './unified-storage.service';
-import { RubricaDefinicion, TipoRubrica, TipoEntrega } from '../models';
+import { RubricaDefinicion } from '../models';
 
 describe('RubricService', () => {
     let service: RubricService;
-    let storageSpy: jasmine.SpyObj<UnifiedStorageService>;
+    let storageMock: jest.Mocked<UnifiedStorageService>;
 
     beforeEach(() => {
-        const spy = jasmine.createSpyObj('UnifiedStorageService', ['get', 'set', 'remove', 'init']);
+        storageMock = {
+            get: jest.fn(),
+            set: jest.fn(),
+            remove: jest.fn(),
+            init: jest.fn()
+        } as any;
 
         TestBed.configureTestingModule({
             providers: [
                 RubricService,
-                { provide: UnifiedStorageService, useValue: spy }
+                { provide: UnifiedStorageService, useValue: storageMock }
             ]
         });
 
         service = TestBed.inject(RubricService);
-        storageSpy = TestBed.inject(UnifiedStorageService) as jasmine.SpyObj<UnifiedStorageService>;
     });
 
     it('should be created', () => {
@@ -27,112 +31,103 @@ describe('RubricService', () => {
 
     describe('loadRubricas', () => {
         it('should load rubricas from storage', async () => {
-            const mockRubricas: RubricaDefinicion[] = [
-                {
+            const mockRubricas: { [key: string]: RubricaDefinicion } = {
+                'RUB001': {
                     id: 'RUB001',
                     codigo: 'RGE1-EPM',
                     nombre: 'Rúbrica Grupal E1',
-                    tipo: 'grupal' as TipoRubrica,
-                    entrega: 'E1' as TipoEntrega,
+                    tipoRubrica: 'PG',
+                    tipoEntrega: 'E1',
+                    descripcion: 'Test Desc',
                     criterios: [],
-                    escalaCalificacion: {
-                        excelente: { min: 90, max: 100 },
-                        bueno: { min: 75, max: 89 },
-                        aceptable: { min: 60, max: 74 },
-                        deficiente: { min: 0, max: 59 }
-                    },
-                    puntajeMaximo: 100,
+                    escalaCalificacion: [],
+                    puntuacionTotal: 100,
                     activa: true,
                     version: 1,
-                    fechaCreacion: new Date().toISOString(),
-                    fechaModificacion: new Date().toISOString()
+                    fechaCreacion: new Date(),
+                    fechaModificacion: new Date()
                 }
-            ];
+            };
 
-            storageSpy.get.and.returnValue(Promise.resolve(mockRubricas));
+            storageMock.get.mockResolvedValue(mockRubricas);
 
             await service.loadRubricas();
 
-            expect(storageSpy.get).toHaveBeenCalledWith('rubricDefinitionsData');
-            expect(service.getRubricasValue()).toEqual(mockRubricas);
+            expect(storageMock.get).toHaveBeenCalledWith('rubricDefinitionsData');
+            expect(service.rubricasValue).toEqual(mockRubricas);
         });
 
-        it('should initialize with empty array if no data in storage', async () => {
-            storageSpy.get.and.returnValue(Promise.resolve(null));
+        it('should initialize with empty object if no data in storage', async () => {
+            storageMock.get.mockResolvedValue(null);
 
             await service.loadRubricas();
 
-            expect(service.getRubricasValue()).toEqual([]);
+            expect(service.rubricasValue).toEqual({});
         });
     });
 
-    describe('getRubricaById', () => {
+    describe('getRubrica', () => {
         it('should return rubrica when found', () => {
             const mockRubrica: RubricaDefinicion = {
                 id: 'RUB001',
                 codigo: 'RGE1-EPM',
                 nombre: 'Test Rubrica',
-                tipo: 'grupal' as TipoRubrica,
-                entrega: 'E1' as TipoEntrega,
+                tipoRubrica: 'PG',
+                tipoEntrega: 'E1',
+                descripcion: 'Test Desc',
                 criterios: [],
-                escalaCalificacion: {
-                    excelente: { min: 90, max: 100 },
-                    bueno: { min: 75, max: 89 },
-                    aceptable: { min: 60, max: 74 },
-                    deficiente: { min: 0, max: 59 }
-                },
-                puntajeMaximo: 100,
+                escalaCalificacion: [],
+                puntuacionTotal: 100,
                 activa: true,
                 version: 1,
-                fechaCreacion: new Date().toISOString(),
-                fechaModificacion: new Date().toISOString()
+                fechaCreacion: new Date(),
+                fechaModificacion: new Date()
             };
 
-            service['_rubricas'].set([mockRubrica]);
+            service.updateRubricasState({ 'RUB001': mockRubrica });
 
-            const result = service.getRubricaById('RUB001');
+            const result = service.getRubrica('RUB001');
             expect(result).toEqual(mockRubrica);
         });
 
         it('should return undefined when rubrica not found', () => {
-            service['_rubricas'].set([]);
+            service.updateRubricasState({});
 
-            const result = service.getRubricaById('NON_EXISTENT');
+            const result = service.getRubrica('NON_EXISTENT');
             expect(result).toBeUndefined();
         });
     });
 
-    describe('saveRubrica', () => {
+    describe('guardarRubrica', () => {
         it('should add new rubrica to the list', async () => {
             const newRubrica: RubricaDefinicion = {
                 id: 'RUB002',
                 codigo: 'RGE2-EPM',
                 nombre: 'New Rubrica',
-                tipo: 'grupal' as TipoRubrica,
-                entrega: 'E2' as TipoEntrega,
+                tipoRubrica: 'PG',
+                tipoEntrega: 'E2',
+                descripcion: 'Test Desc',
                 criterios: [],
-                escalaCalificacion: {
-                    excelente: { min: 90, max: 100 },
-                    bueno: { min: 75, max: 89 },
-                    aceptable: { min: 60, max: 74 },
-                    deficiente: { min: 0, max: 59 }
-                },
-                puntajeMaximo: 100,
+                escalaCalificacion: [],
+                puntuacionTotal: 100,
                 activa: true,
                 version: 1,
-                fechaCreacion: new Date().toISOString(),
-                fechaModificacion: new Date().toISOString()
+                fechaCreacion: new Date(),
+                fechaModificacion: new Date()
             };
 
-            service['_rubricas'].set([]);
-            storageSpy.set.and.returnValue(Promise.resolve());
+            service.updateRubricasState({});
+            storageMock.set.mockResolvedValue(undefined);
 
-            await service.saveRubrica(newRubrica);
+            await service.guardarRubrica(newRubrica);
 
-            const rubricas = service.getRubricasValue();
-            expect(rubricas.length).toBe(1);
-            expect(rubricas[0]).toEqual(newRubrica);
-            expect(storageSpy.set).toHaveBeenCalled();
+            const rubricas = service.rubricasValue;
+            expect(rubricas['RUB002']).toMatchObject({
+                id: 'RUB002',
+                codigo: 'RGE2-EPM',
+                nombre: 'New Rubrica'
+            });
+            expect(storageMock.set).toHaveBeenCalled();
         });
 
         it('should update existing rubrica', async () => {
@@ -140,20 +135,16 @@ describe('RubricService', () => {
                 id: 'RUB001',
                 codigo: 'RGE1-EPM',
                 nombre: 'Old Name',
-                tipo: 'grupal' as TipoRubrica,
-                entrega: 'E1' as TipoEntrega,
+                tipoRubrica: 'PG',
+                tipoEntrega: 'E1',
+                descripcion: 'Test Desc',
                 criterios: [],
-                escalaCalificacion: {
-                    excelente: { min: 90, max: 100 },
-                    bueno: { min: 75, max: 89 },
-                    aceptable: { min: 60, max: 74 },
-                    deficiente: { min: 0, max: 59 }
-                },
-                puntajeMaximo: 100,
+                escalaCalificacion: [],
+                puntuacionTotal: 100,
                 activa: true,
                 version: 1,
-                fechaCreacion: new Date().toISOString(),
-                fechaModificacion: new Date().toISOString()
+                fechaCreacion: new Date(),
+                fechaModificacion: new Date()
             };
 
             const updatedRubrica: RubricaDefinicion = {
@@ -162,38 +153,33 @@ describe('RubricService', () => {
                 version: 2
             };
 
-            service['_rubricas'].set([existingRubrica]);
-            storageSpy.set.and.returnValue(Promise.resolve());
+            service.updateRubricasState({ 'RUB001': existingRubrica });
+            storageMock.set.mockResolvedValue(undefined);
 
-            await service.saveRubrica(updatedRubrica);
+            await service.guardarRubrica(updatedRubrica);
 
-            const rubricas = service.getRubricasValue();
-            expect(rubricas.length).toBe(1);
-            expect(rubricas[0].nombre).toBe('Updated Name');
-            expect(rubricas[0].version).toBe(2);
+            const rubricas = service.rubricasValue;
+            expect(rubricas['RUB001'].nombre).toBe('Updated Name');
+            expect(rubricas['RUB001'].version).toBe(2);
         });
     });
 
-    describe('deleteRubrica', () => {
+    describe('eliminarRubrica', () => {
         it('should remove rubrica from list', async () => {
             const rubrica1: RubricaDefinicion = {
                 id: 'RUB001',
                 codigo: 'RGE1-EPM',
                 nombre: 'Rubrica 1',
-                tipo: 'grupal' as TipoRubrica,
-                entrega: 'E1' as TipoEntrega,
+                tipoRubrica: 'PG',
+                tipoEntrega: 'E1',
+                descripcion: 'Test Desc',
                 criterios: [],
-                escalaCalificacion: {
-                    excelente: { min: 90, max: 100 },
-                    bueno: { min: 75, max: 89 },
-                    aceptable: { min: 60, max: 74 },
-                    deficiente: { min: 0, max: 59 }
-                },
-                puntajeMaximo: 100,
+                escalaCalificacion: [],
+                puntuacionTotal: 100,
                 activa: true,
                 version: 1,
-                fechaCreacion: new Date().toISOString(),
-                fechaModificacion: new Date().toISOString()
+                fechaCreacion: new Date(),
+                fechaModificacion: new Date()
             };
 
             const rubrica2: RubricaDefinicion = {
@@ -202,15 +188,18 @@ describe('RubricService', () => {
                 nombre: 'Rubrica 2'
             };
 
-            service['_rubricas'].set([rubrica1, rubrica2]);
-            storageSpy.set.and.returnValue(Promise.resolve());
+            service.updateRubricasState({
+                'RUB001': rubrica1,
+                'RUB002': rubrica2
+            });
+            storageMock.set.mockResolvedValue(undefined);
 
-            await service.deleteRubrica('RUB001');
+            await service.eliminarRubrica('RUB001');
 
-            const rubricas = service.getRubricasValue();
-            expect(rubricas.length).toBe(1);
-            expect(rubricas[0].id).toBe('RUB002');
-            expect(storageSpy.set).toHaveBeenCalled();
+            const rubricas = service.rubricasValue;
+            expect(rubricas['RUB001']).toBeUndefined();
+            expect(rubricas['RUB002']).toBeDefined();
+            expect(storageMock.set).toHaveBeenCalled();
         });
     });
 });

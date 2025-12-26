@@ -19,23 +19,28 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  serverOutline,
-  desktopOutline,
-  phonePortraitOutline,
-  buildOutline,
-  cloudDownloadOutline,
-  cloudUploadOutline,
-  trashOutline,
-  informationCircleOutline,
-  checkmarkCircleOutline,
+  server,
+  desktop,
+  phonePortrait,
+  build,
+  cloudDownload,
+  cloudUpload,
+  trash,
+  informationCircle,
   checkmarkCircle,
-  warningOutline,
+  warning,
   logoAngular,
   logoJavascript,
-  cloudOutline,
-  refreshOutline,
-  settingsOutline,
-  notificationsOutline, timeOutline, removeCircleOutline, addCircleOutline } from 'ionicons/icons';
+  cloud,
+  refresh,
+  settings,
+  notifications,
+  time,
+  removeCircle,
+  addCircle,
+  brush,
+  closeCircle
+} from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { BackupService } from '../../services/backup.service';
 import { UnifiedStorageService } from '../../services/unified-storage.service';
@@ -79,10 +84,15 @@ export class SistemaPage implements OnInit {
   };
 
   mostrarMensajesEmergentes = true;
+  ocultarAvisoEdicionSinSeleccion = false;
   duracionToast = 2; // Duración en segundos (1-4)
 
   constructor() {
-    addIcons({serverOutline,buildOutline,settingsOutline,notificationsOutline,timeOutline,removeCircleOutline,addCircleOutline,cloudDownloadOutline,cloudUploadOutline,informationCircleOutline,trashOutline,warningOutline,refreshOutline,logoAngular,phonePortraitOutline,logoJavascript,cloudOutline,desktopOutline,checkmarkCircleOutline,checkmarkCircle});
+    addIcons({
+      server, build, settings, notifications, informationCircle, time, removeCircle, addCircle,
+      cloudDownload, cloudUpload, trash, warning, refresh, logoAngular, phonePortrait,
+      logoJavascript, cloud, desktop, checkmarkCircle, brush, closeCircle
+    });
   }
 
   async ngOnInit() {
@@ -96,6 +106,8 @@ export class SistemaPage implements OnInit {
     this.mostrarMensajesEmergentes = uiState.mostrarMensajesEmergentes !== false;
     // Duración por defecto 2 segundos
     this.duracionToast = uiState.duracionToast ?? 2;
+    // Preferencia de aviso de selección
+    this.ocultarAvisoEdicionSinSeleccion = uiState.ocultarAvisoEdicionSinSeleccion === true;
   }
 
   toggleMensajesEmergentes(event: any) {
@@ -103,6 +115,13 @@ export class SistemaPage implements OnInit {
     this.mostrarMensajesEmergentes = habilitado;
     this.dataService.updateUIState({ mostrarMensajesEmergentes: habilitado });
     Logger.log(`🔔 [Sistema] Mensajes emergentes ${habilitado ? 'habilitados' : 'deshabilitados'}`);
+  }
+
+  toggleAvisoEdicion(event: any) {
+    const ocultar = !event.detail.checked; // Si el toggle está ON, NO queremos ocultar (ocultar = false)
+    this.ocultarAvisoEdicionSinSeleccion = ocultar;
+    this.dataService.updateUIState({ ocultarAvisoEdicionSinSeleccion: ocultar });
+    Logger.log(`📢 [Sistema] Aviso de selección de curso ${!ocultar ? 'habilitado' : 'deshabilitado'}`);
   }
 
   incrementarDuracion() {
@@ -190,16 +209,16 @@ export class SistemaPage implements OnInit {
     }
   } async limpiarBaseDatosEstadoCero() {
     const alert = await this.alertController.create({
-      header: '🗑️ Confirmar Limpieza',
+      header: 'Confirmar Limpieza',
       message: '¿Estás seguro de eliminar todas las evaluaciones y estados? Los cursos y estudiantes no se verán afectados.',
-      cssClass: 'alert-danger',
+      cssClass: 'premium-alert premium-alert--danger',
       buttons: [
         {
-          text: 'Cancelar',
+          text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Limpiar',
+          text: '<ion-icon name="trash"></ion-icon> Limpiar',
           role: 'destructive',
           handler: async () => {
             try {
@@ -223,16 +242,16 @@ export class SistemaPage implements OnInit {
    */
   async limpiarCachePWA() {
     const alert = await this.alertController.create({
-      header: '🧹 Limpiar Caché PWA',
+      header: 'Limpiar Caché PWA',
       message: 'Esto eliminará los archivos cacheados de la aplicación. Los datos (cursos, evaluaciones, rúbricas) NO se verán afectados. La app necesitará conexión a internet para recargar los recursos.',
-      cssClass: 'alert-warning',
+      cssClass: 'premium-alert premium-alert--warning',
       buttons: [
         {
-          text: 'Cancelar',
+          text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Limpiar Caché',
+          text: '<ion-icon name="brush"></ion-icon> Limpiar Caché',
           role: 'destructive',
           handler: async () => {
             try {

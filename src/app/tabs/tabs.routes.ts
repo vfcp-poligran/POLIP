@@ -12,11 +12,6 @@ export const routes: Routes = [
           import('../pages/inicio/inicio.page').then((m) => m.InicioPage),
       },
       {
-        path: 'inicio-draft',
-        loadComponent: () =>
-          import('../pages/inicio-draft/inicio-draft.page').then((m) => m.InicioDraftPage),
-      },
-      {
         path: 'cursos',
         loadComponent: () =>
           import('../pages/cursos/cursos.page').then((m) => m.CursosPage),

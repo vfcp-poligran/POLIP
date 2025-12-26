@@ -849,60 +849,7 @@ ion-toolbar {
   border-left: 3px solid var(--azul-claro, #4a90e2);
 }
 
-/* Mantener compatibilidad con clase anterior */
-ion-alert.alert-delete-curso-srs {
-  --background: #ffffff !important;
-
-  &::part(backdrop) {
-    background: rgba(0, 0, 0, 0.65);
-  }
-
-  .alert-wrapper {
-    background: #ffffff !important;
-
-    .alert-head {
-      background: linear-gradient(135deg, #EC0677 0%, #d4055f 100%) !important;
-
-      h2.alert-title {
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-      }
-    }
-
-    .alert-message {
-      background: #ffffff !important;
-      color: #0F385A !important;
-      font-weight: 500 !important;
-    }
-
-    .alert-button-group {
-      background: #ffffff !important;
-
-      button {
-        &.alert-button-cancel {
-          background: linear-gradient(135deg, #90a4ae 0%, #78909c 100%) !important;
-          color: #ffffff !important;
-
-          span.alert-button-inner {
-            color: #ffffff !important;
-            font-weight: 600 !important;
-          }
-        }
-
-        &.alert-button-delete {
-          background: linear-gradient(135deg, #EC0677 0%, #c90569 100%) !important;
-          color: #ffffff !important;
-
-          span.alert-button-inner {
-            color: #ffffff !important;
-            font-weight: 700 !important;
-          }
-        }
-      }
-    }
-  }
-}
+/* Bloque alert-delete-curso-srs eliminado para unificación premium */
 
 /* ========================================
    ESTILOS GLOBALES PARA TOASTS SRS
@@ -1535,4 +1482,209 @@ ion-checkbox {
     background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
     color: #ffffff;
   }
+}
+
+/* ============================================================
+   SISTEMA DE ALERTAS PREMIUM (SRS)
+   Categorías: Warning (Alerta) y Danger (Peligro)
+   ============================================================ */
+ion-alert.premium-alert {
+  --background: #ffffff;
+
+  &::part(backdrop) {
+    background: rgba(15, 56, 90, 0.6);
+    backdrop-filter: blur(8px);
+  }
+
+  .alert-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    background: #ffffff;
+    overflow: hidden;
+    width: 95%;
+    max-width: 380px;
+
+    @media (min-width: 768px) {
+      max-width: 440px;
+    }
+
+    // CABECERA (BARRA DE TÍTULO)
+    .alert-head {
+      padding: 18px 24px;
+      text-align: left;
+      border-bottom-width: 3px;
+      border-bottom-style: solid;
+      display: flex;
+      align-items: center;
+
+      h2.alert-title {
+        color: #ffffff;
+        font-family: 'Montserrat', sans-serif !important;
+        font-weight: 700;
+        font-size: 1.15rem;
+        margin: 0;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+    }
+
+    // CONTENIDO DEL MENSAJE
+    .alert-message {
+      padding: 24px 24px 20px;
+      color: #374151;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-align: left;
+      background: #ffffff;
+      font-weight: 400;
+
+      // Soporte para listas e iconos dentro del mensaje (usado en Eliminar)
+      ion-list {
+        background: transparent;
+        margin-top: 12px;
+
+        ion-item {
+          --background: transparent;
+          --padding-start: 0;
+          font-size: 0.9rem;
+
+          h3 {
+            font-weight: 700;
+            color: #0f385a;
+            margin: 0;
+          }
+
+          p {
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    // SECCIÓN DE CHECKBOX / INPUTS
+    .alert-checkbox-group,
+    .alert-input-group {
+      padding: 0 24px 16px;
+      background: #ffffff;
+
+      .alert-checkbox-button {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 10px 14px;
+
+        &[aria-checked="true"] {
+          background: rgba(15, 56, 90, 0.03);
+          border-color: #0F385A;
+        }
+
+        .alert-checkbox-label {
+          color: #4b5563;
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    // BOTONES DE ACCIÓN
+    .alert-button-group {
+      padding: 16px 24px 24px;
+      background: #f9f9f9;
+      border-top: 1px solid #f3f4f6;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+
+      button.alert-button {
+        border-radius: 6px;
+        font-weight: 700;
+        height: 40px; // TAMAÑO IDEAL: large standard
+        min-height: 40px;
+        min-width: 110px;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+
+        // Estilos para iconos dentro de los botones
+        ion-icon {
+          font-size: 1.2rem;
+          margin-right: 8px;
+          color: inherit !important;
+          flex-shrink: 0;
+        }
+
+        span.alert-button-inner {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+
+        // Botón Cancelar (gris)
+        &.alert-button-role-cancel {
+          background: #e5e7eb;
+          color: #4b5563;
+          box-shadow: none;
+
+          &:hover {
+            background: #d1d5db;
+          }
+        }
+
+        // Botón Principal
+        &:not(.alert-button-role-cancel) {
+          color: #ffffff;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+          &:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  // --- VARIANTE: WARNING (ALERTA) ---
+  &.premium-alert--warning {
+    .alert-head {
+      background: #f59e0b; // Warning SRS
+      border-bottom-color: #d97706;
+    }
+
+    .alert-button:not(.alert-button-role-cancel) {
+      background: #f59e0b;
+    }
+  }
+
+  // --- VARIANTE: DANGER (PELIGRO / ELIMINAR) ---
+  &.premium-alert--danger {
+    .alert-head {
+      background: #EC0677; // Pink SRS
+      border-bottom-color: #c90569;
+    }
+
+    .alert-button:not(.alert-button-role-cancel) {
+      background: #EC0677;
+    }
+  }
+}
+
+// Mantener clases antiguas redirigidas al nuevo sistema para evitar roturas
+ion-alert.custom-alert {
+  @extend .premium-alert;
+  @extend .premium-alert--warning;
+}
+
+ion-alert.alert-danger {
+  @extend .premium-alert;
+  @extend .premium-alert--danger;
+}
+
+ion-alert.alert-delete-curso-srs {
+  @extend .premium-alert;
+  @extend .premium-alert--danger;
 }

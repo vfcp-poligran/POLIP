@@ -1,6767 +1,1107 @@
-/* ========================================
-   ESTILOS PRINCIPALES DE LA PÁGINA INICIO
-   Dashboard central de gestión de cursos
-   ======================================== */
+@use "sass:color";
 
-/* Importar estilos modulares como partials */
-@use './seguimiento';
-@use '../../shared/styles/page-header'; // Estilos compartidos de header
-@use '../../shared/styles/course-tabs' as *;
-@use '../../shared/styles/typography-variables' as typo-vars; // Variables tipográficas
-@use '../../shared/styles/typography-mixins' as typo; // Mixins tipográficos
+// Variables
+$azul-oscuro: #0f385a;
+$azul-claro: #4a90e2;
+$verde-exito: #2dd36f;
+$gris-claro: #f8f9fa;
+$touch-target: 44px;
 
-/* Variables locales simplificadas con ajustes dinámicos para móviles */
-:host {
-  /* Sistema de fuentes responsive con clamp() - escala automática */
-  --fs-xs: clamp(0.7rem, 1.8vw, 0.75rem);
-  --fs-sm: clamp(0.8rem, 2.2vw, 0.85rem);
-  --fs-md: clamp(0.85rem, 2.5vw, 0.9rem);
-  --fs-lg: clamp(0.95rem, 3vw, 1rem);
-  --fs-xl: clamp(1rem, 3.5vw, 1.1rem);
-  --fs-xxl: clamp(1.1rem, 4vw, 1.2rem);
-
-  /* Espaciado responsive unificado */
-  --spacing-xs: clamp(2px, 0.5vw, 4px);
-  --spacing-sm: clamp(4px, 1vw, 8px);
-  --spacing-md: clamp(8px, 2vw, 12px);
-  --spacing-lg: clamp(12px, 2.5vw, 16px);
-  --spacing-xl: clamp(16px, 3vw, 20px);
-
-  /* Tamaños de componentes responsive */
-  --card-padding: clamp(8px, 2vw, 16px);
-  --button-height: clamp(36px, 8vw, 44px);
-  --badge-size: clamp(0.65rem, 2vw, 0.75rem);
-  --chip-height: clamp(24px, 5vw, 28px);
-
-  /* Radios */
-  --rad-sm: 8px;
-  --rad-xs: 4px;
-
-  /* Sombras */
-  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
-
-  /* Variables dinámicas para íconos */
-  --icon-size-fab: clamp(1.1rem, 3vw, 1.4rem);
-  --icon-size-button: clamp(0.9rem, 2.5vw, 1.1rem);
-  --fab-size: clamp(48px, 10vw, 56px);
-
-  /* Tamaños de items en listas */
-  --list-item-height: clamp(44px, 10vw, 60px);
-  --list-item-compact: clamp(32px, 7vw, 40px);
-
-  /* Color magenta para selección */
-  --magenta: #e91e63;
-  --magenta-light: rgba(233, 30, 99, 0.1);
+// Contenedor principal
+.inicio-content {
+    --background: #{$gris-claro};
+    --padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Fondo general del contenido - Simplificado */
-ion-content {
-  --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  --padding-start: 0;
-  --padding-end: 0;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  --offset-bottom: 0;
-  --offset-top: 0;
-
-  // Safe areas básicas para todos los tamaños
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-
-  // Deshabilitar scroll cuando solo hay mensaje de no hay cursos
-  &.ion-content-scroll-host {
-    overflow: hidden;
-  }
-}
-
-/* ========================================
-   ESTILOS DE TÍTULO DE PÁGINA - DESKTOP
-   Mismo estilo visual que Calificaciones Canvas
-   Altura alineada con el sidebar colapsado
-   ======================================== */
-
-// Barra de búsqueda en la parte superior
-.search-bar-top {
-  margin-bottom: 8px;
-  padding-top: max(8px, env(safe-area-inset-top));
-  padding-left: max(8px, env(safe-area-inset-left));
-  padding-right: max(8px, env(safe-area-inset-right));
-  background: rgba(255, 255, 255, 0.95);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-
-  .main-searchbar {
-    --background: rgba(255, 255, 255, 0.95);
-    --border-radius: 10px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --placeholder-color: rgba(15, 56, 90, 0.5);
-    --color: var(--azul-oscuro, #0f385a);
-    padding: 0;
-    font-size: 0.9rem;
-  }
-
-  // Responsive para tablets
-  @media (max-width: 768px) {
-    margin-bottom: 6px;
-
-    .main-searchbar {
-      --border-radius: 8px;
-      font-size: 0.85rem;
-    }
-  }
-
-  // Responsive para móviles
-  @media (max-width: 480px) {
-    margin-bottom: 4px;
-
-    .main-searchbar {
-      --border-radius: 6px;
-      font-size: 0.8rem;
-    }
-  }
-
-  // Landscape móviles
-  @media (max-height: 500px) and (orientation: landscape) {
-    margin-bottom: 4px;
-
-    .main-searchbar {
-      min-height: 36px;
-    }
-  }
-}
-
-// Header con título del curso y filtros de grupo
-.curso-grupos-header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: var(--rad-sm, 8px);
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid var(--azul-claro, #1fb2de);
-
-  .curso-titulo-bar {
-    display: flex;
-    align-items: center;
-
-    .curso-titulo {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--azul-oscuro, #0f385a);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-  }
-
-  .grupos-filtros {
-    display: flex;
-    align-items: center;
-    background: rgba(15, 56, 90, 0.04);
-    border-radius: 6px;
-    padding: 4px 8px;
-
-    .grupos-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .grupos-icon {
-      display: flex !important;
-      font-size: 1rem;
-      color: var(--azul-oscuro, #0f385a);
-      margin: 0 4px;
-      opacity: 0.7;
-    }
-
-    .grupo-nav-btn {
-      min-width: 26px;
-      height: 24px;
-      padding: 0 6px;
-      border-radius: 6px;
-      border: none;
-      background: var(--azul-oscuro, #0f385a);
-      color: #ffffff;
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.6;
-
-      &:hover {
-        opacity: 0.85;
-      }
-
-      &.activo {
-        opacity: 1;
-        background: var(--azul-claro, #1fb2de);
-        box-shadow: 0 2px 6px rgba(31, 178, 222, 0.4);
-      }
-
-      &.grupo-nav-btn-dashboard {
-        ion-icon {
-          font-size: 0.85rem;
-        }
-      }
-    }
-  }
-}
-
-// Barra de título del curso con fondo azul
-.page-container .page-title-header {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  padding: 8px 12px;
-  margin-bottom: 0.5rem;
-  background: var(--azul-oscuro, #0f385a);
-  border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  overflow: visible;
-  min-height: 50px;
-  gap: 6px;
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  box-sizing: border-box;
-
-  // Barra de navegación de grupos en la parte superior
-  .grupos-nav-bar-top {
-    display: flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: var(--rad-sm, 8px);
-    padding: 4px 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-
-    .grupos-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 4px;
-    }
-
-    // Ícono de grupos en línea
-    .grupos-icon {
-      display: flex !important;
-      font-size: 1.1rem;
-      color: var(--azul-oscuro, #0f385a);
-      margin: 0 4px;
-      opacity: 0.7;
-    }
-
-    .grupo-nav-btn {
-      min-width: 28px;
-      height: 26px;
-      padding: 0 8px;
-      border-radius: var(--rad-sm, 8px);
-      border: none;
-      background: var(--azul-oscuro, #0f385a);
-      color: #ffffff;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.65;
-
-      &:hover {
-        opacity: 0.85;
-      }
-
-      &.activo {
-        opacity: 1;
-        box-shadow: 0 2px 6px rgba(15, 56, 90, 0.4);
-        transform: scale(1.05);
-      }
-
-      // Botón Dashboard (Todos)
-      &.grupo-nav-btn-dashboard {
-        ion-icon {
-          font-size: 0.9rem;
-        }
-      }
-    }
-
-    // Botón Vista General en la barra de navegación
-    .vista-general-toggle-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 40px;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      border-radius: var(--rad-sm, 8px);
-      border: none;
-      background: var(--verde-menta, #28a745);
-      color: #ffffff;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      opacity: 1;
-      margin-right: 8px;
-      flex-shrink: 0;
-
-      &:hover {
-        opacity: 0.9;
-      }
-
-      &.activo {
-        opacity: 1;
-        box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
-      }
-
-      ion-icon {
-        font-size: 1.2rem;
-        color: #ffffff;
-      }
-    }
-
-    // Mensaje cuando no hay cursos
-    .no-cursos-message {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 0.75rem;
-      padding: 8px;
-    }
-  }
-
-  // Selector de cursos integrado en el header
-  .header-course-selector {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex: 1 1 auto;
-    min-width: 0;
-    gap: 8px;
-    padding-left: max(4px, env(safe-area-inset-left));
-    padding-right: max(4px, env(safe-area-inset-right));
-    width: 100%;
-
-    .course-segment {
-      --background: transparent;
-      background: transparent;
-      border-radius: var(--rad-sm, 8px);
-      min-height: 32px;
-      flex: 0 1 auto;
-      justify-content: flex-start;
-      display: flex;
-      flex-wrap: nowrap;
-
-      ion-segment-button {
-        --background: var(--course-color, var(--azul-claro));
-        --background-checked: var(--course-color, var(--azul-claro));
-        --color: #ffffff;
-        --color-checked: #ffffff;
-        --indicator-height: 0;
-        --padding-start: 10px;
-        --padding-end: 10px;
-        min-height: 32px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        border-radius: var(--rad-sm, 8px);
-        margin: 2px;
-        opacity: 1;
-        transition: all 0.2s ease;
-        flex: 0 0 auto; // Botones no se expanden
-
-        &.segment-button-checked {
-          transform: scale(1.05);
-          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-          border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-
-        &:not(.segment-button-checked):hover {
-          transform: scale(1.02);
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
-
-        &::part(indicator-background) {
-          display: none;
-        }
-
-        .segment-button-content {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .segment-menu-icon {
-          font-size: 0.9rem;
-          opacity: 0.7;
-          cursor: pointer;
-
-          &:hover {
-            opacity: 1;
-          }
-        }
-      }
-    }
-  }
-
-  // Responsive para tablets (portrait y landscape)
-  @media (max-width: 768px) {
-    padding: 6px 8px;
-    gap: 4px;
-
-    .header-course-selector {
-      .vista-general-toggle-btn {
-        width: 30px;
-        height: 30px;
-        min-width: 30px;
-        margin-right: 4px;
-
-        ion-icon {
-          font-size: 1rem;
-        }
-      }
-
-      .course-segment {
-        ion-segment-button {
-          --padding-start: 6px;
-          --padding-end: 6px;
-          min-height: 26px;
-          font-size: 0.65rem;
-          margin: 1px;
-
-          .segment-menu-icon {
-            font-size: 0.7rem;
-          }
-        }
-      }
-    }
-  }
-
-  // Responsive para móviles
-  @media (max-width: 480px) {
-    padding: 4px 6px;
-    gap: 2px;
-
-    .header-course-selector {
-      .vista-general-toggle-btn {
-        width: 26px;
-        height: 26px;
-        min-width: 26px;
-        margin-right: 2px;
-
-        ion-icon {
-          font-size: 0.85rem;
-        }
-      }
-
-      .course-segment {
-        ion-segment-button {
-          --padding-start: 5px;
-          --padding-end: 5px;
-          min-height: 24px;
-          font-size: 0.6rem;
-          margin: 1px;
-
-          .segment-menu-icon {
-            font-size: 0.65rem;
-            margin-left: 1px;
-          }
-        }
-      }
-    }
-  }
-
-  // Landscape en móviles - optimizar altura y hacer todo más compacto
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding: 2px 4px;
-    min-height: auto;
-
-    .header-course-selector {
-      .vista-general-toggle-btn {
-        width: 22px;
-        height: 22px;
-        min-width: 22px;
-        border-radius: 4px;
-
-        ion-icon {
-          font-size: 0.75rem;
-        }
-      }
-
-      .course-segment {
-        ion-segment-button {
-          min-height: 20px;
-          --padding-start: 3px;
-          --padding-end: 3px;
-          font-size: 0.5rem;
-          margin: 0 1px;
-          border-radius: 4px;
-
-          .segment-menu-icon {
-            font-size: 0.55rem;
-            margin-left: 1px;
-          }
-        }
-      }
-    }
-  }
-}
-
-// Clases para headers de calificaciones
-.header-e1,
-.header-e2,
-.header-ef {
-  max-width: 60px;
-}
-
-.header-total {
-  max-width: 50px;
-}
-
-.rubrica-title {
-  font-size: 0.9rem;
-}
-
-.rubrica-points-chip {
-  height: 24px;
-  font-size: 0.85rem;
-}
-
-// ===== BARRA DE ACCIONES EN HEADER =====
-.action-bar {
-  display: flex;
-  gap: 4.8px;
-  margin: 0;
-  padding: 4.8px 7.2px;
-  background: #ffffff;
-  border-radius: 4.8px;
-  box-shadow: 0 0.6px 1.8px rgba(15, 56, 90, 0.08);
-
-  .action-btn-square {
-    --border-radius: 4.8px;
-    --padding-start: 7.2px;
-    --padding-end: 7.2px;
-    --color: white;
-    --background: var(--azul-oscuro);
-    height: 24px;
-    min-height: 24px;
-    margin: 0;
-    font-size: 0.51rem;
-    font-weight: 600;
-    text-transform: none;
-    letter-spacing: 0.18px;
-    white-space: nowrap;
-
-    ion-icon {
-      font-size: 10.8px;
-      color: white;
-      margin-right: 3.6px;
-    }
-
-    &.btn-export {
-      --background: var(--verde);
-      --color: white;
-    }
-
-    &.btn-edit {
-      --background: var(--naranja);
-      --color: white;
-    }
-
-    &.btn-delete {
-      --background: var(--magenta);
-      --color: white;
-    }
-
-    &:hover:not([disabled]) {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    }
-
-    &[disabled] {
-      opacity: 0.4;
-    }
-  }
-}
-
-// ========================================
-// OPTIMIZACIÓN GLOBAL DE ÍCONOS DINÁMICOS
-// ========================================
-:host {
-
-  // Optimización global para todos los íconos - Escalado dinámico
-  ion-icon {
-    transition: all 0.3s ease;
-
-    // RESPONSIVE: Escalado dinámico basado en viewport
-    @media (max-width: 768px) {
-      transform: scale(0.9); // Reducir 10% en tabletas
-    }
-
-    @media (max-width: 480px) {
-      transform: scale(0.8); // Reducir 20% en móviles
-    }
-
-    // RESPONSIVE: Landscape móvil - Escalado compacto
-    @media (max-width: 960px) and (orientation: landscape) {
-      transform: scale(0.7); // Reducir 30% en landscape móvil
-    }
-
-    // RESPONSIVE: Pantallas muy pequeñas - Escalado agresivo
-    @media (max-width: 360px) {
-      transform: scale(0.75); // Reducir 25% en pantallas muy pequeñas
-    }
-
-    // Estados hover - Mejor feedback táctil en móviles
-    &:hover {
-      transform: scale(1.1);
-
-      @media (max-width: 768px) {
-        transform: scale(1.0); // Escalado hover ajustado para móvil
-      }
-
-      @media (max-width: 480px) {
-        transform: scale(0.9); // Escalado hover más sutil en móviles pequeños
-      }
-    }
-  }
-}
-
-/* Estilos para cards con fondo claro */
-ion-card {
-  background-color: #ffffff;
-  border: 1px solid rgba(15, 56, 90, 0.1);
-  box-shadow: 0 2px 6px rgba(15, 56, 90, 0.06);
-  margin: 0;
-
-  ion-card-header {
-    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
-    color: #ffffff;
-    padding: 2px 8px !important;
-
-    ion-card-title {
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-  }
-
-  ion-card-content {
-    background-color: #ffffff;
-    color: #000000;
-    padding: 2px !important;
-  }
-
-  // Selector de curso con chips (sin borde)
-  &.course-selector-card {
-    border: none;
-    box-shadow: none;
-    margin-bottom: 2px;
-    background: transparent;
-
-    ion-card-content {
-      padding: 2px 4px !important;
-      background: transparent;
-    }
-  }
-
-  // Legacy: Selector de curso segment (sin borde)
-  &:has(.course-segment) {
-    border: none;
-    box-shadow: none;
-    margin-bottom: 2px;
-
-    ion-card-content {
-      padding: 0 !important;
-      --padding-start: 0;
-      --padding-end: 0;
-      --padding-top: 0;
-      --padding-bottom: 0;
-    }
-  }
-
-  // Borde para panel general
-  &.dashboard-options {
-    border: none;
-    border-radius: 0;
-    margin: 0;
-
-    ion-card-header {
-      padding: 8px 12px !important;
-      background: var(--azul-oscuro, #0f385a);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-
-      // Título del curso (breadcrumb)
-      .breadcrumb-navigation {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-
-        .breadcrumb-item {
-          color: #ffffff;
-          font-weight: 700;
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-
-          &.grupo-name {
-            font-weight: 600;
-            font-size: 0.8rem;
-          }
-
-          &.entrega-name {
-            font-weight: 500;
-            font-size: 0.75rem;
-            opacity: 0.9;
-          }
-        }
-
-        .breadcrumb-separator {
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 0.75rem;
-        }
-
-        // Responsive para tablets
-        @media (max-width: 768px) {
-          gap: 4px;
-
-          .breadcrumb-item {
-            font-size: 0.72rem;
-            letter-spacing: 0.3px;
-
-            &.grupo-name {
-              font-size: 0.68rem;
-            }
-
-            &.entrega-name {
-              font-size: 0.65rem;
-            }
-          }
-
-          .breadcrumb-separator {
-            font-size: 0.65rem;
-          }
-        }
-
-        // Responsive para móviles
-        @media (max-width: 480px) {
-          gap: 3px;
-
-          .breadcrumb-item {
-            font-size: 0.65rem;
-            letter-spacing: 0.2px;
-
-            &.grupo-name {
-              font-size: 0.62rem;
-            }
-
-            &.entrega-name {
-              font-size: 0.58rem;
-            }
-          }
-
-          .breadcrumb-separator {
-            font-size: 0.58rem;
-          }
-        }
-
-        // Landscape móviles
-        @media (max-height: 500px) and (orientation: landscape) {
-          gap: 3px;
-
-          .breadcrumb-item {
-            font-size: 0.6rem;
-
-            &.grupo-name,
-            &.entrega-name {
-              font-size: 0.55rem;
-            }
-          }
-        }
-      }
-    }
-
-    // Barra de filtros de grupo usando ion-segment scrollable
-    .grupos-segment-bar {
-      --background: rgba(248, 249, 250, 0.98);
-      background: rgba(248, 249, 250, 0.98);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-      padding: 6px 8px;
-      min-height: 44px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-
-      // Indicador visual de scroll horizontal
-      &::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        background: linear-gradient(to right, transparent, rgba(248, 249, 250, 0.9));
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      .grupo-segment-btn {
-        --background: transparent;
-        --background-checked: var(--magenta, #e91e63);
-        --background-hover: rgba(233, 30, 99, 0.08);
-        --color: var(--azul-oscuro, #0f385a);
-        --color-checked: white;
-        --indicator-height: 0;
-        --padding-start: 12px;
-        --padding-end: 12px;
-        min-width: 44px;
-        min-height: 36px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        border-radius: 8px;
-        margin: 0 2px;
-        text-transform: none;
-        letter-spacing: 0;
-        transition: all 0.2s ease;
-        flex-shrink: 0; // No colapsar botones
-
-        &::part(indicator-background) {
-          display: none;
-        }
-
-        &.segment-button-checked {
-          box-shadow: 0 3px 10px rgba(233, 30, 99, 0.3);
-        }
-
-        ion-label {
-          margin: 0;
-          font-size: inherit;
-        }
-
-        ion-icon {
-          font-size: 1rem;
-          margin-right: 4px;
-        }
-
-        // Botón "Todos" con icono
-        &.grupo-segment-all {
-          ion-icon {
-            margin-right: 6px;
-          }
-        }
-      }
-
-      // Responsive para tablets - Ocultar texto "Todos"
-      @media (max-width: 768px) {
-        padding: 4px 6px;
-        min-height: 38px;
-
-        .grupo-segment-btn {
-          --padding-start: 8px;
-          --padding-end: 8px;
-          min-width: 36px;
-          min-height: 32px;
-          font-size: 0.78rem;
-          margin: 0 2px;
-
-          // Ocultar texto "Todos" en tablet
-          &.grupo-segment-all {
-            ion-label {
-              display: none;
-            }
-
-            ion-icon {
-              margin-right: 0;
-            }
-          }
-        }
-      }
-
-      // Responsive para móviles portrait
-      @media (max-width: 480px) {
-        padding: 3px 4px;
-        min-height: 34px;
-
-        .grupo-segment-btn {
-          --padding-start: 6px;
-          --padding-end: 6px;
-          min-width: 32px;
-          min-height: 28px;
-          font-size: 0.72rem;
-          margin: 0 1px;
-          border-radius: 6px;
-
-          ion-icon {
-            font-size: 0.85rem;
-          }
-
-          &.grupo-segment-all {
-            ion-label {
-              display: none;
-            }
-
-            ion-icon {
-              margin-right: 0;
-            }
-          }
-        }
-      }
-
-      // Landscape en móviles - muy compacto
-      @media (max-height: 500px) and (orientation: landscape) {
-        padding: 2px 4px;
-        min-height: 28px;
-
-        .grupo-segment-btn {
-          min-height: 24px;
-          min-width: 28px;
-          font-size: 0.62rem;
-          --padding-start: 4px;
-          --padding-end: 4px;
-          border-radius: 4px;
-          margin: 0 1px;
-
-          ion-icon {
-            font-size: 0.72rem;
-          }
-
-          &.grupo-segment-all {
-            ion-label {
-              display: none;
-            }
-          }
-        }
-      }
-    }
-
-    // Sección en construcción
-    .seccion-construccion {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 24px;
-      text-align: center;
-      color: var(--azul-oscuro, #0f385a);
-
-      ion-icon {
-        font-size: 3rem;
-        color: var(--azul-claro, #1fb2de);
-        margin-bottom: 16px;
-        opacity: 0.8;
-      }
-
-      h3 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 0 0 8px 0;
-        color: var(--azul-oscuro, #0f385a);
-      }
-
-      p {
-        font-size: 0.9rem;
-        margin: 0 0 12px 0;
-        color: rgba(15, 56, 90, 0.7);
-        max-width: 300px;
-      }
-
-      ion-text {
-        small {
-          font-size: 0.8rem;
-        }
-      }
-    }
-
-    ion-card-content {
-      padding: 2px !important;
-      --padding-start: 2px;
-      --padding-end: 2px;
-      --padding-top: 2px;
-      --padding-bottom: 2px;
-    }
-  }
-}
-
-/* ========================================
-   BOTÓN TOGGLE VISTA GENERAL
-   Botón de mundo a la izquierda del selector de cursos
-   ======================================== */
-.vista-general-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-  margin-right: 8px;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  ion-icon {
-    font-size: 1.2rem;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    transform: scale(1.05);
-  }
-
-  &.activo {
-    background: var(--magenta, #e91e63);
-    color: white;
-    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.4);
-
-    &:hover {
-      background: var(--magenta, #e91e63);
-      color: white;
-    }
-  }
-
-  // Responsive para tablets
-  @media (max-width: 768px) {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    margin-right: 4px;
-
-    ion-icon {
-      font-size: 1rem;
-    }
-  }
-
-  // Responsive para móviles
-  @media (max-width: 480px) {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    margin-right: 2px;
-    border-radius: 6px;
-
-    ion-icon {
-      font-size: 0.9rem;
-    }
-  }
-
-  // Landscape en móviles
-  @media (max-height: 500px) and (orientation: landscape) {
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-
-    ion-icon {
-      font-size: 0.85rem;
-    }
-  }
-}
-
-/* ========================================
-   SECCIÓN VISTA GENERAL (Multi-curso)
-   Panel principal cuando está activa la vista general
-   ======================================== */
-.vista-general-section {
-  padding: 0 8px;
-  animation: fadeIn 0.3s ease;
-
-  .vista-general-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-  }
-
-  // Responsive para móvil
-  @media (max-width: 768px) {
-    padding: 0 6px;
-
-    .vista-general-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    padding: 0 4px;
-
-    .vista-general-grid {
-      gap: 10px;
-    }
-  }
-
-  // Landscape móvil
-  @media (max-width: 768px) and (orientation: landscape) {
-    .vista-general-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .vista-general-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    height: 100%;
-  }
-
-  .vista-general-header {
-    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+// === HEADER ===
+.page-header {
+    background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
     padding: 10px 12px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    position: sticky;
+    top: 0;
+    z-index: 100;
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      justify-content: flex-start;
-
-      // Botón toggle dentro del header de Vista General
-      .vista-general-toggle-btn {
-        width: 36px;
-        height: 36px;
-        min-width: 36px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        cursor: pointer;
+    .header-top {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
+        margin-bottom: 8px;
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            ion-icon {
+                font-size: 1.5rem;
+                color: #fff;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #fff;
+            }
+
+            .offline-chip {
+                --background: rgba(255, 152, 0, 0.2);
+                --color: #ffb74d;
+                font-size: 0.7rem;
+                height: 24px;
+            }
+        }
+
+        .pending-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+    }
+
+    .search-tipos-row {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+
+        @media (max-width: 991px) {
+            flex-direction: column;
+            gap: 8px;
+        }
+    }
+
+    .tipos-filtro-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
         flex-shrink: 0;
 
-        ion-icon {
-          font-size: 1.2rem;
-        }
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-
-        &.activo {
-          background: rgba(255, 255, 255, 0.25);
-        }
-      }
-
-      // Selector de cursos dentro del header - alineado a la izquierda
-      .header-course-selector-vg {
-        flex: 0 1 auto;
-        min-width: 0;
-        overflow-x: auto;
-        overflow-y: hidden;
-
-        .course-segment-vg {
-          --background: transparent;
-          background: transparent !important;
-          border-radius: 8px;
-          min-height: 36px;
-          justify-content: flex-start;
-
-          .course-segment-button-vg {
-            --background: var(--course-color, #1976d2);
-            --background-checked: var(--course-color, #1976d2);
-            --color: #ffffff;
-            --color-checked: #ffffff;
-            --indicator-height: 0;
-            --padding-start: 10px;
-            --padding-end: 10px;
-            min-height: 32px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border-radius: 8px;
-            margin: 2px;
-            opacity: 0.7;
+        ion-chip {
+            --background: rgba(255, 255, 255, 0.2);
+            --color: rgba(255, 255, 255, 0.9);
+            height: 32px;
+            font-size: 0.75rem;
+            margin: 0;
+            cursor: pointer;
             transition: all 0.2s ease;
-            flex: 0 0 auto;
 
-            &.segment-button-checked {
-              opacity: 1;
-              transform: scale(1.02);
-              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            ion-icon {
+                font-size: 0.9rem;
             }
 
-            .segment-button-content {
-              display: flex;
-              align-items: center;
-              gap: 4px;
+            &.selected {
+                --background: var(--chip-color, #fff);
+                --color: #fff;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            }
 
-              .segment-label {
-                .course-name {
-                  font-size: 0.8rem;
-                }
-              }
+            &:hover:not(.selected) {
+                --background: rgba(255, 255, 255, 0.35);
+            }
+        }
+    }
 
-              .segment-menu-icon {
-                font-size: 0.85rem;
-                opacity: 0.7;
+    .search-container {
+        position: relative;
+        flex: 1;
+
+        .student-searchbar {
+            --background: rgba(255, 255, 255, 0.15);
+            --color: #fff;
+            --placeholder-color: rgba(255, 255, 255, 0.6);
+            --icon-color: rgba(255, 255, 255, 0.6);
+            --border-radius: 10px;
+            --box-shadow: none;
+            padding: 0;
+            height: 44px;
+        }
+
+        .search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 200;
+
+            .search-result-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
                 cursor: pointer;
-                padding: 2px;
+                transition: background 0.2s ease;
 
                 &:hover {
-                  opacity: 1;
+                    background: rgba($azul-claro, 0.08);
                 }
-              }
+
+                &.selected {
+                    background: rgba($verde-exito, 0.1);
+
+                    .result-name {
+                        color: $verde-exito;
+                        font-weight: 600;
+                    }
+                }
+
+                ion-icon:first-child {
+                    font-size: 1.2rem;
+                    color: $azul-oscuro;
+
+                    &.selected-icon {
+                        color: $verde-exito;
+                    }
+                }
+
+                .result-info {
+                    flex: 1;
+                    min-width: 0;
+
+                    .result-name {
+                        display: block;
+                        font-weight: 500;
+                        color: $azul-oscuro;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    .result-meta {
+                        font-size: 0.75rem;
+                        color: #666;
+                    }
+                }
+
+                .add-icon {
+                    font-size: 1.2rem;
+                    color: $azul-claro;
+                }
             }
-          }
+
+            .dropdown-actions {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 12px;
+                background: #f8f9fa;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+                .dropdown-hint {
+                    font-size: 0.7rem;
+                    color: #888;
+                    font-style: italic;
+                }
+
+                ion-button {
+                    --color: #888;
+                    margin: 0;
+                }
+            }
         }
-      }
-    }
-  }
-
-  .vista-general-content {
-    padding: 20px;
-    min-height: 300px;
-  }
-
-  .vista-general-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    text-align: center;
-    color: #999;
-    min-height: 220px;
-
-    .placeholder-icon {
-      font-size: 3rem;
-      margin-bottom: 16px;
-      opacity: 0.5;
     }
 
-    .placeholder-icon-badge {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: rgba(15, 56, 90, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-
-      ion-icon {
-        font-size: 1.6rem;
-        color: var(--azul-oscuro, #0f385a);
-      }
-    }
-
-    .placeholder-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--azul-oscuro, #0f385a);
-    }
-
-    .placeholder-description {
-      font-size: 0.85rem;
-      color: rgba(15, 56, 90, 0.7);
-      margin: 0 0 10px 0;
-    }
-
-    .hint {
-      font-size: 0.75rem;
-      color: rgba(15, 56, 90, 0.6);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      font-weight: 700;
-    }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ========================================
-   BARRA DE BÚSQUEDA GLOBAL
-   Debajo del selector de cursos
-   ======================================== */
-// Contenedor principal con búsqueda e información
-.search-info-container {
-  display: flex;
-  gap: 12px;
-  padding: 6px 12px;
-  align-items: flex-start;
-
-  .search-bar-wrapper {
-    flex: 1;
-    max-width: 400px;
-    min-width: 200px;
-    position: relative;
-
-    .search-with-results {
-      position: relative;
-    }
-
-    .main-searchbar {
-      --background: white;
-      --border-radius: 8px;
-      --box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-      --placeholder-color: #999;
-      --icon-color: #666;
-      --color: #333;
-      --min-height: 36px;
-      height: 36px;
-      padding: 0;
-
-      &::part(native) {
-        border: 1px solid #e0e0e0;
-        padding: 0 8px;
-      }
-
-      &.searchbar-has-focus {
-        --box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.2);
-
-        &::part(native) {
-          border-color: var(--ion-color-primary);
-        }
-      }
-    }
-
-    // Dropdown de resultados de búsqueda
-    .search-results-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      max-height: 400px;
-      overflow-y: auto;
-      z-index: 1000;
-      margin-top: 4px;
-
-      .search-result-item {
+    .selected-students-bar {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 10px 12px;
-        border-bottom: 1px solid #f0f0f0;
-        cursor: pointer;
-        transition: background-color 0.2s;
-
-        &:hover {
-          background-color: #f8f9fa;
-        }
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        ion-checkbox {
-          --size: 20px;
-          margin: 0;
-        }
-
-        .result-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-
-          .result-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #333;
-          }
-
-          .result-meta {
-            font-size: 0.75rem;
-            color: #666;
-            opacity: 0.8;
-          }
-        }
-      }
-    }
-  }
-
-  .info-section {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-height: 36px;
-
-    .info-content {
-      width: 100%;
-    }
-
-    .seleccionados-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 4px;
-      max-height: 80px;
-      overflow-y: auto;
-
-      .estudiante-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 8px 4px 10px;
-        background: rgba(var(--ion-color-primary-rgb), 0.12);
-        border: 1px solid rgba(var(--ion-color-primary-rgb), 0.25);
-        border-radius: 16px;
-        font-size: 0.7rem;
-        color: #333;
-        transition: all 0.2s;
-
-        &:hover {
-          background: rgba(var(--ion-color-primary-rgb), 0.18);
-          border-color: rgba(var(--ion-color-primary-rgb), 0.4);
-        }
-
-        .chip-text {
-          max-width: 150px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          line-height: 1.2;
-        }
-
-        .chip-remove {
-          font-size: 1rem;
-          color: var(--ion-color-primary);
-          cursor: pointer;
-          flex-shrink: 0;
-          transition: color 0.2s;
-
-          &:hover {
-            color: var(--ion-color-danger);
-          }
-        }
-      }
-    }
-
-    .seleccionados-list {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: rgba(var(--ion-color-primary-rgb), 0.08);
-      border-radius: 8px;
-      border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
-
-      ion-icon {
-        font-size: 1.1rem;
-        color: var(--ion-color-primary);
-        flex-shrink: 0;
-      }
-
-      .seleccionados-text {
-        flex: 1;
-        font-size: 0.8rem;
-        color: #333;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 100%;
-      }
-
-      ion-button {
-        --padding-start: 4px;
-        --padding-end: 4px;
-        margin: 0;
-        height: 24px;
-
-        ion-icon {
-          font-size: 1.2rem;
-          color: #666;
-        }
-      }
-    }
-
-    .info-placeholder {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      color: var(--azul-oscuro, #0f385a);
-      font-size: 0.85rem;
-
-      ion-icon {
-        font-size: 1.2rem;
-        opacity: 0.7;
-      }
-    }
-  }
-
-  // Responsive: móvil
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 8px;
-
-    .search-bar-wrapper {
-      max-width: 100%;
-      width: 100%;
-    }
-
-    .info-section {
-      width: 100%;
-      justify-content: flex-start;
-    }
-  }
-}
-
-// Retrocompatibilidad con clase antigua
-.search-bar-container {
-  padding: 0 8px 8px 8px;
-
-  .main-searchbar {
-    --background: white;
-    --border-radius: 10px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --placeholder-color: #999;
-    --icon-color: #666;
-    --color: #333;
-    padding: 0;
-
-    &::part(native) {
-      border: 1px solid #e0e0e0;
-    }
-
-    &.searchbar-has-focus {
-      --box-shadow: 0 2px 12px rgba(var(--ion-color-primary-rgb), 0.2);
-
-      &::part(native) {
-        border-color: var(--ion-color-primary);
-      }
-    }
-  }
-}
-
-/* Sección de estudiantes con borde naranja */
-.estudiantes-section {
-  border: none;
-  border-radius: 6px;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.5);
-  margin-top: 2px;
-}
-
-/* Layout principal - Sistema simplificado */
-.layout {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  /* Usar toda la altura disponible del ion-content */
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-
-  /* En desktop: Layout responsive con panel dinámico */
-  @media (min-width: 1024px) {
-    flex-direction: row;
-    gap: 0;
-  }
-}
-
-/* Contenedor principal - Sistema simplificado y funcional */
-.page-container {
-  /* Base: Ocupar todo el espacio disponible */
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  /* Ajuste exacto al espacio disponible */
-  /* Usar todo el espacio del ion-content */
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  box-sizing: border-box;
-
-  /* Eliminar scroll del contenedor - lo maneja ion-content */
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    padding: 0;
-    height: auto;
-    /* En móvil permite altura dinámica para scroll */
-    min-height: 100%;
-  }
-
-  /* RESPONSIVE: Ajustes de padding según tamaño */
-  @media (max-width: 480px) {
-    padding: 0;
-    /* Sin padding en móviles pequeños para empty-state */
-  }
-
-  @media (min-width: 769px) {
-    padding: 0;
-    /* Sin padding en desktop para empty-state */
-  }
-
-  @media (min-width: 1200px) {
-    padding: 0;
-    /* Sin padding en pantallas grandes para empty-state */
-  }
-
-  /* En desktop: ajuste dinámico según el panel */
-  @media (min-width: 1024px) {
-    /* Sistema responsivo: el contenedor se ajusta dinámicamente al espacio disponible */
-    flex: 1;
-    max-width: none;
-
-    /* Cuando hay panel visible, ajustarse dinámicamente */
-    margin-right: 0;
-    /* Sin padding derecho - scroll en el borde */
-
-    /* Contenido ocupa todo el ancho disponible */
-    .estudiantes-section,
-    .table-container {
-      width: 100%;
-      margin: 0;
-    }
-
-    .estudiantes-table {
-      width: 100%;
-      table-layout: fixed;
-    }
-  }
-
-  /* RESPONSIVE: Optimización para pantallas altas */
-  @media (min-height: 800px) {
-    // En pantallas altas, aprovechar mejor el espacio vertical
-    padding-bottom: 16px;
-  }
-
-  @media (min-height: 1200px) {
-    // En pantallas muy altas, añadir padding extra
-    padding-bottom: 24px;
-  }
-
-  // Webkit scrollbars
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--azul-claro);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: var(--azul-oscuro);
-  }
-}
-
-/* Padding cero para card-content dentro del contenedor de estudiantes */
-.estudiantes-container ion-card-content {
-  padding: 0;
-  margin: 0;
-}
-
-/* Cards responsive - no interfieren con el layout */
-.estudiantes-container ion-card {
-  margin: 2px 0;
-  /* Solo margen vertical - compacto */
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Títulos de sección con paleta SRS */
-.section-header {
-  margin: 2px 0;
-  padding: 0 2px;
-
-  .section-title {
-    font-size: 0.84rem;
-    font-weight: 700;
-    color: #0F385A;
-    /* Azul oscuro SRS */
-    margin: 0;
-    padding: 4px 6px;
-    background: linear-gradient(135deg, rgba(15, 56, 90, 0.08) 0%, rgba(15, 56, 90, 0.03) 100%);
-    border-radius: 7.2px;
-    border-left: 3.6px solid #0F385A;
-    /* Borde azul oscuro */
-    box-shadow: 0 1.2px 4.8px rgba(15, 56, 90, 0.1);
-    font-family: var(--font-principal, 'Montserrat', sans-serif);
-    letter-spacing: 0.18px;
-
-    &:hover {
-      background: linear-gradient(135deg, rgba(15, 56, 90, 0.12) 0%, rgba(15, 56, 90, 0.06) 100%);
-      transform: translateY(-0.6px);
-      box-shadow: 0 2.4px 7.2px rgba(15, 56, 90, 0.15);
-    }
-
-    @media (max-width: 768px) {
-      font-size: 0.72rem;
-      padding: 6px 7.2px;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 0.66rem;
-      padding: 4.8px 6px;
-    }
-  }
-}
-
-/* ========================================
-   SELECTOR DE CURSOS CON ION-SEGMENT
-   Componente scrollable y optimizado
-   ======================================== */
-.course-segment {
-  --background: transparent;
-  width: 100%;
-
-  &::part(scroll) {
-    scroll-behavior: smooth;
-  }
-}
-
-// ============================================
-// SELECTOR DE CURSO - ESTILOS CON SHADOW PARTS
-// Según documentación oficial de Ionic
-// ============================================
-
-// Variables CSS aplicadas al host del componente
-ion-segment-button.course-segment-button {
-  // Variables CSS de Ionic (aplicadas al Shadow DOM)
-  // El color del curso se aplica SIEMPRE, no solo cuando está checked
-  --background: var(--course-color, #0f385a);
-  --background-hover: var(--course-color, #0f385a);
-  --background-checked: var(--course-color, #0f385a);
-  --color: #ffffff;
-  --color-checked: #ffffff;
-  --color-hover: #ffffff;
-  --border-radius: 8px;
-  --padding-start: 10px;
-  --padding-end: 8px;
-  --padding-top: 4px;
-  --padding-bottom: 4px;
-  --indicator-height: 0;
-  --indicator-color: transparent;
-
-  // Propiedades del host - más compacto
-  min-width: 80px;
-  max-width: 150px;
-  margin: 2px;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.2px;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-  border: none;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-}
-
-// Shadow Part: indicator-background (oculto)
-ion-segment-button.course-segment-button::part(indicator-background) {
-  display: none;
-}
-
-// Shadow Part: native (el botón interno)
-ion-segment-button.course-segment-button::part(native) {
-  border-radius: 10px;
-}
-
-// Estado checked - más prominente
-ion-segment-button.course-segment-button.segment-button-checked {
-  border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transform: translateY(-1px);
-}
-
-ion-segment-button.course-segment-button.segment-button-checked::part(native) {
-  border-radius: 10px;
-  filter: brightness(1.1);
-}
-
-// Estado hover - efecto sutil
-ion-segment-button.course-segment-button:hover:not(.segment-button-checked) {
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-  transform: translateY(-1px);
-}
-
-ion-segment-button.course-segment-button:hover::part(native) {
-  filter: brightness(1.05);
-}
-
-// Elementos de contenido (fuera del Shadow DOM)
-ion-segment-button.course-segment-button {
-  .segment-button-content {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-  }
-
-  .segment-label {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-  }
-
-  .course-name {
-    // Extends from shared styles
-    color: #ffffff;
-  }
-
-  .segment-menu-icon {
-    font-size: 0.95rem;
-    padding: 3px;
-    border-radius: 50%;
-    cursor: pointer;
-    opacity: 0.7;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-    margin-left: auto;
-    // Icono siempre blanco sobre fondo de color
-    color: #ffffff;
-
-    &:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.2);
-    }
-  }
-
-  // Cuando está checked: resaltar más
-  &.segment-button-checked {
-    .segment-menu-icon {
-      opacity: 0.85;
-    }
-  }
-
-  // Responsive - Tablets
-  @media (max-width: 768px) {
-    --padding-start: 8px;
-    --padding-end: 6px;
-    --padding-top: 3px;
-    --padding-bottom: 3px;
-    margin: 2px;
-    min-width: 70px;
-    max-width: 130px;
-
-    // course-name styles from shared styles
-
-    .segment-menu-icon {
-      font-size: 0.8rem;
-      padding: 2px;
-    }
-  }
-
-  // Responsive - Móviles
-  @media (max-width: 480px) {
-    --padding-start: 6px;
-    --padding-end: 4px;
-    --padding-top: 2px;
-    --padding-bottom: 2px;
-    min-width: 60px;
-    max-width: 110px;
-  }
-}
-
-/* Estilos para el header del curso */
-.title-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
-}
-
-.course-name {
-  font-size: 0.66rem;
-  font-weight: 600;
-  color: white;
-}
-
-.course-code {
-  font-size: 0.48rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* Selector de curso - Contenedor del segment */
-ion-segment.course-segment {
-  --background: #ffffff;
-  background: #ffffff;
-  border-radius: var(--rad-sm);
-  overflow-x: auto;
-  padding: 2px;
-  border: none;
-  box-shadow: none;
-  justify-content: flex-start;
-
-  /* Responsive: ajustar en móviles */
-  @media (max-width: 768px) {
-    padding: 2px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 1px;
-  }
-}
-
-/* Mensaje cuando no hay cursos */
-.text-center {
-  text-align: center;
-}
-
-/* Sección de estudiantes con borde naranja */
-.estudiantes-section {
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.5);
-  margin-top: 12px;
-}
-
-/* Estilo para mensaje de no hay cursos - Pantalla completa */
-.empty-state-fullscreen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  margin: 0;
-  padding: 0;
-  z-index: 1;
-  pointer-events: auto;
-  overflow: hidden;
-  box-sizing: border-box;
-
-  .empty-state-content {
-    text-align: center;
-    padding: 48px 24px;
-
-    h3 {
-      margin: 0 0 8px 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #495057;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #6c757d;
-      line-height: 1.5;
-
-      strong {
-        color: #495057;
-
-        ion-icon.icon-menu {
-          font-size: 1rem;
-          vertical-align: middle;
-          margin-right: 2px;
-          color: var(--ion-color-primary, #0F385A);
-        }
-      }
-    }
-
-    // Tablet (768px - 1024px)
-    @media (max-width: 1024px) and (min-width: 769px) {
-      padding: 40px 20px;
-
-      h3 {
-        font-size: 1rem;
-      }
-
-      p {
-        font-size: 0.85rem;
-
-        strong ion-icon.icon-menu {
-          font-size: 0.95rem;
-        }
-      }
-    }
-
-    // Mobile (< 768px)
-    @media (max-width: 768px) {
-      padding: 32px 16px;
-
-      h3 {
-        font-size: 0.95rem;
-      }
-
-      p {
-        font-size: 0.8rem;
-
-        strong ion-icon.icon-menu {
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-}
-
-/* Badges y elementos visuales con paleta SRS */
-ion-badge {
-  font-size: var(--badge-size);
-  font-weight: 600;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--rad-xs);
-
-  &[color="primary"] {
-    --background: var(--azul-oscuro);
-    --color: #ffffff;
-  }
-
-  &[color="secondary"] {
-    --background: var(--azul-claro);
-    --color: #ffffff;
-  }
-
-  &[color="success"] {
-    --background: var(--verde);
-    --color: #ffffff;
-  }
-
-  &[color="warning"] {
-    --background: var(--naranja);
-    --color: #ffffff;
-  }
-
-  &[color="danger"] {
-    --background: var(--magenta);
-    --color: #ffffff;
-  }
-}
-
-/* Chips responsive */
-ion-chip {
-  height: var(--chip-height);
-  font-size: var(--fs-sm);
-}
-
-/* Header del grupo en ion-card-header */
-.grupo-card-header {
-  background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a4a6e 100%);
-  padding: 12px 16px;
-
-  .grupo-card-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-
-    ion-icon {
-      font-size: 1.5rem;
-      color: var(--azul-claro, #1fb2de);
-    }
-
-    ion-badge {
-      --background: var(--azul-claro, #1fb2de);
-      --color: white;
-      font-size: 0.75rem;
-      margin-left: auto;
-    }
-  }
-}
-
-/* Contenedor para vista de grupo específico */
-.grupo-detail-content {
-  padding: 0;
-}
-
-/* Placeholder informativo del grupo */
-.grupo-info-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 12px;
-  text-align: center;
-  background: rgba(15, 56, 90, 0.02);
-  border: 1px dashed rgba(15, 56, 90, 0.15);
-  border-radius: 8px;
-  margin: 8px;
-
-  ion-icon {
-    font-size: 2rem;
-    opacity: 0.6;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-
-  small {
-    opacity: 0.7;
-  }
-}
-
-/* Layout de gestión de grupo - Una columna centrada */
-.grupo-gestion-layout {
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  max-width: 800px;
-  margin: 0 auto;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    padding: 8px;
-  }
-}
-
-/* Layout legacy de dos columnas (deprecated) */
-.grupo-content-layout {
-  display: grid;
-  grid-template-columns: 1fr minmax(250px, 320px);
-  gap: 12px;
-  padding: 12px;
-  min-height: 450px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr 280px;
-  }
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
-}
-
-/* Columna de Rúbrica */
-.rubrica-column {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 400px;
-}
-
-/* Placeholder cuando no hay rúbrica */
-.rubrica-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 300px;
-  background: rgba(15, 56, 90, 0.02);
-  border: 1px dashed rgba(15, 56, 90, 0.2);
-  border-radius: 4px;
-
-  ion-icon {
-    font-size: 3rem;
-    margin-bottom: 12px;
-  }
-
-  p {
-    color: var(--ion-color-medium);
-    font-size: 0.9rem;
-    margin: 0;
-  }
-}
-
-/* Columna de Anotaciones - Layout principal */
-.anotaciones-column {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-
-  // En el nuevo layout de gestión, sin límite de altura
-  .grupo-gestion-layout & {
-    max-height: none;
-  }
-
-  // En el layout legacy de dos columnas
-  .grupo-content-layout & {
-    max-height: 550px;
-
-    @media (max-width: 900px) {
-      max-height: 350px;
-    }
-  }
-}
-
-/* Área para anotaciones y comentarios - Rediseñada */
-.area-anotaciones {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #ffffff;
-  border: 1px solid rgba(15, 56, 90, 0.12);
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-/* ========================================
-   ESTILOS PARA NAVEGACIÓN DE CRITERIOS
-   ======================================== */
-
-
-
-
-/* Nivel seleccionado - Detalle completo */
-.nivel-seleccionado-detalle {
-  background: linear-gradient(135deg, rgba(159, 200, 72, 0.1) 0%, rgba(159, 200, 72, 0.05) 100%);
-  border: 2px solid var(--verde);
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 12px rgba(159, 200, 72, 0.2);
-
-  .nivel-seleccionado-titulo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--verde);
-    margin: 0 0 12px 0;
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(159, 200, 72, 0.3);
-
-    ion-icon {
-      font-size: 1.2rem;
-    }
-  }
-
-  .nivel-seleccionado-contenido {
-    p {
-      margin: 8px 0;
-      font-size: 0.9rem;
-      color: #495057;
-      line-height: 1.5;
-
-      strong {
-        color: var(--azul-oscuro);
-        font-weight: 600;
-      }
-    }
-
-    .nivel-seleccionado-descripcion {
-      background: white;
-      padding: 12px;
-      border-radius: 6px;
-      margin-top: 12px;
-      border-left: 4px solid var(--verde);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-  }
-}
-
-/* Niveles en columnas */
-.niveles-columnas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.nivel-columna {
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  background: #ffffff;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 150px;
-
-  &:hover {
-    border-color: var(--azul-claro);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(31, 178, 222, 0.2);
-  }
-
-  &.selected {
-    border-color: var(--verde);
-    background: rgba(159, 200, 72, 0.1);
-    box-shadow: 0 4px 12px rgba(159, 200, 72, 0.3);
-  }
-
-  &.disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
-
-    &:hover {
-      border-color: #e9ecef;
-      transform: none;
-      box-shadow: none;
-    }
-  }
-
-  .nivel-header-columna {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e9ecef;
-
-    h6 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--azul-oscuro);
-      margin: 0;
-      flex: 1;
-    }
-
-    .nivel-puntos-badge {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--azul-claro);
-      background: rgba(31, 178, 222, 0.15);
-      padding: 2px 8px;
-      border-radius: 12px;
-      margin-left: 8px;
-    }
-  }
-
-  .nivel-descripcion-columna {
-    font-size: 0.8rem;
-    color: #6c757d;
-    line-height: 1.4;
-    margin: 0;
-    flex: 1;
-  }
-}
-
-/* Área de personalización */
-.personalizacion-area {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 16px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-
-  .campo-personalizado {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-
-    label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--azul-oscuro);
-    }
-
-    ion-input,
-    ion-textarea {
-      --background: #ffffff;
-      font-size: 0.85rem;
-    }
-
-    .comentarios-frecuentes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-
-      .label-frecuentes {
-        font-size: 0.75rem;
-        color: #6c757d;
-        width: 100%;
-        margin-bottom: 4px;
-      }
-
-      ion-chip {
-        --background: rgba(31, 178, 222, 0.1);
-        --color: var(--azul-oscuro);
-        font-size: 0.75rem;
-        height: 24px;
-        cursor: pointer;
-
-        &:hover {
-          --background: rgba(31, 178, 222, 0.2);
-        }
-      }
-    }
-  }
-}
-
-.criterio-actual {
-  padding: 16px;
-
-  .criterio-titulo {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--azul-oscuro);
-    margin: 0 0 16px 0;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--azul-claro);
-  }
-
-  .niveles-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-}
-
-.nivel-btn-nuevo {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 12px;
-  background: #ffffff;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-
-  &:hover {
-    border-color: var(--azul-claro);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(31, 178, 222, 0.2);
-  }
-
-  &.selected {
-    border-color: var(--verde);
-    background: rgba(159, 200, 72, 0.1);
-    box-shadow: 0 4px 12px rgba(159, 200, 72, 0.3);
-  }
-
-  .nivel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-
-    .nivel-titulo {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--azul-oscuro);
-    }
-
-    .nivel-puntos {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--azul-claro);
-      background: rgba(31, 178, 222, 0.1);
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-  }
-
-  .nivel-descripcion {
-    font-size: 0.85rem;
-    color: #6c757d;
-    line-height: 1.4;
-    margin: 0;
-  }
-}
-
-/* ========================================
-   ESTILOS PARA ÁREA DE SEGUIMIENTO DE RÚBRICA
-   ======================================== */
-
-.rubrica-seguimiento-area {
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border: 2px solid var(--azul-claro);
-
-  .rubrica-seguimiento-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #dee2e6;
-
-    .rubrica-seguimiento-titulo {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--azul-oscuro);
-      margin: 0;
-    }
-
-    ion-button {
-      --padding-start: 10px;
-      --padding-end: 10px;
-      height: 28px;
-      font-size: 0.75rem;
-    }
-  }
-
-  .rubrica-seguimiento-contenido {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-
-  .rubrica-parrafo {
-    padding: 12px;
-    background: #ffffff;
-    border-left: 4px solid var(--verde);
-    margin-bottom: 12px;
-    border-radius: 4px;
-
-    p {
-      margin: 0;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: #495057;
-    }
-
-    // Timestamp de referencia (no se copia)
-    .timestamp-referencia {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      font-size: 0.75rem;
-      color: #6c757d;
-      font-style: italic;
-      text-align: right;
-      -webkit-user-select: none;
-      user-select: none; // No seleccionable para evitar copia accidental
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .layout {
-    flex-direction: column;
-    height: 100%;
-    padding: 0;
-  }
-
-  .estudiantes-container {
-    width: 100%;
-    padding: 4px;
-    /* Padding reducido para móviles */
-    margin: 0;
-    flex: 1;
-  }
-
-  .course-label {
-    padding: 6px;
-  }
-
-  .course-tab-name {
-    max-width: 100px;
-  }
-
-  // Mejorar tabla de estudiantes en tablet
-  .estudiantes-table {
-    font-size: 0.85rem;
-
-    th,
-    td {
-      padding: 6px 4px;
-    }
-  }
-
-  // Ajustar grupos en seguimiento
-  .grupos-container {
-    gap: 6px;
-
-    .grupo-btn {
-      padding: 6px 10px;
-      font-size: 0.85rem;
-    }
-  }
-
-  // Ajustar comentarios en nueva ubicación
-  .comentarios-grupo {
-    margin-top: 12px;
-    padding: 12px;
-  }
-
-
-}
-
-@media (max-width: 480px) {
-
-  // PORTRAIT: Layout simplificado a ancho completo
-  .layout {
-    flex-direction: column;
-    padding: 0;
-    height: 100%;
-  }
-
-  .estudiantes-container {
-    width: 100%;
-    padding: 2px;
-    /* Padding mínimo para móviles pequeños */
-    margin: 0;
-    flex: 1;
-  }
-
-  // Optimización para móviles pequeños
-  .estudiantes-table {
-    font-size: 0.65rem;
-
-    th,
-    td {
-      padding: 2px 1px;
-    }
-
-    // Ocultar columna de email por defecto en móvil
-    .email-col {
-      display: none;
-    }
-
-    // Textos reducidos en cabeceras
-    .entrega-header {
-      font-size: 0.6rem;
-      padding: 2px;
-      white-space: nowrap;
-
-      // Mostrar versión corta en móvil
-      .header-text-full {
-        display: none;
-      }
-
-      .header-text-short {
-        display: inline;
-        font-weight: 700;
-        font-size: 0.7rem;
-      }
-    }
-  }
-
-  // Tabs de curso más compactos
-  .course-segment {
-    ion-segment-button {
-      min-width: 80px;
-    }
-  }
-
-  .course-tab-code {
-    font-size: 0.7rem;
-  }
-
-  .course-tab-name {
-    font-size: 0.65rem;
-    max-width: 80px;
-  }
-
-  // Grupos más compactos
-  .grupos-container {
-    .grupo-btn {
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      min-width: 35px;
-    }
-  }
-
-  // Comentarios más compactos
-  .comentarios-grupo {
-    padding: 8px;
-
-    .comentarios-titulo {
-      font-size: 0.9rem;
-    }
-
-    .comentario-card {
-      padding: 8px;
-      font-size: 0.85rem;
-    }
-  }
-
-
-
-  // Ajustar rúbrica en móvil
-  .rubrica-contenedor-tabla {
-    .nivel-card {
-      padding: 8px;
-
-      .nivel-titulo {
-        font-size: 0.85rem;
-      }
-
-      .nivel-descripcion {
-        font-size: 0.75rem;
-      }
-    }
-  }
-}
-
-/* ========================================
-   RESPONSIVE: LANDSCAPE MÓVIL
-   ======================================== */
-@media (max-width: 960px) and (orientation: landscape) {
-
-  // En landscape móvil, el panel se oculta, la tabla ocupa todo el ancho
-  .layout {
-    display: flex; // Usar flexbox en lugar de grid
-    width: 100%;
-    height: calc(100vh - 70px); // Menos altura por header compacto
-    padding: 2px;
-  }
-
-  .estudiantes-container {
-    flex: 1; // Ocupar todo el espacio disponible
-    width: 100%;
-  }
-
-  // Tabla de estudiantes: reducir tamaño para mostrar todas las columnas
-  .estudiantes-table {
-    font-size: 0.65rem; // Texto más pequeño
-
-    th,
-    td {
-      padding: 2px 4px;
-      white-space: nowrap;
-    }
-
-    th {
-      font-size: 0.6rem;
-    }
-
-    // Asegurar que todas las columnas sean visibles
-    .email-col {
-      display: table-cell; // Mostrar email en landscape
-      max-width: 120px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  // Course tabs más compactos
-  .course-segment {
-    ion-segment-button {
-      min-width: 60px;
-      padding: 2px 4px;
-    }
-  }
-
-  .course-tab-code {
-    font-size: 0.6rem;
-  }
-
-  .course-tab-name {
-    font-size: 0.55rem;
-    max-width: 60px;
-  }
-
-  // Grupos más compactos
-  .grupos-container {
-    gap: 4px;
-    padding: 4px;
-
-    .grupo-btn {
-      padding: 2px 6px;
-      font-size: 0.65rem;
-      min-width: 30px;
-    }
-  }
-
-  // Rúbrica más compacta
-  .rubrica-contenedor-tabla {
-    font-size: 0.7rem;
-
-    .nivel-card {
-      padding: 4px;
-
-      .nivel-titulo {
-        font-size: 0.75rem;
-      }
-
-      .nivel-descripcion {
-        font-size: 0.65rem;
-      }
-    }
-  }
-
-
-}
-
-/* ========================================
-   RESPONSIVE: MÓVIL RÚBRICA
-   ======================================== */
-@media (max-width: 767px) {
-
-  // Rúbrica más compacta en móvil
-  .rubrica-contenedor-tabla {
-    font-size: 0.75rem;
-    margin-top: 8px;
-
-    .rubrica-header {
-      flex-direction: column;
-      gap: 8px;
-      padding: 8px;
-    }
-
-    .criterio-titulo {
-      font-size: 0.8rem;
-      line-height: 1.2;
-    }
-
-    .rubrica-puntos {
-      font-size: 0.85rem;
-    }
-
-    .criterio-indicador {
-      font-size: 0.75rem;
-    }
-
-    // Reducir tamaño de botones
-    .navegacion-botones,
-    .acciones-botones {
-      flex-wrap: wrap;
-      gap: 4px;
-
-      ion-button {
-        --padding-start: 8px;
-        --padding-end: 8px;
-        font-size: 0.7rem !important;
-        height: 28px;
-        min-width: 60px;
-      }
-    }
-
-    // Niveles de rúbrica más compactos
-    .nivel-card {
-      padding: 8px !important;
-      margin-bottom: 6px;
-
-      .nivel-titulo {
-        font-size: 0.8rem !important;
-        margin-bottom: 4px;
-      }
-
-      .nivel-descripcion {
-        font-size: 0.7rem !important;
-        line-height: 1.3;
-      }
-
-      .nivel-puntos {
-        font-size: 0.75rem;
-      }
-    }
-
-    // Checkbox más pequeño
-    ion-checkbox {
-      --size: 16px;
-    }
-  }
-}
-
-@media (max-width: 480px) {
-
-  // Portrait: rúbrica ultra compacta
-  .rubrica-contenedor-tabla {
-    font-size: 0.7rem;
-
-    .criterio-titulo {
-      font-size: 0.75rem !important;
-    }
-
-    .rubrica-puntos {
-      font-size: 0.8rem;
-    }
-
-    .criterio-indicador {
-      font-size: 0.7rem;
-    }
-
-    .navegacion-botones,
-    .acciones-botones {
-      ion-button {
-        font-size: 0.65rem !important;
-        height: 26px;
-        min-width: 55px;
-        --padding-start: 6px;
-        --padding-end: 6px;
-      }
-    }
-
-    .nivel-card {
-      padding: 6px !important;
-
-      .nivel-titulo {
-        font-size: 0.75rem !important;
-      }
-
-      .nivel-descripcion {
-        font-size: 0.65rem !important;
-      }
-
-      .nivel-puntos {
-        font-size: 0.7rem;
-      }
-    }
-
-    ion-checkbox {
-      --size: 14px;
-    }
-
-    // Entrega badge más pequeño
-    .entrega-badge {
-      font-size: 0.7rem !important;
-      padding: 4px 8px;
-    }
-  }
-}
-
-// ================================================
-// OPTIMIZACIONES MÓVILES GENERALES
-// MODO LANDSCAPE PERMANENTE
-// ================================================
-
-// Clase para optimización móvil en ion-content
-.mobile-optimized {
-  --padding-top: 5vh; // Separación del 5% en borde superior para landscape móvil
-
-  @media (min-width: 1024px) {
-    --padding-top: 0; // En escritorio no aplicar el padding
-  }
-}
-
-// ================================================
-// LAYOUT LANDSCAPE PERMANENTE PARA MÓVILES
-// ================================================
-
-.layout {
-  @media (max-width: 1023px) {
-    // Móviles SIEMPRE en landscape: layout horizontal optimizado
-    flex-direction: row;
-    gap: 8px;
-    padding: 8px;
-    height: calc(100vh - 60px); // Altura completa menos tabs
-
-    .estudiantes-container {
-      flex: 1;
-      min-width: 0;
-      padding: 4px;
-      /* Padding pequeño para landscape */
-      margin: 0;
-    }
-
-    .seguimiento-panel {
-      display: none; // Ocultar panel en landscape
-    }
-
-    // Ocultar FAB en landscape (no necesario)
-    .fab-menu-container {
-      display: none !important;
-    }
-
-    // Mostrar botones de acción normales
-    .navegacion-controles {
-      .acciones-botones {
-        display: flex !important;
-        flex-wrap: wrap;
-        gap: 4px;
-
-        ion-button {
-          font-size: 0.65rem;
-          height: 28px;
-          min-width: 50px;
-          --padding-start: 4px;
-          --padding-end: 4px;
-        }
-      }
-
-      .navegacion-botones {
-        ion-button {
-          font-size: 0.65rem;
-          height: 28px;
-        }
-      }
-    }
-  }
-
-  @media (min-width: 1024px) {
-    // Desktop: layout flexible que se adapta al panel lateral
-    flex-direction: row;
-    padding: 0;
-    gap: 0;
-  }
-}
-
-// ================================================
-// OPTIMIZACIONES PARA TABLAS EN LANDSCAPE MÓVIL
-// ================================================
-
-@media (max-width: 1023px) {
-  .table-container {
-    overflow-x: auto;
-    max-height: calc(100vh - 300px);
-
-    table {
-      font-size: 0.7rem;
-    }
-  }
-
-  .estudiantes-table {
-
-    th,
-    td {
-      padding: 4px 3px;
-      white-space: nowrap;
-      font-size: 0.7rem;
-    }
-
-    // Columnas compactas
-    th[style*="width: 45px"],
-    td:first-child {
-      width: 30px !important;
-    }
-
-    th[style*="width: 60px"] {
-      width: 40px !important;
-    }
-
-    // Headers más compactos
-    .entrega-header {
-      padding: 4px;
-      font-size: 0.7rem;
-    }
-  }
-}
-
-// ================================================
-// CARDS Y SEGMENTS OPTIMIZADOS LANDSCAPE
-// ================================================
-
-@media (max-width: 1023px) {
-  ion-card {
-    margin: 6px 0;
-    border-radius: 8px;
-
-    ion-card-content {
-      padding: 8px;
-    }
-  }
-
-  .course-segment {
-    ion-segment-button {
-      min-height: 40px;
-      font-size: 0.7rem;
-
-      .course-label {
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        align-items: center;
-
-        .course-tab-code {
-          font-size: 0.75rem;
-          font-weight: 600;
-        }
-
-        .course-tab-name {
-          font-size: 0.65rem;
-          opacity: 0.8;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 100px;
-        }
-      }
-    }
-  }
-}
-
-// ================================================
-// RÚBRICA OPTIMIZADA PARA LANDSCAPE MÓVIL
-// ================================================
-
-@media (max-width: 1023px) {
-  .rubrica-contenedor-tabla {
-    font-size: 0.7rem;
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-
-    .rubrica-header {
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 6px;
-    }
-
-    .criterio-titulo {
-      font-size: 0.75rem !important;
-      line-height: 1.2;
-    }
-
-    .rubrica-puntos {
-      font-size: 0.75rem;
-    }
-
-    .criterio-indicador {
-      font-size: 0.65rem;
-    }
-
-    .navegacion-botones,
-    .acciones-botones {
-      ion-button {
-        font-size: 0.65rem !important;
-        height: 28px;
-        min-width: 50px;
-        --padding-start: 4px;
-        --padding-end: 4px;
-      }
-    }
-
-    .nivel-card {
-      padding: 6px !important;
-      margin: 4px;
-
-      .nivel-titulo {
-        font-size: 0.7rem !important;
-      }
-
-      .nivel-descripcion {
-        font-size: 0.65rem !important;
-        line-height: 1.3;
-      }
-
-      .nivel-puntos {
-        font-size: 0.65rem;
-      }
-    }
-
-    ion-checkbox {
-      --size: 16px;
-    }
-
-    .niveles-columnas {
-      gap: 6px;
-
-      .nivel-columna {
-        flex: 1;
-        min-width: 120px;
-      }
-    }
-
-    .criterio-descripcion {
-      font-size: 0.7rem;
-      padding: 6px;
-      margin: 4px 0;
-    }
-
-    .aplicar-todos-container {
-      font-size: 0.7rem;
-      padding: 4px;
-
-      .checkbox-label {
-        font-size: 0.7rem;
-      }
-    }
-  }
-}
-
-// ================================================
-// SEGUIMIENTO PANEL LANDSCAPE MÓVIL
-// ================================================
-
-@media (max-width: 1023px) {
-  .seguimiento-panel {
-    ion-card-content {
-      padding: 8px !important;
-    }
-  }
-
-  .comentario-item {
-    margin: 6px 0;
-    padding: 6px;
-    font-size: 0.7rem;
-  }
-
-  .comentario-header {
-    .comentario-fecha {
-      font-size: 0.65rem;
-    }
-  }
-
-  .comentario-texto {
-    font-size: 0.7rem;
-    line-height: 1.3;
-  }
-
-  .rubrica-seguimiento-area {
-    margin: 8px 0;
-    font-size: 0.7rem;
-
-    .rubrica-seguimiento-titulo {
-      font-size: 0.75rem;
-    }
-
-    .rubrica-parrafo p {
-      font-size: 0.7rem;
-      line-height: 1.3;
-    }
-  }
-
-  .nuevo-comentario-area {
-    ion-textarea {
-      font-size: 0.7rem;
-      --padding-start: 8px;
-      --padding-end: 8px;
-    }
-
-    ion-button {
-      font-size: 0.7rem;
-      height: 32px;
-    }
-  }
-}
-
-// ================================================
-// MEJORAS DE USABILIDAD TÁCTIL LANDSCAPE
-// ================================================
-
-@media (max-width: 1023px) {
-
-  // Touch targets optimizados para landscape
-  ion-button {
-    min-height: 36px;
-
-    &[size="small"] {
-      min-height: 28px;
-    }
-  }
-
-  ion-checkbox {
-    --size: 18px;
-    min-width: 36px;
-    min-height: 36px;
-  }
-
-  // Mejorar contraste y espaciado
-  .entrega-header {
-    padding: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-
-    &:active {
-      background-color: rgba(var(--ion-color-primary-rgb), 0.1);
-    }
-  }
-
-  // Inputs más compactos
-  ion-input,
-  ion-textarea {
-    font-size: 0.75rem;
-    --padding-top: 6px;
-    --padding-bottom: 6px;
-  }
-}
-
-// ================================================
-// SAFE AREAS PARA NOTCH Y NAVEGACIÓN (MOBILE)
-// ================================================
-
-@media (max-width: 1023px) {
-  ion-content {
-    // Asegurar espacio adicional para barra de estado y notch
-    --padding-top: max(8px, env(safe-area-inset-top));
-    --padding-bottom: max(8px, env(safe-area-inset-bottom));
-
-    @supports (padding: env(safe-area-inset-left)) {
-      --padding-start: max(8px, env(safe-area-inset-left));
-      --padding-end: max(8px, env(safe-area-inset-right));
-    }
-  }
-
-  // Asegurar que el layout respete safe areas
-  .layout {
-    padding-left: max(8px, env(safe-area-inset-left));
-    padding-right: max(8px, env(safe-area-inset-right));
-    padding-bottom: max(8px, env(safe-area-inset-bottom)); // Para navegación Android/iOS
-  }
-
-  // Ajustar barra de título del curso
-  .page-title-header {
-    padding-left: max(8px, env(safe-area-inset-left));
-    padding-right: max(8px, env(safe-area-inset-right));
-  }
-
-  // FAB menu con safe area inferior
-  .fab-menu-container {
-    --ion-safe-area-bottom: env(safe-area-inset-bottom);
-    margin-bottom: calc(16px + env(safe-area-inset-bottom));
-  }
-}
-
-// ================================================
-// OCULTAR FAB EN MODO LANDSCAPE PERMANENTE
-// ================================================
-
-.fab-menu-container {
-  // Visible con tamaños dinámicos
-  display: flex;
-  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  margin-bottom: calc(56px + var(--ion-safe-area-bottom)); // Espacio para bottom tabs
-
-  // RESPONSIVE: Desktop - OCULTAR FAB completamente
-  @media (min-width: 769px) {
-    display: none !important;
-  }
-
-  // Landscape - ajustar margen inferior
-  @media (max-height: 500px) and (orientation: landscape) {
-    margin-bottom: calc(48px + var(--ion-safe-area-bottom));
-  }
-
-  // FAB principal con tamaño fijo para mejor UX
-  ion-fab-button {
-    --size: 48px;
-    --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-    --border-radius: 50%;
-    overflow: visible;
-
-    ion-icon {
-      font-size: 1.4rem !important;
-      width: 24px;
-      height: 24px;
-    }
-
-    // Mobile pequeño
-    @media (max-width: 480px) {
-      --size: 44px;
-
-      ion-icon {
-        font-size: 1.2rem !important;
-        width: 22px;
-        height: 22px;
-      }
-    }
-
-    // Landscape móvil
-    @media (max-height: 500px) and (orientation: landscape) {
-      --size: 40px;
-
-      ion-icon {
-        font-size: 1.1rem !important;
-        width: 20px;
-        height: 20px;
-      }
-    }
-  }
-
-  // Botones de lista FAB - tamaño consistente
-  ion-fab-list {
-    ion-fab-button {
-      --size: 40px;
-      --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      margin: 4px 0;
-      overflow: visible;
-
-      ion-icon {
-        font-size: 1.2rem !important;
-        width: 20px;
-        height: 20px;
-      }
-
-      // Mobile pequeño
-      @media (max-width: 480px) {
-        --size: 36px;
-        margin: 3px 0;
-
-        ion-icon {
-          font-size: 1rem !important;
-          width: 18px;
-          height: 18px;
-        }
-      }
-
-      // Landscape
-      @media (max-height: 500px) and (orientation: landscape) {
-        --size: 34px;
-        margin: 2px 0;
-
-        ion-icon {
-          font-size: 0.95rem !important;
-          width: 16px;
-          height: 16px;
-        }
-      }
-
-      &[disabled] {
-        opacity: 0.4;
-        pointer-events: none;
-      }
-    }
-  }
-}
-
-// ================================================
-// ANIMACIONES
-// ================================================
-
-@keyframes pulse-warning {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.85;
-    transform: scale(1.02);
-  }
-}
-
-
-// ================================================
-// ACCESIBILIDAD Y RENDIMIENTO
-// ================================================
-
-// Reducir animaciones si el usuario lo prefiere
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-  }
-}
-
-// Modo oscuro: ajustar contraste
-@media (prefers-color-scheme: dark) {
-  .estudiantes-table {
-
-    th,
-    td {
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-  }
-
-  .nivel-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
-// ================================================
-// OPTIMIZACIONES ESPECÍFICAS PARA PANTALLAS PEQUEÑAS
-// ================================================
-
-@media (max-width: 800px) {
-  .layout {
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-
-    .estudiantes-container {
-      width: 100% !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      /* Altura gestionada por el sistema principal */
-    }
-
-    .seguimiento-panel {
-      display: none; // Panel solo visible en tabs lateral
-    }
-  }
-
-  .estudiantes-table {
-    font-size: 0.65rem !important;
-
-    th,
-    td {
-      padding: 3px 2px !important;
-    }
-  }
-
-  .rubrica-contenedor-tabla {
-    font-size: 0.65rem !important;
-
-    .nivel-card {
-      padding: 4px !important;
-    }
-  }
-}
-
-// ================================================
-// CLASES PARA REEMPLAZAR ESTILOS INLINE
-// ================================================
-
-.acciones-curso {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.info-estudiantes {
-  margin-left: auto;
-  font-size: 0.85rem;
-  color: var(--ion-color-medium);
-}
-
-.card-content-compact {
-  padding: 12px;
-}
-
-/* Canvas info wrapper - Responsive en una columna en móviles */
-.canvas-info-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-
-  /* Móviles: Columna única */
-  @media (max-width: 767px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-}
-
-.canvas-info-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 200px;
-
-  /* Móviles: Ancho completo */
-  @media (max-width: 767px) {
-    width: 100%;
-    min-width: unset;
-  }
-}
-
-.canvas-info-text {
-  flex: 1;
-}
-
-.canvas-info-status {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-
-  /* Móviles: Ancho completo con espacio entre elementos */
-  @media (max-width: 767px) {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
-.text-small-medium {
-  font-size: 0.8rem;
-  color: var(--ion-color-medium);
-}
-
-.text-extra-small {
-  font-size: 0.8rem;
-}
-
-.column-width-checkbox {
-  width: 45px;
-}
-
-.column-width-group {
-  width: 60px;
-  cursor: pointer;
-}
-
-.student-name-small {
-  font-size: 0.85em;
-  opacity: 0.9;
-}
-
-.checkbox-apply-label {
-  font-size: 0.75em;
-  margin-left: 4px;
-}
-
-.icon-small-inline {
-  font-size: 0.75rem;
-  margin-right: 2px;
-}
-
-.rubrica-note-text {
-  font-size: 0.85rem;
-  font-style: italic;
-  color: #6c757d;
-  margin: 8px 0 0 0;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.entrega-header-clickable {
-  cursor: pointer;
-}
-
-.checkbox-apply {
-  margin-left: 12px;
-  --size: 18px;
-}
-
-// ================================================
-// AJUSTES PARA PANTALLAS MUY ANCHAS (TABLETS)
-// ================================================
-
-@media (min-width: 800px) and (max-width: 1023px) {
-  .layout {
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-
-    .estudiantes-container {
-      width: 100% !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      /* Altura calculada por el sistema principal basado en custom-tab-bar */
-    }
-
-    .seguimiento-panel {
-      display: none; // Panel solo visible en tabs lateral
-    }
-  }
-
-  .estudiantes-table {
-    font-size: 0.75rem;
-  }
-
-  .rubrica-contenedor-tabla {
-    font-size: 0.75rem;
-  }
-}
-
-/* ========================================
-   POPOVER DE COLOR (IONIC NATIVO) - MEJORADO
-   ======================================== */
-
-.color-picker-popover-wrapper {
-  --width: auto;
-  --max-width: 260px;
-  --min-width: 230px;
-}
-
-.color-picker-popover {
-  background: white;
-  padding: 0;
-  width: 100%;
-  max-height: 400px;
-  overflow: visible;
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-}
-
-.color-picker-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px;
-  border-bottom: 1px solid #e0e0e0;
-  background: var(--azul-oscuro, #0F385A);
-  border-radius: 10px 10px 0 0;
-
-  span {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: white;
-  }
-
-  ion-icon {
-    font-size: 1.1rem;
-    color: white;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 4px;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-  }
-}
-
-.color-picker-content {
-  padding: 8px;
-  background: #fafafa;
-  overflow-y: auto;
-  max-height: 250px;
-  flex: 1;
-  flex-shrink: 1;
-}
-
-.color-picker-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
-  padding: 6px;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-}
-
-.color-option {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 2px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  position: relative;
-
-  &:focus,
-  &:focus-visible {
-    outline: 2px solid var(--azul-oscuro, #0F385A);
-    outline-offset: 1px;
-    z-index: 2;
-  }
-
-  &:hover:not(.selected) {
-    border-color: #999;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    z-index: 1;
-  }
-
-  &.selected {
-    border-color: var(--azul-oscuro, #0F385A);
-    border-width: 3px;
-    box-shadow: 0 0 0 2px rgba(15, 56, 90, 0.2);
-    z-index: 3;
-
-    ion-icon {
-      color: white;
-      font-size: 18px;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
-    }
-  }
-
-  &:active {
-    opacity: 0.8;
-  }
-}
-
-.color-picker-input-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  border: 2px solid #e0e0e0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.hex-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  .hex-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #555;
-    margin: 0;
-  }
-
-  .hex-hint {
-    margin: 0;
-    font-size: 0.7rem;
-    color: #888;
-    font-style: italic;
-  }
-
-  .student-name {
-    font-size: 0.75rem; // Reducido de 0.85rem
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 2px;
-    line-height: 1.2;
-  }
-
-  .student-email {
-    font-size: 0.65rem; // Reducido de 0.7rem
-    color: #7f8c8d;
-    opacity: 0.85;
-    line-height: 1.1;
-  }
-}
-
-.color-hex-input {
-  width: 100%;
-  --background: #f8f9fa;
-  --border-color: #d0d0d0;
-  --border-radius: 6px;
-  --padding-start: 12px;
-  --padding-end: 12px;
-  --padding-top: 8px;
-  --padding-bottom: 8px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-
-  &::part(native) {
-    border: 2px solid #d0d0d0;
-    transition: all 0.2s ease;
-
-    &:focus {
-      background: white;
-      border-color: var(--azul-oscuro, #0F385A);
-      /* Color SRS principal */
-      box-shadow: 0 0 0 3px rgba(15, 56, 90, 0.1);
-    }
-  }
-}
-
-.color-picker-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  padding: 10px 12px;
-  border-top: 1px solid #e0e0e0;
-  background: white;
-  border-radius: 0 0 10px 10px;
-  flex-shrink: 0;
-
-  ion-button {
-    margin: 0;
-    height: 36px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    --padding-start: 14px;
-    --padding-end: 14px;
-    min-width: 80px;
-
-    &[disabled] {
-      opacity: 0.5;
-      cursor: not-allowed;
-
-      ion-icon {
-        animation: rotate-loading 1.2s ease-in-out infinite;
-      }
-    }
-  }
-}
-
-// Animación para el ícono de loading
-@keyframes rotate-loading {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* ========================================
-   PANEL DE CURSO CON TABS DE ENTREGAS
-   ======================================== */
-
-.dashboard-options {
-  margin: 16px 0;
-
-  ion-card-header {
-    padding: 16px;
-    background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
-    border-radius: 0;
-  }
-
-  // Fila del header con título y estadísticas
-  .header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  ion-card-title {
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.75rem;
-    margin: 0;
-    letter-spacing: 0.18px;
-  }
-
-  // Estadísticas resumidas en línea horizontal
-  .stats-header {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-  }
-
-  .stat-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--ion-color-light, #f4f5f8);
-    padding: 10px 16px;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    cursor: default;
-
-    &:hover {
-      background: var(--ion-color-light-shade, #d7d8da);
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    ion-icon {
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-
-    .stat-content {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .stat-number {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--ion-color-dark, var(--azul-oscuro));
-      line-height: 1;
-    }
-
-    .stat-text {
-      font-size: 0.75rem;
-      color: var(--ion-color-medium, #92949c);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      line-height: 1;
-    }
-  }
-
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-  }
-
-  .dashboard-item {
-    background: var(--fondo-componente);
-    padding: 20px;
-    border-radius: 0;
-    border: 2px solid rgba(31, 178, 222, 0.2);
-    text-align: center;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-
-    &:hover {
-      border-color: var(--azul-claro);
-      box-shadow: 0 4px 12px rgba(31, 178, 222, 0.2);
-      transform: translateY(-2px);
-    }
-
-    ion-icon {
-      font-size: 2.5rem;
-      margin-bottom: 8px;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--azul-oscuro);
-    }
-
-    p {
-      margin: 4px 0 8px 0;
-      font-size: 0.85rem;
-      color: var(--texto-secundario);
-      line-height: 1.4;
-    }
-
-    ion-badge {
-      margin-top: 8px;
-    }
-  }
-
-  @media (max-width: 992px) {
-    .header-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .stats-header {
-      width: 100%;
-      justify-content: space-between;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .stats-header {
-      gap: 8px;
-    }
-
-    .stat-chip {
-      padding: 8px 12px;
-
-      ion-icon {
-        font-size: 1.2rem;
-      }
-
-      .stat-number {
-        font-size: 1.1rem;
-      }
-
-      .stat-text {
-        font-size: 0.7rem;
-      }
-    }
-
-  }
-
-  @media (max-width: 480px) {
-    ion-card-title {
-      font-size: 1.1rem;
-    }
-
-    .stats-header {
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .stat-chip {
-      flex: 1;
-      min-width: calc(50% - 3px);
-      padding: 8px 10px;
-
-      ion-icon {
-        font-size: 1.1rem;
-      }
-
-      .stat-number {
-        font-size: 1rem;
-      }
-
-      .stat-text {
-        font-size: 0.65rem;
-      }
-    }
-
-    .dashboard-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .dashboard-item {
-      padding: 16px;
-
-      ion-icon {
-        font-size: 2rem;
-      }
-
-      h3 {
-        font-size: 0.9rem;
-      }
-    }
-  }
-
-  // Header con toggle integrado y breadcrumb
-  .header-con-toggle {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 12px !important;
-    gap: 8px;
-    min-height: 32px;
-    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-    border-radius: var(--rad-sm, 8px) var(--rad-sm, 8px) 0 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-
-    // Breadcrumb de navegación
-    .breadcrumb-navigation {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex: 1;
-
-      .breadcrumb-icon {
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.7);
-      }
-
-      .breadcrumb-item {
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #ffffff;
-
-        &.curso-name {
-          // Título en negrita
-          font-weight: 700;
-          // Permitir que el nombre completo se muestre
-          white-space: normal;
-          word-wrap: break-word;
-          line-height: 1.2;
-        }
-
-        &.grupo-name {
-          font-weight: 700;
-          font-size: 0.7rem;
-          // Chip con fondo blanco
-          background: #ffffff;
-          padding: 0 8px;
-          border-radius: 10px;
-          line-height: 1.4;
-          // Color dinámico viene del template [style.color]
-        }
-
-        &.entrega-name {
-          font-weight: 700;
-          font-size: 0.75rem;
-          background: rgba(255, 255, 255, 0.15);
-          padding: 0 6px;
-          border-radius: 8px;
-          line-height: 1.4;
-        }
-      }
-
-      .breadcrumb-separator {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.5);
-      }
-    }
-
-    // Botón volver a matriz
-    .btn-volver-matriz {
-      --padding-start: 8px;
-      --padding-end: 10px;
-      --color: #ffffff;
-      font-size: 0.75rem;
-      height: 26px;
-      margin: 0;
-
-      ion-icon {
-        font-size: 0.9rem;
-        margin-right: 4px;
-      }
-
-      .btn-text {
-        @media (max-width: 480px) {
-          display: none;
-        }
-      }
-
-      &:hover {
-        --background: rgba(255, 255, 255, 0.1);
-      }
-    }
-  }
-
-  // Toggle para modo de vista de encabezado de grupo - Solo ícono de candado
-  .modo-vista-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: scale(1.1);
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
-
-    // Ícono de candado
-    .lock-icon {
-      font-size: 0.8rem;
-      color: #ffffff;
-      transition: all 0.2s ease;
-    }
-  }
-
-  // ===== BARRA DE NAVEGACIÓN DE GRUPOS =====
-  .grupos-nav-bar {
-    background: transparent;
-    padding: 0;
-    margin-bottom: 8px;
-
-    .grupos-nav-header {
-      display: none;
-    }
-
-    .grupos-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 4px;
-    }
-
-    // Ícono de grupos en línea - SIEMPRE visible
-    .grupos-icon {
-      display: flex !important;
-      font-size: 1.2rem;
-      color: var(--azul-oscuro, #0f385a);
-      margin: 0 4px;
-      opacity: 0.7;
-    }
-
-    .grupo-nav-btn {
-      min-width: 32px;
-      height: 28px;
-      padding: 0 8px;
-      border-radius: var(--rad-sm, 8px);
-      border: none;
-      background: var(--azul-oscuro, #0f385a);
-      color: #ffffff;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.7;
-
-      &:hover {
-        opacity: 0.9;
-      }
-
-      &.activo {
-        opacity: 1;
-        box-shadow: 0 2px 6px rgba(15, 56, 90, 0.4);
-        transform: scale(1.05);
-      }
-
-      // Botón Dashboard (Todos) - Mismo estilo base
-      &.grupo-nav-btn-dashboard {
-        ion-icon {
-          font-size: 0.95rem;
-        }
-      }
-    }
-  }
-
-  // ===== PANEL DE RESUMEN POR ENTREGAS =====
-  .entregas-resumen-panel {
-    background: white;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 2px 12px rgba(15, 56, 90, 0.08);
-
-    .entregas-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid rgba(15, 56, 90, 0.1);
-
-      ion-icon {
-        font-size: 1.4rem;
-        color: var(--azul-oscuro);
-      }
-
-      span {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--azul-oscuro);
-      }
-    }
-
-    // Tabla de Entregas
-    .entregas-tabla {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-
-      thead {
-        tr {
-          background: linear-gradient(135deg, var(--azul-oscuro) 0%, #1e4b6e 100%);
-          border-radius: var(--rad-sm, 8px) var(--rad-sm, 8px) 0 0;
-
-          th {
-            padding: 12px 16px;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-
-            &:first-child {
-              border-radius: var(--rad-sm, 8px) 0 0 0;
-            }
-
-            &:last-child {
-              border-radius: 0 var(--rad-sm, 8px) 0 0;
-            }
-
-            ion-icon {
-              vertical-align: middle;
-              margin-right: 6px;
-              font-size: 1rem;
-            }
-
-            &.col-entrega {
-              text-align: left;
-              min-width: 180px;
-            }
-
-            &.col-evaluados ion-icon {
-              color: #86efac;
-            }
-
-            &.col-pendientes ion-icon {
-              color: #fde047;
-            }
-
-            &.col-atencion ion-icon {
-              color: #fca5a5;
-            }
-          }
-        }
-      }
-
-      tbody {
-        .fila-entrega {
-          background: #f8fafc;
-          border-bottom: 1px solid #e2e8f0;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: #e0f2fe;
-          }
-
-          &.activa {
-            background: #dbeafe;
-            border-left: 4px solid var(--azul-claro);
-          }
-
-          td {
-            padding: 14px 16px;
-            text-align: center;
-            font-weight: 500;
-
-            &.col-entrega {
-              text-align: left;
-              display: flex;
-              align-items: center;
-              gap: 12px;
-            }
-
-            &.col-evaluados {
-              color: #059669;
-              font-weight: 700;
-            }
-
-            &.col-pendientes {
-              color: #d97706;
-              font-weight: 700;
-            }
-
-            &.col-atencion {
-              color: #94a3b8;
-              font-weight: 600;
-
-              ion-icon {
-                display: none;
-                margin-right: 4px;
-                vertical-align: middle;
-              }
-
-              &.con-atencion {
-                color: #dc2626;
-                font-weight: 700;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        .selected-chips {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+
+            .student-chip {
+                --background: rgba(255, 255, 255, 0.2);
+                --color: #fff;
+                height: 28px;
+                font-size: 0.8rem;
 
                 ion-icon {
-                  display: inline-block;
-                  color: #ef4444;
-                  animation: pulse 1.5s ease-in-out infinite;
+                    font-size: 0.9rem;
                 }
-              }
             }
-          }
-
-          .entrega-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            color: white;
-
-            &.e1 {
-              background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            }
-
-            &.e2 {
-              background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            }
-
-            &.ef {
-              background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            }
-          }
-
-          .entrega-nombre {
-            font-size: 0.9rem;
-            color: #334155;
-          }
         }
 
-        tr:last-child {
-          border-bottom: none;
+        ion-button {
+            flex-shrink: 0;
+            --border-radius: 8px;
+            --padding-top: 8px;
+            --padding-bottom: 8px;
         }
-      }
+    }
+}
+
+// === CONTENIDO PRINCIPAL GRID (3 COLUMNS) ===
+.main-content-grid {
+    padding: 8px 6px;
+    max-width: 1600px;
+    margin: 0 auto;
+
+    ion-grid {
+        padding: 0;
     }
 
-    @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.5;
-      }
-    }
-
-    // Estilos legacy para entregas-grid (mantener compatibilidad)
-    .entregas-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .entrega-card {
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 16px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(15, 56, 90, 0.12);
-        border-color: var(--azul-claro);
-      }
-
-      .entrega-titulo {
-        display: flex;
-        align-items: baseline;
-        gap: 10px;
-        margin-bottom: 16px;
-
-        .entrega-nombre {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: var(--azul-oscuro);
-        }
-
-        .entrega-subtitulo {
-          font-size: 0.8rem;
-          color: #64748b;
-        }
-      }
-
-      .entrega-stats {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-
-        .stat {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 4px;
-
-          ion-icon {
-            font-size: 1.3rem;
-          }
-
-          .stat-numero {
-            font-size: 1.4rem;
-            font-weight: 700;
-          }
-
-          .stat-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: #64748b;
-            letter-spacing: 0.3px;
-          }
-
-          &.evaluados {
-            ion-icon {
-              color: #10b981;
-            }
-
-            .stat-numero {
-              color: #059669;
-            }
-          }
-
-          &.pendientes {
-            ion-icon {
-              color: #f59e0b;
-            }
-
-            .stat-numero {
-              color: #d97706;
-            }
-          }
-
-          &.atencion {
-            opacity: 0.4;
-
-            ion-icon {
-              color: #ef4444;
-            }
-
-            .stat-numero {
-              color: #dc2626;
-            }
-
-            &.visible {
-              opacity: 1;
-            }
-          }
-        }
-      }
-
-      .entrega-progress {
-        height: 6px;
-        background: #e2e8f0;
-        border-radius: 3px;
-        overflow: hidden;
-
-        .progress-fill {
-          height: 100%;
-          background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-          border-radius: 3px;
-          transition: width 0.5s ease;
-        }
-      }
-    }
-
-    .resumen-total {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      padding-top: 16px;
-      border-top: 1px solid #e2e8f0;
-
-      .total-item {
+    .column-container {
         display: flex;
         flex-direction: column;
+        gap: 16px;
+        min-height: 400px;
+
+        @media (min-width: 992px) {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            padding: 0 8px;
+
+            &::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 2px;
+            }
+        }
+
+        // Columna de cursos más al borde izquierdo
+        &.column-courses {
+            padding-left: 0 !important;
+            margin-left: -8px;
+
+            @media (min-width: 992px) {
+                padding-left: 0 !important;
+            }
+        }
+    }
+
+    .column-header {
+        display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 10px;
+        margin-bottom: 8px;
+        padding: 4px;
 
         ion-icon {
-          font-size: 1.5rem;
-          color: var(--azul-oscuro);
+            font-size: 1.4rem;
+            color: $azul-oscuro;
         }
 
-        .total-valor {
-          font-size: 1.6rem;
-          font-weight: 800;
-          color: var(--azul-oscuro);
+        h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            flex: 1;
         }
 
-        .total-label {
-          font-size: 0.7rem;
-          text-transform: uppercase;
-          color: #64748b;
-          letter-spacing: 0.3px;
+        ion-badge {
+            --padding-start: 10px;
+            --padding-end: 10px;
+            --padding-top: 4px;
+            --padding-bottom: 4px;
+            font-size: 0.85rem;
+            border-radius: 50px;
         }
-
-        &.atencion {
-          opacity: 0.4;
-
-          ion-icon {
-            color: #ef4444;
-          }
-
-          .total-valor {
-            color: #dc2626;
-          }
-
-          &.visible {
-            opacity: 1;
-          }
-        }
-      }
     }
-  }
+}
 
-  // Responsive para entregas
-  @media (max-width: 768px) {
-    .grupos-nav-bar {
-      padding: 2px;
+// === DYNAMIC GRUPOS SELECTOR BAR ===
+.grupos-selector-bar {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-      .grupos-buttons {
-        gap: 4px;
-      }
-
-      .grupo-nav-btn {
-        width: 38px;
-        height: 38px;
-        font-size: 0.9rem;
-      }
-    }
-
-    .entregas-resumen-panel {
-      padding: 16px;
-
-      .entregas-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .resumen-total {
-        gap: 24px;
+    .grupos-selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
         flex-wrap: wrap;
-      }
-    }
-  }
-
-  // ===== PANEL DE DINÁMICA GRUPAL (LEGACY - mantener por compatibilidad) =====
-  .dinamica-grupal-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 248, 250, 0.95) 100%);
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 2px 12px rgba(15, 56, 90, 0.08);
-    overflow: hidden;
-
-    // Barra de filtros superior
-    .dinamica-filtros-bar {
-      background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d3a5c 100%);
-      padding: 10px 16px;
-
-      ion-segment {
-        --background: rgba(255, 255, 255, 0.15);
-        border-radius: 8px;
-        min-height: 36px;
-        max-width: 400px;
-
-        ion-segment-button {
-          --indicator-color: white;
-          --color: rgba(255, 255, 255, 0.8);
-          --color-checked: var(--azul-oscuro);
-          --padding-top: 6px;
-          --padding-bottom: 6px;
-          --padding-start: 16px;
-          --padding-end: 16px;
-          min-width: 60px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-      }
     }
 
-    // Header con título
-    .dinamica-header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding: 16px 16px 12px 16px;
-      border-bottom: 2px solid rgba(15, 56, 90, 0.1);
-
-      .dinamica-titulo {
+    .grupos-selector-label {
         display: flex;
         align-items: center;
         gap: 8px;
 
         ion-icon {
-          font-size: 1.4rem;
-          color: var(--azul-oscuro);
+            font-size: 1.2rem;
+            color: $azul-oscuro;
         }
 
         span {
-          font-size: 1.1rem;
-          font-weight: 700;
-          color: var(--azul-oscuro);
-          letter-spacing: 0.3px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-      }
-
-      .dinamica-filtros {
-        ion-segment {
-          --background: rgba(15, 56, 90, 0.08);
-          border-radius: 8px;
-          min-height: 32px;
-
-          ion-segment-button {
-            --indicator-color: var(--azul-oscuro);
-            --color: var(--azul-oscuro);
-            --color-checked: white;
-            --padding-top: 4px;
-            --padding-bottom: 4px;
-            --padding-start: 12px;
-            --padding-end: 12px;
-            min-width: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-          }
-        }
-      }
     }
 
-    // Leyenda de convenciones
-    .dinamica-leyenda {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin: 0 16px 16px 16px;
-      padding: 10px 14px;
-      background: rgba(15, 56, 90, 0.04);
-      border-radius: 8px;
-      border-left: 3px solid var(--azul-claro);
+    .selection-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
 
-      .leyenda-item {
+        ion-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+
+        ion-button {
+            --padding-start: 8px;
+            --padding-end: 8px;
+            height: 32px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    }
+
+    .grupos-buttons-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        .grupo-dynamic-btn {
+            --border-radius: 8px;
+            --padding-start: 14px;
+            --padding-end: 14px;
+            --padding-top: 8px;
+            --padding-bottom: 8px;
+            --background: transparent;
+            --background-hover: rgba(0, 0, 0, 0.03);
+            --box-shadow: none;
+            height: 36px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: none !important;
+            border: none !important;
+            transition: all 0.2s ease;
+            margin: 0;
+            position: relative;
+
+            // Texto con color del curso (se aplica dinámicamente)
+            &::part(native) {
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            &.selected {
+                --background: rgba(var(--curso-color-rgb, 74, 144, 226), 0.1);
+                font-weight: 800;
+
+                ion-icon {
+                    margin-right: 4px;
+                }
+            }
+
+            &:hover {
+                --background: rgba(0, 0, 0, 0.03);
+            }
+        }
+    }
+
+    .hint-text {
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 0.75rem;
-        color: #555;
+        padding: 8px 12px;
+        background: rgba($azul-claro, 0.05);
+        border-radius: 8px;
 
         ion-icon {
-          font-size: 1rem;
+            font-size: 1rem;
+            color: $azul-claro;
+            flex-shrink: 0;
         }
-      }
+
+        span {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+    }
+}
+
+// === DYNAMIC GRUPOS SELECTOR BAR (GLOBAL - ABOVE ALL COLUMNS) ===
+.grupos-selector-bar-global {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .grupos-selector-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
     }
 
-    // Grid de grupos
-    .dinamica-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-      margin: 0 16px 16px 16px;
+    .grupos-selector-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        ion-icon {
+            font-size: 1.2rem;
+            color: $azul-oscuro;
+        }
+
+        span {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
     }
 
-    // Card de cada grupo
-    .dinamica-card {
-      background: white;
-      border-radius: 10px;
-      padding: 14px;
-      border: 1px solid #e8e8e8;
-      transition: all 0.25s ease;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
+    .selection-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
 
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-      }
+        ion-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
 
-      &::before {
-        content: '';
+        ion-button {
+            --padding-start: 8px;
+            --padding-end: 8px;
+            height: 32px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    }
+
+    .grupos-buttons-row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 4px 0;
+
+        // Custom scrollbar
+        &::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .grupo-dynamic-btn {
+            --border-radius: 10px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --padding-top: 10px;
+            --padding-bottom: 10px;
+            height: 40px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            position: relative;
+            flex-shrink: 0;
+
+            &.selected {
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+                transform: translateY(-1px);
+
+                ion-icon {
+                    margin-right: 4px;
+                }
+            }
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+    }
+
+    .hint-text {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        background: rgba($azul-claro, 0.05);
+        border-radius: 8px;
+
+        ion-icon {
+            font-size: 1rem;
+            color: $azul-claro;
+            flex-shrink: 0;
+        }
+
+        span {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+    }
+}
+
+// === COLUMNA 1: CURSOS ===
+.courses-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    @media (min-width: 992px) {
+        padding-left: 0;
+    }
+}
+
+.course-card-premium {
+    margin: 0;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+
+    .card-color-strip {
         position: absolute;
         top: 0;
         left: 0;
-        width: 4px;
-        height: 100%;
-        background: #ddd;
-        transition: background 0.2s ease;
-      }
-
-      // Estados visuales
-      &.estado-ok::before {
-        background: var(--verde);
-      }
-
-      &.estado-alerta::before {
-        background: #ffc107;
-      }
-
-      &.estado-problema::before {
-        background: #dc3545;
-      }
-
-      &.estado-sin-datos::before {
-        background: #aaa;
-      }
-
-      &.estado-ok {
-        border-color: rgba(51, 153, 102, 0.3);
-      }
-
-      &.estado-alerta {
-        border-color: rgba(255, 193, 7, 0.3);
-      }
-
-      &.estado-problema {
-        border-color: rgba(220, 53, 69, 0.3);
-      }
-
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 12px;
-
-        .grupo-info {
-          .grupo-nombre {
-            display: block;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--azul-oscuro);
-          }
-
-          .grupo-integrantes {
-            font-size: 0.7rem;
-            color: #888;
-          }
-        }
-
-        .estado-icon {
-          font-size: 1.3rem;
-        }
-      }
-
-      .card-stats {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 10px;
-
-        .stat-row {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 8px;
-          border-radius: 6px;
-          background: #f8f9fa;
-          opacity: 0.6;
-          transition: all 0.2s ease;
-
-          &.activo {
-            opacity: 1;
-            font-weight: 500;
-          }
-
-          ion-icon {
-            font-size: 0.85rem;
-          }
-
-          .stat-label {
-            flex: 1;
-            font-size: 0.72rem;
-          }
-
-          .stat-value {
-            font-size: 0.8rem;
-            font-weight: 700;
-            min-width: 20px;
-            text-align: right;
-          }
-
-          &.stat-ok {
-
-            ion-icon,
-            .stat-value {
-              color: var(--verde);
-            }
-
-            &.activo {
-              background: rgba(51, 153, 102, 0.1);
-            }
-          }
-
-          &.stat-solo {
-
-            ion-icon,
-            .stat-value {
-              color: #ffc107;
-            }
-
-            &.activo {
-              background: rgba(255, 193, 7, 0.1);
-            }
-          }
-
-          &.stat-ausente {
-
-            ion-icon,
-            .stat-value {
-              color: #dc3545;
-            }
-
-            &.activo {
-              background: rgba(220, 53, 69, 0.1);
-            }
-          }
-
-          &.stat-pendiente {
-
-            ion-icon,
-            .stat-value {
-              color: #888;
-            }
-          }
-        }
-      }
-
-      .card-progress {
-        margin-bottom: 8px;
-
-        .progress-bar {
-          display: flex;
-          height: 6px;
-          border-radius: 3px;
-          overflow: hidden;
-          background: #eee;
-
-          .progress-segment {
-            transition: width 0.3s ease;
-
-            &.ok {
-              background: var(--verde);
-            }
-
-            &.solo {
-              background: #ffc107;
-            }
-
-            &.ausente {
-              background: #dc3545;
-            }
-          }
-        }
-      }
-
-      .card-nota {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        padding-top: 8px;
-        border-top: 1px dashed #e0e0e0;
-
-        ion-icon {
-          font-size: 0.8rem;
-          color: #888;
-        }
-
-        small {
-          font-size: 0.68rem;
-          color: #666;
-          font-style: italic;
-        }
-      }
+        bottom: 0;
+        width: 6px;
+        transition: width 0.2s ease;
     }
 
-    // Resumen general
-    .dinamica-resumen {
-      background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d3a5c 100%);
-      border-radius: 10px;
-      padding: 14px 20px;
-      color: white;
+    // Desktop selection indicator positioning
+    .card-selection-indicator {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 10;
 
-      .resumen-stats {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 12px;
-
-        .resumen-item {
-          text-align: center;
-          min-width: 70px;
-
-          .resumen-numero {
-            display: block;
+        ion-icon {
             font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-          }
-
-          .resumen-label {
-            font-size: 0.68rem;
-            opacity: 0.85;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-          }
-
-          &.ok .resumen-numero {
-            color: #90ee90;
-          }
-
-          &.alerta .resumen-numero {
-            color: #ffd700;
-          }
-
-          &.problema .resumen-numero {
-            color: #ff6b6b;
-          }
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
-      }
     }
 
-    // Responsive
-    @media (max-width: 768px) {
-      .dinamica-filtros-bar {
-        padding: 8px 12px;
-
-        ion-segment {
-          max-width: 100%;
-
-          ion-segment-button {
-            --padding-start: 10px;
-            --padding-end: 10px;
-            min-width: 50px;
-            font-size: 0.72rem;
-          }
-        }
-      }
-
-      .dinamica-header {
-        padding: 12px 12px 10px 12px;
-      }
-
-      .dinamica-leyenda {
-        margin: 0 12px 12px 12px;
-        gap: 10px;
-        font-size: 0.7rem;
-      }
-
-      .dinamica-grid {
-        grid-template-columns: 1fr;
-        margin: 0 12px 12px 12px;
-      }
-
-      .dinamica-card {
-        padding: 12px;
-      }
-
-      .dinamica-resumen .resumen-stats {
-        .resumen-item .resumen-numero {
-          font-size: 1.2rem;
-        }
-      }
-    }
-  }
-
-  // Estilos legacy para matriz (deprecated pero mantenido por compatibilidad)
-  .entregas-matrix-container {
-    display: none; // Ocultar matriz antigua
-  }
-
-  .entregas-matrix {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.8rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border-radius: 6px;
-    overflow: hidden;
-
-    thead {
-      background: linear-gradient(135deg, var(--azul-oscuro) 0%, #0d2e47 100%);
-      color: white;
-
-      .header-entrega,
-      .header-grupo {
-        padding: 8px 10px;
-        text-align: center;
-        font-weight: 600;
-        font-size: 0.75rem;
-        letter-spacing: 0.3px;
-        border-right: 1px solid rgba(255, 255, 255, 0.15);
-      }
-
-      .header-entrega {
-        text-align: center;
-        padding-left: 12px;
-        min-width: 60px;
-
-        .header-icon {
-          color: #ffffff;
-          font-size: 1.1rem;
-        }
-      }
-
-      .header-grupo {
-        min-width: 50px;
-
-        &.header-clickable {
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(1.05);
-          }
-        }
-      }
-
-      th:last-child {
-        border-right: none;
-      }
-    }
-
-    tbody {
-      tr {
-        border-bottom: 1px solid #e9ecef;
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        &:hover {
-          background-color: rgba(15, 56, 90, 0.03);
-        }
-      }
-
-      .label-entrega {
-        text-align: left;
-        padding: 10px 12px;
-        font-weight: 700;
-        color: var(--azul-oscuro);
-        background-color: #f8f9fa;
-        cursor: default;
-        font-size: 0.8rem;
-        border-right: 1px solid #dee2e6;
-      }
-
-      .cell-estado {
-        padding: 8px 6px;
-        text-align: center;
-        border-right: 1px solid #e9ecef;
-        transition: all 0.25s ease;
-        cursor: pointer;
-        position: relative;
-        min-height: 40px;
-        min-width: 50px;
-
-        &:last-child {
-          border-right: none;
-        }
-
-        // Estados con colores e indicadores mejorados
-        &.estado-pendiente {
-          background-color: #ffe5e5;
-
-          &:hover {
-            background-color: #ffd0d0;
-            transform: scale(1.08);
-            box-shadow: 0 3px 8px rgba(196, 30, 58, 0.25);
-            z-index: 1;
-          }
-
-          .estado-indicator::before {
-            content: '○';
-            color: #c41e3a;
-            font-size: 1.2rem;
-            font-weight: 700;
-          }
-        }
-
-        &.estado-parcial {
-          background-color: #fff9e5;
-
-          &:hover {
-            background-color: #fff3d0;
-            transform: scale(1.08);
-            box-shadow: 0 3px 8px rgba(204, 136, 0, 0.25);
-            z-index: 1;
-          }
-
-          .estado-indicator::before {
-            content: '◐';
-            color: #cc8800;
-            font-size: 1.2rem;
-            font-weight: 700;
-          }
-        }
-
-        &.estado-completo {
-          background-color: #e5f9f0;
-
-          &:hover {
-            background-color: #d0f5e5;
-            transform: scale(1.08);
-            box-shadow: 0 3px 8px rgba(51, 153, 102, 0.25);
-            z-index: 1;
-          }
-
-          .estado-indicator::before {
-            content: '●';
-            color: var(--verde);
-            font-size: 1.2rem;
-            font-weight: 700;
-          }
-        }
-      }
-
-      .estado-indicator {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-
-    // Responsive
-    @media (max-width: 768px) {
-      font-size: 0.6rem;
-
-      thead {
-
-        .header-entrega,
-        .header-grupo {
-          padding: 3px 4px;
-          font-size: 0.55rem;
-        }
-
-        .header-entrega {
-          min-width: 60px;
-
-          .header-icon {
-            font-size: 1rem;
-          }
-        }
-
-        .header-grupo {
-          min-width: 45px;
-        }
-      }
-
-      tbody {
-        .label-entrega {
-          padding: 8px 10px;
-          font-size: 0.7rem;
-        }
-
-        .cell-estado {
-          padding: 8px 6px;
-          min-height: 38px;
-
-          .estado-indicator::before {
-            font-size: 1rem;
-          }
-        }
-      }
-    }
-  }
-
-  // ===== RESUMEN DE SALUD DE GRUPOS =====
-  .grupos-salud-resumen {
-    margin: 12px 0 8px 0;
-    padding: 10px 12px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 247, 250, 0.9) 100%);
-    border-radius: 8px;
-    border: 1px solid rgba(15, 56, 90, 0.1);
-
-    .salud-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(15, 56, 90, 0.08);
-
-      ion-icon {
-        font-size: 1.1rem;
-        color: var(--azul-oscuro);
-      }
-
-      span {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: var(--azul-oscuro);
-        letter-spacing: 0.3px;
-      }
-    }
-
-    .salud-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .salud-card {
-      display: flex;
-      flex-direction: column;
-      padding: 8px 10px;
-      background: white;
-      border-radius: 6px;
-      border: 1px solid #e0e0e0;
-      min-width: 90px;
-      flex: 0 0 auto;
-      transition: all 0.2s ease;
-      cursor: pointer;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-      }
-
-      .salud-card-header {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        margin-bottom: 6px;
+    // Mobile selection mode icon (top-left)
+    .card-mobile-mode-icon {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        z-index: 10;
 
         ion-icon {
-          font-size: 1rem;
+            font-size: 1.3rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+            opacity: 0.9;
         }
-
-        strong {
-          font-size: 0.78rem;
-          color: var(--azul-oscuro);
-        }
-      }
-
-      .salud-stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-
-        .stat {
-          display: flex;
-          align-items: center;
-          gap: 3px;
-          font-size: 0.7rem;
-          background: #f5f5f5;
-          padding: 2px 5px;
-          border-radius: 4px;
-
-          ion-icon {
-            font-size: 0.75rem;
-          }
-
-          &.stat-ok {
-            color: var(--verde);
-            background: rgba(51, 153, 102, 0.1);
-          }
-
-          &.stat-solo {
-            color: #cc8800;
-            background: rgba(204, 136, 0, 0.1);
-          }
-
-          &.stat-ausente {
-            color: #c41e3a;
-            background: rgba(196, 30, 58, 0.1);
-          }
-
-          &.stat-sin-estado {
-            color: #888;
-            background: rgba(136, 136, 136, 0.1);
-          }
-        }
-      }
-
-      .salud-nota {
-        margin-top: 5px;
-        padding-top: 4px;
-        border-top: 1px dashed rgba(0, 0, 0, 0.1);
-        font-size: 0.68rem;
-        color: #666;
-        font-style: italic;
-      }
-
-      // Estados de salud
-      &.salud-ok {
-        border-color: var(--verde);
-        border-left: 3px solid var(--verde);
-        background: linear-gradient(135deg, rgba(51, 153, 102, 0.05) 0%, white 100%);
-
-        .salud-card-header ion-icon {
-          color: var(--verde);
-        }
-      }
-
-      &.salud-alerta {
-        border-color: #cc8800;
-        border-left: 3px solid #cc8800;
-        background: linear-gradient(135deg, rgba(204, 136, 0, 0.05) 0%, white 100%);
-
-        .salud-card-header ion-icon {
-          color: #cc8800;
-        }
-      }
-
-      &.salud-problema {
-        border-color: #c41e3a;
-        border-left: 3px solid #c41e3a;
-        background: linear-gradient(135deg, rgba(196, 30, 58, 0.05) 0%, white 100%);
-
-        .salud-card-header ion-icon {
-          color: #c41e3a;
-        }
-      }
-
-      &.salud-sin-datos {
-        border-color: #aaa;
-        border-left: 3px solid #aaa;
-        opacity: 0.7;
-
-        .salud-card-header ion-icon {
-          color: #888;
-        }
-      }
     }
 
-    // Responsive
-    @media (max-width: 768px) {
-      padding: 8px;
-      margin: 8px 0 6px 0;
+    ion-card-header {
+        padding: 16px;
+        padding-left: 22px;
 
-      .salud-header {
-        ion-icon {
-          font-size: 1rem;
+        ion-card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: $azul-oscuro;
         }
-
-        span {
-          font-size: 0.75rem;
-        }
-      }
-
-      .salud-grid {
-        gap: 6px;
-      }
-
-      .salud-card {
-        padding: 6px 8px;
-        min-width: 80px;
-
-        .salud-card-header {
-          ion-icon {
-            font-size: 0.9rem;
-          }
-
-          strong {
-            font-size: 0.72rem;
-          }
-        }
-
-        .salud-stats .stat {
-          font-size: 0.65rem;
-          padding: 2px 4px;
-
-          ion-icon {
-            font-size: 0.7rem;
-          }
-        }
-      }
-    }
-  }
-
-  // Estilos para las nuevas secciones del panel general con Ionic
-  .panel-section-card {
-    margin-bottom: 0;
-    height: 100%;
-    max-height: 450px;
-    display: flex;
-    flex-direction: column;
-
-    .section-header-ionic {
-      padding: 6px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-left: 2px solid var(--azul-claro);
-
-      ion-card-subtitle {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        margin: 0;
-        padding: 0;
-        font-size: 0.52rem;
-        font-weight: 600;
-        color: var(--azul-oscuro);
-
-        ion-icon {
-          font-size: 0.75rem;
-          flex-shrink: 0;
-        }
-
-        ion-text {
-          flex: 1;
-          font-weight: 600;
-        }
-
-        ion-badge {
-          font-weight: 700;
-          font-size: 0.46rem;
-        }
-      }
-    }
-
-    ion-card-content {
-      background: var(--ion-color-light, #f4f5f8);
-      min-height: 60px;
-      max-height: 380px;
-      overflow-y: auto;
-      padding: 8px;
-      flex: 1;
-
-      .grupos-list,
-      .casos-especiales-list {
-        background: transparent;
-        padding: 0;
-
-        .placeholder-item {
-          --background: white;
-          --border-radius: 4px;
-          --padding-start: 8px;
-          --padding-end: 8px;
-          margin-bottom: 0;
-          box-shadow: 0 0.6px 1.8px rgba(0, 0, 0, 0.05);
-
-          ion-icon {
-            font-size: 1rem;
-          }
-
-          ion-label {
-            p {
-              margin: 1px 0;
-              font-size: 0.5rem;
-              line-height: 1.3;
-
-              &:first-child {
-                font-weight: 600;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Estilos para el card de información de grupo específico
-  .grupo-especifico-card {
-    margin: 0;
-
-    ion-card-content {
-      min-height: 60px;
-      padding: 0;
-    }
-
-    // Tabla de calificaciones del grupo
-    .calificaciones-grupo-table {
-      width: 100%;
-      overflow-x: auto;
-
-      ion-grid {
-        padding: 0;
-      }
-
-      // Lista de estudiantes estilo Ionic
-      .estudiantes-list {
-        .list-header {
-          background: var(--ion-color-light);
-          border-bottom: 2px solid var(--ion-color-medium);
-          font-weight: 600;
-
-          .header-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--ion-color-dark);
-          }
-        }
-
-        .student-row {
-          cursor: pointer;
-          transition: background-color 0.2s;
-          min-height: 48px;
-
-          &:hover {
-            background-color: var(--ion-color-light);
-          }
-
-          .student-info-label {
-            flex: 1;
-            min-width: 0;
-          }
-
-          .student-name {
-            font-size: 0.85rem;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          // Alineación correcta de badges
-          ion-badge.grade-badge {
-            min-width: 45px;
-            max-width: 45px;
-            text-align: center;
-            font-size: 0.8rem;
-            margin-left: 4px;
-          }
-
-          ion-chip.total-chip {
-            min-width: 50px;
-            max-width: 50px;
-            height: 24px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-left: 4px;
-
-            ion-label {
-              margin: 0;
-            }
-          }
-        }
-      }
-
-      .table-header {
-        background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-claro) 100%);
-        border-bottom: 2px solid var(--azul-oscuro);
-        padding: 7.2px 0;
-
-        .header-cell {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 3.6px;
-          padding: 4.8px;
-
-          ion-icon {
-            font-size: 0.72rem;
-          }
-
-          ion-text {
-            color: white;
-            font-size: 0.54rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-          }
-
-          &:first-child {
-            justify-content: flex-start;
-            padding-left: 9.6px;
-          }
-        }
-      }
-
-      .table-row {
-        border-bottom: 1px solid var(--ion-color-light-shade, #e0e0e0);
-        transition: background-color 0.2s ease;
-
-        &:hover {
-          background-color: var(--ion-color-light, #f4f5f8);
-        }
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        .data-cell {
-          padding: 7.2px 4.8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          &:first-child {
-            justify-content: flex-start;
-            padding-left: 9.6px;
-          }
-
-          .estudiante-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-
-            ion-icon {
-              font-size: 1.2rem;
-              flex-shrink: 0;
-            }
-
-            div {
-              display: flex;
-              flex-direction: column;
-              gap: 1.2px;
-
-              .estudiante-nombre {
-                font-size: 0.54rem;
-                font-weight: 600;
-                color: var(--azul-oscuro);
-                line-height: 1.1;
-              }
-
-              .estudiante-email {
-                font-size: 0.45rem;
-                color: var(--ion-color-medium);
-                line-height: 1.1;
-              }
-            }
-          }
-
-          ion-badge {
-            font-size: 0.54rem;
-            font-weight: 600;
-            padding: 3.6px 7.2px;
-            min-width: 30px;
-            text-align: center;
-          }
-
-          ion-chip {
-            margin: 0;
-            font-size: 0.6rem;
-            font-weight: 700;
-            min-width: 36px;
-            justify-content: center;
-          }
-        }
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    .panel-section-card {
-      margin-bottom: 9.6px;
-
-      .section-header-ionic {
-        padding: 6px;
 
         ion-card-subtitle {
-          gap: 3.6px;
-          font-size: 0.51rem;
-
-          ion-icon {
-            font-size: 0.72rem;
-          }
-
-          ion-badge {
-            font-size: 0.45rem;
-          }
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
         }
-      }
     }
 
-    .grupo-especifico-card {
-      .calificaciones-grupo-table {
-        .table-header {
-          .header-cell {
-            padding: 3.6px 2.4px;
-            font-size: 0.45rem;
+    // Selection state styles
+    &.selected {
+        border-color: var(--course-color);
+        border-width: 2px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
 
-            ion-icon {
-              font-size: 0.6rem;
-            }
-
-            ion-text {
-              font-size: 0.45rem;
-            }
-
-            &:first-child {
-              padding-left: 4.8px;
-            }
-          }
+        .card-color-strip {
+            width: 8px; // Slightly wider when selected
         }
-
-        .table-row {
-          .data-cell {
-            padding: 4.8px 2.4px;
-
-            &:first-child {
-              padding-left: 4.8px;
-            }
-
-            .estudiante-info {
-              gap: 3.6px;
-
-              ion-icon {
-                font-size: 0.9rem;
-              }
-
-              div {
-                .estudiante-nombre {
-                  font-size: 0.48rem;
-                }
-
-                .estudiante-email {
-                  font-size: 0.42rem;
-                }
-              }
-            }
-
-            ion-badge {
-              font-size: 0.45rem;
-              padding: 2.4px 4.8px;
-              min-width: 24px;
-            }
-
-            ion-chip {
-              font-size: 0.51rem;
-              min-width: 30px;
-            }
-          }
-        }
-      }
     }
-
-    .grupo-info-card {
-      ion-card-content {
-        padding: 18px 9px;
-
-        ion-text {
-          h2 {
-            font-size: 0.72rem;
-          }
-        }
-      }
-    }
-  }
-}
-
-/* ========================================
-   ESTILOS PARA LISTAS DE GRUPOS
-   ======================================== */
-
-.grupos-list {
-  background: transparent;
-  padding: 0;
-
-  // Versión compacta
-  &.compact {
-    .grupo-item {
-      --min-height: 32px;
-      --padding-start: 6px;
-      --padding-end: 6px;
-      --padding-top: 4px;
-      --padding-bottom: 4px;
-      margin-bottom: 4px;
-
-      &:hover {
-        --background: #f8f9fa;
-      }
-
-      ion-label {
-        margin: 0;
-      }
-
-      .grupo-header {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.5rem;
-
-        .grupo-numero {
-          font-weight: 700;
-          color: var(--azul-oscuro);
-          min-width: 22px;
-          font-size: 0.55rem;
-        }
-
-        .grupo-integrantes {
-          font-size: 0.48rem;
-          color: #6c757d;
-          min-width: 18px;
-        }
-
-        .entregas-inline {
-          display: flex;
-          gap: var(--spacing-xs);
-          flex: 1;
-
-          .mini-badge {
-            font-size: var(--badge-size);
-            padding: 1px var(--spacing-xs);
-            height: clamp(16px, 4vw, 18px);
-            min-width: clamp(24px, 5vw, 26px);
-            font-weight: 600;
-          }
-        }
-
-        .porcentaje-badge {
-          font-size: var(--badge-size);
-          padding: var(--spacing-xs) var(--spacing-sm);
-          height: clamp(18px, 4.5vw, 20px);
-          min-width: clamp(32px, 7vw, 36px);
-          font-weight: 700;
-        }
-      }
-    }
-
-    .placeholder-item {
-      --min-height: clamp(44px, 10vw, 50px);
-      --padding-top: var(--spacing-md);
-      --padding-bottom: var(--spacing-md);
-      border: 1px dashed #dee2e6;
-      border-radius: 6px;
-      margin: var(--spacing-xs);
-
-      ion-label {
-        p {
-          font-size: var(--fs-sm);
-          margin: 0;
-        }
-      }
-    }
-  }
-
-  // Versión normal (legacy)
-  ion-item {
-    --background: white;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --min-height: 60px;
-    border-bottom: 1px solid #e9ecef;
-    transition: all 0.2s ease;
 
     &:hover {
-      --background: #f8f9fa;
-      transform: translateX(4px);
-    }
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 
-    &:last-child {
-      border-bottom: none;
-    }
-
-    ion-label {
-      h3 {
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: var(--azul-oscuro);
-        margin: 0 0 4px 0;
-      }
-
-      p {
-        font-size: 0.8rem;
-        color: #6c757d;
-        margin: 2px 0;
-      }
-
-      .entregas-status {
-        display: flex;
-        gap: 4px;
-        margin-top: 6px;
-
-        .entrega-badge {
-          font-size: 0.7rem;
-          padding: 2px 6px;
-          min-width: 32px;
-          text-align: center;
-          font-weight: 600;
+        &.selected {
+            transform: translateY(-4px); // More lift when selected
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
         }
-      }
     }
-
-    ion-chip {
-      font-size: 0.75rem;
-      font-weight: 600;
-      height: 26px;
-      min-width: 60px;
-    }
-  }
-
-  .placeholder-item {
-    --background: #f8f9fa;
-    --min-height: 80px;
-    border: 1px dashed #dee2e6;
-    border-radius: 8px;
-    margin: 8px 0;
-
-    ion-icon {
-      font-size: 1.5rem;
-      opacity: 0.6;
-    }
-
-    ion-label {
-      p {
-        font-size: 0.85rem;
-        line-height: 1.4;
-        margin: 4px 0;
-      }
-    }
-  }
 }
 
-/* ========================================
-   ESTILOS MEJORADOS PARA POPOVER DE COLOR
-   ======================================== */
-
-/* Mejora del botón de menú en el curso */
-.course-menu-btn {
-  --padding-start: 6px;
-  --padding-end: 6px;
-  --border-radius: 8px;
-  margin: 0 0 0 8px;
-  min-width: 32px;
-  height: 32px;
-
-  &:hover {
-    --background: rgba(0, 0, 0, 0.06);
-  }
-
-  ion-icon {
-    font-size: 20px;
-    color: #666;
-  }
-}
-
-// Ionic List Styles for Students Table
-.estudiantes-list {
-  background: transparent;
-  padding: 0;
-
-  .list-header {
-    --background: var(--azul-oscuro);
-    --color: white;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --min-height: 40px;
-    font-weight: 600;
-    font-size: 0.75rem;
-
-    .header-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      margin: 0;
-
-      ion-icon {
-        font-size: 1rem;
-        margin-bottom: 2px;
-      }
-
-      div {
-        margin-top: 2px;
-      }
-    }
-  }
-
-  .student-row {
-    --background: white;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --min-height: 50px;
-    border-bottom: 1px solid #e0e0e0;
-    cursor: pointer;
-
-    &:hover {
-      --background: #f5f5f5;
-    }
-
-    .student-info-label {
-      flex: 1;
-      max-width: 45%;
-    }
-
-    .grade-badge {
-      margin: 0 4px;
-      min-width: 45px;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .total-chip {
-      margin: 0;
-      height: 28px;
-      min-width: 40px;
-    }
-  }
-}
-
-.panel-section-card {
-  margin: var(--spacing-sm) 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-  &.compact {
-    margin: var(--spacing-xs) 0;
-
-    .section-header-ionic {
-      padding: var(--spacing-sm) var(--spacing-md);
-
-      ion-card-subtitle {
-        font-size: var(--fs-sm);
-
-        ion-icon {
-          font-size: var(--fs-lg);
-        }
-
-        ion-badge {
-          font-size: var(--badge-size);
-          padding: var(--spacing-xs) var(--spacing-sm);
-        }
-      }
-    }
-  }
-
-  .section-header-ionic {
-    padding: var(--spacing-md);
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 2px solid #dee2e6;
-
-    ion-card-subtitle {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      margin: 0;
-      font-size: var(--fs-md);
-      font-weight: 600;
-
-      ion-icon {
-        font-size: var(--fs-xl);
-      }
-
-      ion-text {
-        flex: 1;
-        font-weight: 600;
-      }
-
-      ion-badge {
-        font-size: var(--badge-size);
-        font-weight: 700;
-      }
-    }
-  }
-
-  ion-card-content {
-    padding: 0;
-  }
-}
-
-// ==================================================
-// CARD DE GRUPOS DEL CURSO - Sección independiente
-// ==================================================
-.grupos-curso-card {
-  margin-bottom: 16px;
-
-  ion-card-header {
-    padding: 12px 16px;
-    background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-
-    ion-card-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-      margin: 0;
-
-      ion-icon {
-        font-size: 1.2rem;
-      }
-    }
-  }
-
-  ion-card-content {
-    padding: 0;
-  }
-}
-
-// ==================================================
-// GRUPOS TABS SECTION - Vista de tabs de grupos
-// ==================================================
-.grupos-tabs-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid rgba(15, 56, 90, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-
-  .grupos-tabs-header {
-    margin-bottom: 12px;
-
-    h4 {
-      margin: 0;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--azul-oscuro, #0f385a);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      ion-icon {
-        font-size: 1.2rem;
-      }
-    }
-  }
-
-  // Barra de tabs de grupos
-  .grupos-tabs-bar {
+// === COLUMNA 2: REGISTRO ===
+.registration-control-pane {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     display: flex;
-    gap: 6px;
-    padding: 4px;
-    background: rgba(15, 56, 90, 0.04);
-    border-radius: 10px;
-    overflow-x: auto;
-    scrollbar-width: thin;
-    margin-bottom: 16px;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+}
+
+.registration-actions-top {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .btn-main-register {
+        --border-radius: 12px;
+        --padding-top: 16px;
+        --padding-bottom: 16px;
+        height: 52px;
+        font-weight: 750;
+        font-size: 1rem;
+        box-shadow: 0 6px 16px rgba($azul-claro, 0.3);
+    }
+
+    .selection-tools {
+        display: flex;
+        justify-content: space-between;
+
+        ion-button {
+            --padding-start: 4px;
+            --padding-end: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+    }
+}
+
+.selected-students-scroll {
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
 
     &::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
+        width: 3px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(15, 56, 90, 0.2);
-      border-radius: 2px;
-    }
-
-    .grupo-tab {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: rgba(15, 56, 90, 0.7);
-      white-space: nowrap;
-      transition: all 0.2s ease;
-      min-height: 40px;
-
-      ion-icon {
-        font-size: 1rem;
-      }
-
-      .grupo-numero {
-        font-size: 0.9rem;
-        font-weight: 700;
-      }
-
-      .badge {
-        font-size: 0.68rem;
-        background: rgba(15, 56, 90, 0.12);
-        color: rgba(15, 56, 90, 0.8);
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-weight: 700;
-      }
-
-      &:hover {
-        background: rgba(15, 56, 90, 0.08);
-        color: var(--azul-oscuro, #0f385a);
-      }
-
-      &.active {
-        background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-        color: #fff;
-        box-shadow: 0 2px 8px rgba(15, 56, 90, 0.3);
-
-        ion-icon {
-          color: #fff;
-        }
-
-        .badge {
-          background: rgba(255, 255, 255, 0.25);
-          color: #fff;
-        }
-      }
-    }
-  }
-
-  // Contenido del tab
-  .grupo-tab-content {
-    .tab-content-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(15, 56, 90, 0.04);
-      border-radius: 8px;
-      margin-bottom: 12px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--azul-oscuro, #0f385a);
-
-      ion-icon {
-        font-size: 1rem;
-      }
-    }
-
-    .curso-general-placeholder {
-      border: 1px dashed rgba(15, 56, 90, 0.25);
-      border-radius: 12px;
-      padding: 32px 24px;
-      text-align: center;
-      background: rgba(15, 56, 90, 0.03);
-      color: rgba(15, 56, 90, 0.7);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-
-      ion-icon {
-        font-size: 2.2rem;
-        color: var(--azul-oscuro, #0f385a);
-      }
-
-      h5 {
-        margin: 0;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--azul-oscuro, #0f385a);
-      }
-
-      p {
-        margin: 0;
-        font-size: 0.85rem;
-      }
-
-      small {
-        font-size: 0.75rem;
-        color: rgba(15, 56, 90, 0.6);
-      }
-    }
-
-    // Grid de integrantes
-    .integrantes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 10px;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 4px;
-
-      &::-webkit-scrollbar {
-        width: 4px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: rgba(15, 56, 90, 0.2);
+        background: #eee;
         border-radius: 2px;
-      }
-
-      .integrante-card {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        background: #fff;
-        border-radius: 10px;
-        border: 1px solid rgba(15, 56, 90, 0.1);
-        transition: all 0.2s ease;
-
-        &:hover {
-          border-color: rgba(15, 56, 90, 0.2);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-          transform: translateY(-1px);
-        }
-
-        .integrante-avatar {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #1a5a7a 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-
-          ion-icon {
-            font-size: 1.2rem;
-            color: #fff;
-          }
-        }
-
-        .integrante-data {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          flex: 1;
-          min-width: 0;
-
-          .nombre {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--azul-oscuro, #0f385a);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          .correo {
-            font-size: 0.72rem;
-            color: rgba(15, 56, 90, 0.55);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-
-        .grupo-badge {
-          font-size: 0.72rem;
-          font-weight: 700;
-          color: #fff;
-          background: var(--ion-color-tertiary, #5260ff);
-          padding: 4px 10px;
-          border-radius: 12px;
-          flex-shrink: 0;
-        }
-      }
     }
-
-    // Estado vacío
-    .empty-tab-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      color: rgba(15, 56, 90, 0.4);
-
-      ion-icon {
-        font-size: 2.5rem;
-        margin-bottom: 12px;
-      }
-
-      p {
-        margin: 0;
-        font-size: 0.85rem;
-      }
-
-      .hint {
-        font-size: 0.75rem;
-        margin-top: 8px;
-      }
-    }
-  }
 }
 
-// Responsive para grupos tabs
-@media (max-width: 768px) {
-  .grupos-tabs-section {
-    padding: 12px;
-
-    .grupos-tabs-header h4 {
-      font-size: 0.82rem;
-
-      ion-icon {
-        font-size: 1rem;
-      }
-    }
-
-    .grupos-tabs-bar {
-      gap: 4px;
-      padding: 3px;
-
-      .grupo-tab {
-        padding: 8px 12px;
-        font-size: 0.75rem;
-        min-height: 36px;
-
-        .grupo-numero {
-          font-size: 0.82rem;
-        }
-
-        .badge {
-          font-size: 0.62rem;
-          padding: 2px 6px;
-        }
-      }
-    }
-
-    .grupo-tab-content {
-      .tab-content-header {
-        font-size: 0.75rem;
-        padding: 6px 10px;
-      }
-
-      .integrantes-grid {
-        grid-template-columns: 1fr;
-        max-height: 300px;
-
-        .integrante-card {
-          padding: 10px 12px;
-
-          .integrante-avatar {
-            width: 34px;
-            height: 34px;
-
-            ion-icon {
-              font-size: 1rem;
-            }
-          }
-
-          .integrante-data {
-            .nombre {
-              font-size: 0.8rem;
-            }
-
-            .correo {
-              font-size: 0.68rem;
-            }
-          }
-
-          .grupo-badge {
-            font-size: 0.68rem;
-            padding: 3px 8px;
-          }
-        }
-      }
-    }
-  }
-}
-
-/* ==========================================
-   ESTILOS PARA REGISTRO DE NOVEDADES
-   ========================================== */
-
-// Contenedor de búsqueda e información
-.search-info-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: var(--rad-sm, 8px);
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  align-items: flex-start;
-
-  @media (min-width: 992px) {
-    flex-wrap: nowrap;
-  }
-}
-
-// Sección de información con chips
-.info-section {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 300px;
-}
-
-.info-content {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-// Chips de estudiantes seleccionados
-.seleccionados-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  max-width: 200px;
-}
-
-.estudiante-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, var(--azul-claro, #1fb2de) 0%, var(--cyan, #15bece) 100%);
-  color: #ffffff;
-  padding: 4px 10px;
-  border-radius: 16px;
-  font-size: 0.75rem;
-  font-weight: 500;
-
-  .chip-text {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .chip-remove {
-    font-size: 1rem;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-}
-
-// Botón Registrar
-.btn-registrar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: linear-gradient(135deg, var(--verde, #4caf50) 0%, #66bb6a 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.35);
-
-  ion-icon {
-    font-size: 1.1rem;
-  }
-
-  &:hover {
-    background: linear-gradient(135deg, #45a049 0%, #4caf50 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-// Panel de estudiantes registrados (derecha)
-.registrados-panel {
-  flex: 0 0 280px;
-  max-width: 320px;
-  background: #ffffff;
-  border-radius: var(--rad-sm, 8px);
-  border: 1px solid rgba(15, 56, 90, 0.12);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-
-  @media (max-width: 991px) {
-    flex: 1 1 100%;
-    max-width: 100%;
-    margin-top: 8px;
-  }
-}
-
-.registrados-list {
-  --background: transparent;
-  padding: 0;
-  margin: 0;
-
-  ion-list-header {
-    --background: linear-gradient(135deg, var(--azul-oscuro, #0f385a) 0%, #0d2e47 100%);
-    --color: #ffffff;
-    padding: 10px 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    min-height: 40px;
+.student-selection-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    background: #f9fbff;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+    transition: all 0.2s ease;
 
-    ion-label {
-      flex: 1;
-      margin: 0;
+    .item-selection {
+        ion-checkbox {
+            --size: 16px;
+            --border-radius: 4px;
+        }
     }
 
-    .btn-limpiar {
-      font-size: 1.1rem;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s ease;
-      color: #ffffff;
+    .item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
 
-      &:hover {
-        opacity: 1;
-        color: #ff6b6b;
-      }
+        .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: $azul-oscuro;
+            line-height: 1.2;
+        }
+
+        .meta {
+            font-size: 0.68rem;
+            color: #888;
+            font-weight: 500;
+            line-height: 1.1;
+        }
     }
-  }
+
+    &.selected {
+        background: rgba($azul-claro, 0.05);
+        border-color: rgba($azul-claro, 0.2);
+    }
+
+    &:hover {
+        background: #f0f4ff;
+    }
 }
 
-.registrado-item {
-  --padding-start: 12px;
-  --padding-end: 8px;
-  --min-height: 50px;
-  --background: #ffffff;
-  --background-hover: rgba(31, 178, 222, 0.05);
-  border-bottom: 1px solid rgba(15, 56, 90, 0.06);
+.registration-empty {
+    padding: 40px 20px;
+    text-align: center;
+    opacity: 0.6;
 
-  &:last-child {
-    border-bottom: none;
-  }
+    small {
+        display: block;
+        margin-top: 10px;
+        font-size: 0.8rem;
+    }
+}
 
-  ion-label {
+// === COLUMNA 3: CONSTRUCCIÓN ===
+.construction-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed #ddd;
+    background: linear-gradient(135deg, #fff 0%, #f7f9fc 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    .animation-placeholder {
+        width: 80px;
+        height: 80px;
+        background: rgba($azul-claro, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 8px;
+
+        .animated-icon {
+            font-size: 2.5rem;
+            color: $azul-claro;
+            animation: gear-rotate 4s infinite linear;
+        }
+    }
+
     h3 {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--azul-oscuro, #0f385a);
-      margin: 0 0 2px 0;
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: $azul-oscuro;
     }
 
     p {
-      font-size: 0.72rem;
-      color: #78909c;
-      margin: 0;
+        margin: 0;
+        font-size: 0.85rem;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    .feature-list-mini {
+        margin-top: 16px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            text-align: left;
+
+            ion-icon {
+                font-size: 1.2rem;
+            }
+
+            span {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #555;
+            }
+        }
+    }
+}
+
+@keyframes gear-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// === REGISTRATION MODAL ===
+.registration-modal {
+    --height: auto;
+    --max-height: 90vh;
+    --border-radius: 24px;
+    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+
+    &::part(content) {
+        background: #f8fbff;
+    }
+
+    .modal-form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding-bottom: 24px;
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .section-label {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: $azul-oscuro;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                opacity: 0.7;
+            }
+        }
+
+        .selected-summary-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .tipo-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+
+            .tipo-option-card {
+                position: relative;
+                background: #fff;
+                border-radius: 16px;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 2px solid transparent;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+                ion-icon {
+                    font-size: 1.8rem;
+                    color: var(--tipo-color);
+                }
+
+                span {
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: $azul-oscuro;
+                    text-align: center;
+                }
+
+                &.active {
+                    border-color: var(--tipo-color);
+                    background: rgba(var(--tipo-color), 0.05);
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+                    .check-badge {
+                        position: absolute;
+                        top: 8px;
+                        right: 8px;
+                        background: var(--tipo-color);
+                        color: #fff;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.8rem;
+                    }
+                }
+            }
+        }
+
+        .origen-selector-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px;
+
+            .origen-option {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: #fff;
+                padding: 10px 14px;
+                border-radius: 50px;
+                cursor: pointer;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                transition: all 0.2s ease;
+
+                ion-icon {
+                    font-size: 1.4rem;
+                }
+
+                .origen-label {
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: $azul-oscuro;
+                }
+
+                &.active {
+                    background: $azul-claro;
+                    color: #fff;
+                    box-shadow: 0 4px 12px rgba($azul-claro, 0.3);
+
+                    ion-icon,
+                    .origen-label {
+                        color: #fff !important;
+                    }
+                }
+            }
+        }
+
+        .custom-textarea {
+            --background: #fff;
+            --border-radius: 16px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --padding-top: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .form-actions-footer {
+            .confirm-btn {
+                --border-radius: 16px;
+                height: 56px;
+                font-weight: 700;
+                box-shadow: 0 8px 24px rgba($azul-claro, 0.25);
+            }
+        }
+    }
+}
+
+// === MOBILE FAB ===
+.registro-fab {
+    margin-bottom: calc(16px + var(--ion-safe-area-bottom, 0px));
+}
+
+@media (min-width: 992px) {
+    .registro-fab {
+        display: none;
+    }
+}
+// === MEJORAS RESPONSIVE MOBILE/TABLET ===
+@media (max-width: 991px) {
+  .page-header {
+    padding: 8px 10px;
+    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+
+    .header-top {
+      margin-bottom: 6px;
+    }
+
+    .tipos-filtro-chips {
+      gap: 4px;
+      
+      ion-chip {
+        height: 28px;
+        font-size: 0.7rem;
+      }
     }
   }
 
-  .btn-eliminar {
-    font-size: 1.2rem;
-    color: #90a4ae;
-    cursor: pointer;
-    transition: color 0.2s ease;
+  .main-content-grid {
+    padding: 6px 4px;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  }
 
-    &:hover {
-      color: #ef5350;
+  .course-card-premium {
+    ion-card-header {
+      padding: 10px 12px;
+      padding-left: 18px;
+
+      ion-card-title {
+        font-size: 0.95rem;
+      }
+
+      ion-card-subtitle {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .student-selection-item {
+    padding: 5px 6px;
+    gap: 6px;
+
+    .item-info .name {
+      font-size: 0.75rem;
+    }
+
+    .item-info .meta {
+      font-size: 0.65rem;
     }
   }
 }
 
-.info-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #90a4ae;
-  opacity: 0.5;
+// === TABLET OPTIMIZATIONS ===
+@media (min-width: 768px) and (max-width: 991px) {
+  .main-content-grid {
+    padding: 10px 8px;
+  }
 
-  ion-icon {
-    font-size: 1.5rem;
+  .column-container {
+    min-height: 300px;
   }
 }

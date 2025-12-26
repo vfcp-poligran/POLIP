@@ -592,19 +592,47 @@
         }
       }
 
-      // Lista de información del curso parseado (igual que vista lectura)
+      // Lista de información del curso parseado (Grid Layout)
       .parsed-course-info {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); // 4 columnas iguales
+        gap: spacing('md');
         background: transparent;
-        padding: spacing('xs') 0;
+        padding: spacing('sm') 0;
         margin-top: spacing('sm');
         border-top: 1px dashed rgba($azul-oscuro, 0.08);
-        width: 100%; // Usa todo el ancho disponible
+        width: 100%;
+
+        // Mobile: Stack vertical normal
+        @include bp.mobile-only {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
 
         ion-item {
           --padding-start: 0;
           --inner-padding-end: 0;
-          --min-height: 30px;
+          --min-height: 40px;
           --background: transparent;
+          width: 100%;
+
+          // ITEM 1: Nombre del Curso (Fila 1, ancho completo)
+          &:nth-child(1) {
+            grid-column: 1 / -1;
+            margin-bottom: spacing('xs');
+            border-bottom: 1px solid rgba($azul-oscuro, 0.05);
+            padding-bottom: spacing('xs');
+          }
+
+          // ITEMS 2-5: Código, Ingreso, Bloque, Modalidad (Fila 2, 1 columna cada uno)
+          &:nth-child(n+2) {
+            grid-column: span 1;
+
+            // Centrar contenido en cada celda del grid si se desea, 
+            // pero el usuario pidió "Titulo sobre valor", que ya es el default del ion-label.
+            // Vamos a asegurar que ion-label ocupe todo el ancho.
+          }
 
           @include bp.tablet-only {
             --min-height: 28px;
@@ -612,14 +640,23 @@
 
           @include bp.mobile-only {
             --min-height: 26px;
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
           }
 
           ion-icon {
+            display: none; // Ocultar iconos para diseño más limpio en grid, o mantenerlos si caben.
+            // El usuario no pidió quitar iconos, pero en 4 columnas podrían estorbar.
+            // Vamos a probar DEJÁNDOLOS pero pequeños, o stacking vertical.
             font-size: 1rem;
-            margin-inline-end: 6px;
+            margin-inline-end: 8px;
             flex-shrink: 0;
+            margin-bottom: auto; // Alinear arriba con el título
+            margin-top: 2px; // Ajuste fino
 
             @include bp.mobile-only {
+              display: block; // Reaparecer en móvil
               font-size: 0.9rem;
               margin-inline-end: 4px;
             }
@@ -627,7 +664,50 @@
 
           ion-label {
             margin: 0;
-            overflow: visible; // No cortar el contenido
+            display: flex;
+            flex-direction: column; // Título sobre Valor
+            gap: 2px;
+            overflow: visible;
+
+            // Alineación
+            h3 {
+              white-space: normal; // Permitir wrapping en celdas estrechas
+            }
+          }
+
+          // Customización específica para el Grid (Desktop/Tablet)
+          @media (min-width: 768px) {
+            // Asegurar altura suficiente para titulo y valor
+            --min-height: 50px;
+            align-items: flex-start; // Alinear arriba
+
+            ion-icon {
+              display: block !important; // FORZAR VISIBILIDAD DE ICONOS
+              margin-top: 8px; // Ajuste para alinear con primera linea de texto
+              font-size: 1.2rem;
+            }
+
+            ion-label {
+              margin-top: 4px;
+              margin-bottom: 4px;
+            }
+          }
+
+          // MOBILE: Solo Icono y Valor
+          @include bp.mobile-only {
+            align-items: center;
+            --min-height: 40px;
+
+            ion-label {
+              p {
+                display: none; // OCULTAR TITULO EN MÓVIL
+              }
+
+              h3 {
+                font-size: 0.9rem;
+                margin-top: 0;
+              }
+            }
           }
 
           // USANDO NUEVO SISTEMA TIPOGRÁFICO

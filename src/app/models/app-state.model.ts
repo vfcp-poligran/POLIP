@@ -7,6 +7,7 @@ export interface UIState {
   // Estados de modo edición/creación para persistir entre navegaciones
   cursosModoEdicion?: boolean; // Estado del panel de importación en Cursos
   rubricasModoSeleccionCrear?: boolean; // Estado del panel de opciones en Rúbricas
+  ocultarAvisoEdicionSinSeleccion?: boolean; // Preferencia para no mostrar el aviso de "Seleccione primero el curso"
   courseStates: { [cursoNombre: string]: CourseState };
 }
 
@@ -19,7 +20,7 @@ export interface CourseState {
   emailsVisible: boolean;
   isScrollingTable: boolean;
   integrantesSeleccionados?: string[]; // Correos de integrantes seleccionados en el panel
-  gruposSeleccionados?: string[]; // Grupos seleccionados en inicio-draft (para multi-selección)
+  gruposSeleccionados?: string[]; // Grupos seleccionados en inicio (para multi-selección)
   color?: string; // Color personalizado para el botón del curso
   metadata?: {
     nombre: string;                    // Nombre completo: "PROGRAMACIÓN MÓVIL"

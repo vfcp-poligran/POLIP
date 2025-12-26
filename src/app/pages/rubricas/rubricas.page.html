@@ -16,13 +16,13 @@
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button color="success" (click)="guardarRubricaEditada()" aria-label="Guardar">
-        <ion-icon name="save-outline"></ion-icon>
+        <ion-icon name="save"></ion-icon>
       </ion-fab-button>
 
       <ion-fab-button color="warning"
         (click)="modoEdicion ? cancelarEdicion() : modoCreacion ? cancelarModoCreacion() : cancelarSeleccionCrear()"
         aria-label="Cancelar">
-        <ion-icon name="close-outline"></ion-icon>
+        <ion-icon name="close-circle"></ion-icon>
       </ion-fab-button>
 
     </ion-fab-list>
@@ -36,28 +36,38 @@
       <div class="title-wrapper">
         <h2>Rúbricas</h2>
       </div>
-      <div class="header-actions ion-hide-md-down">
+      <div class="header-actions">
         @if (!modoEdicion && !modoCreacion && !modoSeleccionCrear) {
-        <ion-button size="small" fill="solid" color="success" (click)="mostrarOpcionesCrear()">
-          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        <ion-button size="small" fill="solid" color="success" (click)="mostrarOpcionesCrear()" class="ion-hide-md-down">
+          <ion-icon name="add-circle" slot="start"></ion-icon>
           Crear
         </ion-button>
+        @if (rubricaSeleccionada) {
+        <ion-button size="small" fill="solid" color="primary" (click)="editarRubrica(rubricaSeleccionada)">
+          <ion-icon name="create" slot="start"></ion-icon>
+          Editar
+        </ion-button>
+        <ion-button size="small" fill="solid" color="danger" (click)="confirmarEliminarRubrica(rubricaSeleccionada)">
+          <ion-icon name="trash" slot="start"></ion-icon>
+          Eliminar
+        </ion-button>
+        }
         } @else if (modoSeleccionCrear) {
-        <ion-button size="small" fill="solid" color="warning" (click)="cancelarSeleccionCrear()">
-          <ion-icon name="close-outline" slot="start"></ion-icon>
+        <ion-button size="small" fill="solid" color="warning" (click)="cancelarSeleccionCrear()"
+          class="ion-hide-md-down">
           Cancelar
         </ion-button>
         } @else if (modoEdicion) {
-        <ion-button size="small" fill="solid" color="primary" (click)="guardarRubricaEditada()">
-          <ion-icon name="save-outline" slot="start"></ion-icon>
+        <ion-button size="small" fill="solid" color="primary" (click)="guardarRubricaEditada()"
+          class="ion-hide-md-down">
+          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
           Guardar
         </ion-button>
-        <ion-button size="small" fill="solid" color="warning" (click)="cancelarEdicion()">
+        <ion-button size="small" fill="solid" color="warning" (click)="cancelarEdicion()" class="ion-hide-md-down">
           Cancelar
         </ion-button>
         } @else if (modoCreacion) {
-        <ion-button size="small" fill="solid" color="warning" (click)="cancelarModoCreacion()">
-          <ion-icon name="close-outline" slot="start"></ion-icon>
+        <ion-button size="small" fill="solid" color="warning" (click)="cancelarModoCreacion()" class="ion-hide-md-down">
           Cancelar
         </ion-button>
         }
@@ -76,7 +86,7 @@
       <div class="upload-wrapper" [class.expanded]="infoExpanded">
         <!-- Mensaje instructivo con icono toggle -->
         <div class="upload-instructions">
-          <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
+          <ion-icon name="information-circle" (click)="toggleInfo()"></ion-icon>
           <span class="info-text"><strong>Nueva:</strong> Desde cero. <strong>Importar:</strong> Archivo JSON/TXT.
             <strong>Basada en:</strong> Copiar existente.</span>
         </div>
@@ -92,7 +102,7 @@
             <span class="btn-label">Importar</span>
           </div>
           <div class="upload-btn-container" (click)="mostrarSelectorRubricaBase()">
-            <ion-icon name="copy-outline"></ion-icon>
+            <ion-icon name="copy"></ion-icon>
             <span class="btn-label">Basada en</span>
           </div>
         </div>
@@ -141,7 +151,7 @@
       } @else {
       <!-- Mensaje de carga inicial -->
       <div class="upload-instructions">
-        <ion-icon name="information-circle-outline" (click)="toggleInfo()"></ion-icon>
+        <ion-icon name="information-circle" (click)="toggleInfo()"></ion-icon>
         <span class="info-text">Seleccione un archivo para importar o haga clic en "Cancelar" para volver.</span>
       </div>
       <div class="tabla-info-bar">
@@ -175,11 +185,10 @@
                           [color]="rubrica.estado === 'borrador' ? 'warning' : (rubrica.activa !== false ? 'success' : 'medium')"
                           (click)="toggleActivaRubrica(rubrica, $event); $event.stopPropagation()">
                           <ion-icon
-                            [name]="rubrica.estado === 'borrador' ? 'construct-outline' : (rubrica.activa !== false ? 'checkmark-circle-outline' : 'ellipse-outline')"></ion-icon>
+                            [name]="rubrica.estado === 'borrador' ? 'construct' : (rubrica.activa !== false ? 'checkmark-circle' : 'ellipse')"></ion-icon>
                         </ion-chip>
                         <ion-chip class="tipo-chip" [color]="rubrica.tipoRubrica === 'PG' ? 'primary' : 'secondary'">
-                          <ion-icon
-                            [name]="rubrica.tipoRubrica === 'PG' ? 'people-outline' : 'person-outline'"></ion-icon>
+                          <ion-icon [name]="rubrica.tipoRubrica === 'PG' ? 'people' : 'person'"></ion-icon>
                         </ion-chip>
                         @if (rubrica.tipoEntrega) {
                         <ion-chip class="entrega-chip" color="tertiary">
@@ -192,26 +201,17 @@
                     </ion-card-header>
                     <ion-card-content>
                       <div class="rubrica-actions">
-                        <ion-button size="small" fill="clear" color="primary"
-                          (click)="editarRubrica(rubrica); $event.stopPropagation()" title="Editar rúbrica">
-                          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                        </ion-button>
                         @if (rubrica.version && rubrica.version >= 1) {
                         <ion-button size="small" fill="clear" color="tertiary"
                           (click)="verHistorialVersiones(rubrica, $event); $event.stopPropagation()"
                           title="Ver historial">
-                          <ion-icon slot="icon-only" name="git-branch-outline"></ion-icon>
+                          <ion-icon slot="icon-only" name="git-branch"></ion-icon>
                         </ion-button>
                         }
                         <ion-button size="small" fill="clear" color="secondary"
                           (click)="mostrarOpcionesExportacion(rubrica); $event.stopPropagation()"
                           title="Exportar rúbrica">
-                          <ion-icon slot="icon-only" name="download-outline"></ion-icon>
-                        </ion-button>
-                        <ion-button size="small" fill="clear" color="danger"
-                          (click)="confirmarEliminarRubrica(rubrica); $event.stopPropagation()"
-                          title="Eliminar rúbrica">
-                          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                          <ion-icon slot="icon-only" name="download"></ion-icon>
                         </ion-button>
                       </div>
                     </ion-card-content>
@@ -236,7 +236,7 @@
                 </ion-segment-button>
               </ion-segment>
               <ion-button fill="clear" size="small" (click)="cerrarPanelDetalle()" class="btn-cerrar">
-                <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                <ion-icon name="close-circle" slot="icon-only"></ion-icon>
               </ion-button>
             </div>
 

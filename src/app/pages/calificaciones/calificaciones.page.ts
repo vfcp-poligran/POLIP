@@ -25,33 +25,17 @@ import {
   people,
   pencil,
   statsChart,
-  ribbon,
-  // Iconos outline
-  schoolOutline,
   checkmarkCircle,
-  documentTextOutline,
-  calendarOutline,
-  downloadOutline,
-  analyticsOutline,
-  refreshOutline,
-  barChartOutline,
-  documentOutline,
-  folderOutline,
-  trashOutline,
-  listOutline,
-  personOutline,
-  mailOutline,
-  trophyOutline,
-  ribbonOutline,
-  fingerPrintOutline,
-  starOutline,
-  gridOutline,
-  eyeOffOutline,
-  keyOutline,
-  peopleOutline,
-  documentAttachOutline,
-  micOutline,
-  createOutline
+  person,
+  fingerPrint,
+  key,
+  documentAttach,
+  list,
+  trophy,
+  ribbon,
+  mic,
+  star,
+  closeCircle
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -173,12 +157,7 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
     addIcons({
       // Iconos filled
       school, folder, documentText, download, trash, people, pencil, statsChart, ribbon,
-      // Iconos outline (para fallback)
-      schoolOutline, folderOutline, documentTextOutline, downloadOutline, trashOutline,
-      peopleOutline, createOutline, barChartOutline, checkmarkCircle, calendarOutline,
-      documentOutline, analyticsOutline, refreshOutline, listOutline, personOutline,
-      mailOutline, trophyOutline, ribbonOutline, fingerPrintOutline, starOutline,
-      gridOutline, eyeOffOutline, keyOutline, documentAttachOutline, micOutline
+      checkmarkCircle, person, fingerPrint, key, documentAttach, list, trophy, mic, star, closeCircle
     });
 
     effect(() => {
@@ -925,16 +904,16 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
 
   private async eliminarCalificaciones(codigo: string) {
     const alert = await this.alertController.create({
-      header: '🗑️ Confirmar Eliminación',
+      header: 'Confirmar Eliminación',
       message: '¿Estás seguro de eliminar el archivo de calificaciones de Canvas?<br><br><strong>Nota:</strong> Esta acción solo elimina el archivo cargado. Las evaluaciones realizadas con rúbricas se mantienen intactas.<br><br>Podrás volver a cargar otro archivo más tarde.',
-      cssClass: 'alert-danger',
+      cssClass: 'premium-alert premium-alert--danger',
       buttons: [
         {
-          text: 'Cancelar',
+          text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Eliminar',
+          text: '<ion-icon name="trash"></ion-icon> Eliminar',
           role: 'destructive',
           handler: async () => {
             try {
@@ -1018,39 +997,39 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
     const headerLower = header.toLowerCase();
 
     if (header === 'Student' || headerLower.includes('student') || headerLower.includes('nombre')) {
-      return 'person-outline';
+      return 'person';
     }
     if (header === 'ID' || (headerLower.includes('id') && !headerLower.includes('login') && !headerLower.includes('sis'))) {
-      return 'finger-print-outline';
+      return 'finger-print';
     }
     if (header === 'SIS Login ID' || headerLower.includes('sis') || headerLower.includes('login')) {
-      return 'key-outline';
+      return 'key';
     }
     if (header === 'Section' || headerLower.includes('section')) {
-      return 'people-outline';
+      return 'people';
     }
     if (headerLower.includes('entrega') || headerLower.includes('proyecto')) {
-      return 'document-attach-outline';
+      return 'document-attach';
     }
     if (headerLower.includes('tareas')) {
-      return 'list-outline';
+      return 'list';
     }
     if (headerLower.includes('final')) {
-      return 'trophy-outline';
+      return 'trophy';
     }
     if (headerLower.includes('current')) {
-      return 'ribbon-outline';
+      return 'ribbon';
     }
     if (headerLower.includes('sustentacion')) {
-      return 'mic-outline';
+      return 'mic';
     }
     if (!isNaN(parseFloat(header)) ||
       headerLower.includes('points') ||
       headerLower.includes('score')) {
-      return 'star-outline';
+      return 'star';
     }
 
-    return 'document-text-outline';
+    return 'document-text';
   }
 
   esColumnaNumerico(header: string): boolean {

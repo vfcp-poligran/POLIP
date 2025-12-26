@@ -58,7 +58,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircleOutline, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDownOutline, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktopOutline, libraryOutline
+  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -484,7 +484,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
   readonly BUTTON_CONFIG = BUTTON_CONFIG;
 
   constructor() {
-    addIcons({ addCircleOutline, addCircle, informationCircleOutline, peopleOutline, closeCircle, statsChartOutline, codeSlash, gridOutline, calendarOutline, pricetagOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, checkmark, calendar, desktopOutline, cloudUploadOutline, documentTextOutline, folderOpenOutline, people, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, cloudUpload, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, school, documentText, library, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline });
+    addIcons({ addCircle, informationCircle, people, cloudUpload, closeCircle, school, codeSlash, pricetag, calendar, desktop, checkmark, calendarOutline, pricetagOutline, desktopOutline, time, library, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, trash, chevronUp, chevronDown, create });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -578,10 +578,45 @@ export class CursosPage implements OnInit, ViewWillEnter {
   /**
    * Editar el curso seleccionado desde el header
    */
-  editarCursoSeleccionadoDesdeHeader(): void {
+  async editarCursoSeleccionadoDesdeHeader(): Promise<void> {
     const curso = this.getCursoSeleccionadoObj();
     if (curso) {
       this.editarCurso(curso);
+    } else {
+      // Validar si el usuario ya silenció este aviso
+      const uiState = this.dataService.getUIState();
+      if (uiState.ocultarAvisoEdicionSinSeleccion) {
+        return;
+      }
+
+      const alert = await this.alertController.create({
+        header: 'Seleccione un curso',
+        message: 'Debe seleccionar primero un curso para poder editarlo.',
+        inputs: [
+          {
+            name: 'ocultar',
+            type: 'checkbox',
+            label: 'No mostrar más este mensaje',
+            value: 'true',
+            checked: false
+          }
+        ],
+        buttons: [
+          {
+            text: '<ion-icon name="checkmark-circle" class="alert-btn-icon"></ion-icon> Aceptar',
+            handler: (data) => {
+              // Si el checkbox está marcado, persistir la preferencia
+              if (data && data.includes('true')) {
+                this.dataService.updateUIState({ ocultarAvisoEdicionSinSeleccion: true });
+                Logger.log('[CursosPage] Preferencia guardada: ocultar aviso de edición sin selección');
+              }
+            }
+          }
+        ],
+        cssClass: 'premium-alert premium-alert--warning'
+      });
+
+      await alert.present();
     }
   }
 
@@ -1828,7 +1863,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     event.stopPropagation();
 
     const alert = await this.alertController.create({
-      header: '🗑️ Confirmar Eliminación',
+      header: 'Confirmar Eliminación',
       message: `
         ¿Estás seguro de eliminar el curso "${curso.nombre}" (${curso.nombreAbreviado})?
         <ion-list lines="none" class="ion-no-padding ion-margin-top">
@@ -1840,7 +1875,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
             </ion-label>
           </ion-item>
           <ion-item class="ion-no-padding">
-            <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+            <ion-icon name="calendar" slot="start" color="primary"></ion-icon>
             <ion-label>
               <p>Bloque</p>
               <h3>${curso.bloque || '—'}</h3>
@@ -1854,14 +1889,14 @@ export class CursosPage implements OnInit, ViewWillEnter {
         • Comentarios y seguimiento<br><br>
         Esta acción no se puede deshacer.
       `,
-      cssClass: 'alert-danger',
+      cssClass: 'premium-alert premium-alert--danger',
       buttons: [
         {
-          text: 'Cancelar',
+          text: '<ion-icon name="close-circle" class="alert-btn-icon"></ion-icon> Cancelar',
           role: 'cancel'
         },
         {
-          text: 'Eliminar',
+          text: '<ion-icon name="trash" class="alert-btn-icon"></ion-icon> Eliminar',
           role: 'destructive',
           handler: async () => {
             try {
