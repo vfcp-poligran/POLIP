@@ -1,6 +1,3 @@
-import 'jest-preset-angular/setup-jest';
+import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
 
-// Reset TestBed after each test to avoid "Cannot set base providers" error
-afterEach(() => {
-    jest.clearAllMocks();
-});
+setupZoneTestEnv();
