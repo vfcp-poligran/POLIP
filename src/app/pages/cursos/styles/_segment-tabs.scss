@@ -65,7 +65,21 @@
             max-width: none;
         }
 
-        border-left: 15px solid var(--course-stripe-color, var(--azul-oscuro));
+        overflow: hidden; // Asegurar que el pseudo-elemento respete el borde redondeado
+        --padding-start: calc(#{spacing('sm')} + 15px); // Compensar ancho de la barra (15px)
+
+        // Barra vertical de color usando pseudo-elemento para permitir borde/contorno
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 15px; // Ancho fijo de 15px
+            background: var(--course-stripe-color, var(--azul-oscuro));
+            border-right: 1px solid rgba(255, 255, 255, 0.3); // Contorno delgado SOLICITADO
+            z-index: 1;
+        }
 
         &:hover {
             box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
@@ -81,20 +95,28 @@
             // Asumiré que quiere que RESALTE. Si el fondo es azul osucro (pagina) y tab blanco, el borde blanco no hace nada.
             // Pero el contenedor de tabs tiene gradiente azul oscuro.
             // Entonces fondo blanco RESALTA sobre el gradiente.
-            border-left-width: 15px;
-            border-left-color: var(--course-stripe-color, var(--azul-claro));
-            --background: #ffffff;
-            --color: #{$azul-oscuro};
-            --color-checked: #{$azul-oscuro};
+            border: 2px solid #ffffff;
+            // Border-left ya no es necesario porque usamos ::before
+            // border-left-width: 15px;
+            // border-left-color: var(--course-stripe-color, var(--azul-claro));
+
+            &::before {
+                border-right: 1px solid rgba(255, 255, 255, 0.8); // Contorno más visible al seleccionar
+                width: 15px;
+            }
+
+            --background: #{$azul-oscuro}; // Fondo oscuro para texto blanco
+            --color: #ffffff;
+            --color-checked: #ffffff;
 
             // Forzar estilos en elementos hijos para el estado seleccionado
             .tab-nombre {
-                color: #{$azul-oscuro} !important;
+                color: #ffffff !important;
                 font-weight: 800 !important; // Extra bold
             }
 
             .tab-codigo {
-                color: rgba($azul-oscuro, 0.85) !important;
+                color: rgba(255, 255, 255, 0.9) !important;
                 font-weight: 500;
             }
         }

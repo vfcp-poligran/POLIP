@@ -117,17 +117,27 @@ export class CourseManagementService {
             : [];
 
         // Actualizar UI State con metadata
-        const nuevoCourseState = {
-            codigo: cursoData.codigo,
-            nombre: cursoData.nombre,
-            color: cursoData.color || this.generarColorAleatorio(),
+        const nuevoCourseState: any = {
+            activeStudent: null,
+            activeGroup: null,
+            activeDelivery: null,
+            activeType: null,
             filtroGrupo: 'todos',
-            anio: cursoData.anio,
+            emailsVisible: true,
+            isScrollingTable: false,
+            color: cursoData.color || this.generarColorAleatorio(),
             grupos: grupos,
-            tipoIngreso: cursoData.tipoIngreso,
-            bloque: cursoData.bloque,
-            modalidad: cursoData.modalidad,
-            ingreso: cursoData.ingreso
+            metadata: {
+                codigo: cursoData.codigo,
+                nombre: cursoData.nombre,
+                bloque: cursoData.bloque,
+                anio: cursoData.anio,
+                tipoIngreso: cursoData.tipoIngreso,
+                modalidad: cursoData.modalidad,
+                ingreso: cursoData.ingreso,
+                fechaCreacion: new Date().toISOString(),
+                profesor: 'Usuario' // Valor por defecto
+            }
         };
 
         const nuevoUIState = {
@@ -227,8 +237,8 @@ export class CourseManagementService {
         for (const [codigoUnico, state] of Object.entries(uiState.courseStates)) {
             // Comparar con todos los posibles identificadores
             if (
-                state.codigo === identificador ||
-                state.nombre === identificador ||
+                state.metadata?.codigo === identificador ||
+                state.metadata?.nombre === identificador ||
                 this.extraerCodigoBaseCurso(codigoUnico) === identificador
             ) {
                 return codigoUnico;

@@ -36,7 +36,7 @@ export class CohorteService {
             const courseState = uiState.courseStates[codigoCurso];
 
             // Verificar si es el mismo código base
-            if (!courseState?.codigo?.includes(codigoBase)) {
+            if (!courseState?.metadata?.codigo?.includes(codigoBase)) {
                 return;
             }
 
@@ -55,10 +55,11 @@ export class CohorteService {
 
                 const repitente = repitentes.get(key)!;
                 repitente.cursadas.push({
+
                     codigoCurso,
-                    ingreso: courseState.tipoIngreso || 'N/A',
-                    bloque: courseState.bloque || 'N/A',
-                    anio: courseState.anio || new Date().getFullYear(),
+                    ingreso: courseState.metadata?.tipoIngreso || 'N/A',
+                    bloque: courseState.metadata?.bloque || 'N/A',
+                    anio: courseState.metadata?.fechaCreacion ? new Date(courseState.metadata.fechaCreacion).getFullYear() : new Date().getFullYear(),
                     grupo: est.grupo || '1',
                     calificacionFinal: this.calcularCalificacionFinal(est),
                     estado: this.determinarEstado(est)
@@ -95,11 +96,11 @@ export class CohorteService {
                 const courseState = uiState.courseStates[codigoCurso];
 
                 cohortes.push({
-                    curso: courseState?.nombre || 'Sin nombre',
+                    curso: courseState.metadata?.nombre || 'Sin nombre',
                     codigoCurso,
-                    ingreso: courseState?.tipoIngreso || 'N/A',
-                    bloque: courseState?.bloque || 'N/A',
-                    anio: courseState?.anio || new Date().getFullYear(),
+                    ingreso: courseState.metadata?.tipoIngreso || 'N/A',
+                    bloque: courseState.metadata?.bloque || 'N/A',
+                    anio: courseState.metadata?.fechaCreacion ? new Date(courseState.metadata.fechaCreacion).getFullYear() : new Date().getFullYear(),
                     grupo: estudiante.grupo || '1',
                     calificacion: this.calcularCalificacionFinal(estudiante),
                     estado: this.determinarEstado(estudiante)
@@ -131,9 +132,10 @@ export class CohorteService {
         Object.entries(cursosData).forEach(([codigoCurso, estudiantes]) => {
             const courseState = uiState.courseStates[codigoCurso];
 
-            if (courseState?.tipoIngreso === ingreso && courseState?.anio === anio) {
+            if (courseState?.metadata?.tipoIngreso === ingreso &&
+                (courseState?.metadata?.fechaCreacion ? new Date(courseState.metadata.fechaCreacion).getFullYear() : new Date().getFullYear()) === anio) {
                 estudiantesCohorte.push(...estudiantes);
-                cursoNombre = courseState.nombre || '';
+                cursoNombre = courseState.metadata?.nombre || '';
             }
         });
 
@@ -192,12 +194,13 @@ export class CohorteService {
      */
     private calcularCalificacionFinal(estudiante: Estudiante): number {
         // Implementación simplificada - ajustar según lógica real
-        const ei1 = estudiante.ei1 || 0;
-        const eg1 = estudiante.eg1 || 0;
-        const ei2 = estudiante.ei2 || 0;
-        const eg2 = estudiante.eg2 || 0;
-        const eif = estudiante.eif || 0;
-        const egf = estudiante.egf || 0;
+        const e = estudiante as any;
+        const ei1 = e.ei1 || 0;
+        const eg1 = e.eg1 || 0;
+        const ei2 = e.ei2 || 0;
+        const eg2 = e.eg2 || 0;
+        const eif = e.eif || 0;
+        const egf = e.egf || 0;
 
         const e1 = ei1 + eg1;
         const e2 = ei2 + eg2;

@@ -9,7 +9,9 @@ import {
   IonChip,
   IonLabel,
   IonCard,
-
+  IonGrid,
+  IonRow,
+  IonCol,
   IonList,
   IonItem,
   IonBadge,
@@ -64,6 +66,7 @@ import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
 import { BUTTON_CONFIG } from '@app/constants/button-config';
+import { CapitalizePipe } from '@app/pipes/capitalize.pipe';
 
 
 interface EstudianteConNotas {
@@ -93,7 +96,9 @@ interface EstudianteConNotas {
     IonChip,
     IonLabel,
     IonCard,
-
+    IonGrid,
+    IonRow,
+    IonCol,
     IonFab,
     IonFabButton,
     IonList,
@@ -103,7 +108,8 @@ interface EstudianteConNotas {
     IonSelectOption,
     IonSegment,
     IonSegmentButton,
-    IonNote]
+    IonNote,
+    CapitalizePipe]
 })
 export class CursosPage implements OnInit, ViewWillEnter {
   private dataService = inject(DataService);
@@ -181,8 +187,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
    * Si estamos creando uno nuevo, devuelve un objeto temporal basado en el parseo.
    */
   /**
-   * Genera el código estandarizado con año al final: SIGLAS-B##-BLQ##-MOD-YYYY
-   * Ejemplo: HPM1-B01-BLQ01-V-2025
+   * Genera el código estandarizado con año al final: SIGLAS-B##-XXX-MOD-YYYY
+   * Ejemplo: HPM1-B01-PRI-V-2025
    */
   public getStandardizedCode(c: any): string {
     Logger.log('🔍 getStandardizedCode INPUT:', c);
@@ -191,29 +197,8 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const siglas = c.siglas || this.generarAcronimoCurso(c.nombre || '');
     const ingreso = c.ingreso || '';
 
-    Logger.log('  📌 Siglas:', siglas);
-    Logger.log('  📌 Ingreso:', ingreso);
-    Logger.log('  📌 Bloque original:', c.bloque);
-    Logger.log('  📌 Grupo original:', c.grupo);
-    Logger.log('  📌 Modalidad original:', c.modalidad);
-    Logger.log('  📌 Año:', c.anio);
-
-    // Extraer bloque y formatear como BLQ01, BLQ02, BLQTRV
-    const bloqueRaw = this.convertirBloqueTextoANumero(c.bloque || '');
-    Logger.log('  📌 Bloque convertido:', bloqueRaw);
-
-    let bloqueFormatted = '';
-    if (bloqueRaw) {
-      // Si es un número, formatearlo con ceros a la izquierda
-      const bloqueMatch = bloqueRaw.match(/\d+/);
-      if (bloqueMatch) {
-        const bloqueNum = bloqueMatch[0].padStart(2, '0');
-        bloqueFormatted = `BLQ${bloqueNum}`;
-      } else {
-        // Si no es número (ej: TRV), usar tal cual
-        bloqueFormatted = `BLQ${bloqueRaw}`;
-      }
-    }
+    // Extraer bloque y formatear usando abreviatura (PRI, SEG, etc.)
+    const bloqueFormatted = this.getBloqueAbbreviation(c.bloque || '');
     Logger.log('  📌 Bloque formateado:', bloqueFormatted);
 
     // Extraer iniciales de la modalidad
@@ -257,6 +242,43 @@ export class CursosPage implements OnInit, ViewWillEnter {
   }
 
   /**
+   */
+  private getBloqueAbbreviation(bloque: string): string {
+    const b = (bloque || '').toUpperCase().trim();
+
+    // Mapeo directo de palabras y números
+    const map: { [key: string]: string } = {
+      'PRIMERO': 'PRI', '1': 'PRI', '01': 'PRI',
+      'SEGUNDO': 'SEG', '2': 'SEG', '02': 'SEG',
+      'TERCERO': 'TER', '3': 'TER', '03': 'TER',
+      'CUARTO': 'CUA', '4': 'CUA', '04': 'CUA',
+      'QUINTO': 'QUI', '5': 'QUI', '05': 'QUI',
+      'SEXTO': 'SEX', '6': 'SEX', '06': 'SEX',
+      'SEPTIMO': 'SEP', 'SÉPTIMO': 'SEP', '7': 'SEP', '07': 'SEP',
+      'OCTAVO': 'OCT', '8': 'OCT', '08': 'OCT',
+      'NOVENO': 'NOV', '9': 'NOV', '09': 'NOV',
+      'DECIMO': 'DEC', 'DÉCIMO': 'DEC', '10': 'DEC',
+      'TRANSVERSAL': 'TRV'
+    };
+
+    // Si existe en el mapa, devolver valor
+    if (map[b]) return map[b];
+
+    // Si contiene "BLOQUE", extraer número y reintentar
+    if (b.includes('BLOQUE')) {
+      const num = b.replace(/\D/g, '');
+      if (map[num]) return map[num];
+    }
+
+    // Fallback: Si no se reconoce, devolver las primeras 3 letras (si tiene al menos 3)
+    // o el valor original si es muy corto
+    if (b.length >= 3) {
+      return b.substring(0, 3);
+    }
+    return b;
+  }
+
+  /**
    * Extrae iniciales de la modalidad de forma robusta
    * Ej: "TEORICO-PRACTICO - VIRTUAL" -> "TPV"
    */
@@ -287,6 +309,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const real = this.cursoSeleccionadoInfo();
     if (real) return {
       ...real,
+      nombre: real.nombre || real.codigo || 'Sin nombre', // Asegurar que nombre exista
       codigoEstandarizado: real.codigo, // Usar código único directamente
       codigoDisplay: real.codigo, // Usar código único directamente (EPM-B01-BLQ02)
       anio: real.anio || new Date().getFullYear()
@@ -603,7 +626,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
         ],
         buttons: [
           {
-            text: '<ion-icon name="checkmark-circle" class="alert-btn-icon"></ion-icon> Aceptar',
+            text: 'Aceptar',
             handler: (data) => {
               // Si el checkbox está marcado, persistir la preferencia
               if (data && data.includes('true')) {
@@ -1865,38 +1888,30 @@ export class CursosPage implements OnInit, ViewWillEnter {
     const alert = await this.alertController.create({
       header: 'Confirmar Eliminación',
       message: `
-        ¿Estás seguro de eliminar el curso "${curso.nombre}" (${curso.nombreAbreviado})?
-        <ion-list lines="none" class="ion-no-padding ion-margin-top">
-          <ion-item class="ion-no-padding">
-            <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
-            <ion-label>
-              <p>Código</p>
-              <h3>${curso.codigo}</h3>
-            </ion-label>
-          </ion-item>
-          <ion-item class="ion-no-padding">
-            <ion-icon name="calendar" slot="start" color="primary"></ion-icon>
-            <ion-label>
-              <p>Bloque</p>
-              <h3>${curso.bloque || '—'}</h3>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-        <br>
-        <strong>Se eliminarán:</strong><br>
-        • Todos los estudiantes del curso<br>
-        • Todas las evaluaciones asociadas<br>
-        • Comentarios y seguimiento<br><br>
-        Esta acción no se puede deshacer.
+        <p>¿Estás seguro de eliminar el curso <strong>"${curso.nombre}"</strong> (${curso.nombreAbreviado})?</p>
+        
+        <div style="margin: 16px 0; padding: 12px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+          <p style="margin: 4px 0;"><strong>Código:</strong> ${curso.codigo}</p>
+          <p style="margin: 4px 0;"><strong>Bloque:</strong> ${curso.bloque || '—'}</p>
+        </div>
+        
+        <p style="margin-top: 16px;"><strong>Se eliminarán:</strong></p>
+        <ul style="margin: 8px 0; padding-left: 20px;">
+          <li>Todos los estudiantes del curso</li>
+          <li>Todas las evaluaciones asociadas</li>
+          <li>Comentarios y seguimiento</li>
+        </ul>
+        
+        <p style="margin-top: 12px; color: #d32f2f;"><strong>⚠️ Esta acción no se puede deshacer.</strong></p>
       `,
       cssClass: 'premium-alert premium-alert--danger',
       buttons: [
         {
-          text: '<ion-icon name="close-circle" class="alert-btn-icon"></ion-icon> Cancelar',
+          text: 'Cancelar',
           role: 'cancel'
         },
         {
-          text: '<ion-icon name="trash" class="alert-btn-icon"></ion-icon> Eliminar',
+          text: 'Eliminar',
           role: 'destructive',
           handler: async () => {
             try {

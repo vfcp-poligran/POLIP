@@ -21,6 +21,7 @@ export interface CourseState {
   isScrollingTable: boolean;
   integrantesSeleccionados?: string[]; // Correos de integrantes seleccionados en el panel
   gruposSeleccionados?: string[]; // Grupos seleccionados en inicio (para multi-selección)
+  grupos?: any[]; // Info de grupos generada
   color?: string; // Color personalizado para el botón del curso
   metadata?: {
     nombre: string;                    // Nombre completo: "PROGRAMACIÓN MÓVIL"
@@ -28,6 +29,7 @@ export interface CourseState {
     codigoUnico?: string;              // Código interno único: "EPM-B01-BLQ2-V-20251121"
     codigo: string;                    // Código base sin timestamp
     bloque: string;
+    anio?: number;                     // Año del curso (2024, 2025)
     tipoIngreso?: string;              // Tipo de ingreso simple: A, B, C
     modalidad?: string;                // Código de modalidad: V, TP, CB
     fechaCreacion: string;

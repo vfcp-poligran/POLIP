@@ -180,219 +180,237 @@
                         }
                       </div>
                     </div>
-
-                    <!-- Datos del curso (mismo formato que vista lectura) -->
-                    @if (cursoParseado) {
-                    <ion-list lines="none" class="parsed-course-info">
-                      <ion-item>
-                        <ion-icon name="school" slot="start" color="primary"></ion-icon>
-                        <ion-label>
-                          <p>Nombre del Curso</p>
-                          <h3>{{ cursoParseado.nombre }}</h3>
-                        </ion-label>
-                      </ion-item>
-                      <ion-item>
-                        <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
-                        <ion-label>
-                          <p>Código</p>
-                          <h3>{{ getDisplayCode(cursoParseado) }}</h3>
-                        </ion-label>
-                      </ion-item>
-                      <ion-item>
-                        <ion-icon name="pricetag" slot="start" color="primary"></ion-icon>
-                        <ion-label>
-                          <p>Ingreso</p>
-                          <h3>{{ cursoParseado.ingreso || '—' }}</h3>
-                        </ion-label>
-                      </ion-item>
-                      <ion-item>
-                        <ion-icon name="calendar" slot="start" color="primary"></ion-icon>
-                        <ion-label>
-                          <p>Bloque</p>
-                          <h3>{{ cursoParseado.bloque || '—' }}</h3>
-                        </ion-label>
-                      </ion-item>
-                      <ion-item>
-                        <ion-icon name="desktop" slot="start" color="primary"></ion-icon>
-                        <ion-label>
-                          <p>Modalidad</p>
-                          <h3>{{ cursoParseado.modalidad || 'Virtual' }}</h3>
-                        </ion-label>
-                      </ion-item>
-                    </ion-list>
-                    } @else {
-                    <div class="empty-import-state">
-                      <ion-icon name="cloud-upload" color="medium"></ion-icon>
-                      <p>Importa un archivo para ver los datos del curso</p>
-                    </div>
-                    }
                   </div>
 
-                  <!-- Selector de Color del Curso -->
-                  <div class="color-selector-section">
-                    <!-- Bot\u00f3n para abrir/cerrar color picker -->
-                    <button type="button" class="color-toggle-button" (click)="toggleColorPicker()">
-                      <div class="color-preview-swatch" [style.background-color]="colorCursoSeleccionado || '#1fb2de'">
-                      </div>
-                      <span class="color-label">Color del Curso</span>
-                      <ion-icon [name]="showColorPicker ? 'chevron-up' : 'chevron-down'"></ion-icon>
-                    </button>
+                  <!-- Sección de Características del Curso (independiente) -->
+                  @if (cursoParseado) {
+                  <ion-grid class="parsed-course-info">
+                    <!-- Fila 1: Nombre del Curso (ancho completo) -->
+                    <ion-row>
+                      <ion-col size="12">
+                        <div class="characteristic-item">
+                          <h4 class="label">Nombre del Curso</h4>
+                          <p class="value">{{ cursoParseado.nombre || info.nombre || '—' }}</p>
+                        </div>
+                      </ion-col>
+                    </ion-row>
 
-                    <!-- Grid de colores (colapsable) -->
-                    @if (showColorPicker) {
-                    <div class="color-grid">
-                      @for (color of coloresDisponibles; track color) {
-                      <button type="button" class="color-button" [class.selected]="colorCursoSeleccionado === color"
-                        [style.background-color]="color" (click)="seleccionarColorCurso(color)"
-                        [attr.aria-label]="'Seleccionar color ' + color">
-                        @if (colorCursoSeleccionado === color) {
-                        <ion-icon name="checkmark" class="check-icon"></ion-icon>
-                        }
-                      </button>
+                    <!-- Fila 2: Código, Ingreso, Bloque, Modalidad, Año (Suman 12) -->
+                    <ion-row>
+                      <ion-col size="6" size-md="2">
+                        <div class="characteristic-item">
+                          <h4 class="label">Código</h4>
+                          <p class="value">{{ getDisplayCode(cursoParseado) || info.codigoDisplay }}</p>
+                        </div>
+                      </ion-col>
+                      <ion-col size="6" size-md="2">
+                        <div class="characteristic-item">
+                          <h4 class="label">Ingreso</h4>
+                          <p class="value">{{ cursoParseado.ingreso || info.ingreso || '—' }}</p>
+                        </div>
+                      </ion-col>
+                      <ion-col size="6" size-md="3">
+                        <div class="characteristic-item">
+                          <h4 class="label">Bloque</h4>
+                          <p class="value">{{ (cursoParseado.bloque || info.bloque || '—') | capitalize }}</p>
+                        </div>
+                      </ion-col>
+                      <ion-col size="6" size-md="3">
+                        <div class="characteristic-item">
+                          <h4 class="label">Modalidad</h4>
+                          <p class="value">{{ (cursoParseado.modalidad || info.modalidad || 'Virtual') | capitalize }}
+                          </p>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" size-md="2">
+                        <div class="characteristic-item">
+                          <h4 class="label">Año</h4>
+                          <p class="value">{{ cursoParseado.anio || info.anio || '—' }}</p>
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                  } @else {
+                  <div class="empty-import-state">
+                    <ion-icon name="cloud-upload" color="medium"></ion-icon>
+                    <p>Importa un archivo para ver los datos del curso</p>
+                  </div>
+                  }
+                </div>
+
+                <!-- Selector de Color del Curso -->
+                <div class="color-selector-section">
+                  <!-- Bot\u00f3n para abrir/cerrar color picker -->
+                  <button type="button" class="color-toggle-button" (click)="toggleColorPicker()">
+                    <div class="color-preview-swatch" [style.background-color]="colorCursoSeleccionado || '#1fb2de'">
+                    </div>
+                    <span class="color-label">Color del Curso</span>
+                    <ion-icon [name]="showColorPicker ? 'chevron-up' : 'chevron-down'"></ion-icon>
+                  </button>
+
+                  <!-- Grid de colores (colapsable) -->
+                  @if (showColorPicker) {
+                  <div class="color-grid">
+                    @for (color of coloresDisponibles; track color) {
+                    <button type="button" class="color-button" [class.selected]="colorCursoSeleccionado === color"
+                      [style.background-color]="color" (click)="seleccionarColorCurso(color)"
+                      [attr.aria-label]="'Seleccionar color ' + color">
+                      @if (colorCursoSeleccionado === color) {
+                      <ion-icon name="checkmark" class="check-icon"></ion-icon>
                       }
-                    </div>
+                    </button>
                     }
                   </div>
+                  }
+                </div>
 
-                  <!-- Columna Abajo/Derecha: Configuración (solo en edición, no en creación) -->
-                  @if (!info.esNuevo) {
-                  <div class="config-side">
-                    <h4 class="section-title">Parámetros de Cohorte</h4>
-                    <div class="form-grid">
-                      <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" label="Ingreso"
-                        labelPlacement="stacked" interface="popover" fill="outline">
-                        <ion-select-option value="A">A</ion-select-option>
-                        <ion-select-option value="B">B</ion-select-option>
-                        <ion-select-option value="C">C</ion-select-option>
-                      </ion-select>
+                <!-- Columna Abajo/Derecha: Configuración (solo en edición, no en creación) -->
+                @if (!info.esNuevo) {
+                <div class="config-side">
+                  <h4 class="section-title">Parámetros de Cohorte</h4>
+                  <div class="form-grid">
+                    <ion-select [(ngModel)]="cohorteForm.ingreso" (ionChange)="onIngresoChange()" label="Ingreso"
+                      labelPlacement="stacked" interface="popover" fill="outline">
+                      <ion-select-option value="A">A</ion-select-option>
+                      <ion-select-option value="B">B</ion-select-option>
+                      <ion-select-option value="C">C</ion-select-option>
+                    </ion-select>
 
-                      <ion-select [(ngModel)]="cohorteForm.bloque" (ionChange)="onBloqueChange()" label="Bloque"
-                        labelPlacement="stacked" interface="popover" fill="outline">
-                        <ion-select-option value="PRIMERO">PRIMERO</ion-select-option>
-                        <ion-select-option value="SEGUNDO">SEGUNDO</ion-select-option>
-                        <ion-select-option value="TRANSVERSAL">TRANSVERSAL</ion-select-option>
-                      </ion-select>
+                    <ion-select [(ngModel)]="cohorteForm.bloque" (ionChange)="onBloqueChange()" label="Bloque"
+                      labelPlacement="stacked" interface="popover" fill="outline">
+                      <ion-select-option value="PRIMERO">PRIMERO</ion-select-option>
+                      <ion-select-option value="SEGUNDO">SEGUNDO</ion-select-option>
+                      <ion-select-option value="TRANSVERSAL">TRANSVERSAL</ion-select-option>
+                    </ion-select>
 
-                      <ion-select [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" label="Año"
-                        labelPlacement="stacked" interface="popover" fill="outline">
-                        @for (anio of aniosDisponibles(); track anio) {
-                        <ion-select-option [value]="anio.toString()">{{ anio }}</ion-select-option>
-                        }
-                      </ion-select>
-                    </div>
+                    <ion-select [(ngModel)]="cohorteForm.anio" (ionChange)="onCambioCohorte()" label="Año"
+                      labelPlacement="stacked" interface="popover" fill="outline">
+                      @for (anio of aniosDisponibles(); track anio) {
+                      <ion-select-option [value]="anio.toString()">{{ anio }}</ion-select-option>
+                      }
+                    </ion-select>
                   </div>
-                  }
-
                 </div>
-              </div>
-              } @else {
-              <!-- VISTA LECTURA -->
-              <ion-list lines="none">
-                <ion-item>
-                  <ion-icon name="code-slash" slot="start" color="primary"></ion-icon>
-                  <ion-label>
-                    <p>Código</p>
-                    <h3>{{ info.codigoDisplay }}</h3>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
-                  <ion-label>
-                    <p>Bloque</p>
-                    <h3>{{ info.bloque || '—' }}</h3>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="pricetag-outline" slot="start" color="primary"></ion-icon>
-                  <ion-label>
-                    <p>Ingreso</p>
-                    <h3>{{ info.ingreso || '—' }}</h3>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="desktop-outline" slot="start" color="primary"></ion-icon>
-                  <ion-label>
-                    <p>Modalidad</p>
-                    <h3>{{ info.modalidad || '—' }}</h3>
-                  </ion-label>
-                </ion-item>
-                <ion-item>
-                  <ion-icon name="time" slot="start" color="primary"></ion-icon>
-                  <ion-label>
-                    <p>Año</p>
-                    <h3>{{ info.anio || '—' }}</h3>
-                  </ion-label>
-                </ion-item>
-              </ion-list>
-
-              <div class="compact-rubricas-section">
-                <h4 class="section-title">Rúbricas asociadas</h4>
-                @if (rubricasAsociadas.length > 0) {
-                <div class="compact-rubricas-list">
-                  @for (rubrica of rubricasAsociadas; track rubrica.id) {
-                  <ion-chip outline="true" size="small">
-                    <ion-label>{{ rubrica.nombre }}</ion-label>
-                  </ion-chip>
-                  }
-                </div>
-                } @else {
-                <p class="no-data">No hay rúbricas</p>
                 }
+
               </div>
-              }
-            </ion-card>
           </div>
-          }
+          } @else {
+          <!-- VISTA LECTURA -->
+          <ion-grid class="parsed-course-info">
+            <!-- Fila 1: Nombre del Curso (ancho completo) -->
+            <ion-row>
+              <ion-col size="12">
+                <div class="characteristic-item">
+                  <h4 class="label">Nombre del Curso</h4>
+                  <p class="value">{{ info.nombre || '—' }}</p>
+                </div>
+              </ion-col>
+            </ion-row>
 
-          <!-- SUBTAB: Integrantes -->
-          @if (subtabActivo() === 'integrantes') {
-          <div class="subtab-content">
-            <!-- Tabs de grupos -->
-            <ion-segment [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)" scrollable>
-              <ion-segment-button value="todos">
-                Todos ({{ estudiantesCurso().length }})
-              </ion-segment-button>
-              @for (grupo of gruposCurso(); track grupo) {
-              <ion-segment-button [value]="grupo">
-                {{ grupo }} ({{ contarIntegrantes(grupo) }})
-              </ion-segment-button>
-              }
-            </ion-segment>
+            <!-- Fila 2: Código, Ingreso, Bloque, Modalidad, Año (Suman 12) -->
+            <ion-row>
+              <ion-col size="6" size-md="2">
+                <div class="characteristic-item">
+                  <h4 class="label">Código</h4>
+                  <p class="value">{{ info.codigoDisplay }}</p>
+                </div>
+              </ion-col>
+              <ion-col size="6" size-md="2">
+                <div class="characteristic-item">
+                  <h4 class="label">Ingreso</h4>
+                  <p class="value">{{ info.ingreso || '—' }}</p>
+                </div>
+              </ion-col>
+              <ion-col size="6" size-md="3">
+                <div class="characteristic-item">
+                  <h4 class="label">Bloque</h4>
+                  <p class="value">{{ (info.bloque || '—') | capitalize }}</p>
+                </div>
+              </ion-col>
+              <ion-col size="6" size-md="3">
+                <div class="characteristic-item">
+                  <h4 class="label">Modalidad</h4>
+                  <p class="value">{{ (info.modalidad || '—') | capitalize }}</p>
+                </div>
+              </ion-col>
+              <ion-col size="12" size-md="2">
+                <div class="characteristic-item">
+                  <h4 class="label">Año</h4>
+                  <p class="value">{{ info.anio || '—' }}</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
 
-            <!-- Lista de estudiantes -->
-            @if (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {
-            <ion-list>
-              @for (est of estudiantesFiltrados(); track est.correo) {
-              <ion-item>
-                <ion-badge slot="start" color="light">{{ est?.grupo || '-' }}</ion-badge>
-                <ion-label>
-                  <h3>{{ est?.nombres }} {{ est?.apellidos }}</h3>
-                  <p>{{ est?.correo }}</p>
-                </ion-label>
-                <ion-note slot="end">
-                  E1: {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}
-                </ion-note>
-              </ion-item>
+          <div class="compact-rubricas-section">
+            <h4 class="section-title">Rúbricas asociadas</h4>
+            @if (rubricasAsociadas.length > 0) {
+            <div class="compact-rubricas-list">
+              @for (rubrica of rubricasAsociadas; track rubrica.id) {
+              <ion-chip outline="true" size="small">
+                <ion-label>{{ rubrica.nombre }}</ion-label>
+              </ion-chip>
               }
-            </ion-list>
-            } @else {
-            <div class="empty-state-mini">
-              <p>No hay estudiantes en este grupo</p>
             </div>
+            } @else {
+            <p class="no-data">No hay rúbricas</p>
             }
           </div>
           }
-        </div>
       </ion-card>
-      }
-    </div>
-    } @else {
-    <!-- Estado vacío (No hay cursos y no estamos creando) -->
-    <div class="empty-state">
-      <ion-icon name="library"></ion-icon>
-      <h3>No hay cursos registrados</h3>
-      <p>Presione "Crear" para agregar un nuevo curso</p>
     </div>
     }
+
+    <!-- SUBTAB: Integrantes -->
+    @if (subtabActivo() === 'integrantes') {
+    <div class="subtab-content">
+      <!-- Tabs de grupos -->
+      <ion-segment [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)" scrollable>
+        <ion-segment-button value="todos">
+          Todos ({{ estudiantesCurso().length }})
+        </ion-segment-button>
+        @for (grupo of gruposCurso(); track grupo) {
+        <ion-segment-button [value]="grupo">
+          {{ grupo }} ({{ contarIntegrantes(grupo) }})
+        </ion-segment-button>
+        }
+      </ion-segment>
+
+      <!-- Lista de estudiantes -->
+      @if (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {
+      <ion-list>
+        @for (est of estudiantesFiltrados(); track est.correo) {
+        <ion-item>
+          <ion-badge slot="start" color="light">{{ est?.grupo || '-' }}</ion-badge>
+          <ion-label>
+            <h3>{{ est?.nombres }} {{ est?.apellidos }}</h3>
+            <p>{{ est?.correo }}</p>
+          </ion-label>
+          <ion-note slot="end">
+            E1: {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}
+          </ion-note>
+        </ion-item>
+        }
+      </ion-list>
+      } @else {
+      <div class="empty-state-mini">
+        <p>No hay estudiantes en este grupo</p>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  </ion-card>
+  }
+  </div>
+  } @else {
+  <!-- Estado vacío (No hay cursos y no estamos creando) -->
+  <div class="empty-state">
+    <ion-icon name="library"></ion-icon>
+    <h3>No hay cursos registrados</h3>
+    <p>Presione "Crear" para agregar un nuevo curso</p>
+  </div>
+  }
   </div>
 </ion-content>
