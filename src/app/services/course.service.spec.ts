@@ -4,21 +4,25 @@ import { UnifiedStorageService } from './unified-storage.service';
 
 describe('CourseService', () => {
     let service: CourseService;
-    let storageSpy: jasmine.SpyObj<UnifiedStorageService>;
+    let storageMock: jest.Mocked<UnifiedStorageService>;
 
     beforeEach(() => {
-        // Crear spy del storage service
-        const spy = jasmine.createSpyObj('UnifiedStorageService', ['get', 'set', 'remove', 'init']);
+        // Crear mock del storage service para Jest
+        storageMock = {
+            get: jest.fn(),
+            set: jest.fn(),
+            remove: jest.fn(),
+            init: jest.fn()
+        } as any;
 
         TestBed.configureTestingModule({
             providers: [
                 CourseService,
-                { provide: UnifiedStorageService, useValue: spy }
+                { provide: UnifiedStorageService, useValue: storageMock }
             ]
         });
 
         service = TestBed.inject(CourseService);
-        storageSpy = TestBed.inject(UnifiedStorageService) as jasmine.SpyObj<UnifiedStorageService>;
     });
 
     it('should be created', () => {
@@ -74,16 +78,16 @@ describe('CourseService', () => {
                 'EPM-B01': [{ correo: 'test@test.com', nombres: 'Test', apellidos: 'User', grupo: '1' }]
             };
 
-            storageSpy.get.and.returnValue(Promise.resolve(mockCursos));
+            storageMock.get.mockResolvedValue(mockCursos);
 
             await service.loadCursos();
 
-            expect(storageSpy.get).toHaveBeenCalledWith('gestorCursosData');
+            expect(storageMock.get).toHaveBeenCalledWith('gestorCursosData');
             expect(service.getCursosValue()).toEqual(mockCursos);
         });
 
         it('should initialize with empty object if no data in storage', async () => {
-            storageSpy.get.and.returnValue(Promise.resolve(null));
+            storageMock.get.mockResolvedValue(null);
 
             await service.loadCursos();
 
@@ -97,11 +101,11 @@ describe('CourseService', () => {
                 'EPM-B01': [{ correo: 'test@test.com', nombres: 'Test', apellidos: 'User', grupo: '1' }]
             };
 
-            storageSpy.set.and.returnValue(Promise.resolve());
+            storageMock.set.mockResolvedValue(undefined);
 
             await service.saveCursos(mockCursos);
 
-            expect(storageSpy.set).toHaveBeenCalledWith('gestorCursosData', mockCursos);
+            expect(storageMock.set).toHaveBeenCalledWith('gestorCursosData', mockCursos);
             expect(service.getCursosValue()).toEqual(mockCursos);
         });
     });
@@ -117,13 +121,13 @@ describe('CourseService', () => {
             ];
 
             service['_cursos'].set(initialCursos);
-            storageSpy.set.and.returnValue(Promise.resolve());
+            storageMock.set.mockResolvedValue(undefined);
 
             await service.actualizarEstudiantesCurso('EPM-B01', newEstudiantes);
 
             const updatedCursos = service.getCursosValue();
             expect(updatedCursos['EPM-B01']).toEqual(newEstudiantes);
-            expect(storageSpy.set).toHaveBeenCalled();
+            expect(storageMock.set).toHaveBeenCalled();
         });
     });
 
@@ -135,14 +139,14 @@ describe('CourseService', () => {
             };
 
             service['_cursos'].set(initialCursos);
-            storageSpy.set.and.returnValue(Promise.resolve());
+            storageMock.set.mockResolvedValue(undefined);
 
             await service.eliminarCursoData('EPM-B01');
 
             const updatedCursos = service.getCursosValue();
             expect(updatedCursos['EPM-B01']).toBeUndefined();
             expect(updatedCursos['SO-B02']).toBeDefined();
-            expect(storageSpy.set).toHaveBeenCalled();
+            expect(storageMock.set).toHaveBeenCalled();
         });
     });
 });
