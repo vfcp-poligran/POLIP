@@ -294,123 +294,123 @@
                 }
 
               </div>
-          </div>
-          } @else {
-          <!-- VISTA LECTURA -->
-          <ion-grid class="parsed-course-info">
-            <!-- Fila 1: Nombre del Curso (ancho completo) -->
-            <ion-row>
-              <ion-col size="12">
-                <div class="characteristic-item">
-                  <h4 class="label">Nombre del Curso</h4>
-                  <p class="value">{{ info.nombre || '—' }}</p>
-                </div>
-              </ion-col>
-            </ion-row>
 
-            <!-- Fila 2: Código, Ingreso, Bloque, Modalidad, Año (Suman 12) -->
-            <ion-row>
-              <ion-col size="6" size-md="2">
-                <div class="characteristic-item">
-                  <h4 class="label">Código</h4>
-                  <p class="value">{{ info.codigoDisplay }}</p>
-                </div>
-              </ion-col>
-              <ion-col size="6" size-md="2">
-                <div class="characteristic-item">
-                  <h4 class="label">Ingreso</h4>
-                  <p class="value">{{ info.ingreso || '—' }}</p>
-                </div>
-              </ion-col>
-              <ion-col size="6" size-md="3">
-                <div class="characteristic-item">
-                  <h4 class="label">Bloque</h4>
-                  <p class="value">{{ (info.bloque || '—') | capitalize }}</p>
-                </div>
-              </ion-col>
-              <ion-col size="6" size-md="3">
-                <div class="characteristic-item">
-                  <h4 class="label">Modalidad</h4>
-                  <p class="value">{{ (info.modalidad || '—') | capitalize }}</p>
-                </div>
-              </ion-col>
-              <ion-col size="12" size-md="2">
-                <div class="characteristic-item">
-                  <h4 class="label">Año</h4>
-                  <p class="value">{{ info.anio || '—' }}</p>
-                </div>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+              } @else {
+              <!-- VISTA LECTURA -->
+              <ion-grid class="parsed-course-info">
+                <!-- Fila 1: Nombre del Curso (ancho completo) -->
+                <ion-row>
+                  <ion-col size="12">
+                    <div class="characteristic-item">
+                      <h4 class="label">Nombre del Curso</h4>
+                      <p class="value">{{ info.nombre || '—' }}</p>
+                    </div>
+                  </ion-col>
+                </ion-row>
 
-          <div class="compact-rubricas-section">
-            <h4 class="section-title">Rúbricas asociadas</h4>
-            @if (rubricasAsociadas.length > 0) {
-            <div class="compact-rubricas-list">
-              @for (rubrica of rubricasAsociadas; track rubrica.id) {
-              <ion-chip outline="true" size="small">
-                <ion-label>{{ rubrica.nombre }}</ion-label>
-              </ion-chip>
+                <!-- Fila 2: Código, Ingreso, Bloque, Modalidad, Año (Suman 12) -->
+                <ion-row>
+                  <ion-col size="6" size-md="2">
+                    <div class="characteristic-item">
+                      <h4 class="label">Código</h4>
+                      <p class="value">{{ info.codigoDisplay }}</p>
+                    </div>
+                  </ion-col>
+                  <ion-col size="6" size-md="2">
+                    <div class="characteristic-item">
+                      <h4 class="label">Ingreso</h4>
+                      <p class="value">{{ info.ingreso || '—' }}</p>
+                    </div>
+                  </ion-col>
+                  <ion-col size="6" size-md="3">
+                    <div class="characteristic-item">
+                      <h4 class="label">Bloque</h4>
+                      <p class="value">{{ (info.bloque || '—') | capitalize }}</p>
+                    </div>
+                  </ion-col>
+                  <ion-col size="6" size-md="3">
+                    <div class="characteristic-item">
+                      <h4 class="label">Modalidad</h4>
+                      <p class="value">{{ (info.modalidad || '—') | capitalize }}</p>
+                    </div>
+                  </ion-col>
+                  <ion-col size="12" size-md="2">
+                    <div class="characteristic-item">
+                      <h4 class="label">Año</h4>
+                      <p class="value">{{ info.anio || '—' }}</p>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+              <div class="compact-rubricas-section">
+                <h4 class="section-title">Rúbricas asociadas</h4>
+                @if (rubricasAsociadas.length > 0) {
+                <div class="compact-rubricas-list">
+                  @for (rubrica of rubricasAsociadas; track rubrica.id) {
+                  <ion-chip outline="true" size="small">
+                    <ion-label>{{ rubrica.nombre }}</ion-label>
+                  </ion-chip>
+                  }
+                </div>
+                } @else {
+                <p class="no-data">No hay rúbricas</p>
+                }
+              </div>
               }
-            </div>
+            </ion-card>
+          </div>
+          }
+
+          <!-- SUBTAB: Integrantes -->
+          @if (subtabActivo() === 'integrantes') {
+          <div class="subtab-content">
+            <!-- Tabs de grupos -->
+            <ion-segment [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)" scrollable>
+              <ion-segment-button value="todos">
+                Todos ({{ estudiantesCurso().length }})
+              </ion-segment-button>
+              @for (grupo of gruposCurso(); track grupo) {
+              <ion-segment-button [value]="grupo">
+                {{ grupo }} ({{ contarIntegrantes(grupo) }})
+              </ion-segment-button>
+              }
+            </ion-segment>
+
+            <!-- Lista de estudiantes -->
+            @if (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {
+            <ion-list>
+              @for (est of estudiantesFiltrados(); track est.correo) {
+              <ion-item>
+                <ion-badge slot="start" color="light">{{ est?.grupo || '-' }}</ion-badge>
+                <ion-label>
+                  <h3>{{ est?.nombres }} {{ est?.apellidos }}</h3>
+                  <p>{{ est?.correo }}</p>
+                </ion-label>
+                <ion-note slot="end">
+                  E1: {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}
+                </ion-note>
+              </ion-item>
+              }
+            </ion-list>
             } @else {
-            <p class="no-data">No hay rúbricas</p>
+            <div class="empty-state-mini">
+              <p>No hay estudiantes en este grupo</p>
+            </div>
             }
           </div>
           }
+        </div>
       </ion-card>
-    </div>
-    }
-
-    <!-- SUBTAB: Integrantes -->
-    @if (subtabActivo() === 'integrantes') {
-    <div class="subtab-content">
-      <!-- Tabs de grupos -->
-      <ion-segment [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)" scrollable>
-        <ion-segment-button value="todos">
-          Todos ({{ estudiantesCurso().length }})
-        </ion-segment-button>
-        @for (grupo of gruposCurso(); track grupo) {
-        <ion-segment-button [value]="grupo">
-          {{ grupo }} ({{ contarIntegrantes(grupo) }})
-        </ion-segment-button>
-        }
-      </ion-segment>
-
-      <!-- Lista de estudiantes -->
-      @if (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {
-      <ion-list>
-        @for (est of estudiantesFiltrados(); track est.correo) {
-        <ion-item>
-          <ion-badge slot="start" color="light">{{ est?.grupo || '-' }}</ion-badge>
-          <ion-label>
-            <h3>{{ est?.nombres }} {{ est?.apellidos }}</h3>
-            <p>{{ est?.correo }}</p>
-          </ion-label>
-          <ion-note slot="end">
-            E1: {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}
-          </ion-note>
-        </ion-item>
-        }
-      </ion-list>
-      } @else {
-      <div class="empty-state-mini">
-        <p>No hay estudiantes en este grupo</p>
-      </div>
       }
     </div>
+    } @else {
+    <!-- Estado vacío (No hay cursos y no estamos creando) -->
+    <div class="empty-state">
+      <ion-icon name="library"></ion-icon>
+      <h3>No hay cursos registrados</h3>
+      <p>Presione "Crear" para agregar un nuevo curso</p>
+    </div>
     }
-  </div>
-  </ion-card>
-  }
-  </div>
-  } @else {
-  <!-- Estado vacío (No hay cursos y no estamos creando) -->
-  <div class="empty-state">
-    <ion-icon name="library"></ion-icon>
-    <h3>No hay cursos registrados</h3>
-    <p>Presione "Crear" para agregar un nuevo curso</p>
-  </div>
-  }
   </div>
 </ion-content>
