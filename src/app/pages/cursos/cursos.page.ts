@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, signal } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -111,7 +111,7 @@ interface EstudianteConNotas {
     IonNote,
     CapitalizePipe]
 })
-export class CursosPage implements OnInit, ViewWillEnter {
+export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
@@ -512,9 +512,7 @@ export class CursosPage implements OnInit, ViewWillEnter {
 
   private cd = inject(ChangeDetectorRef);
 
-  ngOnInit() {
-    // Setup inicial que NO depende de recarga de datos
-  }
+
 
   /**
    * Maneja cambios en año o ingreso para actualizar el nombre generado
