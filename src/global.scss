@@ -20,6 +20,7 @@
 @use "app/shared/styles/empty-state"; // Estados vacíos
 @use "app/shared/styles/page-container"; // Contenedores de página
 @use "app/shared/styles/button-standards"; // Estandarización de botones
+@use "app/shared/styles/shadow-tokens"; // Sistema de tokens de sombras
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -154,7 +155,7 @@ ion-button {
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 3px rgba(31, 178, 222, 0.25);
+    box-shadow: var(--shadow-focus);
   }
 }
 
@@ -226,7 +227,7 @@ ion-badge.estado-badge {
 
 ion-card {
   border-radius: var(--rad-sm, 8px);
-  box-shadow: var(--shadow-light, 0 8px 24px rgba(16, 35, 47, 0.08));
+  box-shadow: var(--shadow-md);
   background: var(--bg-card, #ffffff);
 }
 
@@ -253,7 +254,7 @@ ion-toast {
   --background: var(--bg-card, #ffffff);
   --color: var(--texto-principal, #1d1d1d);
   --border-radius: 14px;
-  --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --box-shadow: var(--shadow-2xl);
   --button-color: var(--azul-claro, #1fb2de);
   --start: 16px;
   --end: 16px;
@@ -353,9 +354,9 @@ ion-toast {
   --rad-sm: 8px;
   --rad-xs: 4px;
 
-  /* Sombras */
-  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Sombras - Legacy fallbacks (main tokens in _shadow-tokens.scss) */
+  --shadow-light: var(--shadow-sm);
+  --shadow-medium: var(--shadow-md);
 
   /* Variables dinámicas para íconos */
   --icon-size-fab: clamp(1.1rem, 3vw, 1.4rem);
@@ -401,18 +402,26 @@ ion-toast {
   }
 }
 
+/* ============================================================================
+ * GLOBAL RESETS - !important justified to override user agent stylesheets
+ * ============================================================================ */
+
 /* Reset global para eliminar espacios superiores */
 html,
 body {
   margin: 0 !important;
+  /* Override user agent stylesheet */
   padding: 0 !important;
+  /* Override user agent stylesheet */
   height: 100%;
   overflow-x: hidden;
 }
 
 ion-app {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  /* Removed !important - no conflicting styles */
+  padding: 0;
+  /* Removed !important - no conflicting styles */
 }
 
 /* Configuración global de tipografía */
@@ -432,15 +441,16 @@ ion-title,
 ion-segment-button,
 ion-button {
   font-family: var(--font-principal, 'Montserrat', sans-serif) !important;
+  /* Override Ionic defaults */
   font-weight: 700;
 }
 
 /* ============================================================================
- * FIX: Eliminar padding/margin problemático de ion-page
+ * LAYOUT RESETS - Ensure proper spacing in Angular components
  * ============================================================================ */
 ion-page {
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0;
 }
 
 /* Reset para elementos con _ngcontent que puedan tener padding/margin */
@@ -453,15 +463,58 @@ ion-page {
 /* Asegurar que ion-tabs no tenga espacios */
 ion-tabs[class*="_ngcontent-"],
 ion-tabs[class*="_nghost-"] {
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0;
 }
 
 /* Asegurar que ion-router-outlet no tenga espacios extra */
 ion-router-outlet[class*="_ngcontent-"],
 ion-router-outlet[class*="_nghost-"] {
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0;
+}
+
+/* ============================================================================
+ * ACCESSIBILITY IMPROVEMENTS
+ * ============================================================================ */
+
+/* Enhanced focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--azul-claro, #1fb2de) !important;
+  /* Override defaults for accessibility */
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip link for screen readers and keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--azul-oscuro, #0f385a);
+  color: white;
+  padding: 0.5rem 1rem;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 0 0 4px 0;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/* Screen reader only utility class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* ============================================================================
@@ -1064,7 +1117,8 @@ ion-checkbox {
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   /* Posición debajo del header */
-  margin-top: 56px !important;
+  margin-top: 56px;
+  /* Removed !important - use CSS custom property if override needed */
   /* Altura típica del header */
 
   .toast-wrapper {
@@ -1086,7 +1140,8 @@ ion-checkbox {
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   /* Posición debajo del header */
-  margin-top: 56px !important;
+  margin-top: 56px;
+  /* Removed !important */
 
   .toast-wrapper {
     animation: slideInDown 0.3s ease-out;
@@ -1107,7 +1162,8 @@ ion-checkbox {
   --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
   /* Posición debajo del header */
-  margin-top: 56px !important;
+  margin-top: 56px;
+  /* Removed !important */
 
   .toast-wrapper {
     animation: slideInDown 0.3s ease-out;

@@ -1,4 +1,7 @@
-<ion-app>
+<!-- Skip link for keyboard navigation accessibility -->
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+<ion-app id="main-content">
   <!-- Splash Screen durante la carga inicial -->
   @if (showSplash) {
     <app-splash-screen (splashComplete)="onSplashComplete()"></app-splash-screen>

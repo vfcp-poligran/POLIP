@@ -863,6 +863,150 @@
   }
 }
 
+// ============================================
+// DARK MODE SUPPORT
+// ============================================
+[data-theme="dark"] {
+
+  // Card backgrounds
+  .compact-info-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+
+    ion-item {
+      p {
+        color: var(--text-secondary);
+      }
+
+      h3 {
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  // Section backgrounds
+  .compact-rubricas-section {
+    background: var(--background-tertiary);
+    border-color: var(--border-color);
+
+    .section-title {
+      color: var(--text-secondary);
+    }
+
+    .no-data {
+      color: var(--text-tertiary);
+    }
+  }
+
+  // Import cloud items
+  .import-cloud-item {
+    background: var(--background-tertiary);
+
+    &:hover {
+      background: var(--bg-hover);
+    }
+
+    .cloud-label {
+      color: var(--text-primary);
+    }
+  }
+
+  // Course info display
+  .course-info-display {
+    background: var(--background-tertiary);
+    border-color: var(--border-color);
+
+    &.empty .empty-message {
+      color: var(--text-secondary);
+    }
+
+    .course-main-row {
+
+      .course-name .value,
+      .course-code .value {
+        color: var(--text-primary);
+      }
+
+      .course-name .label,
+      .course-code .label {
+        color: var(--text-secondary);
+      }
+    }
+
+    .course-params-compact {
+      border-color: var(--border-color);
+
+      .param-label {
+        color: var(--text-secondary);
+      }
+    }
+
+    .parsed-course-info {
+      border-color: var(--border-color);
+
+      .characteristic-item {
+        background: var(--background-tertiary);
+        border-left-color: var(--ion-color-primary);
+
+        h4.label {
+          color: var(--text-secondary);
+        }
+
+        p.value {
+          color: var(--text-primary);
+        }
+      }
+    }
+
+    .empty-import-state {
+      background: var(--background-tertiary);
+      border-color: var(--border-color);
+
+      p {
+        color: var(--text-secondary);
+      }
+    }
+  }
+
+  // Cohorte config
+  .cohorte-config {
+    background: var(--background-tertiary);
+
+    h4 {
+      color: var(--text-primary);
+    }
+  }
+
+  // Color picker
+  .color-picker button {
+    border-color: var(--border-color);
+  }
+
+  // Empty states
+  .empty-state-mini {
+    color: var(--text-secondary);
+  }
+
+  // Section titles
+  .compact-form-section .section-title {
+    color: var(--text-secondary);
+  }
+
+  // Date inputs
+  .date-input {
+    label {
+      color: var(--text-secondary);
+    }
+
+    ion-datetime-button::part(native) {
+      background: var(--background-tertiary);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+  }
+}
+
+
 .parsed-preview {
   background: rgba($azul-oscuro, 0.02);
   margin-bottom: spacing('sm');

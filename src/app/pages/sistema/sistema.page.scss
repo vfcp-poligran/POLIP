@@ -6,9 +6,7 @@
 // ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
-ion-content {
-  --background: #f8f9fa;
-}
+// ion-content inherits from theme variables
 
 .page-container {
   padding: 9.6px;
@@ -199,5 +197,59 @@ ion-button {
     color: var(--ion-color-primary);
     min-width: 28px;
     text-align: center;
+  }
+}
+
+// ============================================
+// SECCIONES PRIORITARIAS
+// ============================================
+.priority-section {
+  border-left: 4px solid var(--ion-color-primary);
+  background: linear-gradient(135deg,
+      rgba(var(--ion-color-primary-rgb), 0.05) 0%,
+      rgba(var(--ion-color-primary-rgb), 0.02) 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  ion-card-header {
+    ion-card-title {
+      font-weight: 700;
+      color: var(--ion-color-primary);
+
+      ion-icon {
+        margin-right: 8px;
+        font-size: 1.2em;
+      }
+    }
+
+    ion-card-subtitle {
+      font-size: 0.75rem;
+      color: var(--ion-text-color);
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+  }
+}
+
+// Dark mode adjustments
+[data-theme="dark"] {
+  .priority-section {
+    background: linear-gradient(135deg,
+        rgba(var(--ion-color-primary-rgb), 0.1) 0%,
+        rgba(var(--ion-color-primary-rgb), 0.05) 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  ion-content {
+    --background: var(--ion-background-color);
   }
 }

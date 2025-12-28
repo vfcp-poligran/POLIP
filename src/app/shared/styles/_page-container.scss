@@ -1,16 +1,12 @@
 // ============================================
 // SHARED PAGE CONTAINER STYLES
 // ============================================
-// Estilos globales para contenedores de página
-// Usado en: Cursos, Rúbricas, Calificaciones, etc.
+// PAGE CONTAINER COMPONENT
+// Shared across all pages - DO NOT hardcode backgrounds here
+// ============================================
 
-/**
- * ion-content background
- * Fondo consistente en todas las páginas
- */
-ion-content {
-    --background: #f8f9fa;
-}
+// ion-content inherits background from theme variables
+// No hardcoded backgrounds - supports both light and dark modes
 
 /**
  * Contenedor principal de página

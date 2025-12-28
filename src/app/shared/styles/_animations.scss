@@ -1,0 +1,364 @@
+// ============================================
+// ANIMATION LIBRARY
+// ============================================
+// Reusable animations optimized for performance
+// Uses transform and opacity for GPU acceleration
+
+// ============================================
+// FADE ANIMATIONS
+// ============================================
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+// ============================================
+// SLIDE ANIMATIONS
+// ============================================
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+// ============================================
+// SCALE ANIMATIONS
+// ============================================
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+}
+
+// ============================================
+// BOUNCE ANIMATION
+// ============================================
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+// ============================================
+// PULSE ANIMATION
+// ============================================
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+// ============================================
+// SHAKE ANIMATION
+// ============================================
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Fade animations
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-fade-out {
+    animation: fadeOut 0.3s ease-out;
+}
+
+// Slide animations
+.animate-slide-in-up {
+    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-down {
+    animation: slideInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-left {
+    animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Scale animations
+.animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+}
+
+.animate-scale-out {
+    animation: scaleOut 0.2s ease-out;
+}
+
+// Interactive animations
+.animate-bounce {
+    animation: bounce 0.6s ease-in-out;
+}
+
+.animate-pulse {
+    animation: pulse 1s ease-in-out infinite;
+}
+
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+// ============================================
+// PERFORMANCE OPTIMIZATIONS
+// ============================================
+
+// Force GPU acceleration for animated elements
+// IMPORTANT: Only add .will-animate to elements that WILL animate
+// Remove this class or add .animation-done after animation completes
+.will-animate {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden; // Prevent flickering
+}
+
+// Remove will-change after animation completes to free resources
+// Apply this class when animation finishes
+.animation-done {
+    will-change: auto;
+}
+
+// ============================================
+// ACCESSIBILITY: REDUCED MOTION
+// ============================================
+
+// Respect user's motion preferences
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    // Disable specific animations
+    .animate-fade-in,
+    .animate-fade-out,
+    .animate-slide-in-up,
+    .animate-slide-in-down,
+    .animate-slide-in-left,
+    .animate-slide-in-right,
+    .animate-scale-in,
+    .animate-scale-out,
+    .animate-bounce,
+    .animate-pulse,
+    .animate-shake {
+        animation: none !important;
+    }
+}
+
+// ============================================
+// TRANSITION UTILITIES
+// ============================================
+
+.transition-fast {
+    transition: all 150ms ease-in-out;
+}
+
+.transition-base {
+    transition: all 250ms ease-in-out;
+}
+
+.transition-slow {
+    transition: all 350ms ease-in-out;
+}
+
+// Specific property transitions
+.transition-opacity {
+    transition: opacity 250ms ease-in-out;
+}
+
+.transition-transform {
+    transition: transform 250ms ease-in-out;
+}
+
+.transition-colors {
+    transition: background-color 250ms ease-in-out, color 250ms ease-in-out;
+}
+
+// ============================================
+// MICRO-INTERACTIONS
+// ============================================
+
+// Button hover effect
+.btn-hover-lift {
+    transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+}
+
+// Card hover effect
+.card-hover-scale {
+    transition: transform 250ms ease-in-out;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+// Icon spin on hover
+.icon-hover-spin {
+    transition: transform 300ms ease-in-out;
+
+    &:hover {
+        transform: rotate(180deg);
+    }
+}
+
+// ============================================
+// LOADING ANIMATIONS
+// ============================================
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes ping {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.animate-ping {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

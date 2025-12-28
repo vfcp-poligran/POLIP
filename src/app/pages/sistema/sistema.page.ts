@@ -7,6 +7,7 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
+  IonCardSubtitle,
   IonCardContent,
   IonButton,
   IonIcon,
@@ -39,13 +40,15 @@ import {
   removeCircle,
   addCircle,
   brush,
-  closeCircle
+  closeCircle, contrast, chevronForward
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { BackupService } from '../../services/backup.service';
 import { UnifiedStorageService } from '../../services/unified-storage.service';
 import { ToastService } from '../../services/toast.service';
 import { Capacitor } from '@capacitor/core';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
+import { PreferencesService } from '../../services/preferences.service';
 
 @Component({
   selector: 'app-sistema',
@@ -59,6 +62,7 @@ import { Capacitor } from '@capacitor/core';
     IonCard,
     IonCardHeader,
     IonCardTitle,
+    IonCardSubtitle,
     IonCardContent,
     IonButton,
     IonIcon,
@@ -66,7 +70,8 @@ import { Capacitor } from '@capacitor/core';
     IonItem,
     IonLabel,
     IonBadge,
-    IonToggle
+    IonToggle,
+    ThemeToggleComponent
   ]
 })
 export class SistemaPage implements OnInit {
@@ -75,6 +80,7 @@ export class SistemaPage implements OnInit {
   private unifiedStorageService = inject(UnifiedStorageService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
+  private preferencesService = inject(PreferencesService);
 
   @ViewChild('fileInputDB') fileInputDB!: ElementRef<HTMLInputElement>;
 
@@ -87,12 +93,11 @@ export class SistemaPage implements OnInit {
   ocultarAvisoEdicionSinSeleccion = false;
   duracionToast = 2; // Duración en segundos (1-4)
 
+  // Expose preferences signals
+  tabAnimationsEnabled = this.preferencesService.tabAnimationsEnabled;
+
   constructor() {
-    addIcons({
-      server, build, settings, notifications, informationCircle, time, removeCircle, addCircle,
-      cloudDownload, cloudUpload, trash, warning, refresh, logoAngular, phonePortrait,
-      logoJavascript, cloud, desktop, checkmarkCircle, brush, closeCircle
-    });
+    addIcons({ server, build, informationCircle, logoAngular, logoJavascript, settings, contrast, notifications, warning, time, removeCircle, addCircle, cloud, cloudDownload, chevronForward, cloudUpload, trash, brush, refresh, phonePortrait, desktop, checkmarkCircle, closeCircle });
   }
 
   async ngOnInit() {
@@ -122,6 +127,15 @@ export class SistemaPage implements OnInit {
     this.ocultarAvisoEdicionSinSeleccion = ocultar;
     this.dataService.updateUIState({ ocultarAvisoEdicionSinSeleccion: ocultar });
     Logger.log(`📢 [Sistema] Aviso de selección de curso ${!ocultar ? 'habilitado' : 'deshabilitado'}`);
+  }
+
+  /**
+   * Toggle tab animations preference
+   */
+  toggleTabAnimations(event: any) {
+    const enabled = event.detail.checked;
+    this.preferencesService.setTabAnimations(enabled);
+    Logger.log(`🎨 [Sistema] Animaciones de tabs ${enabled ? 'habilitadas' : 'deshabilitadas'}`);
   }
 
   incrementarDuracion() {

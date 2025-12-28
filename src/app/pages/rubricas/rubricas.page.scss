@@ -2324,9 +2324,8 @@ ion-col {
 }
 
 // ===== ESTILOS GENERALES =====
-ion-content {
-  --background: #f8f9fa;
-}
+// Page content inherits from theme variables
+
 
 // Mensaje de orientación para móviles
 .orientation-warning {
@@ -4643,5 +4642,183 @@ ion-item-sliding {
       --height: 100%;
       --border-radius: 0;
     }
+  }
+}
+
+// ============================================
+// DARK MODE SUPPORT
+// ============================================
+[data-theme="dark"] {
+
+  // Cards
+  .rubrica-card-item {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+
+    &:hover {
+      border-color: var(--ion-color-secondary);
+    }
+
+    &.card-seleccionada {
+      border-color: var(--ion-color-secondary);
+    }
+  }
+
+  .rubrica-card-top ion-chip {
+    --background: var(--background-tertiary);
+    --color: var(--text-primary);
+  }
+
+  .rubrica-meta,
+  .rubrica-codigo-label {
+    color: var(--text-secondary);
+  }
+
+  .rubrica-meta-grid .meta-item {
+    background: var(--background-tertiary);
+
+    .meta-label {
+      color: var(--text-secondary);
+    }
+
+    .meta-value {
+      color: var(--text-primary);
+    }
+  }
+
+  // Panels
+  .crear-panel-wrapper {
+    background: var(--bg-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .file-loaded-panel {
+    background: var(--background-tertiary);
+    border-left-color: var(--ion-color-success);
+
+    .file-full-name {
+      color: var(--text-primary);
+    }
+
+    .rubrica-name {
+      color: var(--ion-color-primary);
+    }
+
+    .rubrica-meta {
+      color: var(--text-secondary);
+    }
+  }
+
+  // Upload instructions
+  .upload-instructions {
+    .info-text {
+      color: var(--text-primary);
+
+      strong {
+        color: var(--text-primary);
+      }
+    }
+  }
+
+  .upload-btn-container .btn-label {
+    color: var(--text-primary);
+  }
+
+  // Tables
+  .tabla-detalle {
+    background: var(--bg-card);
+
+    th {
+      background: var(--background-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    td {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    tr:hover td {
+      background: var(--bg-hover);
+    }
+  }
+
+  // Forms
+  .form-field,
+  .input-wrapper {
+
+    input,
+    textarea,
+    select {
+      background: var(--background-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+
+      &::placeholder {
+        color: var(--text-tertiary);
+      }
+
+      &:focus {
+        border-color: var(--ion-color-primary);
+        background: var(--bg-hover);
+      }
+    }
+  }
+
+  // Labels
+  label,
+  .field-label,
+  .section-label {
+    color: var(--text-secondary);
+  }
+
+  // Empty states
+  .empty-state,
+  .no-data-message {
+    color: var(--text-secondary);
+
+    ion-icon {
+      color: var(--text-tertiary);
+    }
+  }
+
+  // Criterios y puntuaciones
+  .criterio-item,
+  .puntuacion-item {
+    background: var(--background-tertiary);
+    border-color: var(--border-color);
+
+    .criterio-nombre,
+    .puntuacion-value {
+      color: var(--text-primary);
+    }
+
+    .criterio-descripcion,
+    .puntuacion-label {
+      color: var(--text-secondary);
+    }
+  }
+
+  // Stats
+  .stat-item {
+    background: var(--background-tertiary);
+
+    .stat-label {
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      color: var(--text-primary);
+    }
+  }
+
+  // Alerts
+  .alert-box,
+  .notification-card {
+    background: var(--background-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
   }
 }

@@ -1,0 +1,131 @@
+// ============================================
+// DARK MODE THEME VARIABLES
+// ============================================
+
+// Dark theme - Applied when data-theme="dark"
+[data-theme="dark"] {
+    // Background colors
+    --background: #1a1a1a;
+    --background-secondary: #2d2d2d;
+    --background-tertiary: #3a3a3a;
+    --bg-color: #1a1a1a;
+    --bg-card: #2d2d2d;
+    --bg-hover: #3a3a3a;
+
+    // Text colors (WCAG AA compliant on dark backgrounds)
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #808080;
+    --ion-text-color: #e0e0e0;
+
+    // Primary colors (adjusted for dark mode)
+    --azul-oscuro: #5a9fd4;
+    --azul-claro: #4db8e8;
+    --naranja: #ffb84d;
+    --verde: #b8d96a;
+    --magenta: #ff4da6;
+
+    // Ionic color adjustments
+    --ion-color-primary: #5a9fd4;
+    --ion-color-primary-rgb: 90, 159, 212;
+    --ion-color-primary-contrast: #000000;
+
+    --ion-color-secondary: #4db8e8;
+    --ion-color-secondary-rgb: 77, 184, 232;
+
+    --ion-color-success: #b8d96a;
+    --ion-color-success-rgb: 184, 217, 106;
+
+    --ion-color-warning: #ffb84d;
+    --ion-color-warning-rgb: 255, 184, 77;
+
+    --ion-color-danger: #ff4da6;
+    --ion-color-danger-rgb: 255, 77, 166;
+
+    // Borders & Shadows
+    --border-color: #404040;
+    --ion-border-color: #404040;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.6);
+
+    // Ionic backgrounds
+    --ion-background-color: #1a1a1a;
+    --ion-background-color-rgb: 26, 26, 26;
+
+    --ion-card-background: #2d2d2d;
+
+    // Toolbar
+    --ion-toolbar-background: #2d2d2d;
+    --ion-toolbar-color: #e0e0e0;
+
+    // Item
+    --ion-item-background: #2d2d2d;
+    --ion-item-color: #e0e0e0;
+}
+
+// Auto theme - Respects system preference
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        // Background colors
+        --background: #1a1a1a;
+        --background-secondary: #2d2d2d;
+        --background-tertiary: #3a3a3a;
+        --bg-color: #1a1a1a;
+        --bg-card: #2d2d2d;
+        --bg-hover: #3a3a3a;
+
+        // Text colors
+        --text-primary: #e0e0e0;
+        --text-secondary: #b0b0b0;
+        --text-tertiary: #808080;
+        --ion-text-color: #e0e0e0;
+
+        // Primary colors
+        --azul-oscuro: #5a9fd4;
+        --azul-claro: #4db8e8;
+        --naranja: #ffb84d;
+        --verde: #b8d96a;
+        --magenta: #ff4da6;
+
+        // Ionic colors
+        --ion-color-primary: #5a9fd4;
+        --ion-color-primary-rgb: 90, 159, 212;
+        --ion-color-primary-contrast: #000000;
+
+        --ion-color-secondary: #4db8e8;
+        --ion-color-secondary-rgb: 77, 184, 232;
+
+        --ion-color-success: #b8d96a;
+        --ion-color-success-rgb: 184, 217, 106;
+
+        --ion-color-warning: #ffb84d;
+        --ion-color-warning-rgb: 255, 184, 77;
+
+        --ion-color-danger: #ff4da6;
+        --ion-color-danger-rgb: 255, 77, 166;
+
+        // Borders & Shadows
+        --border-color: #404040;
+        --ion-border-color: #404040;
+
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
+        --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.6);
+
+        // Ionic backgrounds
+        --ion-background-color: #1a1a1a;
+        --ion-background-color-rgb: 26, 26, 26;
+
+        --ion-card-background: #2d2d2d;
+
+        // Toolbar
+        --ion-toolbar-background: #2d2d2d;
+        --ion-toolbar-color: #e0e0e0;
+
+        // Item
+        --ion-item-background: #2d2d2d;
+        --ion-item-color: #e0e0e0;
+    }
+}

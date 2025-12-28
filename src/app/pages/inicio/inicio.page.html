@@ -165,8 +165,23 @@
                         <ion-badge color="primary">{{ cursosResumen().length }}</ion-badge>
                     </div>
 
-                    <div class="courses-card-list">
-                        @if (cursosResumen().length === 0) {
+                    <div class="courses-card-list" [@listAnimation]="cursosResumen().length">
+                        @if (isLoading()) {
+                        <!-- Skeleton loaders durante la carga -->
+                        @for (i of [1, 2, 3]; track i) {
+                        <ion-card class="course-card-premium skeleton-card">
+                            <div class="card-color-strip" style="background: #e0e0e0;"></div>
+                            <ion-card-header>
+                                <ion-card-title>
+                                    <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+                                </ion-card-title>
+                                <ion-card-subtitle>
+                                    <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+                                </ion-card-subtitle>
+                            </ion-card-header>
+                        </ion-card>
+                        }
+                        } @else if (cursosResumen().length === 0) {
                         <div class="empty-state">
                             <ion-icon name="school-outline"></ion-icon>
                             <p>No hay cursos cargados</p>
@@ -174,7 +189,8 @@
                         } @else {
                         @for (curso of cursosResumen(); track curso.codigo) {
                         <ion-card class="course-card-premium" [class.selected]="cursoSeleccionado() === curso.codigo"
-                            [style.--course-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)">
+                            [style.--course-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)"
+                            @itemAnimation>
                             <div class="card-color-strip" [style.background]="curso.color"></div>
 
                             <!-- Mobile selection mode indicator (only on mobile) -->
@@ -314,7 +330,8 @@
     }
 
     <!-- MODAL DE REGISTRO DE NOVEDAD -->
-    <ion-modal [isOpen]="isModalRegistroVisible()" (didDismiss)="cerrarModalRegistro()" class="registration-modal">
+    <ion-modal [isOpen]="isModalRegistroVisible()" (didDismiss)="cerrarModalRegistro()" class="registration-modal"
+        @modalAnimation>
         <ng-template>
             <ion-header>
                 <ion-toolbar color="primary">

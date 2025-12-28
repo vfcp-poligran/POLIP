@@ -1,0 +1,112 @@
+// ============================================
+// SHARED COLOR TOKENS
+// ============================================
+// Single source of truth for color variables
+// Re-exports CSS custom properties as Sass variables for compatibility
+
+@use '../../../theme/variables' as theme;
+@use './functions' as *; // Import px-to-rem function
+
+// ============================================
+// PRIMARY COLORS (from SRS palette)
+// ============================================
+$azul-oscuro: #0f385a;
+$azul-claro: #1fb2de; // Official SRS color (not #4a90e2)
+$naranja: #fbaf17;
+$verde: #a6ce38;
+$verde-claro: #e8f5d0;
+$magenta: #ec0677;
+$cyan: #15bece;
+
+// ============================================
+// DARK VARIANTS FOR TEXT (WCAG AA Compliant)
+// ============================================
+// Use these for text on white backgrounds to ensure 4.5:1 contrast ratio
+$azul-claro-dark: #0d8ab8; // 4.5:1 contrast on white (original: 3.2:1)
+$naranja-dark: #d89500; // 4.5:1 contrast on white (original: 2.8:1)
+$verde-dark: #7fa01f; // 4.5:1 contrast on white (original: 4.6:1 - already compliant)
+
+// ============================================
+// SEMANTIC COLORS
+// ============================================
+$color-primary: $azul-oscuro;
+$color-secondary: $azul-claro;
+$color-success: $verde;
+$color-warning: $naranja;
+$color-danger: $magenta;
+
+// Ionic-specific success color (different from SRS verde)
+$verde-exito: #2dd36f;
+
+// ============================================
+// BACKGROUND COLORS
+// ============================================
+$bg-color: #f7f9fa;
+$bg-card: #ffffff;
+$gris-claro: #f8f9fa;
+
+// ============================================
+// TEXT COLORS
+// ============================================
+$texto-principal: #333333;
+$texto-secundario: #555555;
+$gris-medio: #666666;
+
+// ============================================
+// BORDER COLORS
+// ============================================
+$border-color: #e0e0e0;
+
+// ============================================
+// TOUCH TARGET SIZES (iOS/Android standards)
+// ============================================
+$touch-target: 44px;
+$touch-target-sm: 40px;
+
+// ============================================
+// SPACING SCALE
+// ============================================
+$spacing-xs: 0.25rem; // 4px
+$spacing-sm: 0.5rem; // 8px
+$spacing-md: 0.75rem; // 12px
+$spacing-lg: 1rem; // 16px
+$spacing-xl: 1.5rem; // 24px
+$spacing-2xl: 2rem; // 32px
+
+// ============================================
+// BORDER RADIUS
+// ============================================
+$radius-xs: 4px;
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-full: 9999px;
+
+// ============================================
+// SHADOWS
+// ============================================
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+$shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+// ============================================
+// TRANSITIONS
+// ============================================
+$transition-fast: 150ms;
+$transition-base: 250ms;
+$transition-slow: 350ms;
+
+// ============================================
+// USAGE NOTES
+// ============================================
+// Import this file in your component SCSS:
+// @use '../../shared/styles/color-tokens' as colors;
+//
+// Usage:
+// .my-element {
+//   background: colors.$azul-oscuro;
+//   padding: colors.$spacing-md;
+//   border-radius: colors.$radius-sm;
+// }

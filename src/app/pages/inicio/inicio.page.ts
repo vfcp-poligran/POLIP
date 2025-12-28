@@ -28,6 +28,7 @@ import {
     IonToolbar,
     IonTitle,
     IonButtons,
+    IonSkeletonText,
     ActionSheetController,
     ToastController,
     MenuController,
@@ -86,6 +87,9 @@ import {
     ESTADO_CONFIG
 } from '../../models/novedad.model';
 
+// Import animations
+import { pageEnterAnimation, listAnimation, itemAnimation, modalAnimation } from '../../shared/animations/animations';
+
 interface CursoResumen {
     codigo: string;
     nombre: string;
@@ -108,6 +112,7 @@ interface EstudianteSeleccionado {
     templateUrl: './inicio.page.html',
     styleUrls: ['./inicio.page.scss'],
     standalone: true,
+    animations: [pageEnterAnimation, listAnimation, itemAnimation, modalAnimation], // Add modalAnimation
     imports: [
         CommonModule,
         FormsModule,
@@ -133,7 +138,8 @@ interface EstudianteSeleccionado {
         IonCardHeader,
         IonCardTitle,
         IonCardSubtitle,
-        IonFab
+        IonFab,
+        IonSkeletonText
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -158,6 +164,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     isDesktop = signal<boolean>(window.innerWidth >= 992);
     cursoExpandido = signal<string | null>(null); // Código del curso expandido en accordion
     tiposFiltro = signal<Set<string>>(new Set()); // Tipos de novedad seleccionados como filtro
+    isLoading = signal<boolean>(true); // Para skeleton loaders
 
     // NEW: Course and group selection signals
     cursoSeleccionado = signal<string | null>(null);
@@ -225,6 +232,8 @@ export class InicioPage implements OnInit, ViewWillEnter {
     // === CARGA DE DATOS ===
 
     cargarCursos(): void {
+        this.isLoading.set(true); // Start loading
+
         const cursos = this.dataService.cursos();
         const resumen: CursoResumen[] = [];
 
@@ -247,6 +256,11 @@ export class InicioPage implements OnInit, ViewWillEnter {
         });
 
         this.cursosResumen.set(resumen);
+
+        // Simulate loading delay for skeleton (remove in production if data loads instantly)
+        setTimeout(() => {
+            this.isLoading.set(false);
+        }, 300);
     }
 
     /**

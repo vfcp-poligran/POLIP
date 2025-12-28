@@ -1,0 +1,81 @@
+// ============================================
+// PX TO REM CONVERSION FUNCTIONS
+// ============================================
+// Helper functions for converting px to rem units
+// Base font size: 16px (browser default)
+
+@use 'sass:math';
+
+// ============================================
+// CONVERSION FUNCTION
+// ============================================
+
+/// Convert pixels to rem
+/// @param {Number} $px - Pixel value to convert
+/// @param {Number} $base [16] - Base font size in pixels
+/// @return {Number} - Converted rem value
+/// @example
+///   font-size: px-to-rem(14); // 0.875rem
+///   padding: px-to-rem(24); // 1.5rem
+@function px-to-rem($px, $base: 16) {
+    @if unitless($px) {
+        @return math.div($px, $base) * 1rem;
+    }
+
+    @else if unit($px)=='px' {
+        @return math.div(math.div($px, 1px), $base) * 1rem;
+    }
+
+    @else {
+        @error "px-to-rem() expects a unitless number or px value, got #{$px}";
+    }
+}
+
+// ============================================
+// COMMON CONVERSIONS (Quick Reference)
+// ============================================
+
+// Typography
+// 10px = 0.625rem
+// 11px = 0.6875rem
+// 12px = 0.75rem
+// 13px = 0.8125rem
+// 14px = 0.875rem
+// 15px = 0.9375rem
+// 16px = 1rem (base)
+// 18px = 1.125rem
+// 20px = 1.25rem
+// 24px = 1.5rem
+// 32px = 2rem
+// 48px = 3rem
+
+// Spacing
+// 4px = 0.25rem
+// 8px = 0.5rem
+// 12px = 0.75rem
+// 16px = 1rem
+// 20px = 1.25rem
+// 24px = 1.5rem
+// 32px = 2rem
+// 48px = 3rem
+// 64px = 4rem
+
+// ============================================
+// USAGE EXAMPLES
+// ============================================
+
+// Example 1: Simple conversion
+// .element {
+//   font-size: px-to-rem(14); // 0.875rem
+// }
+
+// Example 2: With spacing
+// .container {
+//   padding: px-to-rem(16) px-to-rem(24); // 1rem 1.5rem
+// }
+
+// Example 3: In calculations
+// .box {
+//   width: px-to-rem(320); // 20rem
+//   max-width: px-to-rem(1200); // 75rem
+// }

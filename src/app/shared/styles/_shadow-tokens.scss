@@ -1,0 +1,150 @@
+// ============================================
+// SHADOW TOKEN SYSTEM
+// ============================================
+// Centralized shadow definitions for consistent UI depth
+// and improved performance through CSS variable reuse
+
+// ============================================
+// LIGHT MODE SHADOWS
+// ============================================
+
+:root {
+    // Subtle shadows for minimal elevation
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+    // Standard card shadows
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.15);
+
+    // Elevated elements (modals, popovers)
+    --shadow-xl: 0 10px 24px rgba(0, 0, 0, 0.18);
+    --shadow-2xl: 0 20px 40px rgba(0, 0, 0, 0.22);
+    --shadow-3xl: 0 25px 50px rgba(0, 0, 0, 0.25);
+
+    // Colored shadows for branded elements
+    --shadow-primary: 0 4px 12px rgba(31, 178, 222, 0.3);
+    --shadow-primary-lg: 0 6px 20px rgba(31, 178, 222, 0.4);
+    --shadow-success: 0 4px 12px rgba(16, 185, 129, 0.3);
+    --shadow-warning: 0 4px 12px rgba(245, 158, 11, 0.3);
+    --shadow-danger: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+// ============================================
+// DARK MODE SHADOWS
+// ============================================
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        // Darker, more prominent shadows for dark backgrounds
+        --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+        --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.6);
+        --shadow-xl: 0 10px 24px rgba(0, 0, 0, 0.7);
+        --shadow-2xl: 0 20px 40px rgba(0, 0, 0, 0.8);
+        --shadow-3xl: 0 25px 50px rgba(0, 0, 0, 0.9);
+
+        // Colored shadows slightly more intense in dark mode
+        --shadow-primary: 0 4px 16px rgba(31, 178, 222, 0.4);
+        --shadow-primary-lg: 0 8px 24px rgba(31, 178, 222, 0.5);
+        --shadow-success: 0 4px 16px rgba(16, 185, 129, 0.4);
+        --shadow-warning: 0 4px 16px rgba(245, 158, 11, 0.4);
+        --shadow-danger: 0 4px 16px rgba(239, 68, 68, 0.4);
+    }
+}
+
+// Manual dark mode class support (for theme.service.ts)
+body.dark-mode {
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 10px 24px rgba(0, 0, 0, 0.7);
+    --shadow-2xl: 0 20px 40px rgba(0, 0, 0, 0.8);
+    --shadow-3xl: 0 25px 50px rgba(0, 0, 0, 0.9);
+
+    --shadow-primary: 0 4px 16px rgba(31, 178, 222, 0.4);
+    --shadow-primary-lg: 0 8px 24px rgba(31, 178, 222, 0.5);
+    --shadow-success: 0 4px 16px rgba(16, 185, 129, 0.4);
+    --shadow-warning: 0 4px 16px rgba(245, 158, 11, 0.4);
+    --shadow-danger: 0 4px 16px rgba(239, 68, 68, 0.4);
+}
+
+// ============================================
+// FOCUS SHADOWS (ACCESSIBILITY)
+// ============================================
+
+:root {
+    // Focus ring shadows for keyboard navigation
+    --shadow-focus: 0 0 0 3px rgba(31, 178, 222, 0.25);
+    --shadow-focus-danger: 0 0 0 3px rgba(239, 68, 68, 0.25);
+    --shadow-focus-success: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+// ============================================
+// INSET SHADOWS
+// ============================================
+
+:root {
+    // For pressed/active states
+    --shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-inset-md: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+// ============================================
+// COMBINED SHADOWS (LAYERED)
+// ============================================
+
+:root {
+    // Glassmorphism effect (border + shadow)
+    --shadow-glass:
+        0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 8px 32px rgba(0, 0, 0, 0.15);
+
+    --shadow-glass-dark:
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode {
+    --shadow-glass: var(--shadow-glass-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --shadow-glass: var(--shadow-glass-dark);
+    }
+}
+
+// ============================================
+// USAGE EXAMPLES
+// ============================================
+
+/*
+  // Basic shadow
+  .card {
+    box-shadow: var(--shadow-md);
+  }
+
+  // Hover elevation
+  .card:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  // Branded shadow
+  .primary-button {
+    box-shadow: var(--shadow-primary);
+  }
+
+  // Combined glass effect
+  .glass-card {
+    box-shadow: var(--shadow-glass);
+    backdrop-filter: blur(10px);
+  }
+
+  // Focus state
+  button:focus-visible {
+    box-shadow: var(--shadow-focus);
+  }
+*/

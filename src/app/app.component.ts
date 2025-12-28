@@ -5,6 +5,7 @@ import {
   IonRouterOutlet
 } from '@ionic/angular/standalone';
 import { DataService } from './services/data.service';
+import { ThemeService } from './services/theme.service';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
 import { Logger } from '@app/core/utils/logger';
 
@@ -21,6 +22,7 @@ import { Logger } from '@app/core/utils/logger';
 })
 export class AppComponent implements OnInit {
   private dataService = inject(DataService);
+  private themeService = inject(ThemeService); // Initialize theme service on app startup
 
   @ViewChild(SplashScreenComponent) splashScreen!: SplashScreenComponent;
 

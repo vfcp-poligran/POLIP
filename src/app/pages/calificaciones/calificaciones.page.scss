@@ -9,9 +9,7 @@
 // ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
-ion-content {
-  --background: #f8f9fa;
-}
+// ion-content now inherits from theme variables
 
 // Estilos de .page-title-header se aplican desde global.scss
 
@@ -1208,6 +1206,176 @@ ion-content {
     tbody tr {
       animation: none;
       page-break-inside: avoid;
+    }
+  }
+}
+
+// ============================================
+// DARK MODE SUPPORT
+// ============================================
+[data-theme="dark"] {
+
+  // Main content
+  ion-content {
+    --background: var(--ion-background-color);
+  }
+
+  // Page container
+  .page-container {
+    background: transparent;
+  }
+
+  // Segment buttons
+  .course-segment-button .segment-button-content {
+    background: var(--background-tertiary);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+    .segment-label .course-name {
+      color: var(--text-primary);
+    }
+  }
+
+  .course-segment-button.segment-button-checked .segment-button-content {
+    background: var(--course-color, var(--ion-color-primary));
+    color: #ffffff;
+
+    .segment-label .course-name {
+      color: #ffffff;
+    }
+  }
+
+  .course-segment-button:not(.segment-button-checked):hover .segment-button-content {
+    background: var(--bg-hover);
+    border-color: var(--border-color);
+  }
+
+  // Archivo actions bar
+  .archivo-actions-bar {
+    background: var(--background-tertiary);
+    border-color: var(--border-color);
+
+    &:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-color);
+    }
+
+    .archivo-info {
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+
+      .archivo-nombre {
+        color: var(--text-primary);
+      }
+
+      .archivo-fecha {
+        color: var(--text-secondary);
+      }
+    }
+  }
+
+  // Tabla area
+  .tabla-area {
+    background: var(--bg-card);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  // Tabla info bar
+  .tabla-info-bar {
+    background: var(--background-tertiary);
+    border-bottom-color: var(--border-color);
+  }
+
+  // Tabla wrapper scrollbar
+  .tabla-wrapper {
+    &::-webkit-scrollbar {
+      background: var(--background-tertiary);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--ion-color-primary);
+
+      &:hover {
+        background: var(--ion-color-primary-shade);
+      }
+    }
+  }
+
+  // Tabla calificaciones
+  .tabla-calificaciones {
+    thead {
+      background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+
+      .tabla-header {
+        border-right-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+
+        &.col-sticky {
+          background: var(--ion-color-primary);
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom-color: var(--border-color);
+
+        &:hover {
+          background-color: var(--bg-hover);
+        }
+
+        &.fila-par {
+          background-color: var(--bg-card);
+        }
+
+        &.fila-impar {
+          background-color: var(--background-tertiary);
+        }
+      }
+    }
+
+    .tabla-cell {
+      color: var(--text-primary);
+      border-right-color: var(--border-color);
+
+      &.col-id {
+        color: var(--text-secondary);
+      }
+
+      &.col-sticky {
+        background: var(--bg-card);
+        box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
+      }
+
+      &.cell-nota -input {
+        background: var(--background-tertiary);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+
+        &:focus {
+          background: var(--bg-hover);
+          border-color: var(--ion-color-primary);
+        }
+      }
+    }
+  }
+
+  // Empty state
+  .empty-state {
+    color: var(--text-secondary);
+
+    ion-icon {
+      color: var(--text-tertiary);
+    }
+  }
+
+  // No cursos message
+  .no-cursos-msg {
+    color: var(--text-secondary);
+
+    ion-icon {
+      color: var(--text-tertiary);
     }
   }
 }
