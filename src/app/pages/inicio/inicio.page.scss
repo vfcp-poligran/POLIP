@@ -39,12 +39,7 @@ $touch-target: colors.$touch-target;
                 color: #fff;
             }
 
-            h1 {
-                margin: 0;
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: #fff;
-            }
+            // h1 removed as element is removed from HTML
 
             .offline-chip {
                 --background: rgba(255, 152, 0, 0.2);
@@ -1308,6 +1303,113 @@ $touch-target: colors.$touch-target;
         }
     }
 
+    // Ellipsis Trigger
+    .card-options-trigger {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 4px; // Close to right edge
+        width: 32px; // Slightly larger touch target
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        transition: background 0.2s;
+
+        ion-icon {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        &:hover {
+            background: rgba($azul-oscuro, 0.1);
+
+            ion-icon {
+                color: $azul-oscuro;
+            }
+        }
+    }
+
+    // Floating Overlay
+    .floating-groups-overlay {
+        position: absolute;
+        top: 40px; // Below ellipsis
+        right: 8px; // Aligned right
+        width: 180px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--border-color);
+        z-index: 100;
+        overflow: hidden;
+        animation: scaleIn 0.2s ease-out;
+
+        .floating-header {
+            padding: 8px 12px;
+            background: var(--background-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+
+            ion-icon {
+                font-size: 1rem;
+                cursor: pointer;
+            }
+        }
+
+        .floating-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 4px;
+
+            .floating-group-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 6px 10px;
+                margin-bottom: 2px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background 0.2s;
+                font-size: 0.85rem;
+                color: var(--text-primary);
+
+                &:hover {
+                    background: var(--bg-hover);
+                }
+
+                &.selected {
+                    background: rgba($azul-claro, 0.1);
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .floating-actions {
+            padding: 8px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: $azul-claro;
+            font-size: 0.8rem;
+            font-weight: 500;
+            justify-content: center;
+
+            &:hover {
+                background: var(--bg-hover);
+            }
+        }
+    }
+
     &.column-courses {
         padding-left: 0 !important; // Force left alignment
         padding-right: 8px; // Reduced right padding
@@ -1440,7 +1542,22 @@ $touch-target: colors.$touch-target;
         background: rgba(255, 255, 255, 0.15);
     }
 
-    .grupos-buttons-row::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15);
+    // Force overflow for floating menu
+    .course-card-premium {
+        overflow: visible !important;
+        contain: none !important;
+    }
+
+    // STRICT LEFT ALIGNMENT OVERRIDE
+    @media (min-width: 992px) {
+        ion-grid {
+            padding-inline-start: 0 !important;
+            padding-inline-end: 0 !important;
+            --ion-grid-padding: 0;
+
+            ion-row {
+                padding: 0;
+            }
+        }
     }
 }

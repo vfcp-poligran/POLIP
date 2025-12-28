@@ -7,9 +7,7 @@
         <ion-button (click)="toggleMobileSeguimiento()" aria-label="Alternar panel de seguimiento">
           <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
         </ion-button>
-        <ion-button (click)="toggleSearch()" aria-label="Buscar">
-          <ion-icon slot="icon-only" name="search-outline"></ion-icon>
-        </ion-button>
+
       </ion-buttons>
       <ion-title class="mobile-app-title">
         <ion-avatar class="header-logo-avatar">
@@ -27,9 +25,6 @@
   } @else {
   <div class="desktop-nav-bar" role="navigation" aria-label="Navegación principal">
     <ion-buttons>
-      <ion-button fill="clear" color="light" (click)="toggleSearch()" aria-label="Buscar">
-        <ion-icon slot="icon-only" name="search-outline"></ion-icon>
-      </ion-button>
       <ion-button *ngFor="let item of navigationItems" [fill]="currentUrl.includes(item.path) ? 'solid' : 'clear'"
         color="light" (click)="router.navigate([item.path])">
         <ion-icon slot="start" [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
   IonIcon,
-  IonSearchbar,
   IonButton,
   IonButtons,
   IonCard,
@@ -35,7 +34,6 @@ import {
   clipboard,
   ribbon,
   settings,
-  search,
   school,
   people,
   grid,
@@ -158,10 +156,8 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   private resizeHandler: (() => void) | null = null;
   private subscriptions: Subscription[] = [];
-  globalSearch: string = '';
   selectedGrupo: number = 0; // Grupo seleccionado en UI (para botones)
   grupoVisualizado: number = 0; // Grupo para mostrar integrantes (puede ser diferente)
-  searchExpanded: boolean = false;
   isDesktop: boolean = typeof window !== 'undefined' ? window.innerWidth >= 992 : false;
   grupos: string[] = [];
   tipoRubricaSeleccionado: 'PG' | 'PI' = 'PG';
@@ -189,14 +185,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   editandoCalificacion: { estudiante: any; entrega: string } | null = null;
   valorCalificacionEditando: string = '';
 
-  // Resultados de búsqueda global
-  searchResults: Array<{
-    estudiante: any;
-    curso: string;
-    cursoNombre: string;
-    cursoMetadata?: any;
-  }> = [];
-  searchTerm: string = '';
+
 
   // Modo de selección de estado para estudiantes
   modoSeleccionEstado: 'ok' | 'solo' | 'ausente' | null = null;
@@ -264,14 +253,14 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   constructor() {
     addIcons({
       // Filled icons
-      home, library, clipboard, ribbon, settings, search, school, people, grid, trophy, chatbubble, person, book,
+      home, library, clipboard, ribbon, settings, school, people, grid, trophy, chatbubble, person, book,
       documentText, star, cog, speedometer,
       // Estado icons
       checkmarkCircle, gitMerge, closeCircle,
       // Outline icons
       homeOutline, settingsOutline, schoolOutline, listOutline, analyticsOutline,
       informationCircleOutline, copyOutline, chevronDownOutline, chevronUpOutline,
-      pinOutline, personOutline, peopleOutline, searchOutline, closeOutline, expandOutline, trophyOutline,
+      pinOutline, personOutline, peopleOutline, closeOutline, expandOutline, trophyOutline,
       bookOutline, eyeOutline, menuOutline, chevronForwardOutline, chevronBackOutline,
       arrowForwardOutline, arrowBackOutline,
       speedometerOutline, libraryOutline, ribbonOutline,
@@ -362,13 +351,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       }
     });
 
-    effect(() => {
-      const results = this.dataService.searchResults();
-      this.searchResults = results.results;
-      this.searchTerm = results.term;
-      Logger.log(`📋[tabs.page] Resultados de búsqueda actualizados: ${this.searchResults.length} resultados`);
-      this.cdr.markForCheck();
-    });
+
   }
 
   ngAfterViewInit(): void {
@@ -414,34 +397,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
       window.addEventListener('resize', this.resizeHandler);
     });
-  }
-
-  onGlobalSearch(event: any): void {
-    const searchTerm = event.detail.value?.toLowerCase() || '';
-    this.dataService.setGlobalSearchTerm(searchTerm);
-    // Trigger cross-course search
-    this.dataService.searchAcrossAllCourses(searchTerm);
-  }
-
-  toggleSearch(): void {
-    // Navegar a la página de inicio si no estamos allí
-    if (!this.currentUrl.includes('/inicio')) {
-      this.router.navigate(['/tabs/inicio']);
-    }
-
-    // Alternar visibilidad de la barra de búsqueda
-    const currentVisible = this.dataService.searchBarVisible();
-    (this.dataService as any)._searchBarVisible.set(!currentVisible);
-
-    // Si se acaba de mostrar, hacer focus después de un delay
-    if (!currentVisible) {
-      setTimeout(() => {
-        const searchbar = document.querySelector('.main-searchbar') as any;
-        if (searchbar && searchbar.setFocus) {
-          searchbar.setFocus();
-        }
-      }, 300);
-    }
   }
 
   /** Toggle del panel de seguimiento móvil */
