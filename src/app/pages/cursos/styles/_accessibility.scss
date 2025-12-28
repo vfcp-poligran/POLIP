@@ -134,30 +134,7 @@ ion-chip {
     }
 }
 
-// ============================================
-// SKIP LINKS
-// ============================================
 
-/**
- * Permite saltar al contenido principal
- * Útil para usuarios de screen readers
- */
-.skip-link {
-    position: absolute;
-    top: -40px;
-    left: 0;
-    background: $azul-oscuro;
-    color: white;
-    padding: spacing('sm') spacing('md');
-    text-decoration: none;
-    z-index: z('tooltip');
-    border-radius: 0 0 $radius-sm 0;
-    @include transition(top, $transition-fast);
-
-    &:focus {
-        top: 0;
-    }
-}
 
 // ============================================
 // SCREEN READER ONLY

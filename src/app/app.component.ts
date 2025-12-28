@@ -13,6 +13,7 @@ import { Logger } from '@app/core/utils/logger';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     IonApp,
