@@ -627,34 +627,12 @@ $touch-target: colors.$touch-target;
 @media (min-width: 992px) {
     ion-grid {
         .main-layout-row {
-            flex-wrap: nowrap; // Prevent wrapping ONLY on main row
+            // Standard Grid Behavior restored (Homogeneous Distribution)
+            // No wrapping on desktop to ensure side-by-side
+            flex-wrap: nowrap;
+
+            // Allow columns to behave according to size-lg attributes
             align-items: flex-start; // Ensure top alignment
-
-            // Columna Cursos: Fit Content (High Specificity)
-            &>ion-col.column-courses {
-                flex: 0 0 auto;
-                width: auto;
-                max-width: 400px;
-            }
-
-            // Columna Derecha: Fill Remaining
-            &>ion-col.right-column-container {
-                flex: 1 1 auto;
-                width: 100%; // Ensure it fills the flex space
-                max-width: none;
-
-                // Ensure it has display block/flex to contain children
-                display: block;
-
-                // Restore standard grid behavior for internal rows
-
-                ion-row {
-                    flex-wrap: wrap;
-                    margin-left: -5px; // Compensate for tight internal spacing if needed
-                    margin-right: -5px;
-                    width: calc(100% + 10px);
-                }
-            }
         }
     }
 }
@@ -767,6 +745,19 @@ $touch-target: colors.$touch-target;
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    .btn-main-region-grid {
+        padding-inline-start: 16px;
+        padding-inline-end: 16px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        height: 100%;
+
+        // Optional: Remove grid padding on desktop if strict alignment is needed
+        @media (min-width: 992px) {
+            padding-inline-start: 0; // Strict left alignment
+        }
+    }
 
     .btn-main-register {
         --border-radius: 12px;
@@ -1314,6 +1305,16 @@ $touch-target: colors.$touch-target;
 
         &:hover {
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+        }
+    }
+
+    &.column-courses {
+        padding-left: 0 !important; // Force left alignment
+        padding-right: 8px; // Reduced right padding
+
+        @media (max-width: 992px) {
+            padding: 16px; // Restore padding on mobile
+            width: 100%;
         }
     }
 

@@ -121,8 +121,8 @@
         <ion-grid>
             <ion-row class="main-layout-row">
                 <!-- COLUMNA 1: PANORAMA DE CURSOS (Cards) -->
-                <!-- size-lg removed to allow SCSS flex: 0 0 auto -->
-                <ion-col size="12" class="column-container column-courses">
+                <!-- size-lg="3" = 25% width (Narrower) -->
+                <ion-col size="12" size-lg="3" class="column-container column-courses">
                     <div class="column-header">
                         <ion-icon name="apps-outline"></ion-icon>
                         <h2>Mis Cursos</h2>
@@ -189,8 +189,8 @@
                 </ion-col>
 
                 <!-- COLUMNA 2: CONTENEDOR DERECHO (Selector + Sub-grid) -->
-                <!-- size-lg removed to allow SCSS flex: 1 -->
-                <ion-col size="12" class="right-column-container">
+                <!-- size-lg="9" = 75% width (Wider) -->
+                <ion-col size="12" size-lg="9" class="right-column-container">
 
                     <!-- Dynamic Group Buttons (Full Width) -->
                     @if (cursoSeleccionado()) {
@@ -200,15 +200,7 @@
                                 <ion-icon name="people-outline"></ion-icon>
                                 <span>Grupos de {{ getCodigoCorto(cursoSeleccionado()!) }}</span>
                             </div>
-                            @if (gruposSeleccionados().size > 0) {
-                            <div class="selection-info">
-                                <ion-badge color="primary">{{ gruposSeleccionados().size }} seleccionado(s)</ion-badge>
-                                <ion-button fill="clear" size="small" (click)="agregarGruposSeleccionados()">
-                                    <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-                                    Agregar todos
-                                </ion-button>
-                            </div>
-                            }
+                            <!-- "Agregar Todos" moved to Registration Panel -->
                         </div>
                         <div class="grupos-buttons-row">
                             @for (grupo of gruposDelCursoSeleccionado(); track grupo) {
@@ -252,6 +244,15 @@
                                     </ion-button>
 
                                     <div class="selection-tools">
+                                        <!-- "Agregar Todos" Button (Relocated) -->
+                                        @if (gruposSeleccionados().size > 0) {
+                                        <ion-button fill="clear" size="small" color="secondary"
+                                            (click)="agregarGruposSeleccionados()">
+                                            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                                            Agregar {{ gruposSeleccionados().size }} grupos
+                                        </ion-button>
+                                        }
+
                                         <ion-button fill="clear" size="small" color="medium"
                                             (click)="toggleSeleccionarTodos()">
                                             <ion-icon slot="start"
