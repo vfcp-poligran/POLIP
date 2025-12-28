@@ -23,37 +23,8 @@ $touch-target: colors.$touch-target;
     top: 0;
     z-index: 100;
 
-    .header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
+    // .header-top styles removed
 
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            ion-icon {
-                font-size: 1.5rem;
-                color: #fff;
-            }
-
-            // h1 removed as element is removed from HTML
-
-            .offline-chip {
-                --background: rgba(255, 152, 0, 0.2);
-                --color: #ffb74d;
-                font-size: 0.7rem;
-                height: 24px;
-            }
-        }
-
-        .pending-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-        }
-    }
 
     .search-tipos-row {
         display: flex;
@@ -393,10 +364,17 @@ $touch-target: colors.$touch-target;
         }
     }
 
-    .grupos-buttons-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+    .grupos-buttons-grid {
+        padding: 0;
+        margin-top: 6px;
+
+        @media (max-width: 991px) {
+            margin-top: 4px;
+        }
+
+        ion-row {
+            --ion-grid-column-padding: 4px;
+        }
 
         .grupo-dynamic-btn {
             --border-radius: 8px;
@@ -463,13 +441,24 @@ $touch-target: colors.$touch-target;
 .grupos-selector-bar-global {
     background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
     border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
+    padding: 12px;
+    margin-bottom: 8px;
+
+    @media (max-width: 991px) {
+        padding: 8px;
+        margin-bottom: 4px;
+        border-radius: 12px;
+    }
+
     border: 1px solid rgba(0, 0, 0, 0.04);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+
+    @media (max-width: 991px) {
+        gap: 4px;
+    }
 
     .grupos-selector-header {
         display: flex;
@@ -585,7 +574,7 @@ $touch-target: colors.$touch-target;
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 12px;
+        padding: 6px 10px;
         background: rgba($azul-claro, 0.05);
         border-radius: 8px;
 
@@ -606,14 +595,46 @@ $touch-target: colors.$touch-target;
 // === COLUMNA 1: CURSOS ===
 .courses-card-list {
     display: flex;
-    flex-direction: column;
-    gap: 6px; // Tighter gap
-    align-items: flex-start; // Align to left but allow width management
-    width: 100%; // Ensure it fills the column width
+    flex-direction: row; // Horizontal layout
+    gap: 6px;
+    align-items: stretch;
+    width: 100%;
+    overflow-x: auto; // Enable horizontal scroll
+    overflow-y: hidden;
+    flex-shrink: 0; // Prevent list from collapsing when content below grows
+    padding-bottom: 8px; // Space for scrollbar
+
+    // Hide scrollbar but keep functionality
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--ion-color-primary-rgb), 0.3) transparent;
+
+    &::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(var(--ion-color-primary-rgb), 0.3);
+        border-radius: 3px;
+
+        &:hover {
+            background: rgba(var(--ion-color-primary-rgb), 0.5);
+        }
+    }
 
     @media (min-width: 992px) {
         padding-left: 0;
-        width: auto; // On desktop, let it be auto
+
+        // Desktop: Wrap cards, no scroll
+        flex-wrap: wrap;
+        overflow-x: visible;
+        overflow-y: visible; // Allow vertical growth for wrapped rows
+        padding-bottom: 0;
+
+
     }
 }
 
@@ -621,6 +642,8 @@ $touch-target: colors.$touch-target;
 // Responsive Grid Adjustments for Dynamic Sizing
 @media (min-width: 992px) {
     ion-grid {
+        padding-right: 0; // Flush grid to right edge
+
         .main-layout-row {
             // Standard Grid Behavior restored (Homogeneous Distribution)
             // No wrapping on desktop to ensure side-by-side
@@ -628,18 +651,29 @@ $touch-target: colors.$touch-target;
 
             // Allow columns to behave according to size-lg attributes
             align-items: flex-start; // Ensure top alignment
+
+            // Swap column order: courses (column 1) to the right
+            .column-courses {
+                order: 2; // Move to the right
+                padding-right: 0; // Flush to right edge
+            }
+
+            .right-column-container {
+                order: 1; // Move to the left
+            }
         }
     }
 }
 
 .course-card-premium {
     margin: 0;
-    width: fit-content; // "Ancho de la cadena de texto"
-    min-width: 0; // Allow shrinking if needed
-    border-radius: 10px; // Smaller radius
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    width: 100px; // Ultra compact width
+    min-width: 100px;
+    flex-shrink: 0; // Don't shrink in flex container
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
     background: var(--ion-card-background, #fff);
-    border: 1px solid rgba(0, 0, 0, 0.06); // Slightly stronger border for contrast
+    border: 1px solid rgba(0, 0, 0, 0.06);
     position: relative;
     overflow: hidden;
     transition: all 0.2s ease;
@@ -647,7 +681,7 @@ $touch-target: colors.$touch-target;
     min-height: auto;
 
     // Ensure text doesn't overflow
-    max-width: 100%;
+    max-width: 100px;
 
     .card-color-strip {
         position: absolute;
@@ -684,15 +718,19 @@ $touch-target: colors.$touch-target;
     }
 
     ion-card-header {
-        padding: 8px 10px; // Very tight padding
-        padding-left: 16px; // Space for strip
+        padding: 4px 6px; // Even more reduced padding
+        padding-left: 8px; // Space for strip
 
         ion-card-title {
-            font-size: 0.85rem; // Small but legible
-            font-weight: 700; // Strong weight for hierarchy
+            font-size: 0.75rem;
+            font-weight: 700;
             color: $azul-oscuro;
-            margin-bottom: 2px;
-            line-height: 1.2;
+            margin: 0;
+            line-height: 1;
+            text-align: left; // Align left as requested
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         ion-card-subtitle {
@@ -720,7 +758,7 @@ $touch-target: colors.$touch-target;
 
     &:hover {
         background: rgba(0, 0, 0, 0.015);
-        width: 95%; // Slight expansion on hover for affordance
+        // Removed width change to prevents jumps
     }
 }
 
@@ -754,15 +792,7 @@ $touch-target: colors.$touch-target;
         }
     }
 
-    .btn-main-register {
-        --border-radius: 12px;
-        --padding-top: 16px;
-        --padding-bottom: 16px;
-        height: 52px;
-        font-weight: 750;
-        font-size: 1rem;
-        box-shadow: 0 6px 16px rgba($azul-claro, 0.3);
-    }
+
 
     .selection-tools {
         display: flex;
@@ -945,6 +975,7 @@ $touch-target: colors.$touch-target;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
             text-align: left;
+            transition: all 0.2s ease;
 
             ion-icon {
                 font-size: 1.2rem;
@@ -954,6 +985,31 @@ $touch-target: colors.$touch-target;
                 font-size: 0.85rem;
                 font-weight: 600;
                 color: #555;
+            }
+
+            &.action-item {
+                cursor: pointer;
+                background: var(--ion-color-primary, #3880ff);
+                border: none;
+
+                ion-icon {
+                    color: #fff !important;
+                    font-size: 1.4rem;
+                }
+
+                span {
+                    color: #fff;
+                    font-weight: 700;
+                }
+
+                &:active {
+                    transform: scale(0.98);
+                }
+
+                &.disabled {
+                    opacity: 0.5;
+                    pointer-events: none;
+                }
             }
         }
     }
@@ -1126,16 +1182,7 @@ $touch-target: colors.$touch-target;
     }
 }
 
-// === MOBILE FAB ===
-.registro-fab {
-    margin-bottom: calc(16px + var(--ion-safe-area-bottom, 0px));
-}
 
-@media (min-width: 992px) {
-    .registro-fab {
-        display: none;
-    }
-}
 
 // === MEJORAS RESPONSIVE MOBILE/TABLET ===
 @media (max-width: 991px) {
@@ -1557,6 +1604,112 @@ $touch-target: colors.$touch-target;
 
             ion-row {
                 padding: 0;
+            }
+        }
+    }
+}
+
+// === GROUP MEMBERS SECTION ===
+.group-members-section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 0;
+    margin-bottom: 16px;
+
+    @media (max-width: 991px) {
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    .section-header {
+        display: flex;
+        justify-content: flex-end; // Move actions to the right
+        align-items: center;
+        margin-bottom: 8px;
+        gap: 10px;
+
+        .actions-row {
+            display: flex;
+            gap: 4px;
+
+            ion-button {
+                --padding-start: 8px;
+                --padding-end: 8px;
+                height: 28px;
+                font-size: 0.8rem;
+                font-weight: 600;
+            }
+        }
+    }
+
+    .members-list-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 4px;
+
+        // Banner scrollbar
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            ion-checkbox {
+                --size: 18px;
+                --border-radius: 4px;
+                pointer-events: none; // Let container handle click
+            }
+
+            .member-info {
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                align-items: center;
+
+                .name {
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    color: $azul-oscuro;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            &:hover {
+                background: #f0f4ff;
+                border-color: rgba($azul-claro, 0.2);
+            }
+
+            &.selected {
+                background: rgba($azul-claro, 0.08);
+                border-color: rgba($azul-claro, 0.3);
+
+                .member-info .name {
+                    color: $azul-claro;
+                }
             }
         }
     }

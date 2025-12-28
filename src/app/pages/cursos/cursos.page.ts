@@ -22,6 +22,7 @@ import {
   IonNote,
   IonFab,
   IonFabButton,
+  IonSearchbar,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -67,6 +68,7 @@ import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
 import { BUTTON_CONFIG } from '@app/constants/button-config';
 import { CapitalizePipe } from '@app/pipes/capitalize.pipe';
+import { PreferencesService } from '@app/services/preferences.service';
 
 
 interface EstudianteConNotas {
@@ -109,12 +111,14 @@ interface EstudianteConNotas {
     IonSegment,
     IonSegmentButton,
     IonNote,
+    IonSearchbar,
     CapitalizePipe]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
+  private preferencesService = inject(PreferencesService);
 
   @ViewChild('estudiantesFileInput') estudiantesFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('calificacionesFileInput') calificacionesFileInput!: ElementRef<HTMLInputElement>;
@@ -126,10 +130,14 @@ export class CursosPage implements ViewWillEnter {
   cursosDisponibles = signal<any[]>([]);
   cursoSeleccionado = signal<string | null>(null);
   private cursoSeleccionadoClave = signal<string | null>(null);
+
+  // Preferencias de visibilidad del tab Características
+  mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
   modoEdicion = signal<boolean>(false);
   subtabActivo = signal<string>('detalle');
   grupoActivo = signal<string>('todos');
   vistaActiva = signal<'general' | string>('general');
+  busquedaTermino = signal<string>(''); // Término de búsqueda
 
   rubricasAsociadas: any[] = [];
 
@@ -365,6 +373,20 @@ export class CursosPage implements ViewWillEnter {
   });
 
   /**
+   * Cursos filtrados por búsqueda
+   */
+  cursosDisponiblesFiltrados = computed(() => {
+    const termino = this.busquedaTermino().toLowerCase().trim();
+    if (!termino) return this.cursosDisponibles();
+
+    return this.cursosDisponibles().filter(curso =>
+      curso.nombre?.toLowerCase().includes(termino) ||
+      curso.codigo?.toLowerCase().includes(termino) ||
+      curso.nombreAbreviado?.toLowerCase().includes(termino)
+    );
+  });
+
+  /**
    * Computed signal optimizado para estudiantes filtrados con notas
    * Usa función pura para mejorar rendimiento y facilitar testing
    */
@@ -536,6 +558,14 @@ export class CursosPage implements ViewWillEnter {
     this.onCambioCohorte();
   }
 
+  /**
+   * Maneja cambios en la búsqueda
+   */
+  onBusquedaChange(event: any): void {
+    const valor = event.target?.value || '';
+    this.busquedaTermino.set(valor);
+  }
+
 
 
   /**
@@ -543,6 +573,13 @@ export class CursosPage implements ViewWillEnter {
    */
   toggleCursoCard(codigo: string): void {
     this.cursoExpandido = this.cursoExpandido === codigo ? null : codigo;
+  }
+
+  /**
+   * Check if a course has the Características tab hidden
+   */
+  isCursoConTabOculto(codigoCurso: string): boolean {
+    return this.preferencesService.isCursoConTabOculto(codigoCurso);
   }
 
   /**

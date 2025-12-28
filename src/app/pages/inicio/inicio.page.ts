@@ -74,7 +74,7 @@ import {
     checkmarkDoneCircleOutline,
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
-    analyticsOutline, calendarOutline, pinOutline, lockOpenOutline
+    analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -127,7 +127,6 @@ interface EstudianteSeleccionado {
         IonGrid,
         IonRow,
         IonCol,
-        IonFabButton,
         IonTextarea,
         IonHeader,
         IonToolbar,
@@ -138,7 +137,6 @@ interface EstudianteSeleccionado {
         IonCardHeader,
         IonCardTitle,
         IonCardSubtitle,
-        IonFab,
         IonSkeletonText
     ]
 })
@@ -169,6 +167,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     // NEW: Course and group selection signals
     cursoSeleccionado = signal<string | null>(null);
     gruposSeleccionados = signal<Set<string>>(new Set()); // Multi-selection support
+    seleccionadosDelGrupo = signal<Set<string>>(new Set()); // Legacy, kept for logic but synced with registrados
 
     // Asignación de Novedad
     aliasNovedad = signal<string>('');
@@ -203,7 +202,12 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const cursos = this.dataService.cursos();
         const estudiantes = cursos[cursoActivo] || [];
 
-        return estudiantes.filter(e => grupos.has(String(e.grupo || '')));
+        return estudiantes.filter(e => grupos.has(String(e.grupo || ''))).map(est => ({
+            correo: est.correo,
+            nombre: `${est.nombres} ${est.apellidos}`,
+            curso: cursoActivo,
+            grupo: String(est.grupo || '')
+        }));
     });
 
     Array = Array; // Expose Array to template
@@ -213,7 +217,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ homeOutline, cloudOfflineOutline, closeOutline, schoolOutline, chevronForwardOutline, addOutline, peopleOutline, addCircleOutline, checkmarkCircle, informationCircleOutline, appsOutline, pinOutline, lockOpenOutline, documentTextOutline, checkmarkCircleOutline, trashOutline, personAddOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, checkmarkDoneOutline, checkmarkOutline, checkmarkDoneCircleOutline, createOutline, timeOutline, bulbOutline, personOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, listOutline, gridOutline, chatboxEllipsesOutline });
+        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, peopleCircleOutline, checkboxOutline, squareOutline, documentTextOutline, checkmarkCircleOutline, addCircleOutline, trashOutline, personAddOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, checkmarkDoneOutline, checkmarkOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, timeOutline, bulbOutline, personOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, listOutline, gridOutline, chatboxEllipsesOutline });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -393,6 +397,77 @@ export class InicioPage implements OnInit, ViewWillEnter {
      */
     isEstudianteSeleccionado(correo: string): boolean {
         return this.estudiantesSeleccionados().some(e => e.correo === correo);
+    }
+
+    /**
+     * Toggles selection of a student in the group members list
+     */
+    toggleSeleccionEstudianteGrupo(correo: string): void {
+        const est = this.estudiantesDeGruposSeleccionados().find(e => e.correo === correo);
+        if (!est) return;
+
+        const actuales = this.estudiantesRegistrados();
+        const existeIndex = actuales.findIndex(r => r.correo === correo);
+
+        if (existeIndex !== -1) {
+            // Remover de registrados
+            this.removerRegistrado(existeIndex);
+        } else {
+            // Agregar a registrados
+            const indexParaNovedad = this.estudiantesRegistrados().length;
+            this.estudiantesRegistrados.update(list => [...list, est]);
+            // Opcional: Seleccionar automáticamente para novedad (facilita el flujo)
+            this.toggleSeleccionNovedad(indexParaNovedad);
+        }
+    }
+
+    /**
+     * Selects all students in the currently visible group list
+     */
+    seleccionarTodosGrupo(): void {
+        const deEsteGrupo = this.estudiantesDeGruposSeleccionados();
+        const actuales = this.estudiantesRegistrados();
+        const actualesCorreos = new Set(actuales.map(r => r.correo));
+
+        const nuevosAAgregar = deEsteGrupo.filter(e => !actualesCorreos.has(e.correo));
+
+        if (nuevosAAgregar.length > 0) {
+            this.estudiantesRegistrados.update(list => [...list, ...nuevosAAgregar]);
+
+            // Seleccionar los nuevos para novedad
+            const startIdx = actuales.length;
+            this.seleccionadosIndices.update(set => {
+                const newSet = new Set(set);
+                nuevosAAgregar.forEach((_, i) => newSet.add(startIdx + i));
+                return newSet;
+            });
+        }
+    }
+
+    /**
+     * Deselects all students in the currently visible group list from registration
+     */
+    deseleccionarTodosGrupo(): void {
+        const deEsteGrupoCorreos = new Set(this.estudiantesDeGruposSeleccionados().map(e => e.correo));
+
+        // Obtenemos los índices de los que vamos a remover para limpiar también seleccionadosIndices
+        const registrados = this.estudiantesRegistrados();
+        const aRemoverIndices = registrados
+            .map((r, i) => deEsteGrupoCorreos.has(r.correo) ? i : -1)
+            .filter(idx => idx !== -1);
+
+        // Remover de registrados
+        this.estudiantesRegistrados.update(list => list.filter(r => !deEsteGrupoCorreos.has(r.correo)));
+
+        // Resetear selección de índices (más seguro reconstruir que filtrar por el cambio de índices)
+        this.seleccionadosIndices.set(new Set());
+    }
+
+    /**
+     * Checks if a student is selected in the group members list
+     */
+    isEstudianteGrupoSeleccionado(correo: string): boolean {
+        return this.estudiantesRegistrados().some(r => r.correo === correo);
     }
 
     /**
@@ -653,7 +728,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
         const nuevos: EstudianteSeleccionado[] = estudiantes.map(est => ({
             correo: est.correo,
-            nombre: `${est.nombres} ${est.apellidos}`,
+            nombre: est.nombre,
             curso: this.cursoSeleccionado()!,
             grupo: String(est.grupo || '')
         }));

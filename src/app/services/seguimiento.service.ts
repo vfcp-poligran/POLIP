@@ -70,17 +70,22 @@ export class SeguimientoService {
   private estadosEstudiantesMap: Map<string, Map<string, EstadosEntrega>> = new Map();
   private _estadosEstudiantes = signal<Map<string, Map<string, EstadosEntrega>>>(this.estadosEstudiantesMap);
 
+  // Filtro de búsqueda global
+  private _filtroBusqueda = signal<string>('');
+
   // Readonly Signals
   public grupoSeleccionado = this._grupoSeleccionado.asReadonly();
   public grupoVisualizado = this._grupoVisualizado.asReadonly();
   public seguimientoActual = this._seguimientoActual.asReadonly();
   public estadosEstudiantes = this._estadosEstudiantes.asReadonly();
+  public filtroBusqueda = this._filtroBusqueda.asReadonly();
 
   // Legacy Observables
   public grupoSeleccionado$ = toObservable(this._grupoSeleccionado);
   public grupoVisualizado$ = toObservable(this._grupoVisualizado);
   public seguimientoActual$ = toObservable(this._seguimientoActual);
   public estadosEstudiantes$ = toObservable(this._estadosEstudiantes);
+  public filtroBusqueda$ = toObservable(this._filtroBusqueda);
 
   constructor() { }
 
@@ -129,6 +134,21 @@ export class SeguimientoService {
 
   getSeguimiento(): SeguimientoGrupo | null {
     return this._seguimientoActual();
+  }
+
+  /**
+   * Establece el filtro de búsqueda global
+   * @param filtro - Texto para filtrar estudiantes por nombre o número de grupo
+   */
+  setFiltroBusqueda(filtro: string): void {
+    this._filtroBusqueda.set(filtro);
+  }
+
+  /**
+   * Obtiene el filtro de búsqueda actual
+   */
+  getFiltroBusqueda(): string {
+    return this._filtroBusqueda();
   }
 
   actualizarTextoRubrica(tipo: 'PG' | 'PI', textos: string[], timestamps?: string[]): void {

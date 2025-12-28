@@ -5,6 +5,8 @@ import { Injectable, signal, effect } from '@angular/core';
  */
 export interface InterfacePreferences {
     tabAnimationsEnabled: boolean;
+    mostrarTabCaracteristicas: boolean;
+    cursosConTabOculto: string[];
 }
 
 /**
@@ -39,6 +41,20 @@ export class PreferencesService {
     // Expose as readonly
     tabAnimationsEnabled = this._tabAnimationsEnabled.asReadonly();
 
+    /**
+     * Show Características tab in courses
+     * Controls global visibility of the characteristics tab
+     */
+    private _mostrarTabCaracteristicas = signal<boolean>(true);
+    mostrarTabCaracteristicas = this._mostrarTabCaracteristicas.asReadonly();
+
+    /**
+     * Courses with hidden Características tab
+     * Array of course codes where the tab should be hidden
+     */
+    private _cursosConTabOculto = signal<string[]>([]);
+    cursosConTabOculto = this._cursosConTabOculto.asReadonly();
+
     constructor() {
         this.loadPreferences();
         this.setupPreferencesEffect();
@@ -61,6 +77,45 @@ export class PreferencesService {
     }
 
     /**
+     * Set mostrar tab características preference
+     * @param mostrar - Whether to show the características tab globally
+     */
+    setMostrarTabCaracteristicas(mostrar: boolean): void {
+        this._mostrarTabCaracteristicas.set(mostrar);
+        // Si se desactiva globalmente, limpiar la lista de cursos específicos
+        if (!mostrar) {
+            this._cursosConTabOculto.set([]);
+        }
+        this.savePreferences();
+    }
+
+    /**
+     * Toggle características tab for a specific course
+     * @param codigoCurso - Course code to toggle
+     */
+    toggleTabCaracteristicasCurso(codigoCurso: string): void {
+        const cursosOcultos = this._cursosConTabOculto();
+        const index = cursosOcultos.indexOf(codigoCurso);
+
+        if (index > -1) {
+            // Remove from hidden list
+            this._cursosConTabOculto.set(cursosOcultos.filter(c => c !== codigoCurso));
+        } else {
+            // Add to hidden list
+            this._cursosConTabOculto.set([...cursosOcultos, codigoCurso]);
+        }
+        this.savePreferences();
+    }
+
+    /**
+     * Check if a course has the tab hidden
+     * @param codigoCurso - Course code to check
+     */
+    isCursoConTabOculto(codigoCurso: string): boolean {
+        return this._cursosConTabOculto().includes(codigoCurso);
+    }
+
+    /**
      * Load saved preferences from localStorage
      */
     private loadPreferences(): void {
@@ -69,6 +124,8 @@ export class PreferencesService {
             if (saved) {
                 const preferences: InterfacePreferences = JSON.parse(saved);
                 this._tabAnimationsEnabled.set(preferences.tabAnimationsEnabled ?? false);
+                this._mostrarTabCaracteristicas.set(preferences.mostrarTabCaracteristicas ?? true);
+                this._cursosConTabOculto.set(preferences.cursosConTabOculto ?? []);
             }
         } catch (error) {
             console.error('[PreferencesService] Error loading preferences:', error);
@@ -81,7 +138,9 @@ export class PreferencesService {
     private savePreferences(): void {
         try {
             const preferences: InterfacePreferences = {
-                tabAnimationsEnabled: this._tabAnimationsEnabled()
+                tabAnimationsEnabled: this._tabAnimationsEnabled(),
+                mostrarTabCaracteristicas: this._mostrarTabCaracteristicas(),
+                cursosConTabOculto: this._cursosConTabOculto()
             };
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(preferences));
         } catch (error) {
@@ -96,6 +155,8 @@ export class PreferencesService {
         effect(() => {
             // Track changes
             this._tabAnimationsEnabled();
+            this._mostrarTabCaracteristicas();
+            this._cursosConTabOculto();
             // Preferences are saved via setters, this just tracks reactivity
         });
     }
@@ -105,6 +166,8 @@ export class PreferencesService {
      */
     resetToDefaults(): void {
         this._tabAnimationsEnabled.set(false);
+        this._mostrarTabCaracteristicas.set(true);
+        this._cursosConTabOculto.set([]);
         this.savePreferences();
     }
 }

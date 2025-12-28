@@ -11,6 +11,7 @@ import {
   IonBadge,
   IonSegment,
   IonSegmentButton,
+  IonSearchbar,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -96,7 +97,8 @@ interface ArchivoCalificacionesVisualizacion {
     IonLabel,
     IonBadge,
     IonSegment,
-    IonSegmentButton
+    IonSegmentButton,
+    IonSearchbar
   ]
 })
 export class CalificacionesPage implements OnDestroy, ViewWillEnter {
@@ -152,6 +154,8 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
 
   // Suscripciones para limpiar en ngOnDestroy
   private isInitialized = false;
+  /** Término de búsqueda */
+  busquedaTermino = '';
 
   constructor() {
     addIcons({
@@ -173,6 +177,14 @@ export class CalificacionesPage implements OnDestroy, ViewWillEnter {
 
   ngOnDestroy() {
     this.isInitialized = false;
+  }
+
+  /**
+   * Maneja cambios en la búsqueda
+   */
+  onBusquedaChange(event: any): void {
+    const valor = event.target?.value || '';
+    this.busquedaTermino = valor;
   }
 
   private actualizarCursosConCalificaciones(): void {

@@ -4,11 +4,112 @@
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
 
 // ============================================
+// TABS DE SISTEMA/AJUSTES
+// ============================================
+.sistema-tabs {
+  margin: 0 0 1rem 0;
+  margin-top: 1rem; // Espacio para que no se solape con navegación
+  padding: 0;
+  background: var(--ion-background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-segment-button {
+    // Colores para tabs NO seleccionados
+    --color: var(--ion-text-color);
+    --color-hover: var(--ion-color-primary);
+
+    // Colores para tab SELECCIONADO - CRÍTICO para contraste
+    --color-checked: #ffffff; // Blanco para máximo contraste
+    --background-checked: var(--ion-color-primary); // Fondo azul
+    --indicator-color: var(--ion-color-primary);
+    --indicator-height: 3px;
+
+    min-height: 52px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.3px;
+
+    ion-icon {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+
+      // Asegurar que el icono también sea blanco cuando está seleccionado
+      &.segment-button-checked {
+        color: #ffffff;
+      }
+    }
+
+    ion-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    // Estado seleccionado - asegurar contraste
+    &.segment-button-checked {
+      color: #ffffff !important;
+
+      ion-icon {
+        color: #ffffff !important;
+      }
+
+      ion-label {
+        color: #ffffff !important;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.tabs-content {
+  margin-top: 1rem;
+}
+
+// ============================================
+// LAYOUT DE INFORMACIÓN EN COLUMNAS
+// ============================================
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.info-column {
+  .column-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--ion-color-primary);
+  }
+
+  ion-list {
+    margin-top: 0;
+  }
+}
+
+
+// ============================================
 // CONTENEDOR PRINCIPAL
 // ============================================
 // ion-content inherits from theme variables
 
 .page-container {
+
+  // Override del padding-top global porque esta página NO tiene page-header
+  // Solo necesita espacio para la navegación desktop (64px)
+  @media (min-width: 992px) {
+    padding-top: calc(64px + 1.5rem) !important; // Nav bar + spacing
+  }
+
   padding: 9.6px;
   width: 100%;
   height: 100%;
@@ -251,5 +352,9 @@ ion-button {
 
   ion-content {
     --background: var(--ion-background-color);
+  }
+
+  .sistema-tabs {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 }

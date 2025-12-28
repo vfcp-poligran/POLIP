@@ -20,6 +20,7 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
+  IonSearchbar,
   AlertController,
   LoadingController,
   ModalController,
@@ -89,6 +90,7 @@ import {
     IonFab,
     IonFabButton,
     IonChip,
+    IonSearchbar,
     CommonModule,
     FormsModule,
     RubricaEditorComponent,
@@ -130,6 +132,8 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   rubricaCargada: RubricaDefinicion | null = null;
   /** Cursos disponibles para asociar rúbricas */
   cursosDisponibles: Array<{ codigo: string; nombre: string; titulo: string }> = [];
+  /** Término de búsqueda */
+  busquedaTermino = '';
 
   /** Columna actual de ordenamiento */
   columnaOrdenamiento: 'nombre' | 'codigo' | 'curso' | 'entrega' | null = null;
@@ -253,6 +257,14 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
       ellipse,
       gitBranch, copy, people, person, add, checkmarkCircle
     });
+  }
+
+  /**
+   * Maneja cambios en la búsqueda
+   */
+  onBusquedaChange(event: any): void {
+    const valor = event.target?.value || '';
+    this.busquedaTermino = valor;
   }
 
   ionViewWillEnter() {

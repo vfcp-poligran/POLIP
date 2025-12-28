@@ -23,7 +23,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
+    width: calc(100% - 3rem); // Compensate for page-container padding
     box-sizing: border-box;
 
     // Spacing
@@ -35,17 +35,64 @@
             var(--ion-color-primary) 0%,
             var(--ion-color-primary-shade) 100%);
     border-radius: var(--page-header-border-radius, 6px);
-    box-shadow: var(--page-header-box-shadow);
+    box-shadow: var(--page-header-box-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
 
-    // Positioning
-    position: relative;
-    z-index: 5;
+    // Positioning - Fixed at top
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 100;
+
+    // Desktop: position below navigation bar (64px + spacing)
+    @media (min-width: 992px) {
+        top: calc(64px + 0.75rem); // Desktop nav bar height + minimal spacing
+    }
+
+    // Responsive width adjustments
+    @media (min-width: 768px) and (max-width: 991px) {
+        width: calc(100% - 2rem);
+        top: 1rem;
+        left: 1rem;
+    }
+
+    @media (max-width: 767px) {
+        width: calc(100% - 1.5rem);
+        top: 0.75rem;
+        left: 0.75rem;
+    }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+        width: calc(100% - 1rem);
+        top: 0.5rem;
+        left: 0.5rem;
+    }
 
     // Title wrapper
     .title-wrapper {
         display: flex;
         align-items: center;
         gap: calc(var(--ion-padding, 8px) * 0.75);
+        flex-shrink: 0; // Don't shrink title
+    }
+
+    // Search bar integration
+    ion-searchbar {
+        flex: 1; // Take available space
+        max-width: 400px; // Limit max width
+        margin: 0 calc(var(--ion-padding, 8px) * 0.75);
+
+        --background: rgba(255, 255, 255, 0.15);
+        --border-radius: 8px;
+        --box-shadow: none;
+        --color: var(--ion-color-primary-contrast);
+        --placeholder-color: rgba(255, 255, 255, 0.7);
+        --icon-color: var(--ion-color-primary-contrast);
+        --clear-button-color: var(--ion-color-primary-contrast);
+
+        @media (max-width: 767px) {
+            max-width: 200px;
+            margin: 0 calc(var(--ion-padding, 8px) * 0.5);
+        }
     }
 
     // Actions container
@@ -54,6 +101,7 @@
         align-items: center;
         gap: calc(var(--ion-padding, 8px) * 0.75);
         margin-left: auto;
+        flex-shrink: 0; // Don't shrink actions
     }
 
     // Icons styling

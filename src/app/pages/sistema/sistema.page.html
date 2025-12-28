@@ -1,19 +1,25 @@
 <ion-content [fullscreen]="true">
   <div class="page-container">
-    <!-- Header de Página -->
-    <div class="page-title-header">
-      <div class="title-wrapper">
-        <h2>Sistema</h2>
-      </div>
-    </div>
+    <!-- Segmentos de navegación -->
+    <ion-segment [value]="tabActivo" (ionChange)="cambiarTab($event)" mode="ios" class="sistema-tabs">
+      <ion-segment-button value="interfaz">
+        <ion-icon name="color-palette"></ion-icon>
+        <ion-label>Interfaz</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="database">
+        <ion-icon name="build"></ion-icon>
+        <ion-label>Mantenimiento</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="about">
+        <ion-icon name="information-circle"></ion-icon>
+        <ion-label>Información</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-    <div class="containers-grid">
-      <!-- ========================================
-           SECCIÓN 1: PREFERENCIAS DE INTERFAZ (PRIORITARIA)
-           Configuración de UI/UX
-           ======================================== -->
-
-      <!-- Preferencias de Interfaz -->
+    <!-- Contenido de tabs -->
+    <div class="tabs-content">
+      <!-- Tab 1: Interfaz y Funciones -->
+      @if (tabActivo === 'interfaz') {
       <ion-card class="priority-section">
         <ion-card-header>
           <ion-card-title>
@@ -34,7 +40,7 @@
               <app-theme-toggle slot="end"></app-theme-toggle>
             </ion-item>
 
-            <!-- Tab Animations Toggle (NUEVO) -->
+            <!-- Tab Animations Toggle -->
             <ion-item>
               <ion-icon name="color-wand" slot="start" color="secondary"></ion-icon>
               <ion-label>
@@ -84,23 +90,56 @@
                 </ion-button>
               </div>
             </ion-item>
+
+            <!-- Control de visibilidad del tab Características -->
+            <ion-item>
+              <ion-icon name="list" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Tab Características en Cursos</h3>
+                <p class="text-gray-medium">Mostrar tab de características en todos los cursos</p>
+              </ion-label>
+              <ion-toggle slot="end" [checked]="mostrarTabCaracteristicas()"
+                (ionChange)="toggleTabCaracteristicas($event)">
+              </ion-toggle>
+            </ion-item>
           </ion-list>
+
+          <!-- Lista de cursos (solo visible si toggle global está activo) -->
+          @if (mostrarTabCaracteristicas()) {
+          <ion-list class="cursos-checkbox-list">
+            <ion-item>
+              <ion-label>
+                <h3 class="h3-plataforma-blue">Ocultar en cursos específicos</h3>
+                <p class="text-gray-medium">Selecciona los cursos donde NO quieres ver el tab</p>
+              </ion-label>
+            </ion-item>
+
+            @for (curso of cursosDisponibles(); track curso.codigo) {
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="isCursoConTabOculto(curso.codigo)"
+                (ionChange)="toggleCursoTabOculto(curso.codigo)">
+              </ion-checkbox>
+              <ion-label>
+                <h4>{{ curso.nombre }}</h4>
+                <p>{{ curso.codigo }}</p>
+              </ion-label>
+            </ion-item>
+            }
+          </ion-list>
+          }
         </ion-card-content>
       </ion-card>
+      }
 
-      <!-- ========================================
-           SECCIÓN 2: GESTIÓN DE BASE DE DATOS (PRIORITARIA)
-           Acciones de backup y limpieza
-           ======================================== -->
-
-      <!-- Gestión de Base de Datos -->
+      <!-- Tab 2: Gestión de Base de Datos -->
+      @if (tabActivo === 'database') {
       <ion-card class="priority-section">
         <ion-card-header>
           <ion-card-title>
-            <ion-icon name="server"></ion-icon>
-            Gestión de Base de Datos
+            <ion-icon name="build"></ion-icon>
+            Mantenimiento
           </ion-card-title>
-          <ion-card-subtitle>Administra tus datos almacenados</ion-card-subtitle>
+          <ion-card-subtitle>Herramientas de mantenimiento de la base de datos</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
           <ion-list>
@@ -148,12 +187,128 @@
           </ion-list>
         </ion-card-content>
       </ion-card>
+      }
 
-      <!-- ========================================
-           SECCIÓN 3: INFORMACIÓN DEL SISTEMA
-           Solo lectura - Datos informativos
-           ======================================== -->
+      <!-- Tab 3: Acerca de / Información del Sistema -->
+      @if (tabActivo === 'about') {
+      <ion-card class="priority-section">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="information-circle"></ion-icon>
+            Información del Sistema
+          </ion-card-title>
+          <ion-card-subtitle>Detalles del stack tecnológico</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Grid de 2 columnas para organizar la información -->
+          <div class="info-grid">
+            <!-- Columna 1: Información de la Aplicación -->
+            <div class="info-column">
+              <h4 class="column-title">Aplicación</h4>
+              <ion-list>
+                <!-- Nombre de la App -->
+                <ion-item>
+                  <ion-icon name="apps" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Nombre</h3>
+                    <p class="text-gray-medium">POLI Project</p>
+                  </ion-label>
+                </ion-item>
 
+                <!-- Descripción -->
+                <ion-item>
+                  <ion-icon name="document-text" slot="start" color="secondary"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Descripción</h3>
+                    <p class="text-gray-medium">Sistema de Gestión de Proyectos Académicos</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Versión y Año -->
+                <ion-item>
+                  <ion-icon name="code-slash" slot="start" color="tertiary"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Versión</h3>
+                    <p class="text-gray-medium">3.7.0 (2025)</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Autor -->
+                <ion-item>
+                  <ion-icon name="person" slot="start" color="success"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Autor</h3>
+                    <p class="text-gray-medium">Víctor Castro Pérez</p>
+                    <p class="text-gray-medium">vfcastro@poligran.edu.co</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Institución -->
+                <ion-item>
+                  <ion-icon name="school" slot="start" color="warning"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Institución</h3>
+                    <p class="text-gray-medium">Politécnico Grancolombiano</p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+
+            <!-- Columna 2: Stack Tecnológico -->
+            <div class="info-column">
+              <h4 class="column-title">Stack Tecnológico</h4>
+              <ion-list>
+                <!-- Frontend Framework -->
+                <ion-item>
+                  <ion-icon name="logo-angular" slot="start" color="danger"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Frontend</h3>
+                    <p class="text-gray-medium">Angular 17 + Ionic 8</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Lenguaje -->
+                <ion-item>
+                  <ion-icon name="logo-javascript" slot="start" color="warning"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Lenguaje</h3>
+                    <p class="text-gray-medium">TypeScript 5.2</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Almacenamiento -->
+                <ion-item>
+                  <ion-icon name="save" slot="start" color="success"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Almacenamiento</h3>
+                    <p class="text-gray-medium">{{ storageInfo.storage }}</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Plataforma -->
+                <ion-item>
+                  <ion-icon name="desktop" slot="start" color="medium"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Plataforma</h3>
+                    <p class="text-gray-medium">{{ storageInfo.platform === 'web' ? 'Web (PWA)' : 'Móvil (Android/iOS)'
+                      }}</p>
+                  </ion-label>
+                </ion-item>
+
+                <!-- Estado PWA -->
+                <ion-item>
+                  <ion-icon name="cloud" slot="start" color="primary"></ion-icon>
+                  <ion-label>
+                    <h3 class="h3-plataforma-blue">Tipo</h3>
+                    <p class="text-gray-medium">Progressive Web App</p>
+                  </ion-label>
+                </ion-item>
+              </ion-list>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+      }
     </div>
   </div>
 </ion-content>

@@ -117,9 +117,12 @@
         <div class="curso-card-content">
           <!-- Subtabs: Detalle / Integrantes -->
           <ion-segment [value]="subtabActivo()" (ionChange)="subtabActivo.set($any($event).detail.value)" scrollable>
+            <!-- Solo mostrar Características si está habilitado globalmente Y no está oculto para este curso -->
+            @if (mostrarTabCaracteristicas() && !isCursoConTabOculto(info.codigo)) {
             <ion-segment-button value="detalle">
               <ion-label>Características</ion-label>
             </ion-segment-button>
+            }
 
             <!-- Solo mostrar Integrantes para cursos que ya existen -->
             @if (!info.esNuevo) {

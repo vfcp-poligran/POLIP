@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -16,6 +16,10 @@ import {
   IonLabel,
   IonBadge,
   IonToggle,
+  IonSearchbar,
+  IonSegment,
+  IonSegmentButton,
+  IonCheckbox,
   AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -40,7 +44,7 @@ import {
   removeCircle,
   addCircle,
   brush,
-  closeCircle, contrast, chevronForward
+  closeCircle, contrast, chevronForward, colorPalette, colorWand, codeSlash, save, school, apps, person, documentText, list
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { BackupService } from '../../services/backup.service';
@@ -49,6 +53,7 @@ import { ToastService } from '../../services/toast.service';
 import { Capacitor } from '@capacitor/core';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 import { PreferencesService } from '../../services/preferences.service';
+import { ALERT_BUTTONS } from '@app/constants/button-config';
 
 @Component({
   selector: 'app-sistema',
@@ -71,6 +76,10 @@ import { PreferencesService } from '../../services/preferences.service';
     IonLabel,
     IonBadge,
     IonToggle,
+    IonSearchbar,
+    IonSegment,
+    IonSegmentButton,
+    IonCheckbox,
     ThemeToggleComponent
   ]
 })
@@ -95,9 +104,36 @@ export class SistemaPage implements OnInit {
 
   // Expose preferences signals
   tabAnimationsEnabled = this.preferencesService.tabAnimationsEnabled;
+  mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
+
+  // Cursos disponibles para la lista de checkboxes
+  cursosDisponibles = computed(() => {
+    const uiState = this.dataService.getUIState();
+    const courseStates = uiState.courseStates || {};
+
+    return Object.entries(courseStates)
+      .map(([nombreCurso, state]) => {
+        if (!state || typeof state !== 'object') return null;
+
+        // Remover año del código
+        const codigoSinAnio = nombreCurso.split('-').slice(0, -1).join('-') || nombreCurso;
+
+        return {
+          claveCurso: nombreCurso,
+          nombre: state.metadata?.nombre || nombreCurso,
+          codigo: codigoSinAnio
+        };
+      })
+      .filter((curso): curso is NonNullable<typeof curso> => curso !== null)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
+  });
+  /** Término de búsqueda */
+  busquedaTermino = '';
+  /** Tab activo en Sistema */
+  tabActivo: 'interfaz' | 'database' | 'about' = 'interfaz';
 
   constructor() {
-    addIcons({ server, build, informationCircle, logoAngular, logoJavascript, settings, contrast, notifications, warning, time, removeCircle, addCircle, cloud, cloudDownload, chevronForward, cloudUpload, trash, brush, refresh, phonePortrait, desktop, checkmarkCircle, closeCircle });
+    addIcons({ list, colorPalette, build, informationCircle, contrast, colorWand, notifications, warning, time, removeCircle, addCircle, cloudDownload, chevronForward, cloudUpload, trash, brush, apps, documentText, codeSlash, person, school, logoAngular, logoJavascript, save, desktop, cloud, server, settings, refresh, phonePortrait, checkmarkCircle, closeCircle });
   }
 
   async ngOnInit() {
@@ -113,6 +149,21 @@ export class SistemaPage implements OnInit {
     this.duracionToast = uiState.duracionToast ?? 2;
     // Preferencia de aviso de selección
     this.ocultarAvisoEdicionSinSeleccion = uiState.ocultarAvisoEdicionSinSeleccion === true;
+  }
+
+  /**
+   * Maneja cambios en la búsqueda
+   */
+  onBusquedaChange(event: any): void {
+    const valor = event.target?.value || '';
+    this.busquedaTermino = valor;
+  }
+
+  /**
+   * Cambia el tab activo
+   */
+  cambiarTab(event: any): void {
+    this.tabActivo = event.detail.value;
   }
 
   toggleMensajesEmergentes(event: any) {
@@ -227,23 +278,16 @@ export class SistemaPage implements OnInit {
       message: '¿Estás seguro de eliminar todas las evaluaciones y estados? Los cursos y estudiantes no se verán afectados.',
       cssClass: 'premium-alert premium-alert--danger',
       buttons: [
-        {
-          text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: '<ion-icon name="trash"></ion-icon> Limpiar',
-          role: 'destructive',
-          handler: async () => {
-            try {
-              await this.dataService.limpiarBaseDatosEstadoCero();
-              await this.toastService.success('Base de datos limpiada exitosamente');
-            } catch (error) {
-              Logger.error('Error limpiando base de datos:', error);
-              await this.toastService.error('Error al limpiar base de datos');
-            }
+        ALERT_BUTTONS.cancel(),
+        ALERT_BUTTONS.destructive('Limpiar', 'delete', async () => {
+          try {
+            await this.dataService.limpiarBaseDatosEstadoCero();
+            await this.toastService.success('Base de datos limpiada exitosamente');
+          } catch (error) {
+            Logger.error('Error limpiando base de datos:', error);
+            await this.toastService.error('Error al limpiar base de datos');
           }
-        }
+        })
       ]
     });
 
@@ -260,57 +304,85 @@ export class SistemaPage implements OnInit {
       message: 'Esto eliminará los archivos cacheados de la aplicación. Los datos (cursos, evaluaciones, rúbricas) NO se verán afectados. La app necesitará conexión a internet para recargar los recursos.',
       cssClass: 'premium-alert premium-alert--warning',
       buttons: [
-        {
-          text: '<ion-icon name="close-circle"></ion-icon> Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: '<ion-icon name="brush"></ion-icon> Limpiar Caché',
-          role: 'destructive',
-          handler: async () => {
-            try {
-              let cachesCleaned = 0;
-              let swUnregistered = 0;
+        ALERT_BUTTONS.cancel(),
+        ALERT_BUTTONS.destructive('Limpiar Caché', 'clean', async () => {
+          try {
+            let cachesCleaned = 0;
+            let swUnregistered = 0;
 
-              // Limpiar todas las cachés del navegador
-              if ('caches' in window) {
-                const cacheNames = await caches.keys();
-                await Promise.all(
-                  cacheNames.map(async (name) => {
-                    await caches.delete(name);
-                    cachesCleaned++;
-                  })
-                );
-              }
-
-              // Desregistrar Service Workers
-              if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                await Promise.all(
-                  registrations.map(async (reg) => {
-                    await reg.unregister();
-                    swUnregistered++;
-                  })
-                );
-              }
-
-              await this.toastService.success(`Caché limpiada: ${cachesCleaned} cachés, ${swUnregistered} Service Workers. Recargando...`);
-
-              // Recargar la página después de un breve delay
-              setTimeout(() => {
-                window.location.reload();
-              }, 2000);
-
-            } catch (error) {
-              Logger.error('Error limpiando caché PWA:', error);
-              await this.toastService.error('Error al limpiar caché PWA');
+            // Limpiar todas las cachés del navegador
+            if ('caches' in window) {
+              const cacheNames = await caches.keys();
+              await Promise.all(
+                cacheNames.map(async (name) => {
+                  await caches.delete(name);
+                  cachesCleaned++;
+                })
+              );
             }
+
+            // Desregistrar Service Workers
+            if ('serviceWorker' in navigator) {
+              const registrations = await navigator.serviceWorker.getRegistrations();
+              await Promise.all(
+                registrations.map(async (reg) => {
+                  await reg.unregister();
+                  swUnregistered++;
+                })
+              );
+            }
+
+            await this.toastService.success(`Caché limpiada: ${cachesCleaned} cachés, ${swUnregistered} Service Workers. Recargando...`);
+
+            // Recargar la página después de un breve delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+
+          } catch (error) {
+            Logger.error('Error limpiando caché PWA:', error);
+            await this.toastService.error('Error al limpiar caché PWA');
           }
-        }
+        })
       ]
     });
 
     await alert.present();
+  }
+
+  /**
+   * Toggle global Características tab visibility
+   */
+  toggleTabCaracteristicas(event: any): void {
+    const mostrar = event.detail.checked;
+    this.preferencesService.setMostrarTabCaracteristicas(mostrar);
+
+    if (mostrar) {
+      this.toastService.success('Tab Características habilitado');
+    } else {
+      this.toastService.info('Tab Características deshabilitado en todos los cursos');
+    }
+  }
+
+  /**
+   * Toggle Características tab for a specific course
+   */
+  toggleCursoTabOculto(codigoCurso: string): void {
+    this.preferencesService.toggleTabCaracteristicasCurso(codigoCurso);
+    const oculto = this.preferencesService.isCursoConTabOculto(codigoCurso);
+
+    if (oculto) {
+      this.toastService.info(`Tab oculto en curso ${codigoCurso}`);
+    } else {
+      this.toastService.success(`Tab visible en curso ${codigoCurso}`);
+    }
+  }
+
+  /**
+   * Check if a course has the tab hidden
+   */
+  isCursoConTabOculto(codigoCurso: string): boolean {
+    return this.preferencesService.isCursoConTabOculto(codigoCurso);
   }
 }
 

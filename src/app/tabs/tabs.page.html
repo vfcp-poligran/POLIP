@@ -4,9 +4,7 @@
   <ion-header class="mobile-header">
     <ion-toolbar color="primary">
       <ion-buttons slot="start">
-        <ion-button (click)="toggleMobileSeguimiento()" aria-label="Alternar panel de seguimiento">
-          <ion-icon slot="icon-only" [name]="mobileSeguimientoVisible ? 'close-outline' : 'book-outline'"></ion-icon>
-        </ion-button>
+
 
       </ion-buttons>
       <ion-title class="mobile-app-title">
@@ -31,12 +29,14 @@
         {{ item.label }}
       </ion-button>
 
-      <!-- Botón para alternar panel de seguimiento -->
-      <ion-button fill="clear" color="light" (click)="togglePanelSeguimiento()"
-        [title]="panelSeguimientoVisible() ? 'Ocultar Seguimiento' : 'Mostrar Seguimiento'">
-        <ion-icon slot="icon-only" [name]="panelSeguimientoVisible() ? 'book' : 'book-outline'"></ion-icon>
-      </ion-button>
+
     </ion-buttons>
+
+    <!-- Barra de búsqueda global -->
+    <ion-searchbar [(ngModel)]="busquedaGlobal" (ionInput)="onBusquedaGlobalChange($event)" placeholder="Buscar..."
+      mode="ios" class="global-searchbar">
+    </ion-searchbar>
+
     <div class="desktop-nav-brand">
       <ion-avatar class="header-logo-avatar">
         <img
@@ -51,7 +51,7 @@
   </div>
   }
 
-  <div class="main-content-area" [class.has-bottom-tabs]="!isDesktop" [class.full-width]="!panelSeguimientoVisible()">
+  <div class="main-content-area" [class.has-bottom-tabs]="!isDesktop" class="full-width">
     <ion-router-outlet></ion-router-outlet>
   </div>
 
@@ -64,135 +64,3 @@
   </ion-tab-bar>
   }
 </div>
-
-<!-- Panel de Seguimiento - posición fija a la derecha (Desktop) -->
-<ion-card class="panel-seguimiento-global" *ngIf="isDesktop && panelSeguimientoVisible()">
-  <ion-card-header class="panel-seguimiento-header">
-    <ion-card-title><ion-icon name="analytics-outline"></ion-icon> Resumen de Seguimiento</ion-card-title>
-    <ion-button fill="clear" size="small" (click)="togglePanelSeguimiento()" class="header-close-btn">
-      <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-    </ion-button>
-  </ion-card-header>
-
-  <ion-card-content class="panel-seguimiento-content">
-    <!-- Estadísticas Rápidas -->
-    <div class="stats-grid-global">
-      <div class="stat-item">
-        <span class="stat-value">{{ statsGlobales().totalCursos }}</span>
-        <span class="stat-label">Cursos</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ statsGlobales().totalEstudiantes }}</span>
-        <span class="stat-label">Estudiantes</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ novedadesPendientes().length }}</span>
-        <span class="stat-label">Novedades</span>
-      </div>
-    </div>
-
-    <div class="info-divider"></div>
-
-    <!-- Novedades por Categoría -->
-    <div class="summary-section">
-      <h3 class="section-title-premium">Novedades por Categoría</h3>
-      <div class="tipo-summary-list">
-        @for (tipo of novedadesResumen(); track tipo.nombre) {
-        <div class="tipo-summary-item">
-          <div class="tipo-icon" [style.background-color]="tipo.color + '15'" [style.color]="tipo.color">
-            <ion-icon [name]="tipo.icono"></ion-icon>
-          </div>
-          <span class="tipo-name">{{ tipo.nombre }}</span>
-          <ion-badge class="tipo-count" [style.background-color]="tipo.color">{{ tipo.count }}</ion-badge>
-        </div>
-        } @empty {
-        <div class="empty-summary">
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
-          <p>No hay novedades pendientes</p>
-        </div>
-        }
-      </div>
-    </div>
-
-    <!-- Acciones Rápidas -->
-    <div class="panel-actions-global">
-      <ion-button expand="block" fill="outline" class="btn-premium-outline" [routerLink]="['/tabs/calificaciones']">
-        <ion-icon slot="start" name="ribbon-outline"></ion-icon>
-        Ver Calificaciones
-      </ion-button>
-      <ion-button expand="block" color="medium" fill="clear" (click)="togglePanelSeguimiento()">
-        Ocultar Panel
-      </ion-button>
-    </div>
-  </ion-card-content>
-</ion-card>
-
-<!-- Panel de Seguimiento Móvil - Deslizante desde abajo -->
-@if (!isDesktop) {
-<div class="mobile-seguimiento-panel" [class.visible]="mobileSeguimientoVisible">
-  <div class="mobile-panel-header">
-    <div class="panel-title">
-      <ion-icon name="analytics-outline"></ion-icon>
-      <span>Resumen Global</span>
-    </div>
-    <ion-button fill="clear" size="small" (click)="toggleMobileSeguimiento()">
-      <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-    </ion-button>
-  </div>
-  <div class="mobile-panel-content">
-    <!-- Estadísticas Rápidas -->
-    <div class="stats-grid-mobile">
-      <div class="stat-item">
-        <span class="stat-value">{{ statsGlobales().totalCursos }}</span>
-        <span class="stat-label">Cursos</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ statsGlobales().totalEstudiantes }}</span>
-        <span class="stat-label">Estud.</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ novedadesPendientes().length }}</span>
-        <span class="stat-label">Noved.</span>
-      </div>
-    </div>
-
-    <div class="info-divider"></div>
-
-    <!-- Resumen de Novedades -->
-    <div class="summary-section-mobile">
-      <h3 class="section-title-premium-small">Novedades por Categoría</h3>
-      <div class="tipo-summary-list-mobile">
-        @for (tipo of novedadesResumen(); track tipo.nombre) {
-        <div class="tipo-summary-item-mobile">
-          <div class="tipo-info">
-            <div class="tipo-icon-small" [style.background-color]="tipo.color + '15'" [style.color]="tipo.color">
-              <ion-icon [name]="tipo.icono"></ion-icon>
-            </div>
-            <span class="tipo-name-small">{{ tipo.nombre }}</span>
-          </div>
-          <ion-badge class="tipo-count-small" [style.background-color]="tipo.color">{{ tipo.count }}</ion-badge>
-        </div>
-        } @empty {
-        <div class="empty-summary-mobile">
-          <p>No hay novedades pendientes</p>
-        </div>
-        }
-      </div>
-    </div>
-
-    <div class="panel-actions-mobile">
-      <ion-button expand="block" fill="solid" color="primary" [routerLink]="['/tabs/calificaciones']"
-        (click)="toggleMobileSeguimiento()">
-        <ion-icon slot="start" name="ribbon-outline"></ion-icon>
-        Ir a Calificaciones
-      </ion-button>
-    </div>
-  </div>
-</div>
-}
-
-<!-- Overlay para cerrar el panel móvil -->
-@if (!isDesktop) {
-<div class="mobile-seguimiento-overlay" [class.visible]="mobileSeguimientoVisible" (click)="toggleMobileSeguimiento()">
-</div>
-}
