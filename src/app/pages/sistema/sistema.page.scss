@@ -105,14 +105,17 @@
 .page-container {
 
   // Override del padding-top global porque esta página NO tiene page-header
+  padding: 9.6px;
+  width: 100%;
+  height: 100%;
+  /* Ajuste exacto sin scroll */
+
+  // Override del padding-top global porque esta página NO tiene page-header
   // Solo necesita espacio para la navegación desktop (64px)
   @media (min-width: 992px) {
     padding-top: calc(64px + 1.5rem) !important; // Nav bar + spacing
   }
 
-  padding: 9.6px;
-  width: 100%;
-  height: 100%;
   /* Ajuste exacto sin scroll */
 
   @media (max-width: 768px) {

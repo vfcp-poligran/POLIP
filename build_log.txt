@@ -1,0 +1,199 @@
+Application bundle generation failed. [6.894 seconds] - 2025-12-29T23:08:10.223Z
+
+▲ [WARNING] 2 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings. [plugin angular-sass]
+
+  null
+
+
+▲ [WARNING] NG8113: IonSearchbar is not used within the template of CalificacionesPage [plugin angular-compiler]
+
+    src/app/pages/calificaciones/calificaciones.page.ts:101:4:
+      101 │     IonSearchbar
+          ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonSearchbar is not used within the template of CursosPage [plugin angular-compiler]
+
+    src/app/pages/cursos/cursos.page.ts:116:4:
+      116 │     IonSearchbar,
+          ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonSearchbar is not used within the template of RubricasPage [plugin angular-compiler]
+
+    src/app/pages/rubricas/rubricas.page.ts:93:4:
+      93 │     IonSearchbar,
+         ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonSearchbar is not used within the template of SistemaPage [plugin angular-compiler]
+
+    src/app/pages/sistema/sistema.page.ts:79:4:
+      79 │     IonSearchbar,
+         ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
+
+    node_modules/@stencil/core/internal/client/index.js:169:2:
+      169 │   `./${bundleId}.entry.js${BUILD5.hotModuleReplacement && hmrVers...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:456:4:
+      456 │     border: 1px solid rgba(0, 0, 0, 0.04);
+          ╵     ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:457:4:
+      457 │     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          ╵     ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:458:4:
+      458 │     display: flex;
+          ╵     ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:459:4:
+      459 │     flex-direction: column;
+          ╵     ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:460:4:
+      460 │     gap: 8px;
+          ╵     ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:915:65:
+      915 │ ...radient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 8%) 100%);
+          ╵                                     ^
+
+
+  Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+  Use color.adjust instead.
+  
+  More info and automated migrator: https://sass-lang.com/d/import
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/inicio/inicio.page.scss:915:65:
+      915 │ ...radient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 8%) 100%);
+          ╵                                     ^
+
+
+  darken() is deprecated. Suggestions:
+  
+  color.scale($color, $lightness: -38.8571428571%)
+  color.adjust($color, $lightness: -8%)
+  
+  More info: https://sass-lang.com/d/color-functions
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/sistema/sistema.page.scss:113:2:
+      113 │   padding: 9.6px;
+          ╵   ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/sistema/sistema.page.scss:114:2:
+      114 │   width: 100%;
+          ╵   ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+▲ [WARNING] Deprecation [plugin angular-sass]
+
+    src/app/pages/sistema/sistema.page.scss:115:2:
+      115 │   height: 100%;
+          ╵   ^
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: https://sass-lang.com/d/mixed-decls
+
+
+X [ERROR] unmatched "}".
+    ╷
+953 │ }
+    │ ^
+    ╵
+  src\app\pages\cursos\cursos.page.scss 953:1  root stylesheet [plugin angular-sass]
+
+

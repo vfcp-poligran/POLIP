@@ -447,12 +447,6 @@ $touch-target: colors.$touch-target;
     padding: 12px;
     margin-bottom: 8px;
 
-    @media (max-width: 991px) {
-        padding: 8px;
-        margin-bottom: 4px;
-        border-radius: 12px;
-    }
-
     border: 1px solid rgba(0, 0, 0, 0.04);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
@@ -460,6 +454,9 @@ $touch-target: colors.$touch-target;
     gap: 8px;
 
     @media (max-width: 991px) {
+        padding: 8px;
+        margin-bottom: 4px;
+        border-radius: 12px;
         gap: 4px;
     }
 
@@ -912,7 +909,7 @@ $touch-target: colors.$touch-target;
         z-index: 10;
 
         th {
-            background: linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 8%) 100%);
+            background: linear-gradient(180deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -8%) 100%);
             color: white;
             font-weight: 600;
             text-transform: uppercase;
@@ -1888,14 +1885,14 @@ $touch-target: colors.$touch-target;
     margin-top: 0;
     margin-bottom: 16px;
 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
     @media (max-width: 991px) {
         padding: 8px;
         margin-bottom: 10px;
         border-radius: 12px;
     }
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.04);
 
     .section-header {
         display: flex;

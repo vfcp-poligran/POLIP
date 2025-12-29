@@ -20,7 +20,7 @@ import {
   IonFab,
   IonFabButton,
   IonFabList,
-  IonSearchbar,
+
   AlertController,
   LoadingController,
   ModalController,
@@ -90,7 +90,6 @@ import {
     IonFab,
     IonFabButton,
     IonChip,
-    IonSearchbar,
     CommonModule,
     FormsModule,
     RubricaEditorComponent,

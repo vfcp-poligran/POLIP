@@ -22,7 +22,6 @@ import {
   IonNote,
   IonFab,
   IonFabButton,
-  IonSearchbar,
   AlertController,
   ViewWillEnter,
   IonAccordionGroup,
@@ -113,7 +112,7 @@ interface EstudianteConNotas {
     IonSegment,
     IonSegmentButton,
     IonNote,
-    IonSearchbar,
+    IonNote,
     CapitalizePipe,
     IonAccordionGroup,
     IonAccordion]

@@ -11,7 +11,6 @@ import {
   IonBadge,
   IonSegment,
   IonSegmentButton,
-  IonSearchbar,
   AlertController,
   ViewWillEnter
 } from '@ionic/angular/standalone';
@@ -97,8 +96,7 @@ interface ArchivoCalificacionesVisualizacion {
     IonLabel,
     IonBadge,
     IonSegment,
-    IonSegmentButton,
-    IonSearchbar
+    IonSegmentButton
   ]
 })
 export class CalificacionesPage implements OnDestroy, ViewWillEnter {

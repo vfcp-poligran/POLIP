@@ -18,11 +18,11 @@
 ///   font-size: px-to-rem(14); // 0.875rem
 ///   padding: px-to-rem(24); // 1.5rem
 @function px-to-rem($px, $base: 16) {
-    @if unitless($px) {
+    @if math.is-unitless($px) {
         @return math.div($px, $base) * 1rem;
     }
 
-    @else if unit($px)=='px' {
+    @else if math.unit($px)=='px' {
         @return math.div(math.div($px, 1px), $base) * 1rem;
     }
 
