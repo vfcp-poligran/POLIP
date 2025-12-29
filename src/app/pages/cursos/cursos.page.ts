@@ -24,7 +24,9 @@ import {
   IonFabButton,
   IonSearchbar,
   AlertController,
-  ViewWillEnter
+  ViewWillEnter,
+  IonAccordionGroup,
+  IonAccordion
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -112,7 +114,9 @@ interface EstudianteConNotas {
     IonSegmentButton,
     IonNote,
     IonSearchbar,
-    CapitalizePipe]
+    CapitalizePipe,
+    IonAccordionGroup,
+    IonAccordion]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
@@ -138,6 +142,9 @@ export class CursosPage implements ViewWillEnter {
   grupoActivo = signal<string>('todos');
   vistaActiva = signal<'general' | string>('general');
   busquedaTermino = signal<string>(''); // Término de búsqueda
+
+  // Responsive signal
+  isDesktop = signal<boolean>(window.innerWidth >= 992);
 
   rubricasAsociadas: any[] = [];
 
@@ -530,6 +537,11 @@ export class CursosPage implements ViewWillEnter {
 
   constructor() {
     addIcons({ addCircle, informationCircle, people, cloudUpload, closeCircle, school, codeSlash, pricetag, calendar, desktop, checkmark, calendarOutline, pricetagOutline, desktopOutline, time, library, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, trash, chevronUp, chevronDown, create });
+
+    // Listener for responsive changes
+    window.addEventListener('resize', () => {
+      this.isDesktop.set(window.innerWidth >= 992);
+    });
   }
 
   private cd = inject(ChangeDetectorRef);

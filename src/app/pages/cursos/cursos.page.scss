@@ -803,112 +803,153 @@
       }
     }
 
-    @include bp.mobile-only {
-      --ion-grid-column-padding: 6px;
+    // ===============================================
+    // MOBILE COMPACT STYLES (Requested hierarchy)
+    // ===============================================
+    &.mobile-compact {
+      @include bp.mobile-only {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
 
-      .characteristic-item {
-        padding: 10px;
-      }
-    }
+        ion-row {
+          flex-wrap: wrap !important;
+          gap: 6px;
+        }
 
-    // Responsive: ajustes para tablet
-    @include bp.tablet-only {
-      --ion-grid-column-padding: 6px;
+        ion-col {
+          flex: 1 1 45% !important; // 2 items per row
+          max-width: 50%;
+          min-width: 130px;
+          padding: 0;
+        }
 
-      .characteristic-item {
-        padding: 9px;
-        min-height: 60px;
-      }
-    }
+        .characteristic-item {
+          min-height: 48px;
+          padding: 6px 8px;
+          border-left-width: 3px;
+          background: rgba($azul-oscuro, 0.02);
+          box-shadow: none;
+          border: 1px solid rgba($azul-oscuro, 0.05);
 
-    // Responsive: ajustes para desktop
-    @include bp.desktop-only {
-      --ion-grid-column-padding: 8px;
+          h4.label {
+            font-size: 0.6rem; // Small & Sharp
+            letter-spacing: 0.5px;
+            color: lighten($gris-medio, 5%);
+            margin-bottom: 2px;
+          }
 
-      .characteristic-item {
-        padding: 10px;
-        min-height: 64px;
-      }
-    }
-
-    // Responsive: ajustes para móvil
-    @include bp.mobile-only {
-      --ion-grid-column-padding: 4px;
-
-      ion-row {
-        margin-bottom: 6px;
-      }
-
-      .characteristic-item {
-        padding: 10px 12px;
-        min-height: auto;
+          p.value {
+            font-size: 0.85rem; // Compact & Readable
+            line-height: 1.2;
+            color: $azul-oscuro;
+            font-weight: 600;
+          }
+        }
       }
     }
   }
 
-  // Contenedor de subtab para asegurar que el contenido sea visible
-  .subtab-content.detail-compact-layout {
+
+
+  // Responsive: ajustes para tablet
+  @include bp.tablet-only {
+    --ion-grid-column-padding: 6px;
+
+    .characteristic-item {
+      padding: 9px;
+      min-height: 60px;
+    }
+  }
+
+  // Responsive: ajustes para desktop
+  @include bp.desktop-only {
+    --ion-grid-column-padding: 8px;
+
+    .characteristic-item {
+      padding: 10px;
+      min-height: 64px;
+    }
+  }
+
+  // Responsive: ajustes para móvil
+  @include bp.mobile-only {
+    --ion-grid-column-padding: 4px;
+
+    ion-row {
+      margin-bottom: 6px;
+    }
+
+    .characteristic-item {
+      padding: 10px 12px;
+      min-height: auto;
+    }
+  }
+}
+
+// Contenedor de subtab para asegurar que el contenido sea visible
+.subtab-content.detail-compact-layout {
+  overflow: visible;
+  width: 100%;
+
+  .compact-info-card {
     overflow: visible;
+    box-shadow: none;
+    margin: 0;
     width: 100%;
 
-    .compact-info-card {
-      overflow: visible;
-      box-shadow: none;
-      margin: 0;
+    ion-card-content {
       width: 100%;
-
-      ion-card-content {
-        width: 100%;
-        padding: 0;
-      }
+      padding: 0;
     }
   }
+}
 
-  // Asegurar que todos los contenedores padre permitan ancho completo
-  .compact-form-section,
-  .form-main-grid,
-  .import-side {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
+// Asegurar que todos los contenedores padre permitan ancho completo
+.compact-form-section,
+.form-main-grid,
+.import-side {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+// Asegurar que curso-card-content permita ancho completo
+.curso-card-content {
+  width: 100%;
+  box-sizing: border-box;
+
+  // Cuando contiene el grid de características, eliminar padding horizontal
+  &:has(.parsed-course-info) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+// Estado vacío de importación
+.empty-import-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: spacing('lg');
+  margin-top: spacing('sm');
+  border: 1px dashed rgba($azul-oscuro, 0.15);
+  border-radius: $radius-sm;
+  background: rgba($azul-oscuro, 0.02);
+
+  ion-icon {
+    font-size: 2rem;
+    margin-bottom: spacing('xs');
   }
 
-  // Asegurar que curso-card-content permita ancho completo
-  .curso-card-content {
-    width: 100%;
-    box-sizing: border-box;
-
-    // Cuando contiene el grid de características, eliminar padding horizontal
-    &:has(.parsed-course-info) {
-      padding-left: 0;
-      padding-right: 0;
-    }
+  p {
+    @include typography('sm', 'normal');
+    color: $gris-medio;
+    text-align: center;
+    margin: 0;
   }
-
-  // Estado vacío de importación
-  .empty-import-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: spacing('lg');
-    margin-top: spacing('sm');
-    border: 1px dashed rgba($azul-oscuro, 0.15);
-    border-radius: $radius-sm;
-    background: rgba($azul-oscuro, 0.02);
-
-    ion-icon {
-      font-size: 2rem;
-      margin-bottom: spacing('xs');
-    }
-
-    p {
-      @include typography('sm', 'normal');
-      color: $gris-medio;
-      text-align: center;
-      margin: 0;
-    }
-  }
+}
 }
 
 .section-title {
