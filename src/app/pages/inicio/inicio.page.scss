@@ -653,14 +653,15 @@ $touch-target: colors.$touch-target;
             // Allow columns to behave according to size-lg attributes
             align-items: flex-start; // Ensure top alignment
 
-            // Swap column order: courses (column 1) to the right
+            // Natural order: Courses (Left), Content (Right)
             .column-courses {
-                order: 2; // Move to the right
-                padding-right: 0; // Flush to right edge
+                order: 1;
+                border-right: 1px solid rgba(0, 0, 0, 0.05); // Optional separator
             }
 
             .right-column-container {
-                order: 1; // Move to the left
+                order: 2;
+                padding-left: 16px; // Add spacing from sidebar
             }
         }
     }

@@ -82,7 +82,7 @@
       <!-- Tabs superiores de selección de curso -->
       <ion-segment
         [value]="cursoSeleccionado() || (modoEdicion() && !cursoSeleccionado() ? 'NUEVO' : cursosDisponibles()[0]?.codigo)"
-        (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable layout="icon-top">
+        (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable>
 
         <!-- Tab Virtual de Nuevo Curso -->
         @if (modoEdicion() && !cursoSeleccionado()) {
