@@ -177,3 +177,112 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+// ============================================
+// MIXINS ESPECIALIZADOS - CASOS ESPECIALES
+// ============================================
+
+/**
+ * Tipografía para headers de tabla compactos
+ * Usado en tablas de datos densas donde el espacio es limitado
+ */
+@mixin typography-table-header-compact {
+    font-size: 0.625rem; // 10px - tamaño mínimo legible
+    font-weight: 600;
+    font-family: $font-family-form-label;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+
+    @include bp.tablet-only {
+        font-size: 0.6rem;
+    }
+
+    @include bp.mobile-only {
+        font-size: 0.575rem;
+    }
+}
+
+/**
+ * Tipografía para celdas de tabla
+ * Mantiene legibilidad en tablas densas
+ */
+@mixin typography-table-cell {
+    font-size: $font-size-footnote; // 0.625rem
+    font-weight: 400;
+    font-family: $font-family-body;
+    line-height: 1.3;
+
+    @include bp.tablet-only {
+        font-size: 0.6rem;
+    }
+
+    @include bp.mobile-only {
+        font-size: 0.575rem;
+    }
+}
+
+/**
+ * Tipografía para badges
+ * Usado en indicadores, estados, contadores
+ */
+@mixin typography-badge {
+    font-size: $font-size-footnote; // 0.625rem
+    font-weight: 600;
+    font-family: $font-family-char-value;
+    line-height: 1.2;
+}
+
+/**
+ * Tipografía para chips
+ * Usado en tags, filtros, selecciones
+ */
+@mixin typography-chip {
+    font-size: $font-size-footnote; // 0.625rem
+    font-weight: 500;
+    font-family: $font-family-body;
+    line-height: 1.3;
+}
+
+/**
+ * Tipografía para números grandes decorativos
+ * Usado en versiones, estadísticas, contadores destacados
+ */
+@mixin typography-display-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: $font-family-page-title;
+    line-height: 1;
+
+    @include bp.tablet-only {
+        font-size: 2rem;
+    }
+
+    @include bp.mobile-only {
+        font-size: 1.75rem;
+    }
+}
+
+/**
+ * Tipografía para títulos de sección
+ * Usado en headers de secciones dentro de cards/modales
+ */
+@mixin typography-section-header {
+    @include apply-typography('section-header');
+}
+
+/**
+ * Tipografía para labels pequeños de inputs
+ * Usado en formularios compactos
+ */
+@mixin typography-input-label-small {
+    @include apply-typography('input-label-small');
+}
+
+/**
+ * Tipografía para texto pequeño de inputs
+ * Usado en inputs compactos
+ */
+@mixin typography-input-text-small {
+    @include apply-typography('input-text-small');
+}
