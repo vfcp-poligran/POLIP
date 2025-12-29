@@ -387,7 +387,7 @@ $touch-target: colors.$touch-target;
             --box-shadow: none;
             height: 36px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             box-shadow: none !important;
             border: none !important;
             transition: all 0.2s ease;
@@ -535,7 +535,7 @@ $touch-target: colors.$touch-target;
 
             height: 28px; // Very compact
             font-weight: 600;
-            font-size: 0.85rem; // Reduced font size
+            font-size: 0.875rem;
             letter-spacing: 0.2px; // Tighter tracking
             box-shadow: none !important;
             border: none !important;
@@ -801,7 +801,7 @@ $touch-target: colors.$touch-target;
         ion-button {
             --padding-start: 4px;
             --padding-end: 4px;
-            font-size: 0.8rem;
+            font-size: 0.875rem;
             font-weight: 600;
         }
     }
@@ -982,7 +982,7 @@ $touch-target: colors.$touch-target;
             }
 
             span {
-                font-size: 0.85rem;
+                font-size: 0.875rem;
                 font-weight: 600;
                 color: #555;
             }
@@ -1092,7 +1092,7 @@ $touch-target: colors.$touch-target;
                 }
 
                 span {
-                    font-size: 0.85rem;
+                    font-size: 0.875rem;
                     font-weight: 600;
                     color: $azul-oscuro;
                     text-align: center;
@@ -1144,7 +1144,7 @@ $touch-target: colors.$touch-target;
                 }
 
                 .origen-label {
-                    font-size: 0.85rem;
+                    font-size: 0.875rem;
                     font-weight: 600;
                     color: $azul-oscuro;
                 }
