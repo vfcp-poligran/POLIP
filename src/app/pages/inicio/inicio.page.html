@@ -219,46 +219,20 @@
 
                         <!-- Sub-row para Registro y Placeholder -->
                         <ion-row>
-                            <!-- SUB-COL 1: EN CONSTRUCCIÓN -->
-                            <ion-col size="12" size-lg="6" class="column-container column-placeholder">
+                            <!-- SUB-COL 1: FUNCIONALIDADES -->
+                            <ion-col size="12" size-lg="4" class="column-container column-placeholder">
                                 <div class="column-header">
-                                    <ion-icon name="hammer-outline"></ion-icon>
-                                    <h2>En Construcción</h2>
+                                    <ion-icon name="apps-outline"></ion-icon>
+                                    <h2>Funcionalidades</h2>
                                 </div>
 
                                 <div class="construction-card">
-                                    <div class="animation-placeholder">
-                                        <ion-icon name="construct-outline" class="animated-icon"></ion-icon>
-                                    </div>
-                                    <h3>Próximas Funcionalidades</h3>
-                                    <p>Estamos trabajando para traerte más herramientas de gestión y análisis en este
-                                        espacio.</p>
-
-                                    <div class="feature-list-mini">
-                                        <div class="feature-item action-item" (click)="abrirModalRegistro()"
-                                            [class.disabled]="seleccionadosIndices().size === 0">
-                                            <ion-icon name="checkmark-done-circle-outline" color="primary"></ion-icon>
-                                            <span class="action-text">Registrar Novedad ({{ seleccionadosIndices().size
-                                                }})</span>
-                                        </div>
-                                        <div class="feature-item">
-                                            <ion-icon name="analytics-outline" color="primary"></ion-icon>
-                                            <span>Reportes Avanzados</span>
-                                        </div>
-                                        <div class="feature-item">
-                                            <ion-icon name="calendar-outline" color="success"></ion-icon>
-                                            <span>Agenda de Seguimiento</span>
-                                        </div>
-                                        <div class="feature-item">
-                                            <ion-icon name="notifications-outline" color="warning"></ion-icon>
-                                            <span>Alertas Automáticas</span>
-                                        </div>
-                                    </div>
+                                    <!-- Contenido por implementar -->
                                 </div>
                             </ion-col>
 
                             <!-- SUB-COL 2: NOVEDAD -->
-                            <ion-col size="12" size-lg="6" class="column-container column-registration">
+                            <ion-col size="12" size-lg="8" class="column-container column-registration">
                                 <div class="column-header">
                                     <ion-icon name="checkmark-circle-outline"></ion-icon>
                                     <h2>Novedad</h2>
@@ -270,10 +244,7 @@
                                 <div class="registration-control-pane">
                                     @if (estudiantesRegistrados().length > 0) {
                                     <div class="registration-actions-top">
-
-
                                         <div class="selection-tools">
-                                            <!-- "Agregar Todos" Button (Relocated) -->
                                             @if (gruposSeleccionados().size > 0) {
                                             <ion-button fill="clear" size="small" color="secondary"
                                                 (click)="agregarGruposSeleccionados()">
@@ -282,13 +253,6 @@
                                             </ion-button>
                                             }
 
-                                            <ion-button fill="clear" size="small" color="medium"
-                                                (click)="toggleSeleccionarTodos()">
-                                                <ion-icon slot="start"
-                                                    [name]="seleccionadosIndices().size === estudiantesRegistrados().length ? 'checkbox' : 'square-outline'"></ion-icon>
-                                                {{ seleccionadosIndices().size === estudiantesRegistrados().length ?
-                                                'Deseleccionar todos' : 'Seleccionar todos' }}
-                                            </ion-button>
                                             <ion-button fill="clear" size="small" color="danger"
                                                 (click)="limpiarRegistrados()">
                                                 <ion-icon slot="start" name="trash-outline"></ion-icon>
@@ -297,25 +261,74 @@
                                         </div>
                                     </div>
 
-                                    <div class="selected-students-scroll">
-                                        @for (est of estudiantesRegistrados(); track $index) {
-                                        <div class="student-selection-item" [class.selected]="isNovedadSelected($index)"
-                                            (click)="toggleSeleccionNovedad($index)">
-                                            <div class="item-selection">
-                                                <ion-checkbox [checked]="isNovedadSelected($index)"
-                                                    (click)="$event.stopPropagation()"></ion-checkbox>
-                                            </div>
-                                            <div class="item-info">
-                                                <span class="name">{{ est.nombre }}</span>
-                                                <span class="meta">{{ getCodigoCorto(est.curso) }} • G{{ est.grupo
-                                                    }}</span>
-                                            </div>
-                                            <ion-button fill="clear" color="medium" size="small"
-                                                (click)="$event.stopPropagation(); removerRegistrado($index)">
-                                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                                            </ion-button>
-                                        </div>
-                                        }
+                                    <!-- Grid de Novedades -->
+                                    <div class="novedades-grid-container">
+                                        <table class="novedades-table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="student-col">Estudiante</th>
+                                                    <th class="novedad-col" title="Trabaja Solo">👤</th>
+                                                    <th class="novedad-col" title="Grupo Bien">👥</th>
+                                                    <th class="novedad-col" title="Estudiante Fantasma">👻</th>
+                                                    <th class="novedad-col" title="Paracaídista">🪂</th>
+                                                    <th class="actions-col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (est of estudiantesRegistrados(); track est.correo; let i = $index)
+                                                {
+                                                <tr class="student-row" [@itemAnimation]="i">
+                                                    <td class="student-info-cell">
+                                                        <div class="student-name">{{ est.nombre }}</div>
+                                                        <div class="student-meta">{{ getCodigoCorto(est.curso) }} - G{{
+                                                            est.grupo }}</div>
+                                                    </td>
+                                                    <td class="novedad-cell">
+                                                        <button class="novedad-checkbox"
+                                                            [class.checked]="tieneNovedad(est.correo, 'trabaja_solo')"
+                                                            (click)="toggleNovedad(est.correo, 'trabaja_solo')"
+                                                            title="Trabaja Solo">
+                                                            <ion-icon
+                                                                [name]="tieneNovedad(est.correo, 'trabaja_solo') ? 'checkbox' : 'square-outline'"></ion-icon>
+                                                        </button>
+                                                    </td>
+                                                    <td class="novedad-cell">
+                                                        <button class="novedad-checkbox"
+                                                            [class.checked]="tieneNovedad(est.correo, 'grupo_bien')"
+                                                            (click)="toggleNovedad(est.correo, 'grupo_bien')"
+                                                            title="Grupo Bien">
+                                                            <ion-icon
+                                                                [name]="tieneNovedad(est.correo, 'grupo_bien') ? 'checkbox' : 'square-outline'"></ion-icon>
+                                                        </button>
+                                                    </td>
+                                                    <td class="novedad-cell">
+                                                        <button class="novedad-checkbox"
+                                                            [class.checked]="tieneNovedad(est.correo, 'fantasma')"
+                                                            (click)="toggleNovedad(est.correo, 'fantasma')"
+                                                            title="Estudiante Fantasma">
+                                                            <ion-icon
+                                                                [name]="tieneNovedad(est.correo, 'fantasma') ? 'checkbox' : 'square-outline'"></ion-icon>
+                                                        </button>
+                                                    </td>
+                                                    <td class="novedad-cell">
+                                                        <button class="novedad-checkbox"
+                                                            [class.checked]="tieneNovedad(est.correo, 'paracaidista')"
+                                                            (click)="toggleNovedad(est.correo, 'paracaidista')"
+                                                            title="Paracaídista">
+                                                            <ion-icon
+                                                                [name]="tieneNovedad(est.correo, 'paracaidista') ? 'checkbox' : 'square-outline'"></ion-icon>
+                                                        </button>
+                                                    </td>
+                                                    <td class="actions-cell">
+                                                        <ion-button fill="clear" size="small" color="danger"
+                                                            (click)="removerRegistrado(i)">
+                                                            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                                        </ion-button>
+                                                    </td>
+                                                </tr>
+                                                }
+                                            </tbody>
+                                        </table>
                                     </div>
                                     } @else {
                                     <div class="empty-state registration-empty">

@@ -1,5 +1,6 @@
 @use "sass:color";
 @use '../../shared/styles/color-tokens' as colors;
+@use '../../shared/styles/typography-mixins' as typo;
 
 // Use centralized color tokens instead of local variables
 $azul-oscuro: colors.$azul-oscuro;
@@ -883,6 +884,204 @@ $touch-target: colors.$touch-target;
         display: block;
         margin-top: 10px;
         font-size: 0.8rem;
+    }
+}
+
+// === GRID DE NOVEDADES ===
+.novedades-grid-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: calc(100vh - 350px);
+    background: var(--ion-card-background, #fff);
+    border-radius: 12px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.novedades-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    table-layout: fixed;
+
+    thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+
+        th {
+            background: linear-gradient(180deg, $azul-oscuro 0%, darken($azul-oscuro, 8%) 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 16px 12px;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.75rem;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            &.student-col {
+                width: 40%;
+                min-width: 180px;
+                text-align: left;
+                padding-left: 20px;
+            }
+
+            &.novedad-col {
+                width: 80px;
+                font-size: 1.8rem;
+                padding: 12px 8px;
+                cursor: help;
+            }
+
+            &.actions-col {
+                width: 60px;
+            }
+        }
+    }
+
+    tbody {
+        tr.student-row {
+            transition: background-color 0.2s;
+
+            &:nth-child(even) {
+                background: rgba($azul-claro, 0.03);
+            }
+
+            &:hover {
+                background: rgba($azul-claro, 0.08);
+            }
+
+            td {
+                padding: 14px 12px;
+                vertical-align: middle;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+                border-right: 1px solid rgba(0, 0, 0, 0.04);
+                text-align: center;
+
+                &:last-child {
+                    border-right: none;
+                }
+
+                &.student-info-cell {
+                    text-align: left;
+                    padding-left: 20px;
+
+                    .student-name {
+                        font-weight: 600;
+                        color: $azul-oscuro;
+                        font-size: 0.9rem;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    .student-meta {
+                        color: var(--ion-color-medium);
+                        font-size: 0.75rem;
+                        margin-top: 2px;
+                    }
+                }
+
+                &.novedad-cell {
+                    .novedad-checkbox {
+                        background: transparent;
+                        border: 2px solid rgba(0, 0, 0, 0.15);
+                        cursor: pointer;
+                        padding: 6px;
+                        border-radius: 6px;
+                        transition: all 0.2s;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 40px;
+                        height: 40px;
+
+                        ion-icon {
+                            font-size: 1.6rem;
+                            color: var(--ion-color-medium);
+                        }
+
+                        &.checked {
+                            background: rgba($azul-claro, 0.15);
+                            border-color: $azul-claro;
+
+                            ion-icon {
+                                color: $azul-claro;
+                            }
+                        }
+
+                        &:hover {
+                            border-color: $azul-claro;
+                            background: rgba($azul-claro, 0.05);
+                        }
+                    }
+                }
+
+                &.actions-cell {
+                    ion-button {
+                        --padding-start: 6px;
+                        --padding-end: 6px;
+                    }
+                }
+            }
+        }
+    }
+
+    // Responsive
+    @media (max-width: 768px) {
+        font-size: 0.75rem;
+
+        thead th {
+            padding: 12px 8px;
+            font-size: 0.65rem;
+
+            &.student-col {
+                min-width: 120px;
+                padding-left: 12px;
+            }
+
+            &.novedad-col {
+                width: 55px;
+                font-size: 1.3rem;
+                padding: 10px 4px;
+            }
+
+            &.actions-col {
+                width: 45px;
+            }
+        }
+
+        tbody tr td {
+            padding: 10px 6px;
+
+            &.student-info-cell {
+                padding-left: 12px;
+
+                .student-name {
+                    font-size: 0.8rem;
+                }
+
+                .student-meta {
+                    font-size: 0.65rem;
+                }
+            }
+
+            &.novedad-cell .novedad-checkbox {
+                width: 32px;
+                height: 32px;
+                padding: 4px;
+
+                ion-icon {
+                    font-size: 1.2rem;
+                }
+            }
+        }
     }
 }
 

@@ -173,6 +173,9 @@ export class InicioPage implements OnInit, ViewWillEnter {
     aliasNovedad = signal<string>('');
     fechaHoraNovedad = signal<string>(new Date().toISOString());
 
+    // Novedades marcadas: Map<correoEstudiante, Set<tipoNovedad>>
+    novedadesMarcadas = signal<Map<string, Set<string>>>(new Map());
+
     // === COMPUTED ===
     tiposNovedad = computed(() => this.novedadService.tiposActivos());
     novedadesPendientes = computed(() => this.novedadService.novedadesPendientes());
@@ -546,6 +549,38 @@ export class InicioPage implements OnInit, ViewWillEnter {
      */
     isNovedadSelected(index: number): boolean {
         return this.seleccionadosIndices().has(index);
+    }
+
+    /**
+     * Toggle de novedad para un estudiante específico
+     */
+    toggleNovedad(correo: string, tipoNovedad: string): void {
+        this.novedadesMarcadas.update(map => {
+            const newMap = new Map(map);
+            const novedades = newMap.get(correo) || new Set();
+
+            if (novedades.has(tipoNovedad)) {
+                novedades.delete(tipoNovedad);
+            } else {
+                novedades.add(tipoNovedad);
+            }
+
+            if (novedades.size > 0) {
+                newMap.set(correo, novedades);
+            } else {
+                newMap.delete(correo);
+            }
+
+            return newMap;
+        });
+    }
+
+    /**
+     * Verifica si un estudiante tiene una novedad marcada
+     */
+    tieneNovedad(correo: string, tipoNovedad: string): boolean {
+        const novedades = this.novedadesMarcadas().get(correo);
+        return novedades ? novedades.has(tipoNovedad) : false;
     }
 
     /**
