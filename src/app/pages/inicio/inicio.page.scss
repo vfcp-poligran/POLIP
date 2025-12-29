@@ -20,7 +20,7 @@ $touch-target: colors.$touch-target;
 .page-header {
     background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
     padding: 10px 12px;
-    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
     position: sticky;
     top: 0;
     z-index: 100;
@@ -395,6 +395,7 @@ $touch-target: colors.$touch-target;
             transition: all 0.2s ease;
             margin: 0;
             position: relative;
+            color: var(--color) !important; // Enforce color from CSS variable for visibility
 
             // Texto con color del curso (se aplica dinámicamente)
             &::part(native) {
