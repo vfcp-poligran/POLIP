@@ -12,7 +12,8 @@ $touch-target: colors.$touch-target;
 // Contenedor principal
 .inicio-content {
     // Background inherits from --ion-background-color (theme-aware)
-    --padding-bottom: env(safe-area-inset-bottom, 0px);
+    // Add extra padding for mobile bottom tabs
+    --padding-bottom: calc(56px + env(safe-area-inset-bottom, 16px));
 }
 
 // === HEADER ===
@@ -626,16 +627,14 @@ $touch-target: colors.$touch-target;
         }
     }
 
-    @media (min-width: 992px) {
+    @media (min-width: 768px) {
         padding-left: 0;
 
-        // Desktop: Wrap cards, no scroll
+        // Desktop & Tablet: Wrap cards, no scroll
         flex-wrap: wrap;
         overflow-x: visible;
         overflow-y: visible; // Allow vertical growth for wrapped rows
         padding-bottom: 0;
-
-
     }
 }
 
@@ -781,16 +780,9 @@ $touch-target: colors.$touch-target;
     gap: 10px;
 
     .btn-main-region-grid {
-        padding-inline-start: 16px;
-        padding-inline-end: 16px;
-        padding-top: 20px;
+        // Legacy class removed or deprioritized, keeping basic padding if needed
+        padding-top: 10px;
         padding-bottom: 20px;
-        height: 100%;
-
-        // Optional: Remove grid padding on desktop if strict alignment is needed
-        @media (min-width: 992px) {
-            padding-inline-start: 0; // Strict left alignment
-        }
     }
 
 
@@ -897,6 +889,13 @@ $touch-target: colors.$touch-target;
     border-radius: 12px;
     padding: 0;
     border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+// === GRID DE NOVEDADES (Adaptive Container) ===
+// Replaces .novedades-grid-container usage logic
+.novedades-adaptive-container {
+    width: 100%;
+    // Allow height to grow, container below handles scroll if needed
 }
 
 .novedades-table {
@@ -1032,58 +1031,114 @@ $touch-target: colors.$touch-target;
             }
         }
     }
+}
 
-    // Responsive
-    @media (max-width: 768px) {
-        font-size: 0.75rem;
+// === MOBILE/TABLET ADAPTIVE GRID ===
+.mobile-student-grid {
+    display: grid;
+    grid-template-columns: 1fr; // Mobile Portrait default
+    gap: 12px;
+    padding-bottom: 80px; // Extra space for FAB or scroll
+    margin-top: 10px;
 
-        thead th {
-            padding: 12px 8px;
-            font-size: 0.65rem;
+    // Tablet Portrait / Mobile Landscape: 2 Columns
+    @media (min-width: 576px) {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
 
-            &.student-col {
-                min-width: 120px;
-                padding-left: 12px;
-            }
+    .student-card-mobile {
+        margin: 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background: var(--ion-card-background, #fff);
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
 
-            &.novedad-col {
-                width: 55px;
-                font-size: 1.3rem;
-                padding: 10px 4px;
-            }
+        .card-mobile-header {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba($azul-claro, 0.03);
 
-            &.actions-col {
-                width: 45px;
+            .student-details {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                min-width: 0;
+
+                .name {
+                    font-weight: 700;
+                    color: $azul-oscuro;
+                    font-size: 1rem;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .meta {
+                    font-size: 0.8rem;
+                    color: #666;
+                    margin-top: 2px;
+                }
             }
         }
 
-        tbody tr td {
-            padding: 10px 6px;
+        .novedad-toggles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); // 4 buttons
+            padding: 4px;
 
-            &.student-info-cell {
-                padding-left: 12px;
+            .novedad-toggle-btn {
+                background: transparent;
+                border: none;
+                border-right: 1px solid rgba(0, 0, 0, 0.05);
+                padding: 12px 4px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                min-height: 70px; // Good touch target
 
-                .student-name {
-                    font-size: 0.8rem;
+                &:last-child {
+                    border-right: none;
                 }
-
-                .student-meta {
-                    font-size: 0.65rem;
-                }
-            }
-
-            &.novedad-cell .novedad-checkbox {
-                width: 32px;
-                height: 32px;
-                padding: 4px;
 
                 ion-icon {
-                    font-size: 1.2rem;
+                    font-size: 1.5rem;
+                    color: var(--ion-color-medium);
+                    transition: color 0.2s;
+                }
+
+                span {
+                    font-size: 0.65rem;
+                    font-weight: 600;
+                    color: var(--ion-color-medium);
+                    text-align: center;
+                    line-height: 1;
+                }
+
+                &.active {
+                    background: rgba($azul-claro, 0.1);
+
+                    ion-icon {
+                        color: $azul-claro;
+                        transform: scale(1.1);
+                    }
+
+                    span {
+                        color: $azul-claro;
+                    }
                 }
             }
         }
     }
 }
+
 
 // === COLUMNA 3: CONSTRUCCIÓN ===
 .construction-card {
@@ -1406,6 +1461,21 @@ $touch-target: colors.$touch-target;
     .main-content-grid {
         padding: 6px 4px;
         padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+
+        // Reorder Right Column Content on Mobile: Novedades (Registration) First!
+        .right-column-container ion-row {
+            display: flex;
+            flex-direction: column;
+
+            .column-registration {
+                order: 1;
+            }
+
+            .column-placeholder {
+                order: 2;
+                margin-top: 16px;
+            }
+        }
     }
 
     .course-card-premium {

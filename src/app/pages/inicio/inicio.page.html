@@ -261,9 +261,11 @@
                                         </div>
                                     </div>
 
-                                    <!-- Grid de Novedades -->
-                                    <div class="novedades-grid-container">
-                                        <table class="novedades-table">
+                                    <!-- ADAPTIVE LAYOUT: TABLE (Desktop) vs GRID (Mobile) -->
+                                    <div class="novedades-adaptive-container">
+                                        @if (isDesktop()) {
+                                        <!-- DESKTOP VIEW: Data Table -->
+                                        <table class="novedades-table desktop-only-table">
                                             <thead>
                                                 <tr>
                                                     <th class="student-col">Estudiante</th>
@@ -329,6 +331,61 @@
                                                 }
                                             </tbody>
                                         </table>
+
+                                        } @else {
+                                        <!-- MOBILE/TABLET VIEW: Card Grid -->
+                                        <div class="mobile-student-grid">
+                                            @for (est of estudiantesRegistrados(); track est.correo; let i = $index) {
+                                            <ion-card class="student-card-mobile" [@itemAnimation]="i">
+                                                <div class="card-mobile-header">
+                                                    <div class="student-details">
+                                                        <span class="name">{{ est.nombre }}</span>
+                                                        <span class="meta">{{ getCodigoCorto(est.curso) }} • G{{
+                                                            est.grupo }}</span>
+                                                    </div>
+                                                    <ion-button fill="clear" color="medium" size="small"
+                                                        (click)="removerRegistrado(i)" class="remove-btn-mobile">
+                                                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                                    </ion-button>
+                                                </div>
+
+                                                <div class="novedad-toggles-grid">
+                                                    <button class="novedad-toggle-btn"
+                                                        [class.active]="tieneNovedad(est.correo, 'trabaja_solo')"
+                                                        (click)="toggleNovedad(est.correo, 'trabaja_solo')">
+                                                        <ion-icon
+                                                            [name]="tieneNovedad(est.correo, 'trabaja_solo') ? 'person' : 'person-outline'"></ion-icon>
+                                                        <span>Solo</span>
+                                                    </button>
+
+                                                    <button class="novedad-toggle-btn"
+                                                        [class.active]="tieneNovedad(est.correo, 'grupo_bien')"
+                                                        (click)="toggleNovedad(est.correo, 'grupo_bien')">
+                                                        <ion-icon
+                                                            [name]="tieneNovedad(est.correo, 'grupo_bien') ? 'people' : 'people-outline'"></ion-icon>
+                                                        <span>Bien</span>
+                                                    </button>
+
+                                                    <button class="novedad-toggle-btn"
+                                                        [class.active]="tieneNovedad(est.correo, 'fantasma')"
+                                                        (click)="toggleNovedad(est.correo, 'fantasma')">
+                                                        <ion-icon
+                                                            [name]="tieneNovedad(est.correo, 'fantasma') ? 'skull' : 'skull-outline'"></ion-icon>
+                                                        <span>Fantasma</span>
+                                                    </button>
+
+                                                    <button class="novedad-toggle-btn"
+                                                        [class.active]="tieneNovedad(est.correo, 'paracaidista')"
+                                                        (click)="toggleNovedad(est.correo, 'paracaidista')">
+                                                        <ion-icon
+                                                            [name]="tieneNovedad(est.correo, 'paracaidista') ? 'airplane' : 'airplane-outline'"></ion-icon>
+                                                        <span>Paracaídista</span>
+                                                    </button>
+                                                </div>
+                                            </ion-card>
+                                            }
+                                        </div>
+                                        }
                                     </div>
                                     } @else {
                                     <div class="empty-state registration-empty">

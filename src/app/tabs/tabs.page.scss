@@ -12,178 +12,8 @@
   position: relative;
 }
 
-/* Desktop sidebar como ion-card fija */
-.desktop-sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 220px;
-  margin: 0;
-  border-radius: 0;
-  z-index: 99;
-  background: var(--azul-oscuro, #0f385a);
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease;
-  overflow: hidden;
+/* Desktop sidebar styles removed (unused) */
 
-  // Estado colapsado - solo recorta el ancho
-  &.collapsed {
-    width: 64px;
-  }
-
-  ion-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 16px;
-    gap: 12px;
-    background: var(--azul-oscuro, #0f385a);
-    flex-shrink: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: flex-direction 0.3s ease, padding 0.3s ease, gap 0.3s ease;
-    container-type: inline-size;
-    container-name: sidebar-header;
-
-    .sidebar-logo-avatar {
-      width: 40px;
-      height: 40px;
-      margin: 0;
-      flex-shrink: 0;
-    }
-
-    .sidebar-title {
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: font-size 0.3s ease, transform 0.3s ease;
-    }
-
-    ion-card-title {
-      display: none;
-    }
-  }
-
-  // Cuando está colapsado, reorganizar header en columna
-  &.collapsed ion-card-header {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 2px;
-    gap: 2px;
-
-    .sidebar-logo-avatar {
-      width: 32px;
-      height: 32px;
-    }
-
-    .sidebar-title {
-      // Responsive: ajusta al ancho del contenedor
-      font-size: clamp(0.4rem, 8cqw, 0.55rem);
-      text-align: center;
-      letter-spacing: -0.5px;
-      line-height: 1.1;
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .desktop-sidebar-content {
-    flex: 1;
-    padding: 12px 0 0 0;
-    background: var(--azul-oscuro, #0f385a);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .desktop-nav-list {
-    background: transparent;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-
-    ion-item.nav-item {
-      --background: transparent;
-      --color: white;
-      --padding-start: 16px;
-      --padding-end: 16px;
-      --inner-border-width: 0;
-      --min-height: 48px;
-      border-radius: 0;
-      cursor: pointer;
-      transition: background 0.25s ease;
-      margin: 0;
-
-      ion-icon {
-        color: white;
-        font-size: 26px;
-        flex-shrink: 0;
-        margin-right: 12px;
-      }
-
-      ion-label {
-        color: white;
-        font-size: 0.85rem;
-        font-weight: 500;
-        white-space: nowrap;
-      }
-
-      &:hover:not(.active-menu-item) {
-        --background: rgba(255, 255, 255, 0.15);
-      }
-
-      // Estado activo: fondo blanco, icono y texto azul oscuro
-      &.active-menu-item {
-        --background: white;
-        --color: var(--azul-oscuro, #0f385a);
-
-        ion-icon {
-          color: var(--azul-oscuro, #0f385a);
-        }
-
-        ion-label {
-          color: var(--azul-oscuro, #0f385a);
-        }
-      }
-    }
-  }
-
-  // Footer con botón de expandir/colapsar
-  .sidebar-footer-desktop {
-    flex-shrink: 0;
-    padding: 8px;
-    background: var(--azul-oscuro, #0f385a);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: center;
-
-    .expand-btn {
-      --background: transparent;
-      --background-hover: rgba(255, 255, 255, 0.15);
-      --color: white;
-      width: 48px;
-      height: 40px;
-      margin: 0;
-      --border-radius: 8px;
-
-      ion-icon {
-        font-size: 20px;
-      }
-    }
-  }
-
-  ion-footer ion-toolbar {
-    --background: var(--azul-oscuro, #0f385a);
-    --color: white;
-  }
-}
 
 /* Contenedor principal - SOLO div sin ion-tabs */
 .shell-container {
@@ -206,9 +36,13 @@ div.main-content-area {
   overflow: hidden;
   transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
+  /* FIX: Padding dinámico para compensar Header Móvil + Notch */
+  padding-top: calc(48px + env(safe-area-inset-top));
+
   &.full-width {
     right: 0 !important;
   }
+
 
   @media (min-width: 992px) {
     position: fixed;
@@ -770,10 +604,6 @@ div.main-content-area {
 // ========================================
 // ION-CONTENT & ION-HEADER
 // ========================================
-ion-content {
-  --padding-top: 0;
-  --offset-top: 0 !important; // Asegurar que no haya offset que cause solapamiento
-}
 
 ion-header {
   position: relative;
