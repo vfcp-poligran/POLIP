@@ -137,13 +137,11 @@ export class CursosPage implements ViewWillEnter {
   private menuController = inject(MenuController);
   private filePickerService = inject(FilePickerService);
 
-
-
-  @ViewChild('estudiantesFileInput') estudiantesFileInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('calificacionesFileInput') calificacionesFileInput!: ElementRef<HTMLInputElement>;
+  // Referencias a inputs de archivo para activación programática
   @ViewChild('importEstudiantesInput') importEstudiantesInput!: ElementRef<HTMLInputElement>;
   @ViewChild('importCalificacionesInput') importCalificacionesInput!: ElementRef<HTMLInputElement>;
   @ViewChild('rubricaFileInput') rubricaFileInput!: ElementRef<HTMLInputElement>;
+
 
   // Señales para el estado del componente (Reactividad Angular 17+)
   cursosDisponibles = signal<any[]>([]);
@@ -1882,11 +1880,11 @@ export class CursosPage implements ViewWillEnter {
       ingreso: undefined
     };
 
-    if (this.estudiantesFileInput) {
-      this.estudiantesFileInput.nativeElement.value = '';
+    if (this.importEstudiantesInput) {
+      this.importEstudiantesInput.nativeElement.value = '';
     }
-    if (this.calificacionesFileInput) {
-      this.calificacionesFileInput.nativeElement.value = '';
+    if (this.importCalificacionesInput) {
+      this.importCalificacionesInput.nativeElement.value = '';
     }
     if (this.rubricaFileInput) {
       this.rubricaFileInput.nativeElement.value = '';
@@ -1898,8 +1896,8 @@ export class CursosPage implements ViewWillEnter {
     this.estudiantesFileName = '';
     this.cursoParseado = null;
 
-    if (this.estudiantesFileInput?.nativeElement) {
-      this.estudiantesFileInput.nativeElement.value = '';
+    if (this.importEstudiantesInput?.nativeElement) {
+      this.importEstudiantesInput.nativeElement.value = '';
     }
   }
 
@@ -1907,8 +1905,8 @@ export class CursosPage implements ViewWillEnter {
     this.calificacionesFileName = '';
     this.calificacionesCargadas = null;
     this.calificacionesParseadas = [];
-    if (this.calificacionesFileInput) {
-      this.calificacionesFileInput.nativeElement.value = '';
+    if (this.importCalificacionesInput) {
+      this.importCalificacionesInput.nativeElement.value = '';
     }
   }
 

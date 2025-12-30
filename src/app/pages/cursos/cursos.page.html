@@ -258,12 +258,13 @@
                           </div>
 
                           <!-- Import Calificaciones -->
-                          <div class="import-cloud-item" (click)="importCalificacionesInput.click()">
+                          <div class="import-cloud-item" (click)="onCalificacionesFileSelected($event)">
                             <div class="cloud-icon-wrapper">
                               <ion-icon name="cloud-upload"
                                 [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
                               <div class="cloud-label">Importar (Calificaciones)</div>
                             </div>
+                            <!-- Input oculto para web (fallback) -->
                             <input type="file" #importCalificacionesInput
                               accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
                               (change)="onCalificacionesFileSelected($event)"
