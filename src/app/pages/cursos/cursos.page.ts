@@ -69,7 +69,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu
+  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu, peopleCircle
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -591,7 +591,7 @@ export class CursosPage implements ViewWillEnter {
       }
     }, { allowSignalWrites: true });
 
-    addIcons({ trash, add, menu, addCircle, informationCircle, people, cloudUpload, closeCircle, checkmark, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
+    addIcons({ trash, menu, add, addCircle, informationCircle, people, cloudUpload, closeCircle, checkmark, peopleCircle, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
 
     // Listener for responsive changes
     window.addEventListener('resize', () => {
@@ -2316,5 +2316,20 @@ export class CursosPage implements ViewWillEnter {
     if (t.includes('TRANSVERSAL')) return 'TRV';
     const match = t.match(/\d+/);
     return match ? match[0] : '1';
+  }
+
+  /**
+   * Detecta si el dispositivo está en orientación horizontal
+   */
+  isLandscape(): boolean {
+    if (typeof window === 'undefined') return false;
+    return window.innerHeight < window.innerWidth;
+  }
+
+  /**
+   * Filtra estudiantes por grupo específico
+   */
+  estudiantesPorGrupo(grupo: string) {
+    return this.estudiantesCurso().filter((e) => e.grupo === grupo);
   }
 }

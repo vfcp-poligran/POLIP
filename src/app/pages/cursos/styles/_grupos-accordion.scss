@@ -1,0 +1,162 @@
+// ============================================
+// GRUPOS ACCORDION STYLES (TABLET + MOBILE)
+// ============================================
+
+.grupo-accordion {
+    margin-bottom: spacing('xs');
+
+    ion-item[slot="header"] {
+        --padding-start: spacing('sm');
+        --padding-end: spacing('sm');
+        --min-height: 56px; // WCAG touch target
+
+        ion-icon {
+            margin-right: spacing('sm');
+            font-size: 24px;
+        }
+
+        ion-label {
+            h3 {
+                font-size: 16px; // WCAG hierarchy level 3
+                font-weight: 600;
+                line-height: 1.4;
+                margin: 0;
+                color: var(--ion-text-color);
+            }
+
+            p {
+                font-size: 14px;
+                line-height: 1.5;
+                margin-top: 4px;
+                color: var(--ion-color-medium);
+            }
+        }
+    }
+}
+
+// ============================================
+// STUDENT LIST STYLES - WCAG TYPOGRAPHY
+// ============================================
+
+.students-accordion-list {
+    margin: 0;
+    padding: 0;
+}
+
+.student-item-compact {
+    --padding-start: spacing('sm');
+    --padding-end: spacing('sm');
+    --min-height: 64px; // WCAG touch target + content
+
+    .student-name-label-mobile {
+        margin-right: spacing('sm');
+
+        .student-name-single-line {
+            // WCAG Typography Hierarchy: Level 3 (Student Name)
+            font-size: 15px; // Readable on mobile
+            font-weight: 500; // Medium weight for hierarchy
+            line-height: 1.4; // WCAG recommended
+            margin: 0 0 4px 0;
+            color: var(--ion-text-color);
+
+            // Single line with ellipsis
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .student-email {
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+            color: var(--ion-color-medium);
+
+            // Allow wrapping for emails if needed
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .student-grades {
+        font-size: 12px;
+
+        .grades-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: right;
+
+            span {
+                white-space: nowrap;
+                line-height: 1.4;
+            }
+        }
+    }
+}
+
+// Desktop student name label
+.student-name-label {
+    h3 {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.4;
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    p {
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+    }
+}
+
+// ============================================
+// MOBILE LANDSCAPE: GRUPOS COMO LISTA
+// ============================================
+
+.grupos-landscape-list {
+    margin-bottom: spacing('md');
+
+    ion-item {
+        --padding-start: spacing('sm');
+        --padding-end: spacing('sm');
+        --min-height: 52px; // WCAG touch target
+        cursor: pointer;
+
+        ion-icon {
+            margin-right: spacing('sm');
+            font-size: 22px;
+        }
+
+        ion-label {
+            h3 {
+                font-size: 15px;
+                font-weight: 600;
+                line-height: 1.4;
+                margin: 0;
+                color: var(--ion-text-color);
+            }
+
+            p {
+                font-size: 13px;
+                line-height: 1.5;
+                margin-top: 2px;
+                color: var(--ion-color-medium);
+            }
+        }
+
+        ion-badge {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        &:hover {
+            --background: rgba(var(--ion-color-primary-rgb), 0.05);
+        }
+    }
+}

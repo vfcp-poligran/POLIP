@@ -434,7 +434,8 @@
           <!-- Template: Integrantes -->
           <ng-template #contentIntegrantes>
             <div class="subtab-content">
-              <!-- Tabs de grupos -->
+              <!-- DESKTOP: Tabs de grupos (Segment) -->
+              @if (isDesktop()) {
               <ion-segment [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)" scrollable>
                 <ion-segment-button value="todos">
                   Todos ({{ estudiantesCurso().length }})
@@ -445,30 +446,89 @@
                 </ion-segment-button>
                 }
               </ion-segment>
+              }
 
-              <!-- Lista de estudiantes -->
-              @if (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {
-              <ion-list>
-                @for (est of estudiantesFiltrados(); track est.correo) {
-                <ion-item>
-                  <ion-badge slot="start" color="light">{{ est?.grupo || '-' }}</ion-badge>
+              <!-- TABLET + MOBILE PORTRAIT: Grupos como Accordion -->
+              @if (!isDesktop() && !isLandscape()) {
+              <ion-accordion-group [value]="grupoActivo()" (ionChange)="grupoActivo.set($any($event).detail.value)">
+                <!-- Todos los estudiantes -->
+                <ion-accordion value="todos" class="grupo-accordion">
+                  <ion-item slot="header" color="light">
+                    <ion-icon name="people" slot="start" color="primary"></ion-icon>
+                    <ion-label>
+                      <h3>Todos</h3>
+                      <p>{{ estudiantesCurso().length }} estudiantes</p>
+                    </ion-label>
+                  </ion-item>
+                  <div class="ion-padding-vertical" slot="content">
+                    <ng-container *ngTemplateOutlet="listaEstudiantes; context: { grupo: 'todos' }"></ng-container>
+                  </div>
+                </ion-accordion>
+
+                <!-- Grupos individuales -->
+                @for (grupo of gruposCurso(); track grupo) {
+                <ion-accordion [value]="grupo" class="grupo-accordion">
+                  <ion-item slot="header" color="light">
+                    <ion-icon name="people-circle" slot="start" color="secondary"></ion-icon>
+                    <ion-label>
+                      <h3>{{ grupo }}</h3>
+                      <p>{{ contarIntegrantes(grupo) }} integrantes</p>
+                    </ion-label>
+                  </ion-item>
+                  <div class="ion-padding-vertical" slot="content">
+                    <ng-container *ngTemplateOutlet="listaEstudiantes; context: { grupo: grupo }"></ng-container>
+                  </div>
+                </ion-accordion>
+                }
+              </ion-accordion-group>
+              }
+
+              <!-- MOBILE LANDSCAPE: Grupos como Lista -->
+              @if (isMobile() && isLandscape()) {
+              <ion-list class="grupos-landscape-list">
+                <!-- Todos los estudiantes -->
+                <ion-item button (click)="grupoActivo.set('todos')" [color]="grupoActivo() === 'todos' ? 'light' : ''">
+                  <ion-icon name="people" slot="start" color="primary"></ion-icon>
                   <ion-label>
-                    <h3>{{ est?.nombres }} {{ est?.apellidos }}</h3>
-                    <p>{{ est?.correo }}</p>
+                    <h3>Todos</h3>
+                    <p>{{ estudiantesCurso().length }} estudiantes</p>
                   </ion-label>
-                  <ion-note slot="end">
-                    E1: {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}
-                  </ion-note>
+                  <ion-badge slot="end" color="primary">{{ estudiantesCurso().length }}</ion-badge>
+                </ion-item>
+
+                <!-- Grupos individuales -->
+                @for (grupo of gruposCurso(); track grupo) {
+                <ion-item button (click)="grupoActivo.set(grupo)" [color]="grupoActivo() === grupo ? 'light' : ''">
+                  <ion-icon name="people-circle" slot="start" color="secondary"></ion-icon>
+                  <ion-label>
+                    <h3>{{ grupo }}</h3>
+                    <p>{{ contarIntegrantes(grupo) }} integrantes</p>
+                  </ion-label>
+                  <ion-badge slot="end" color="secondary">{{ contarIntegrantes(grupo) }}</ion-badge>
                 </ion-item>
                 }
               </ion-list>
-              } @else {
-              <div class="empty-state-mini">
-                <p>No hay estudiantes en este grupo</p>
-              </div>
               }
-            </div>
-          </ng-template>
+
+              <!-- DESKTOP: Lista de estudiantes (filtrada por grupo activo) -->\n @if (isDesktop()) {\n @if
+              (estudiantesFiltrados() && estudiantesFiltrados().length > 0) {\n <ion-list>\n @for (est of
+                estudiantesFiltrados(); track est.correo) {\n <ion-item>\n <ion-badge slot="start" color="light">{{
+                    est?.grupo || '-' }}</ion-badge>\n <ion-label class="student-name-label">\n <h3>{{ est?.nombres }}
+                      {{ est?.apellidos }}</h3>\n <p>{{ est?.correo }}</p>\n </ion-label>\n <ion-note slot="end">\n E1:
+                    {{ est?.notas?.e1 || '-' }} | E2: {{ est?.notas?.e2 || '-' }} | EF: {{ est?.notas?.ef || '-' }}\n
+                  </ion-note>\n </ion-item>\n }\n </ion-list>\n } @else {\n <div class="empty-state-mini">\n <p>No hay
+                  estudiantes en este grupo</p>\n </div>\n }\n }\n
+            </div>\n
+          </ng-template>\n\n <!-- Template: Lista de Estudiantes (para accordions) -->\n <ng-template #listaEstudiantes
+            let-grupo="grupo">\n @if (estudiantesCurso() && estudiantesCurso().length > 0) {\n <ion-list
+              class="students-accordion-list">\n @for (est of (grupo === 'todos' ? estudiantesCurso() :
+              estudiantesPorGrupo(grupo)); track est.correo) {\n <ion-item class="student-item-compact">\n <ion-label
+                  class="student-name-label-mobile">\n <h3 class="student-name-single-line">{{ est?.nombres }} {{
+                    est?.apellidos }}</h3>\n <p class="student-email">{{ est?.correo }}</p>\n </ion-label>\n <ion-note
+                  slot="end" class="student-grades">\n <div class="grades-compact">\n <span>E1: {{ est?.notas?.e1 || '-'
+                      }}</span>\n <span>E2: {{ est?.notas?.e2 || '-' }}</span>\n <span>EF: {{ est?.notas?.ef || '-'
+                      }}</span>\n </div>\n </ion-note>\n </ion-item>\n }\n </ion-list>\n } @else {\n <div
+              class="empty-state-mini">\n <p>No hay estudiantes en este grupo</p>\n </div>\n }\n </ng-template>
         </div>
       </ion-card>
       }

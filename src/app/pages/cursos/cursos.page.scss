@@ -11,6 +11,7 @@
 @use './styles/verification-panel';
 @use './styles/ingreso-config';
 @use './styles/mobile-toolbar'; // Mobile toolbar with hamburger
+@use './styles/grupos-accordion'; // Groups accordion for Tablet/Mobile
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
 @use '../../shared/styles/breakpoints' as bp; // Sistema de breakpoints
 @use '../../shared/styles/empty-state'; // Estados vacíos
@@ -101,8 +102,8 @@ ion-menu {
   }
 
   @include respond-to-max('sm') {
-    // Mobile: padding for toolbar (56px + safe area + spacing)
-    padding-top: calc(56px + env(safe-area-inset-top) + spacing('md'));
+    // Mobile: padding for toolbar (48px + safe area + spacing)
+    padding-top: calc(48px + env(safe-area-inset-top) + spacing('md'));
   }
 }
 
@@ -110,6 +111,23 @@ ion-menu {
 .cursos-container {
   // Remove margin if needed since top padding is handled
   margin-top: 0;
+
+  // Mobile: Optimize spacing
+  @include respond-to-max('sm') {
+    padding-inline: spacing('sm'); // 12px horizontal padding
+
+    // Improve course button design for Mobile
+    ion-segment {
+      margin-bottom: spacing('sm');
+
+      ion-segment-button {
+        min-width: 80px;
+        font-size: 14px;
+        --padding-start: spacing('xs');
+        --padding-end: spacing('xs');
+      }
+    }
+  }
 }
 
 // ============================================
