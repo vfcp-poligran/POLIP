@@ -41,11 +41,9 @@
   @if (isMobile()) {
   <ion-header class="mobile-toolbar">
     <ion-toolbar color="primary">
-      <ion-buttons slot="start">
-        <ion-button (click)="toggleMenu()" [attr.aria-label]="'Abrir menú de cursos'">
-          <ion-icon slot="icon-only" name="menu"></ion-icon>
-        </ion-button>
-      </ion-buttons>
+      <ion-button slot="start" fill="clear" (click)="toggleMenu()" [attr.aria-label]="'Abrir menú de cursos'">
+        <ion-icon slot="icon-only" name="menu"></ion-icon>
+      </ion-button>
       <ion-title>Cursos</ion-title>
     </ion-toolbar>
   </ion-header>
