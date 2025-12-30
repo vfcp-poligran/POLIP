@@ -54,17 +54,35 @@ export interface Novedad {
     estado: EstadoNovedad;
     descripcion?: string;         // Texto adicional opcional
 
+    // Sesión de revisión
+    sessionId?: string;           // ID de la sesión de seguimiento vinculada
+
     // Auditoría
     fechaRegistro: Date;
     fechaActualizacion?: Date;
     registradoPor?: string;
 
     // Para aplicación masiva
-    grupoNovedadId?: string;      // Agrupa novedades registradas juntas
+    grupoNovedadId?: string;      // ID compartido si se registró como grupo completo
+    esNovedadGrupal?: boolean;    // Marca si afecta a todo el grupo
 
     // Sincronización offline
     syncStatus?: 'pending' | 'synced' | 'conflict';
     localTimestamp?: number;
+}
+
+/**
+ * Sesión de Seguimiento / Revisión
+ */
+export interface SesionRevision {
+    id: string;
+    nombre: string;               // Ej: "Revisión 1"
+    cursoId: string;
+    fechaInicio: Date;
+    fechaFin?: Date;
+    estado: 'borrador' | 'activo' | 'cerrado';
+    comentarios?: string;
+    novedadesIds: string[];       // IDs de las novedades registradas en esta sesión
 }
 
 /**
@@ -75,6 +93,48 @@ export interface HistorialNovedades {
     tiposUsados: TipoNovedad[];
     ultimaActualizacion: Date;
 }
+
+/**
+ * Tipos predefinidos por defecto (Actualizados por USER REQUEST)
+ */
+export const TIPOS_NOVEDAD_DEFAULT: Omit<TipoNovedad, 'id' | 'fechaCreacion'>[] = [
+    {
+        nombre: 'Trabaja Solo',
+        descripcion: 'El estudiante indica que está trabajando solo',
+        icono: 'person-outline',
+        color: '#ff9800',
+        esRecurrente: true,
+        frecuenciaUso: 0,
+        activo: true
+    },
+    {
+        nombre: 'El grupo está trabajando bien',
+        descripcion: 'Todo el grupo participa equitativamente',
+        icono: 'people-outline',
+        color: '#4caf50',
+        esRecurrente: true,
+        frecuenciaUso: 0,
+        activo: true
+    },
+    {
+        nombre: 'Ausente',
+        descripcion: 'El estudiante no se presentó o no responde',
+        icono: 'close-circle-outline',
+        color: '#f44336',
+        esRecurrente: true,
+        frecuenciaUso: 0,
+        activo: true
+    },
+    {
+        nombre: 'Incumplimiento de aportes',
+        descripcion: 'El estudiante no ha entregado lo acordado con el grupo',
+        icono: 'warning-outline',
+        color: '#9c27b0',
+        esRecurrente: true,
+        frecuenciaUso: 0,
+        activo: true
+    }
+];
 
 /**
  * Cola de sincronización para modo offline
@@ -100,70 +160,6 @@ export interface NovedadStats {
     descartadas: number;
     porTipo: Map<string, number>;
 }
-
-/**
- * Configuración de notificaciones de novedades
- */
-export interface NovedadNotificationConfig {
-    enabled: boolean;
-    reminderAfterHours: number;   // Recordar después de X horas
-    badgeEnabled: boolean;        // Mostrar badge en tab
-}
-
-/**
- * Tipos predefinidos por defecto
- */
-export const TIPOS_NOVEDAD_DEFAULT: Omit<TipoNovedad, 'id' | 'fechaCreacion'>[] = [
-    {
-        nombre: 'Trabaja solo',
-        descripcion: 'El estudiante indica que está trabajando solo en el grupo',
-        icono: 'person-outline',
-        color: '#ff9800',
-        esRecurrente: true,
-        frecuenciaUso: 0,
-        activo: true
-    },
-    {
-        nombre: 'Ausente',
-        descripcion: 'El estudiante no ha participado en las actividades',
-        icono: 'close-circle-outline',
-        color: '#f44336',
-        esRecurrente: true,
-        frecuenciaUso: 0,
-        activo: true
-    },
-    {
-        nombre: 'Problema técnico',
-        descripcion: 'Reporta dificultades técnicas con la plataforma',
-        icono: 'warning-outline',
-        color: '#9c27b0',
-        esRecurrente: true,
-        frecuenciaUso: 0,
-        activo: true
-    },
-    {
-        nombre: 'Conflicto de grupo',
-        descripcion: 'Problemas de comunicación o trabajo en equipo',
-        icono: 'people-outline',
-        color: '#e91e63',
-        esRecurrente: true,
-        frecuenciaUso: 0,
-        activo: true
-    },
-    {
-        nombre: 'Observación general',
-        descripcion: 'Nota o comentario sobre el estudiante',
-        icono: 'document-text-outline',
-        color: '#607d8b',
-        esRecurrente: false,
-        frecuenciaUso: 0,
-        activo: true
-    }
-];
-
-/**
- * Mapeo de iconos para origen de mensaje
- */
 export const ORIGEN_CONFIG: Record<OrigenMensaje, { icono: string; label: string; color: string }> = {
     teams: { icono: 'chatbubbles-outline', label: 'Teams', color: '#6264a7' },
     canvas: { icono: 'school-outline', label: 'Canvas', color: '#e03131' },

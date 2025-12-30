@@ -29,6 +29,7 @@ import {
     IonTitle,
     IonButtons,
     IonSkeletonText,
+    IonSpinner,
     ActionSheetController,
     ToastController,
     MenuController,
@@ -74,13 +75,15 @@ import {
     checkmarkDoneCircleOutline,
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
-    analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline
+    analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline, playOutline, stopCircleOutline,
+    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
 import { NovedadService } from '../../services/novedad.service';
 import {
     Novedad,
+    SesionRevision,
     TipoNovedad,
     OrigenMensaje,
     ORIGEN_CONFIG,
@@ -137,7 +140,8 @@ interface EstudianteSeleccionado {
         IonCardHeader,
         IonCardTitle,
         IonCardSubtitle,
-        IonSkeletonText
+        IonSkeletonText,
+        IonSpinner
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -164,12 +168,17 @@ export class InicioPage implements OnInit, ViewWillEnter {
     tiposFiltro = signal<Set<string>>(new Set()); // Tipos de novedad seleccionados como filtro
     isLoading = signal<boolean>(true); // Para skeleton loaders
 
+    // Sesión de revisión
+    sessionActual = signal<SesionRevision | null>(null);
+    tabHistorial = signal<'historial' | 'sesiones'>('historial');
+
     // NEW: Course and group selection signals
     cursoSeleccionado = signal<string | null>(null);
     gruposSeleccionados = signal<Set<string>>(new Set()); // Multi-selection support
     seleccionadosDelGrupo = signal<Set<string>>(new Set()); // Legacy, kept for logic but synced with registrados
 
-    // Asignación de Novedad
+    // Novedad Config
+    modoNovedad = signal<'grupal' | 'individual'>('individual');
     aliasNovedad = signal<string>('');
     fechaHoraNovedad = signal<string>(new Date().toISOString());
 
@@ -220,7 +229,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, peopleCircleOutline, checkboxOutline, squareOutline, documentTextOutline, checkmarkCircleOutline, addCircleOutline, trashOutline, personAddOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, checkmarkDoneOutline, checkmarkOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, timeOutline, bulbOutline, personOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, listOutline, gridOutline, chatboxEllipsesOutline });
+        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, timeOutline, documentTextOutline, checkmarkCircleOutline, playOutline, stopCircleOutline, checkmarkDoneOutline, trashOutline, personAddOutline, checkmarkOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, personOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, listOutline, gridOutline, chatboxEllipsesOutline, closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -590,32 +599,42 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const registrados = this.estudiantesRegistrados();
         const seleccionados = this.seleccionadosIndices();
 
-        if (seleccionados.size === 0) {
-            // Si no hay selección, aplicar a todos
-            registrados.forEach(est => {
+        const indicesAAplicar = seleccionados.size === 0
+            ? registrados.map((_, i) => i)
+            : Array.from(seleccionados);
+
+        indicesAAplicar.forEach(idx => {
+            const est = registrados[idx];
+            if (est) {
                 this.toggleNovedad(est.correo, tipoNovedad);
-            });
-        } else {
-            // Aplicar solo a los seleccionados
-            registrados.forEach((est, idx) => {
-                if (seleccionados.has(idx)) {
-                    // Agregar la novedad (no toggle, siempre agregar)
-                    this.novedadesMarcadas.update(map => {
-                        const newMap = new Map(map);
-                        const novedades = newMap.get(est.correo) || new Set();
-                        novedades.add(tipoNovedad);
-                        newMap.set(est.correo, novedades);
-                        return newMap;
-                    });
-                }
-            });
-        }
+            }
+        });
 
         this.toastController.create({
-            message: `Novedad aplicada a ${seleccionados.size > 0 ? seleccionados.size : registrados.length} estudiantes`,
+            message: `Novedad aplicada a ${indicesAAplicar.length} estudiantes`,
             duration: 1500,
             color: 'success'
         }).then(t => t.present());
+    }
+
+    /**
+     * Remueve una novedad específica de un estudiante en el resumen
+     */
+    removerNovedadItem(correo: string, tipo: string): void {
+        this.novedadesMarcadas.update(map => {
+            const newMap = new Map(map);
+            const novedades = newMap.get(correo);
+            if (novedades) {
+                const updatedSet = new Set(novedades);
+                updatedSet.delete(tipo);
+                if (updatedSet.size === 0) {
+                    newMap.delete(correo);
+                } else {
+                    newMap.set(correo, updatedSet);
+                }
+            }
+            return newMap;
+        });
     }
 
     /**
@@ -656,44 +675,118 @@ export class InicioPage implements OnInit, ViewWillEnter {
             return;
         }
 
+        const cursoId = this.cursoSeleccionado();
+        if (!cursoId) return;
+
+        // Asegurar que hay una sesión iniciada
+        if (!this.sessionActual()) {
+            await this.iniciarRevision(`Revisión automática ${new Date().toLocaleDateString()}`);
+        }
+
+        const session = this.sessionActual()!;
         const comentarios = this.descripcionNovedad();
-        const grupoNovedadId = `GN-${Date.now()}`; // ID único para agrupar novedades
-        const fechaRegistro = new Date();
+        const grupoNovedadId = `GN-${Date.now()}`;
         let contadorGuardados = 0;
 
-        for (const item of resumen) {
-            const estudiante = this.estudiantesRegistrados().find(e => e.correo === item.correo);
-            if (!estudiante) continue;
+        // Identificar si es novedad de grupo o individual
+        // Se considera grupal si TODOS los integrantes de un grupo en la lista registradas tienen la misma novedad
+        // o si el usuario simplemente marcó todos. Por simplicidad, usemos esNovedadGrupal si afecta a > 1 persona del mismo grupo.
 
-            for (const tipoNovedad of item.novedades) {
-                await this.novedadService.registrarNovedad({
-                    estudianteCorreo: estudiante.correo,
-                    estudianteNombre: estudiante.nombre,
-                    cursoId: estudiante.curso,
-                    grupo: estudiante.grupo,
-                    tipoNovedadId: tipoNovedad,
-                    tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
-                    origen: 'presencial',
-                    descripcion: comentarios || undefined,
-                    estado: 'en_revision',
-                    grupoNovedadId: grupoNovedadId // ID compartido para novedades grupales
-                });
-                contadorGuardados++;
+        const gruposEnResumen = new Set(resumen.map(item => {
+            const est = this.estudiantesRegistrados().find(e => e.correo === item.correo);
+            return est?.grupo;
+        }));
+
+        for (const grupo of gruposEnResumen) {
+            const itemsDelGrupo = resumen.filter(item => {
+                const est = this.estudiantesRegistrados().find(e => e.correo === item.correo);
+                return est?.grupo === grupo;
+            });
+
+            const totalIntegrantesGrupo = this.estudiantesDeGruposSeleccionados().filter(e => e.grupo === grupo).length;
+            const esGrupal = itemsDelGrupo.length === totalIntegrantesGrupo && totalIntegrantesGrupo > 1;
+
+            for (const item of itemsDelGrupo) {
+                const estudiante = this.estudiantesRegistrados().find(e => e.correo === item.correo);
+                if (!estudiante) continue;
+
+                for (const tipoNovedad of item.novedades) {
+                    await this.novedadService.registrarNovedad({
+                        estudianteCorreo: estudiante.correo,
+                        estudianteNombre: estudiante.nombre,
+                        cursoId: estudiante.curso,
+                        grupo: estudiante.grupo,
+                        tipoNovedadId: tipoNovedad,
+                        tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
+                        origen: 'presencial',
+                        descripcion: comentarios || undefined,
+                        estado: 'en_revision',
+                        grupoNovedadId: grupoNovedadId,
+                        esNovedadGrupal: esGrupal,
+                        sessionId: session.id
+                    });
+                    contadorGuardados++;
+                }
             }
         }
 
         const toast = await this.toastController.create({
-            message: `✓ ${contadorGuardados} novedades guardadas (ID: ${grupoNovedadId.slice(-6)})`,
+            message: `✓ ${contadorGuardados} novedades guardadas en ${session.nombre}`,
             duration: 3000,
             color: 'success'
         });
         await toast.present();
 
-        // Limpiar estado
+        // Limpiar estado de selección pero mantener sesión
         this.novedadesMarcadas.set(new Map());
         this.descripcionNovedad.set('');
         this.limpiarRegistrados();
         this.cargarCursos();
+    }
+
+    /**
+     * Inicia una sesión de revisión
+     */
+    async iniciarRevision(nombre?: string): Promise<void> {
+        const cursoId = this.cursoSeleccionado();
+        if (!cursoId) {
+            const toast = await this.toastController.create({
+                message: 'Selecciona un curso primero',
+                duration: 2000,
+                color: 'warning'
+            });
+            await toast.present();
+            return;
+        }
+
+        const sesionNombre = nombre || `Revisión ${this.novedadService.sesiones().length + 1}`;
+        const session = await this.novedadService.iniciarSesionRevision(sesionNombre, cursoId);
+        this.sessionActual.set(session);
+
+        const toast = await this.toastController.create({
+            message: `Sesión iniciada: ${sesionNombre}`,
+            duration: 2000,
+            color: 'primary'
+        });
+        await toast.present();
+    }
+
+    /**
+     * Cierra la sesión de revisión actual
+     */
+    async cerrarRevision(): Promise<void> {
+        const session = this.sessionActual();
+        if (!session) return;
+
+        await this.novedadService.cerrarSesionRevision(session.id);
+        this.sessionActual.set(null);
+
+        const toast = await this.toastController.create({
+            message: `Sesión finalizada: ${session.nombre}`,
+            duration: 2000,
+            color: 'success'
+        });
+        await toast.present();
     }
 
     /**
@@ -702,9 +795,9 @@ export class InicioPage implements OnInit, ViewWillEnter {
     getNombreNovedad(tipo: string): string {
         const nombres: Record<string, string> = {
             'trabaja_solo': 'Trabaja Solo',
-            'grupo_bien': 'Grupo Bien',
-            'fantasma': 'Estudiante Fantasma',
-            'paracaidista': 'Paracaidísta'
+            'grupo_bien': 'El grupo está trabajando bien',
+            'ausente': 'Ausente',
+            'aporte_nulo': 'Incumplimiento de aportes'
         };
         return nombres[tipo] || tipo;
     }

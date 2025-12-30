@@ -272,6 +272,34 @@
                                     </ion-badge>
                                 </div>
 
+                                <!-- Session Control -->
+                                <div class="session-control-bar" [class.has-session]="sessionActual()">
+                                    @if (!sessionActual()) {
+                                    <div class="no-session-state">
+                                        <p>No hay una sesión de revisión activa</p>
+                                        <ion-button size="small" (click)="iniciarRevision()">
+                                            <ion-icon slot="start" name="play-outline"></ion-icon>
+                                            Iniciar Sesión
+                                        </ion-button>
+                                    </div>
+                                    } @else {
+                                    <div class="active-session-state">
+                                        <div class="session-info">
+                                            <div class="session-status">
+                                                <ion-spinner name="dots" color="success" size="small"></ion-spinner>
+                                                <span class="status-label">EN VIVO</span>
+                                            </div>
+                                            <span class="session-name">{{ sessionActual()?.nombre }}</span>
+                                            <span class="session-time">{{ sessionActual()?.fechaInicio | date:'HH:mm'
+                                                }}</span>
+                                        </div>
+                                        <ion-button size="small" color="danger" fill="clear" (click)="cerrarRevision()">
+                                            <ion-icon slot="icon-only" name="stop-circle-outline"></ion-icon>
+                                        </ion-button>
+                                    </div>
+                                    }
+                                </div>
+
                                 <div class="registration-control-pane">
                                     @if (estudiantesRegistrados().length > 0) {
                                     <div class="registration-actions-top">
@@ -301,17 +329,17 @@
                                                 <tr>
                                                     <th class="student-col">Estudiante</th>
                                                     <th class="novedad-col novedad-header-clickable"
-                                                        title="Click para aplicar a todos los seleccionados"
+                                                        title="Click para aplicar a todos: Trabaja Solo"
                                                         (click)="aplicarNovedadASeleccionados('trabaja_solo')">👤</th>
                                                     <th class="novedad-col novedad-header-clickable"
-                                                        title="Click para aplicar a todos los seleccionados"
+                                                        title="Click para aplicar a todos: Grupo Bien"
                                                         (click)="aplicarNovedadASeleccionados('grupo_bien')">👥</th>
                                                     <th class="novedad-col novedad-header-clickable"
-                                                        title="Click para aplicar a todos los seleccionados"
-                                                        (click)="aplicarNovedadASeleccionados('fantasma')">👻</th>
+                                                        title="Click para aplicar a todos: Ausente"
+                                                        (click)="aplicarNovedadASeleccionados('ausente')">❌</th>
                                                     <th class="novedad-col novedad-header-clickable"
-                                                        title="Click para aplicar a todos los seleccionados"
-                                                        (click)="aplicarNovedadASeleccionados('paracaidista')">🪂</th>
+                                                        title="Click para aplicar a todos: Incumplimiento"
+                                                        (click)="aplicarNovedadASeleccionados('aporte_nulo')">⚠️</th>
                                                     <th class="actions-col"></th>
                                                 </tr>
                                             </thead>
@@ -337,27 +365,27 @@
                                                         <button class="novedad-checkbox"
                                                             [class.checked]="tieneNovedad(est.correo, 'grupo_bien')"
                                                             (click)="toggleNovedad(est.correo, 'grupo_bien')"
-                                                            title="Grupo Bien">
+                                                            title="El grupo está trabajando bien">
                                                             <ion-icon
                                                                 [name]="tieneNovedad(est.correo, 'grupo_bien') ? 'checkbox' : 'square-outline'"></ion-icon>
                                                         </button>
                                                     </td>
                                                     <td class="novedad-cell">
                                                         <button class="novedad-checkbox"
-                                                            [class.checked]="tieneNovedad(est.correo, 'fantasma')"
-                                                            (click)="toggleNovedad(est.correo, 'fantasma')"
-                                                            title="Estudiante Fantasma">
+                                                            [class.checked]="tieneNovedad(est.correo, 'ausente')"
+                                                            (click)="toggleNovedad(est.correo, 'ausente')"
+                                                            title="Ausente">
                                                             <ion-icon
-                                                                [name]="tieneNovedad(est.correo, 'fantasma') ? 'checkbox' : 'square-outline'"></ion-icon>
+                                                                [name]="tieneNovedad(est.correo, 'ausente') ? 'checkbox' : 'square-outline'"></ion-icon>
                                                         </button>
                                                     </td>
                                                     <td class="novedad-cell">
                                                         <button class="novedad-checkbox"
-                                                            [class.checked]="tieneNovedad(est.correo, 'paracaidista')"
-                                                            (click)="toggleNovedad(est.correo, 'paracaidista')"
-                                                            title="Paracaídista">
+                                                            [class.checked]="tieneNovedad(est.correo, 'aporte_nulo')"
+                                                            (click)="toggleNovedad(est.correo, 'aporte_nulo')"
+                                                            title="Incumplimiento de aportes">
                                                             <ion-icon
-                                                                [name]="tieneNovedad(est.correo, 'paracaidista') ? 'checkbox' : 'square-outline'"></ion-icon>
+                                                                [name]="tieneNovedad(est.correo, 'aporte_nulo') ? 'checkbox' : 'square-outline'"></ion-icon>
                                                         </button>
                                                     </td>
                                                     <td class="actions-cell">
@@ -406,19 +434,19 @@
                                                     </button>
 
                                                     <button class="novedad-toggle-btn"
-                                                        [class.active]="tieneNovedad(est.correo, 'fantasma')"
-                                                        (click)="toggleNovedad(est.correo, 'fantasma')">
+                                                        [class.active]="tieneNovedad(est.correo, 'ausente')"
+                                                        (click)="toggleNovedad(est.correo, 'ausente')">
                                                         <ion-icon
-                                                            [name]="tieneNovedad(est.correo, 'fantasma') ? 'skull' : 'skull-outline'"></ion-icon>
-                                                        <span>Fantasma</span>
+                                                            [name]="tieneNovedad(est.correo, 'ausente') ? 'close-circle' : 'close-circle-outline'"></ion-icon>
+                                                        <span>Ausente</span>
                                                     </button>
 
                                                     <button class="novedad-toggle-btn"
-                                                        [class.active]="tieneNovedad(est.correo, 'paracaidista')"
-                                                        (click)="toggleNovedad(est.correo, 'paracaidista')">
+                                                        [class.active]="tieneNovedad(est.correo, 'aporte_nulo')"
+                                                        (click)="toggleNovedad(est.correo, 'aporte_nulo')">
                                                         <ion-icon
-                                                            [name]="tieneNovedad(est.correo, 'paracaidista') ? 'airplane' : 'airplane-outline'"></ion-icon>
-                                                        <span>Paracaídista</span>
+                                                            [name]="tieneNovedad(est.correo, 'aporte_nulo') ? 'warning' : 'warning-outline'"></ion-icon>
+                                                        <span>Incump.</span>
                                                     </button>
                                                 </div>
                                             </ion-card>
@@ -442,13 +470,16 @@
                                                 <span class="resumen-nombre">{{ item.nombre }}</span>
                                                 <div class="resumen-novedades">
                                                     @for (novedad of item.novedades; track novedad) {
-                                                    <ion-chip size="small"
-                                                        [color]="novedad === 'trabaja_solo' ? 'warning' : 
-                                                                                    novedad === 'grupo_bien' ? 'success' : 
-                                                                                    novedad === 'fantasma' ? 'medium' : 'tertiary'">
-                                                        {{ novedad === 'trabaja_solo' ? '👤 Solo' :
-                                                        novedad === 'grupo_bien' ? '👥 Bien' :
-                                                        novedad === 'fantasma' ? '👻 Fantasma' : '🪂 Paracaídista' }}
+                                                    <ion-chip size="small" [color]="novedad === 'trabaja_solo' ? 'warning' : 
+                                                                 novedad === 'grupo_bien' ? 'success' : 
+                                                                 novedad === 'ausente' ? 'danger' : 'secondary'">
+                                                        <ion-label>
+                                                            {{ novedad === 'trabaja_solo' ? '👤 Solo' :
+                                                            novedad === 'grupo_bien' ? '👥 Bien' :
+                                                            novedad === 'ausente' ? '❌ Ausente' : '⚠️ Incump.' }}
+                                                        </ion-label>
+                                                        <ion-icon name="close-circle"
+                                                            (click)="removerNovedadItem(item.correo, novedad)"></ion-icon>
                                                     </ion-chip>
                                                     }
                                                 </div>

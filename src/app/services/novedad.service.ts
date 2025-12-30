@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import {
     Novedad,
+    SesionRevision,
     TipoNovedad,
     EstadoNovedad,
     OrigenMensaje,
@@ -28,14 +29,20 @@ export class NovedadService {
     // === SIGNALS ===
     private _novedades = signal<Novedad[]>([]);
     private _tiposNovedad = signal<TipoNovedad[]>([]);
+    private _sesiones = signal<SesionRevision[]>([]);
     private _syncQueue = signal<SyncQueueItem[]>([]);
     private _isOnline = signal<boolean>(navigator.onLine);
 
     // === COMPUTED SIGNALS ===
     public novedades = this._novedades.asReadonly();
     public tiposNovedad = this._tiposNovedad.asReadonly();
+    public sesiones = this._sesiones.asReadonly();
     public syncQueue = this._syncQueue.asReadonly();
     public isOnline = this._isOnline.asReadonly();
+
+    public sesionesBorrador = computed(() =>
+        this._sesiones().filter(s => s.estado === 'borrador')
+    );
 
     public novedadesPendientes = computed(() =>
         this._novedades().filter(n => n.estado === 'en_revision')
@@ -65,10 +72,12 @@ export class NovedadService {
         try {
             const novedades = await this.storageService.get<Novedad[]>('novedades');
             const tipos = await this.storageService.get<TipoNovedad[]>('tipos_novedad');
+            const sesiones = await this.storageService.get<SesionRevision[]>('sesiones_revision');
             const queue = await this.storageService.get<SyncQueueItem[]>('sync_queue');
 
             if (novedades) this._novedades.set(novedades);
             if (tipos) this._tiposNovedad.set(tipos);
+            if (sesiones) this._sesiones.set(sesiones);
             if (queue) this._syncQueue.set(queue);
         } catch (error) {
             console.error('[NovedadService] Error loading from storage:', error);
@@ -76,7 +85,9 @@ export class NovedadService {
     }
 
     private async initializeTiposDefault(): Promise<void> {
-        if (this._tiposNovedad().length === 0) {
+        // Forzar actualización de tipos si los existentes no coinciden con los nuevos requeridos
+        const tiposActuales = this._tiposNovedad();
+        if (tiposActuales.length === 0 || !tiposActuales.some(t => t.nombre === 'Incumplimiento de aportes')) {
             const tiposDefault: TipoNovedad[] = TIPOS_NOVEDAD_DEFAULT.map((tipo, index) => ({
                 ...tipo,
                 id: `tipo_${index}_${Date.now()}`,
@@ -103,10 +114,80 @@ export class NovedadService {
         try {
             await this.storageService.set('novedades', this._novedades());
             await this.storageService.set('tipos_novedad', this._tiposNovedad());
+            await this.storageService.set('sesiones_revision', this._sesiones());
             await this.storageService.set('sync_queue', this._syncQueue());
         } catch (error) {
             console.error('[NovedadService] Error saving to storage:', error);
         }
+    }
+
+    // === SESIONES DE REVISIÓN ===
+
+    async iniciarSesionRevision(nombre: string, cursoId: string): Promise<SesionRevision> {
+        // Al iniciar una nueva, pausamos las otras que estén activas
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.estado === 'activo' ? { ...s, estado: 'borrador' } : s)
+        );
+
+        const sesion: SesionRevision = {
+            id: `session_${Date.now()}`,
+            nombre,
+            cursoId,
+            fechaInicio: new Date(),
+            estado: 'activo',
+            novedadesIds: []
+        };
+
+        this._sesiones.update(s => [...s, sesion]);
+        await this.saveToStorage();
+        return sesion;
+    }
+
+    async pausarSesionRevision(sessionId: string): Promise<void> {
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.id === sessionId ? { ...s, estado: 'borrador' } : s)
+        );
+        await this.saveToStorage();
+    }
+
+    async reanudarSesionRevision(sessionId: string): Promise<void> {
+        // Pausamos cualquier otra activa
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.id !== sessionId && s.estado === 'activo' ? { ...s, estado: 'borrador' } : s)
+        );
+
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.id === sessionId ? { ...s, estado: 'activo' } : s)
+        );
+        await this.saveToStorage();
+    }
+
+    async cerrarSesionRevision(sessionId: string, comentarios?: string): Promise<void> {
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.id === sessionId ? {
+                ...s,
+                estado: 'cerrado',
+                fechaFin: new Date(),
+                comentarios: comentarios || s.comentarios
+            } : s)
+        );
+        await this.saveToStorage();
+    }
+
+    async eliminarSesion(sessionId: string): Promise<void> {
+        this._sesiones.update(sesiones => sesiones.filter(s => s.id !== sessionId));
+        // Opcionalmente desvincular novedades
+        this._novedades.update(novedades =>
+            novedades.map(n => n.sessionId === sessionId ? { ...n, sessionId: undefined } : n)
+        );
+        await this.saveToStorage();
+    }
+
+    async actualizarSesion(sessionId: string, cambios: Partial<SesionRevision>): Promise<void> {
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.id === sessionId ? { ...s, ...cambios } : s)
+        );
+        await this.saveToStorage();
     }
 
     // === CRUD NOVEDADES ===
@@ -115,9 +196,10 @@ export class NovedadService {
      * Registra una nueva novedad
      */
     async registrarNovedad(data: Omit<Novedad, 'id' | 'fechaRegistro' | 'syncStatus'>): Promise<Novedad> {
+        const novedadId = this.generateId();
         const novedad: Novedad = {
             ...data,
-            id: this.generateId(),
+            id: novedadId,
             fechaRegistro: new Date(),
             syncStatus: this._isOnline() ? 'synced' : 'pending',
             localTimestamp: Date.now()
@@ -128,6 +210,16 @@ export class NovedadService {
 
         // Agregar a la lista
         this._novedades.update(novedades => [...novedades, novedad]);
+
+        // Vincular a sesión si existe
+        if (data.sessionId) {
+            this._sesiones.update(sesiones =>
+                sesiones.map(s => s.id === data.sessionId ? {
+                    ...s,
+                    novedadesIds: [...s.novedadesIds, novedadId]
+                } : s)
+            );
+        }
 
         // Si está offline, agregar a cola de sincronización
         if (!this._isOnline()) {
@@ -143,7 +235,8 @@ export class NovedadService {
      */
     async registrarNovedadesMasivo(
         estudiantesCorreos: string[],
-        datosComunes: Omit<Novedad, 'id' | 'fechaRegistro' | 'estudianteCorreo' | 'syncStatus'>
+        datosComunes: Omit<Novedad, 'id' | 'fechaRegistro' | 'estudianteCorreo' | 'syncStatus'>,
+        esGrupal: boolean = false
     ): Promise<Novedad[]> {
         const grupoNovedadId = this.generateId();
         const novedades: Novedad[] = [];
@@ -152,7 +245,8 @@ export class NovedadService {
             const novedad = await this.registrarNovedad({
                 ...datosComunes,
                 estudianteCorreo: correo,
-                grupoNovedadId
+                grupoNovedadId,
+                esNovedadGrupal: esGrupal
             });
             novedades.push(novedad);
         }
