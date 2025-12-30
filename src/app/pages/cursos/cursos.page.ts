@@ -119,8 +119,6 @@ interface EstudianteConNotas {
     IonSelectOption,
     IonSegment,
     IonSegmentButton,
-    IonNote,
-    IonNote,
     CapitalizePipe,
     IonAccordionGroup,
     IonAccordion,
@@ -1074,12 +1072,13 @@ export class CursosPage implements ViewWillEnter {
     this.cd.detectChanges();
   }
 
-  async onEstudiantesFileSelected(event: Event) {
+  async onEstudiantesFileSelected(event: any) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
     this.estudiantesFileName = file.name;
+    const isJson = file.name.toLowerCase().endsWith('.json');
 
     try {
       const contenido = await this.leerArchivo(file);
@@ -1088,433 +1087,270 @@ export class CursosPage implements ViewWillEnter {
         throw new Error('El archivo está vacío o no se pudo leer');
       }
 
-      // Parsear CSV con soporte para campos con comas entre comillas
-      const lineas = contenido.split('\n').filter(l => l.trim());
-      if (lineas.length < 2) throw new Error('Archivo CSV vacío');
+      let estudiantes: any[] = [];
+      let cursoDetectado: any = null;
 
-      // Función para parsear línea CSV respetando comillas
-      const parsearLineaCSV = (linea: string): string[] => {
-        const resultado: string[] = [];
-        let dentroComillas = false;
-        let valorActual = '';
-
-        for (let i = 0; i < linea.length; i++) {
-          const char = linea[i];
-
-          if (char === '"') {
-            dentroComillas = !dentroComillas;
-          } else if (char === ',' && !dentroComillas) {
-            resultado.push(valorActual.trim());
-            valorActual = '';
-          } else {
-            valorActual += char;
+      if (isJson) {
+        const data = JSON.parse(contenido);
+        if (data.cursos) {
+          const cursoKeys = Object.keys(data.cursos);
+          if (cursoKeys.length > 0) {
+            const firstKey = cursoKeys[0];
+            estudiantes = data.cursos[firstKey] || [];
+            cursoDetectado = data.uiState?.courseStates?.[firstKey]?.metadata || { nombre: firstKey };
           }
+        } else if (Array.isArray(data)) {
+          estudiantes = data;
+        } else if (data.estudiantes) {
+          estudiantes = data.estudiantes;
+          cursoDetectado = data.curso || null;
         }
-        resultado.push(valorActual.trim());
-        return resultado;
-      };
+      } else {
+        // Parsing CSV
+        const lineas = contenido.split('\n').filter(l => l.trim());
+        if (lineas.length < 2) throw new Error('Archivo CSV vacío');
 
-      const headers = parsearLineaCSV(lineas[0]);
-      Logger.log('========================================');
-      Logger.log('📋 ANÁLISIS COMPLETO DEL CSV');
-      Logger.log('========================================');
-      Logger.log('Total de líneas en el archivo:', lineas.length);
-      Logger.log('Headers completos:', headers);
-      Logger.log('Primeros 4 headers:', headers.slice(0, 4));
+        const headers = this.parseCSVRow(lineas[0]);
+        const nombreIndex = headers.findIndex(h => {
+          const lower = h.toLowerCase().trim();
+          return lower === 'student' || lower === 'nombre';
+        });
+        const canvasUserIdIndex = headers.findIndex(h => {
+          const lower = h.toLowerCase().trim();
+          return lower === 'id' || lower === 'canvas_user_id' || lower === 'canvas user id';
+        });
+        const loginIdIndex = headers.findIndex(h => {
+          const lower = h.toLowerCase().trim();
+          return lower === 'sis login id' || lower === 'login_id' || lower === 'sis user id';
+        });
+        const seccionesIndex = headers.findIndex(h => {
+          const lower = h.toLowerCase().trim();
+          return lower === 'section' || lower === 'secciones';
+        });
+        const groupNameIndex = headers.findIndex(h => {
+          const lower = h.toLowerCase().trim();
+          return lower === 'group_name' || lower === 'group name';
+        });
+        const canvasGroupIdIndex = headers.findIndex(h => {
+          const lower = h.toLowerCase().trim();
+          return lower === 'canvas_group_id' || lower === 'canvas group id';
+        });
 
-      // Detectar índices de columnas importantes
-      // Mapeo correcto para formato Canvas:
-      // Student, ID, SIS Login ID, Section, [otras columnas de tareas], [columnas de grupo si aplica]
-      const nombreIndex = headers.findIndex(h => {
-        const lower = h.toLowerCase().trim();
-        return lower === 'student' || lower === 'nombre';
-      });
-      const canvasUserIdIndex = headers.findIndex(h => {
-        const lower = h.toLowerCase().trim();
-        return lower === 'id' || lower === 'canvas_user_id' || lower === 'canvas user id';
-      });
-      const loginIdIndex = headers.findIndex(h => {
-        const lower = h.toLowerCase().trim();
-        return lower === 'sis login id' || lower === 'login_id' || lower === 'sis user id';
-      });
-      const seccionesIndex = headers.findIndex(h => {
-        const lower = h.toLowerCase().trim();
-        return lower === 'section' || lower === 'secciones';
-      });
-      const groupNameIndex = headers.findIndex(h => {
-        const lower = h.toLowerCase().trim();
-        return lower === 'group_name' || lower === 'group name';
-      });
-      const canvasGroupIdIndex = headers.findIndex(h => {
-        const lower = h.toLowerCase().trim();
-        return lower === 'canvas_group_id' || lower === 'canvas group id';
-      });
-
-      // Para CSV con columnas separadas
-      const apellidoIndex = headers.findIndex(h => h.toLowerCase().trim().includes('apellido'));
-      const correoIndex = headers.findIndex(h => h.toLowerCase().trim().includes('correo'));
-      const pgIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pg');
-      const piIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pi');
-
-      Logger.log('📍 Índices de columnas detectados:', {
-        nombreIndex,
-        canvasUserIdIndex,
-        loginIdIndex,
-        seccionesIndex,
-        groupNameIndex,
-        canvasGroupIdIndex,
-        apellidoIndex,
-        correoIndex,
-        pgIndex,
-        piIndex
-      });
-
-      // Verificar línea 2 (puede ser "Manual Posting" o "Points Possible")
-      if (lineas.length > 1) {
-        const linea2 = parsearLineaCSV(lineas[1]);
-        Logger.log('Línea 2:', linea2.slice(0, 6));
-      }
-      if (lineas.length > 2) {
-        const linea3 = parsearLineaCSV(lineas[2]);
-        Logger.log('Línea 3:', linea3.slice(0, 6));
-      }
-
-      // Filtrar líneas de datos (saltar "Manual Posting", "Points Possible" y líneas vacías)
-      const lineasDatos = lineas.slice(1).filter((linea, idx) => {
-        const valores = parsearLineaCSV(linea);
-        const primeraColumna = valores[0]?.trim().toLowerCase() || '';
-
-        // Detectar líneas a filtrar
-        const esPointsPossible = primeraColumna.includes('points possible');
-        const esManualPosting = primeraColumna === '' && valores[5]?.toLowerCase().includes('manual posting');
-        const esVacia = primeraColumna === '' && linea.trim() === '';
-
-        if (idx < 4) {
-          Logger.log(`Filtro línea ${idx + 2}: "${primeraColumna.substring(0, 30)}" - Points:${esPointsPossible}, ManualPosting:${esManualPosting}, Vacía:${esVacia}`);
-        }
-
-        // Filtrar "Manual Posting", "Points Possible" y líneas vacías
-        return !esPointsPossible && !esManualPosting && !esVacia;
-      });
-
-      Logger.log(`📊 Total de líneas de datos después de filtrar: ${lineasDatos.length}`);
-
-      const estudiantes = lineasDatos.map((linea, index) => {
-        const valores = parsearLineaCSV(linea).map(v => v.trim());
-
-        // Debug: mostrar valores de las primeras 3 líneas
-        if (index < 3) {
-          Logger.log(`🔍 DEBUG Línea ${index + 1} del CSV:`);
-          Logger.log(`   Total columnas: ${valores.length}`);
-          valores.slice(0, 6).forEach((val, idx) => {
-            Logger.log(`   [${idx}]: "${val}"`);
-          });
-        }
-
-        // Obtener el nombre completo del CSV (formato: "APELLIDOS, NOMBRE")
-        let nombreCompleto = '';
-        let apellido = '';
-        let nombre = '';
-
-        if (nombreIndex >= 0 && nombreIndex < valores.length) {
-          // Si hay columna "Student" en el CSV de Canvas (índice 0)
-          nombreCompleto = (valores[nombreIndex] || '').trim();
-
-          if (index === 0) {
-            Logger.log(`📝 Valor en nombreIndex [${nombreIndex}]: "${nombreCompleto}"`);
+        const getIndex = (arr: string[], pred: (h: string) => boolean) => {
+          for (let i = arr.length - 1; i >= 0; i--) {
+            if (pred(arr[i])) return i;
           }
-
-          // Separar por coma: "APELLIDOS, NOMBRE" -> apellidos / nombres
-          if (nombreCompleto.includes(',')) {
-            const partes = nombreCompleto.split(',').map(p => p.trim());
-            apellido = partes[0] || '';
-            nombre = partes[1] || '';
-          } else {
-            // Si no tiene coma, usar el valor completo como apellido
-            apellido = nombreCompleto;
-            nombre = '';
-          }
-        } else if (apellidoIndex >= 0) {
-          // Si hay columnas separadas de apellido/nombre
-          apellido = (valores[apellidoIndex] || '').trim();
-          nombre = (valores[0] || '').trim();
-        } else {
-          // Fallback
-          apellido = (valores[1] || '').trim();
-          nombre = (valores[0] || '').trim();
-        }
-
-        // Extraer número de grupo del groupName (ej: "G1" -> "1", "Grupo 2" -> "2")
-        const groupNameValue = groupNameIndex >= 0 ? (valores[groupNameIndex] || '').trim() : '';
-        let grupoNumero = '';
-        if (groupNameValue) {
-          const grupoMatch = groupNameValue.match(/\d+/);
-          grupoNumero = grupoMatch ? grupoMatch[0] : '';
-        }
-
-        // Crear objeto base con información del estudiante
-        const estudiante: any = {
-          canvasUserId: canvasUserIdIndex >= 0 ? (valores[canvasUserIdIndex] || '').trim() : '',
-          canvasGroupId: canvasGroupIdIndex >= 0 ? (valores[canvasGroupIdIndex] || '').trim() : '',
-          apellidos: apellido,
-          nombres: nombre,
-          correo: loginIdIndex >= 0 ? (valores[loginIdIndex] || '').trim() : (correoIndex >= 0 ? (valores[correoIndex] || '').trim() : ''),
-          grupo: grupoNumero,
-          groupName: groupNameValue,
-          secciones: seccionesIndex >= 0 ? (valores[seccionesIndex] || '').trim() : '',
-          pg: pgIndex >= 0 ? (valores[pgIndex] || '').trim() : '',
-          pi: piIndex >= 0 ? (valores[piIndex] || '').trim() : '',
-          calificaciones: {} // Objeto para almacenar todas las calificaciones
+          return -1;
         };
 
-        // Extraer columnas de calificaciones (después de Section, índice 4 en adelante)
-        // Saltar columnas de metadatos que terminan en "Points", "Score", etc.
-        const primeraColumnaCalificaciones = Math.max(4, seccionesIndex + 1);
+        const apellidoIndex = getIndex(headers, h => h.toLowerCase().trim().includes('apellido'));
+        const correoIndex = getIndex(headers, h => h.toLowerCase().trim().includes('correo'));
+        const pgIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pg');
+        const piIndex = headers.findIndex(h => h.toLowerCase().trim() === 'pi');
 
-        // Debug: Mostrar mapeo de columnas para el primer estudiante
-        if (index === 0) {
-          Logger.log('🔍 MAPEO DE COLUMNAS (Primer estudiante):');
-          Logger.log('Total valores parseados:', valores.length);
-          Logger.log('Total headers:', headers.length);
-          for (let i = 4; i < Math.min(10, headers.length); i++) {
-            Logger.log(`  [${i}] "${headers[i]}" = "${valores[i] || '(vacío)'}"`);
-          }
-        }
+        const lineasDatos = lineas.slice(1).filter((linea) => {
+          const valores = this.parseCSVRow(linea);
+          const primeraColumna = valores[0]?.trim().toLowerCase() || '';
+          const esPointsPossible = primeraColumna.includes('points possible');
+          const esManualPosting = primeraColumna === '' && valores[5]?.toLowerCase().includes('manual posting');
+          return !esPointsPossible && !esManualPosting && linea.trim() !== '';
+        });
 
-        for (let i = primeraColumnaCalificaciones; i < valores.length && i < headers.length; i++) {
-          const headerName = headers[i];
-          const valor = valores[i];
-          const headerLower = headerName.toLowerCase().trim();
+        estudiantes = lineasDatos.map((linea) => {
+          const valores = this.parseCSVRow(linea).map(v => v.trim());
+          let apellido = '';
+          let nombre = '';
 
-          // PRIMERO: Filtrar todas las columnas de metadata de Canvas
-          // Estas columnas NUNCA deben incluirse como calificaciones
-          const esColumnaMetadata = headerLower.includes('current points') ||
-            headerLower.includes('final points') ||
-            headerLower.includes('current score') ||
-            headerLower.includes('final score') ||
-            headerLower.includes('unposted') ||
-            headerLower.includes('solo lectura') ||
-            headerLower.includes('tareas current') ||
-            headerLower.includes('tareas final') ||
-            headerLower.includes('tareas unposted') ||
-            headerLower.includes('herramientas profesor');
-
-          // Filtrar columna "Notas" vacía (si existe)
-          const esColumnaNotas = headerLower === 'notas';
-
-          // Si es metadata o "Notas", saltar esta columna
-          if (esColumnaMetadata || esColumnaNotas) {
-            continue;
+          if (nombreIndex >= 0 && nombreIndex < valores.length) {
+            const nombreCompleto = (valores[nombreIndex] || '').trim();
+            if (nombreCompleto.includes(',')) {
+              const partes = nombreCompleto.split(',').map(p => p.trim());
+              apellido = partes[0] || '';
+              nombre = partes[1] || '';
+            } else {
+              apellido = nombreCompleto;
+              nombre = '';
+            }
+          } else if (apellidoIndex >= 0) {
+            apellido = (valores[apellidoIndex] || '').trim();
+            nombre = (valores[0] || '').trim();
+          } else {
+            apellido = (valores[1] || '').trim();
+            nombre = (valores[0] || '').trim();
           }
 
-          // SEGUNDO: Solo incluir columnas que realmente son entregas/evaluaciones
-          // Estas deben contener palabras específicas de entregas
-          const esColumnaEntrega = headerName.trim() !== '' &&
-            (headerLower.includes('entrega') ||
-              headerLower.includes('proyecto') ||
-              headerLower.includes('escenario') ||
-              headerLower.includes('sustentacion'));
-
-          if (esColumnaEntrega) {
-            estudiante.calificaciones[headerName] = valor || '';
+          const groupNameValue = groupNameIndex >= 0 ? (valores[groupNameIndex] || '').trim() : '';
+          let grupoNumero = '';
+          if (groupNameValue) {
+            const grupoMatch = groupNameValue.match(/\d+/);
+            grupoNumero = grupoMatch ? grupoMatch[0] : '';
           }
-        }
 
-        if (index === 0) {
-          Logger.log('👤 Primer estudiante parseado:', estudiante);
-          Logger.log('📊 Calificaciones extraídas:', Object.keys(estudiante.calificaciones));
-        }
+          const estudiante: any = {
+            canvasUserId: canvasUserIdIndex >= 0 ? (valores[canvasUserIdIndex] || '').trim() : '',
+            canvasGroupId: canvasGroupIdIndex >= 0 ? (valores[canvasGroupIdIndex] || '').trim() : '',
+            apellidos: apellido,
+            nombres: nombre,
+            correo: loginIdIndex >= 0 ? (valores[loginIdIndex] || '').trim() : (correoIndex >= 0 ? (valores[correoIndex] || '').trim() : ''),
+            grupo: grupoNumero,
+            groupName: groupNameValue,
+            secciones: seccionesIndex >= 0 ? (valores[seccionesIndex] || '').trim() : '',
+            pg: pgIndex >= 0 ? (valores[pgIndex] || '').trim() : '',
+            pi: piIndex >= 0 ? (valores[piIndex] || '').trim() : '',
+            calificaciones: {}
+          };
 
-        return estudiante;
-      }).filter(e => {
-        // Filtrar líneas vacías y la línea de "Points Possible" si quedó alguna
-        const tieneNombre = (e.nombre || e.apellido) && (e.nombre + e.apellido).toLowerCase() !== 'points possible';
-        const tieneCorreo = e.correo && e.correo.includes('@');
-        return tieneNombre || tieneCorreo;
-      });
+          const primeraColumnaCalificaciones = Math.max(4, seccionesIndex + 1);
+          for (let i = primeraColumnaCalificaciones; i < valores.length && i < headers.length; i++) {
+            const headerName = headers[i];
+            const valor = valores[i];
+            const headerLower = headerName.toLowerCase().trim();
 
-      // Parsear información del curso desde la columna 'secciones' del CSV
-      // Formato esperado: "SEGUNDO BLOQUE-VIRTUAL/ÉNFASIS EN PROGRAMACIÓN MÓVIL-[GRUPO B01]"
-      const primeraSeccion = estudiantes[0]?.secciones || '';
+            const esColumnaMetadata = headerLower.includes('current points') ||
+              headerLower.includes('final points') ||
+              headerLower.includes('current score') ||
+              headerLower.includes('final score') ||
+              headerLower.includes('unposted') ||
+              headerLower.includes('solo lectura') ||
+              headerLower.includes('tareas current') ||
+              headerLower.includes('tareas final') ||
+              headerLower.includes('tareas unposted') ||
+              headerLower.includes('herramientas profesor');
 
-      let nombreCompleto = '';
-      let codigoAbreviado = '';
-      let bloqueTexto = '';
-      let enfasisSiglas = '';
-      let modalidadTexto = 'VIRTUAL';
-      let grupoSolo = '';
+            if (esColumnaMetadata || headerLower === 'notas') continue;
 
-      if (primeraSeccion) {
-        // OPTIMIZACIÓN: Un solo regex para capturar todos los componentes
-        const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
+            const esColumnaEntrega = headerName.trim() !== '' &&
+              (headerLower.includes('entrega') ||
+                headerLower.includes('proyecto') ||
+                headerLower.includes('escenario') ||
+                headerLower.includes('sustentacion'));
 
-        if (fullMatch) {
-          bloqueTexto = fullMatch[1].trim();
-          modalidadTexto = fullMatch[2].trim();
-          nombreCompleto = fullMatch[3].trim();
-          const letraGrupo = fullMatch[4].trim();
-          const numeroGrupo = fullMatch[5].trim();
-          grupoSolo = numeroGrupo; // Solo el número (ej: "01")
-
-          // Actualizar el ingreso basado en la letra del grupo
-          if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
-            this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
+            if (esColumnaEntrega) {
+              estudiante.calificaciones[headerName] = valor || '';
+            }
           }
-        } else {
-          // Fallback manual si el formato varía ligeramente
-          bloqueTexto = (primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i)?.[1] || '').trim();
-          modalidadTexto = (primeraSeccion.match(/BLOQUE-([^\/]+)\//i)?.[1] || 'VIRTUAL').trim();
-          nombreCompleto = (primeraSeccion.match(/\/([^-]+)-/)?.[1] || '').trim();
+          return estudiante;
+        }).filter(e => {
+          const tieneNombre = (e.nombres || e.apellidos) && (e.nombres + e.apellidos).toLowerCase() !== 'points possible';
+          const tieneCorreo = e.correo && e.correo.includes('@');
+          return tieneNombre || tieneCorreo;
+        });
 
-          // Extraer grupo completo y separar letra de número
-          const grupoCompleto = (primeraSeccion.match(/\[GRUPO\s+([A-Z]\d+)\]/i)?.[1] || '').trim();
-          if (grupoCompleto) {
-            const grupoMatch = grupoCompleto.match(/([A-Z])(\d+)/i);
+        const primeraSeccion = estudiantes[0]?.secciones || '';
+        let nombreCompleto = '';
+        let bloqueTexto = '';
+        let enfasisSiglas = '';
+        let modalidadTexto = 'VIRTUAL';
+        let grupoSolo = '';
+
+        if (primeraSeccion) {
+          const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
+          if (fullMatch) {
+            bloqueTexto = fullMatch[1].trim();
+            modalidadTexto = fullMatch[2].trim();
+            nombreCompleto = fullMatch[3].trim();
+            const letraGrupo = fullMatch[4].trim();
+            grupoSolo = fullMatch[5].trim();
+            if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
+              this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
+            }
+          } else {
+            bloqueTexto = (primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i)?.[1] || '').trim();
+            modalidadTexto = (primeraSeccion.match(/BLOQUE-([^\/]+)\//i)?.[1] || 'VIRTUAL').trim();
+            nombreCompleto = (primeraSeccion.match(/\/([^-]+)-/)?.[1] || '').trim();
+            const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z])(\d+)\]/i);
             if (grupoMatch) {
               const letraGrupo = grupoMatch[1].toUpperCase();
-              grupoSolo = grupoMatch[2]; // Solo el número (ej: "01")
-
-              // Actualizar el ingreso basado en la letra del grupo
+              grupoSolo = grupoMatch[2];
               if (['A', 'B', 'C', 'E'].includes(letraGrupo)) {
                 this.cohorteForm.ingreso = letraGrupo as any;
               }
             }
           }
+          enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+        } else {
+          nombreCompleto = file.name.replace('.csv', '');
+          enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
         }
 
-        enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
-      } else {
-        // Fallback: usar nombre del archivo
-        const nombreArchivo = (file as any).name.replace('.csv', '');
-        const codigoMatch = nombreArchivo.match(/^([A-Z]{2,4})(?=\d+)|([A-Z]{2,4})(?=_)|([A-Z]{2,4})$/i);
-        const bloqueMatch = nombreArchivo.match(/([A-Z]\d+)/i);
+        if (bloqueTexto) {
+          const bt = bloqueTexto.toUpperCase();
+          if (bt.includes('PRIMER')) this.cohorteForm.bloque = 'PRIMERO';
+          else if (bt.includes('SEGUNDO')) this.cohorteForm.bloque = 'SEGUNDO';
+          else if (bt.includes('TRANSVERSAL')) this.cohorteForm.bloque = 'TRANSVERSAL';
+        }
+        this.onIngresoChange();
 
-        nombreCompleto = nombreArchivo;
-        enfasisSiglas = codigoMatch?.[0] || nombreArchivo;
-        bloqueTexto = bloqueMatch?.[1] || '';
-        grupoSolo = (nombreArchivo.match(/([A-Z]\d+)/)?.[0] || '').trim();
+        cursoDetectado = {
+          nombre: nombreCompleto,
+          siglas: enfasisSiglas,
+          grupo: grupoSolo,
+          codigo: '',
+          bloque: this.cohorteForm.bloque || bloqueTexto,
+          ingreso: this.cohorteForm.ingreso || '',
+          modalidad: modalidadTexto,
+          modalidadCodigo: this.getModalityInitials(modalidadTexto)
+        };
       }
 
       this.estudiantesCargados = estudiantes;
+      this.cursoParseado = cursoDetectado;
 
-      // AUTO-PARSING: Actualizar cohorteForm basado en el bloque detectado
-      // El ingreso ya fue establecido durante el parsing del grupo
-      if (bloqueTexto) {
-        const bt = bloqueTexto.toUpperCase();
-        if (bt.includes('PRIMER')) this.cohorteForm.bloque = 'PRIMERO';
-        else if (bt.includes('SEGUNDO')) this.cohorteForm.bloque = 'SEGUNDO';
-        else if (bt.includes('TRANSVERSAL')) this.cohorteForm.bloque = 'TRANSVERSAL';
+      if (this.cursoParseado) {
+        this.cursoParseado.codigo = this.getStandardizedCode(this.cursoParseado);
       }
 
-      this.onIngresoChange(); // Actualizar fechas compartidas
-
-      this.cursoParseado = {
-        nombre: nombreCompleto,
-        siglas: enfasisSiglas,
-        grupo: grupoSolo, // Solo el número: "01", "02", etc.
-        codigo: '', // Se asignará a continuación
-        bloque: this.cohorteForm.bloque || bloqueTexto, // Usar el bloque normalizado del form
-        ingreso: this.cohorteForm.ingreso || '',
-        modalidad: modalidadTexto,
-        modalidadCodigo: this.getModalityInitials(modalidadTexto)
-      };
-
-      // Generar y asignar el código estandarizado
-      this.cursoParseado.codigo = this.getStandardizedCode(this.cursoParseado);
-
-      // Log para debugging
-      Logger.log('📋 Curso parseado:', this.cursoParseado);
-      Logger.log('🔢 Código generado:', this.cursoParseado.codigo);
-
       await this.mostrarToastExito(`${estudiantes.length} estudiantes cargados`);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      Logger.error('[CursosPage] Error cargando estudiantes:', {
-        error: errorMessage,
-        archivo: file.name,
-        stack: error instanceof Error ? error.stack : undefined
-      });
-
-      await this.mostrarToastError(
-        `Error al cargar archivo de estudiantes: ${errorMessage}`,
-        4000
-      );
-
-      // Limpiar estado en caso de error
-      this.estudiantesCargados = [];
-      this.estudiantesFileName = '';
+    } catch (e) {
+      Logger.error('Error al procesar archivo de estudiantes:', e);
+      await this.mostrarToastError('Error al procesar el archivo. Verifique el formato.');
     }
   }
 
-  async onCalificacionesFileSelected(event: Event) {
+  async onCalificacionesFileSelected(event: any) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
     const file = input.files[0];
     this.calificacionesFileName = file.name;
+    const isJson = file.name.toLowerCase().endsWith('.json');
 
     try {
-      // Validar que primero se haya cargado el archivo de Personas
       if (this.estudiantesCargados.length === 0) {
-        await this.mostrarToastError('Primero debe cargar el archivo de Personas');
-        this.calificacionesFileName = '';
-        input.value = '';
-        return;
+        throw new Error('Primero debe cargar el archivo de Personas');
       }
 
       const contenido = await this.leerArchivo(file);
+      let calificaciones: any[] = [];
 
-      // Parsear calificaciones usando el método del servicio
-      const calificaciones = this.parsearCalificacionesCanvasLocal(contenido);
+      if (isJson) {
+        const data = JSON.parse(contenido);
+        calificaciones = Array.isArray(data) ? data : (data.calificaciones || []);
+      } else {
+        calificaciones = this.parsearCalificacionesCanvasLocal(contenido);
+      }
 
-      // VALIDACIÓN: Verificar que los estudiantes coincidan entre ambos archivos
       const validacion = this.validarCoincidenciaEstudiantes(calificaciones);
-
       if (!validacion.esValido) {
-        await this.mostrarToastError(validacion.mensaje, 5000);
-        this.calificacionesFileName = '';
-        input.value = '';
-        return;
+        throw new Error(validacion.mensaje);
       }
 
       this.calificacionesCargadas = {
         nombre: file.name,
         fechaCarga: new Date().toISOString(),
-        contenidoOriginal: contenido,  // CSV completo para exportar
-        calificaciones: calificaciones  // Array procesado para búsquedas
+        contenidoOriginal: isJson ? JSON.stringify(calificaciones) : contenido,
+        calificaciones: calificaciones
       };
 
-      Logger.log('✅ Calificaciones cargadas:', {
-        archivo: file.name,
-        totalRegistros: calificaciones.length,
-        primerRegistro: calificaciones[0]
-      });
-
-      // Parsear calificaciones para vista previa
-      this.parsearCalificaciones(contenido);
-
-      // OPTIMIZACIÓN: Notificar al sistema que las calificaciones cambiaron
-      // Esto invalidará el cache en cursos.page.ts cuando se guarde
-      Logger.log('🔄 [cargarArchivoCalificaciones] Calificaciones cargadas - cache se invalidará al guardar');
-
+      if (!isJson) {
+        this.parsearCalificaciones(contenido);
+      }
       await this.mostrarToastExito('Archivo de calificaciones cargado');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-      Logger.error('[CursosPage] Error cargando calificaciones:', {
-        error: errorMessage,
-        archivo: file.name,
-        stack: error instanceof Error ? error.stack : undefined
-      });
-
-      await this.mostrarToastError(
-        `Error al procesar calificaciones: ${errorMessage}`,
-        4000
-      );
-
-      // Limpiar estado en caso de error
+      await this.mostrarToastError(`Error: ${errorMessage}`, 4000);
       this.calificacionesCargadas = null;
       this.calificacionesFileName = '';
-      this.calificacionesParseadas = [];
     }
   }
 

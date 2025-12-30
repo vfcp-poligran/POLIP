@@ -19,7 +19,9 @@ import {
   IonSegment,
   IonSegmentButton,
   IonCheckbox,
-  AlertController
+  AlertController,
+  IonAccordion,
+  IonAccordionGroup
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -78,6 +80,8 @@ import { ALERT_BUTTONS } from '@app/constants/button-config';
     IonSegment,
     IonSegmentButton,
     IonCheckbox,
+    IonAccordion,
+    IonAccordionGroup,
     ThemeToggleComponent
   ]
 })
@@ -129,6 +133,10 @@ export class SistemaPage implements OnInit {
   busquedaTermino = '';
   /** Tab activo en Sistema */
   tabActivo: 'interfaz' | 'database' | 'about' = 'interfaz';
+
+  get isMobile(): boolean {
+    return this.storageInfo.platform === 'mobile' || window.innerWidth < 768;
+  }
 
   constructor() {
     addIcons({ list, colorPalette, build, informationCircle, contrast, colorWand, notifications, warning, time, removeCircle, addCircle, cloudDownload, chevronForward, cloudUpload, trash, brush, apps, documentText, codeSlash, person, school, logoAngular, logoJavascript, save, desktop, cloud, server, settings, refresh, phonePortrait, checkmarkCircle, closeCircle });
