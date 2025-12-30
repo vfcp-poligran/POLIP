@@ -213,21 +213,58 @@ export class NovedadService {
 
         // Vincular a sesión si existe
         if (data.sessionId) {
-            this._sesiones.update(sesiones =>
-                sesiones.map(s => s.id === data.sessionId ? {
-                    ...s,
-                    novedadesIds: [...s.novedadesIds, novedadId]
-                } : s)
-            );
-        }
-
-        // Si está offline, agregar a cola de sincronización
-        if (!this._isOnline()) {
-            this.addToSyncQueue('create', 'novedad', novedad);
+            this.vincularASesion(data.sessionId, novedadId);
         }
 
         await this.saveToStorage();
         return novedad;
+    }
+
+    /**
+     * Registra múltiples novedades en un solo bloque (Optimizado)
+     */
+    async registrarNovedadesBatch(datosNovedades: Omit<Novedad, 'id' | 'fechaRegistro' | 'syncStatus'>[]): Promise<Novedad[]> {
+        const timestamp = Date.now();
+        const idsCreados: string[] = [];
+
+        const nuevasNovedades: Novedad[] = datosNovedades.map(data => {
+            const id = this.generateId();
+            idsCreados.push(id);
+            this.incrementarFrecuenciaTipo(data.tipoNovedadId);
+            return {
+                ...data,
+                id,
+                fechaRegistro: new Date(),
+                syncStatus: this._isOnline() ? 'synced' : 'pending',
+                localTimestamp: timestamp
+            };
+        });
+
+        // Actualización única de la señal
+        this._novedades.update(list => [...list, ...nuevasNovedades]);
+
+        // Vinculación masiva a sesión
+        const sessionId = datosNovedades[0]?.sessionId;
+        if (sessionId) {
+            this._sesiones.update(sesiones =>
+                sesiones.map(s => s.id === sessionId ? {
+                    ...s,
+                    novedadesIds: [...s.novedadesIds, ...idsCreados]
+                } : s)
+            );
+        }
+
+        await this.saveToStorage();
+        return nuevasNovedades;
+    }
+
+    private vincularASesion(sessionId: string, novedadId: string) {
+        this._sesiones.update(sesiones =>
+            sesiones.map(s => s.id === sessionId ? {
+                ...s,
+                novedadesIds: [...s.novedadesIds, novedadId]
+            } : s)
+        );
     }
 
     /**

@@ -2,7 +2,7 @@
 @use '../../shared/styles/color-tokens' as colors;
 @use '../../shared/styles/typography-mixins' as typo;
 
-// Use centralized color tokens instead of local variables
+// Use centralized color tokens
 $azul-oscuro: colors.$azul-oscuro;
 $azul-claro: colors.$azul-claro;
 $verde-exito: colors.$verde-exito;
@@ -11,8 +11,6 @@ $touch-target: colors.$touch-target;
 
 // Contenedor principal
 .inicio-content {
-    // Background inherits from --ion-background-color (theme-aware)
-    // Add extra padding for mobile bottom tabs
     --padding-bottom: calc(56px + env(safe-area-inset-bottom, 16px));
 }
 
@@ -24,9 +22,6 @@ $touch-target: colors.$touch-target;
     position: sticky;
     top: 0;
     z-index: 100;
-
-    // .header-top styles removed
-
 
     .search-tipos-row {
         display: flex;
@@ -55,18 +50,10 @@ $touch-target: colors.$touch-target;
             cursor: pointer;
             transition: all 0.2s ease;
 
-            ion-icon {
-                font-size: 0.9rem;
-            }
-
             &.selected {
                 --background: var(--chip-color, #fff);
                 --color: #fff;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-            }
-
-            &:hover:not(.selected) {
-                --background: rgba(255, 255, 255, 0.35);
             }
         }
     }
@@ -97,183 +84,28 @@ $touch-target: colors.$touch-target;
             max-height: 300px;
             overflow-y: auto;
             z-index: 200;
-
-            .search-result-item {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                padding: 12px 16px;
-                cursor: pointer;
-                transition: background 0.2s ease;
-
-                &:hover {
-                    background: rgba($azul-claro, 0.08);
-                }
-
-                &.selected {
-                    background: rgba($verde-exito, 0.1);
-
-                    .result-name {
-                        color: $verde-exito;
-                        font-weight: 600;
-                    }
-                }
-
-                ion-icon:first-child {
-                    font-size: 1.2rem;
-                    color: $azul-oscuro;
-
-                    &.selected-icon {
-                        color: $verde-exito;
-                    }
-                }
-
-                .result-info {
-                    flex: 1;
-                    min-width: 0;
-
-                    .result-name {
-                        display: block;
-                        font-weight: 500;
-                        color: $azul-oscuro;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-
-                    .result-meta {
-                        font-size: 0.75rem;
-                        color: #666;
-                    }
-                }
-
-                .add-icon {
-                    font-size: 1.2rem;
-                    color: $azul-claro;
-                }
-            }
-
-            .dropdown-actions {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 8px 12px;
-                background: #f8f9fa;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-
-                .dropdown-hint {
-                    font-size: 0.7rem;
-                    color: #888;
-                    font-style: italic;
-                }
-
-                ion-button {
-                    --color: #888;
-                    margin: 0;
-                }
-            }
-        }
-    }
-
-    .selected-students-bar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-
-        .selected-chips {
-            flex: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-
-            .student-chip {
-                --background: rgba(255, 255, 255, 0.2);
-                --color: #fff;
-                height: 28px;
-                font-size: 0.8rem;
-
-                ion-icon {
-                    font-size: 0.9rem;
-                }
-            }
-        }
-
-        ion-button {
-            flex-shrink: 0;
-            --border-radius: 8px;
-            --padding-top: 8px;
-            --padding-bottom: 8px;
         }
     }
 }
 
 // === CONTENIDO PRINCIPAL GRID (3 COLUMNS) ===
 .main-content-grid {
-    padding: 8px 6px;
-    max-width: 1600px;
-    margin: 0 auto;
+    padding: 12px;
+    max-width: 100%;
+    margin: 0;
 
     ion-grid {
         padding: 0;
     }
 
-    .column-container {
+    .main-layout-row {
+        margin: 0;
         display: flex;
-        flex-direction: column;
-        gap: 16px;
-        min-height: 400px;
+        flex-wrap: wrap;
 
         @media (min-width: 992px) {
-            height: calc(100vh - 200px);
-            overflow-y: auto;
-            padding: 0 8px;
-
-            &::-webkit-scrollbar {
-                width: 4px;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 2px;
-            }
-        }
-
-        // Columna de cursos más al borde izquierdo
-        &.column-courses {
-            padding-left: 0 !important;
-            margin-left: -8px;
-
-            @media (min-width: 992px) {
-                padding-left: 0 !important;
-            }
-        }
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 24px 16px;
-        color: var(--ion-color-medium); // Better contrast in both light and dark modes
-
-        ion-icon {
-            font-size: 2.5rem;
-            color: var(--ion-color-medium);
-            margin-bottom: 12px;
-            opacity: 0.6;
-        }
-
-        p {
-            margin: 0;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: var(--ion-color-medium); // Theme-aware color
-
-            &:first-of-type {
-                font-weight: 600;
-                margin-bottom: 4px;
-            }
+            flex-wrap: nowrap;
+            align-items: stretch;
         }
     }
 
@@ -281,7 +113,7 @@ $touch-target: colors.$touch-target;
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         padding: 4px;
 
         ion-icon {
@@ -300,2060 +132,404 @@ $touch-target: colors.$touch-target;
         ion-badge {
             --padding-start: 10px;
             --padding-end: 10px;
-            --padding-top: 4px;
-            --padding-bottom: 4px;
             font-size: 0.85rem;
             border-radius: 50px;
         }
     }
-}
 
-// === DYNAMIC GRUPOS SELECTOR BAR ===
-.grupos-selector-bar {
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    .grupos-selector-header {
+    .column-container {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
+        flex-direction: column;
+        gap: 16px;
+        padding: 8px;
 
-    .grupos-selector-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        @media (min-width: 992px) {
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+            padding: 0 16px;
 
-        ion-icon {
-            font-size: 1.2rem;
-            color: $azul-oscuro;
-        }
-
-        span {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: $azul-oscuro;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-    }
-
-    .selection-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        ion-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-        }
-
-        ion-button {
-            --padding-start: 8px;
-            --padding-end: 8px;
-            height: 32px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-    }
-
-    .grupos-buttons-grid {
-        padding: 0;
-        margin-top: 6px;
-
-        @media (max-width: 991px) {
-            margin-top: 4px;
-        }
-
-        ion-row {
-            --ion-grid-column-padding: 4px;
-        }
-
-        .grupo-dynamic-btn {
-            --border-radius: 8px;
-            --padding-start: 14px;
-            --padding-end: 14px;
-            --padding-top: 8px;
-            --padding-bottom: 8px;
-            --background: transparent;
-            --background-hover: rgba(0, 0, 0, 0.03);
-            --box-shadow: none;
-            height: 36px;
-            font-weight: 700;
-            font-size: 0.875rem;
-            box-shadow: none !important;
-            border: none !important;
-            transition: all 0.2s ease;
-            margin: 0;
-            position: relative;
-            color: var(--color) !important; // Enforce color from CSS variable for visibility
-
-            // Texto con color del curso (se aplica dinámicamente)
-            &::part(native) {
-                border: none !important;
-                box-shadow: none !important;
+            &::-webkit-scrollbar {
+                width: 4px;
             }
 
-            &.selected {
-                --background: rgba(var(--curso-color-rgb, 74, 144, 226), 0.1);
-                font-weight: 800;
-
-                ion-icon {
-                    margin-right: 4px;
-                }
-            }
-
-            &:hover {
-                --background: rgba(0, 0, 0, 0.03);
+            &::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 2px;
             }
         }
-    }
 
-    .hint-text {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 12px;
-        background: rgba($azul-claro, 0.05);
-        border-radius: 8px;
-
-        ion-icon {
-            font-size: 1rem;
-            color: $azul-claro;
-            flex-shrink: 0;
-        }
-
-        span {
-            font-size: 0.75rem;
-            color: #666;
-            font-style: italic;
-        }
-    }
-}
-
-// === DYNAMIC GRUPOS SELECTOR BAR (GLOBAL - ABOVE ALL COLUMNS) ===
-.grupos-selector-bar-global {
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-    border-radius: 16px;
-    padding: 12px;
-    margin-bottom: 8px;
-
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    @media (max-width: 991px) {
-        padding: 12px;
-        margin-bottom: 12px;
-        margin-top: 8px; // Separation from cards
-        border-radius: 12px;
-        gap: 8px;
-        position: relative;
-        z-index: 5; // Ensure it sits above standard content
-        background: #fff; // Solid background for contrast
-        border: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .grupos-selector-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    .grupos-selector-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        ion-icon {
-            font-size: 1.2rem;
-            color: $azul-oscuro;
-        }
-
-        span {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: $azul-oscuro;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-    }
-
-    .selection-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        ion-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-        }
-
-        ion-button {
-            --padding-start: 8px;
-            --padding-end: 8px;
-            height: 32px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-    }
-
-    .grupos-buttons-row {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 10px;
-        overflow-x: auto;
-        padding: 4px 0;
-
-        // Custom scrollbar
-        &::-webkit-scrollbar {
-            height: 4px; // Thinner
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-        }
-
-        .grupo-dynamic-btn {
-            --padding-start: 6px;
-            --padding-end: 6px;
-            --padding-top: 2px;
-            --padding-bottom: 2px;
-            --background: transparent;
-            --background-hover: transparent; // No BG hover
-            --box-shadow: none;
-            --border-width: 0;
-
-            height: 28px; // Very compact
-            font-weight: 600;
-            font-size: 0.875rem;
-            letter-spacing: 0.2px; // Tighter tracking
-            box-shadow: none !important;
-            border: none !important;
-            transition: opacity 0.2s ease;
-            margin: 0;
-            margin-right: 4px; // Small gap between buttons
-            position: relative;
-            flex-shrink: 0;
-
-            // Text color is derived from --color which is set in HTML to course color
-            // Ensure no other text styles override it
-
-            &::part(native) {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 4px;
-            }
-
-            &.selected {
-                font-weight: 800;
-                text-decoration: underline; // Simple indicator
-                transform: none;
-                background: transparent;
-                box-shadow: none;
-            }
-
-            &:hover {
-                opacity: 0.8;
-                transform: none;
-                --background: transparent;
-            }
-        }
-    }
-
-    .hint-text {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        background: rgba($azul-claro, 0.05);
-        border-radius: 8px;
-
-        ion-icon {
-            font-size: 1rem;
-            color: $azul-claro;
-            flex-shrink: 0;
-        }
-
-        span {
-            font-size: 0.75rem;
-            color: #666;
-            font-style: italic;
-        }
-    }
-}
-
-// === COLUMNA 1: CURSOS ===
-.courses-card-list {
-    display: flex;
-    flex-direction: row; // Horizontal layout
-    gap: 6px;
-    align-items: stretch;
-    width: 100%;
-    overflow-x: auto; // Enable horizontal scroll
-    overflow-y: hidden;
-    flex-shrink: 0; // Prevent list from collapsing when content below grows
-    padding-bottom: 8px; // Space for scrollbar
-
-    // Hide scrollbar but keep functionality
-    scrollbar-width: thin;
-    scrollbar-color: rgba(var(--ion-color-primary-rgb), 0.3) transparent;
-
-    &::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: rgba(var(--ion-color-primary-rgb), 0.3);
-        border-radius: 3px;
-
-        &:hover {
-            background: rgba(var(--ion-color-primary-rgb), 0.5);
-        }
-    }
-
-    @media (min-width: 768px) {
-        padding-left: 0;
-
-        // Desktop & Tablet: Wrap cards, no scroll
-        flex-wrap: wrap;
-        overflow-x: visible;
-        overflow-y: visible; // Allow vertical growth for wrapped rows
-        padding-bottom: 0;
-    }
-}
-
-
-// Responsive Grid Adjustments for Dynamic Sizing
-@media (min-width: 992px) {
-    ion-grid {
-        padding-right: 0; // Flush grid to right edge
-
-        .main-layout-row {
-            // Standard Grid Behavior restored (Homogeneous Distribution)
-            // No wrapping on desktop to ensure side-by-side
-            flex-wrap: nowrap;
-
-            // Allow columns to behave according to size-lg attributes
-            align-items: flex-start; // Ensure top alignment
-
-            // Natural order: Content (Left), Courses (Right) - User Request Step 538
-            .column-courses {
-                order: 2;
-                border-left: 1px solid rgba(0, 0, 0, 0.05); // Separator on left
-                border-right: none;
-                padding-left: 16px; // Spacing from content
-                padding-right: 0;
-            }
-
-            .right-column-container {
+        &.column-placeholder {
+            @media (min-width: 992px) {
                 order: 1;
-                padding-right: 16px; // Spacing to courses
+                border-right: 1px solid rgba(0, 0, 0, 0.05);
                 padding-left: 0;
             }
-        }
-    }
-}
 
-.course-card-premium {
-    margin: 0;
-    width: 100px; // Ultra compact width
-    min-width: 100px;
-    flex-shrink: 0; // Don't shrink in flex container
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-    background: var(--ion-card-background, #fff);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    min-height: auto;
-
-    // Ensure text doesn't overflow
-    max-width: 100px;
-
-    .card-color-strip {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 3px; // Thinner strip
-        transition: width 0.2s ease;
-    }
-
-    // Desktop selection indicator positioning
-    .card-selection-indicator {
-        position: absolute;
-        top: 6px; // Tighter pos
-        right: 6px;
-        z-index: 10;
-
-        ion-icon {
-            font-size: 1rem; // Smaller icon
-        }
-    }
-
-    // Mobile selection mode icon (top-left)
-    .card-mobile-mode-icon {
-        position: absolute;
-        top: 10px;
-        left: 12px;
-        z-index: 10;
-
-        ion-icon {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-    }
-
-    ion-card-header {
-        padding: 4px 6px; // Even more reduced padding
-        padding-left: 8px; // Space for strip
-
-        ion-card-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: $azul-oscuro;
-            margin: 0;
-            line-height: 1;
-            text-align: left; // Align left as requested
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        ion-card-subtitle {
-            font-size: 0.65rem; // Smaller subtitle
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.7;
-            margin-top: 0;
-            line-height: 1.2;
-        }
-    }
-
-    // Selection state styles
-    &.selected {
-        background: rgba(var(--course-color-rgb, 0, 0, 0), 0.04);
-        border-color: rgba(var(--course-color), 0.4);
-        border-width: 1px;
-        box-shadow: none;
-
-        .card-color-strip {
-            width: 5px;
-        }
-    }
-
-    &:hover {
-        background: rgba(0, 0, 0, 0.015);
-        // Removed width change to prevents jumps
-    }
-}
-
-// === COLUMNA 2: REGISTRO ===
-.registration-control-pane {
-    border-radius: 20px;
-    padding: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    height: 100%;
-}
-
-.registration-actions-top {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    .btn-main-region-grid {
-        // Legacy class removed or deprioritized, keeping basic padding if needed
-        padding-top: 10px;
-        padding-bottom: 20px;
-    }
-
-
-
-    .selection-tools {
-        display: flex;
-        justify-content: space-between;
-
-        ion-button {
-            --padding-start: 4px;
-            --padding-end: 4px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-    }
-}
-
-.selected-students-scroll {
-    overflow-y: auto;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-right: 4px;
-
-    &::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: #eee;
-        border-radius: 2px;
-    }
-}
-
-.student-selection-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    background: #f9fbff;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.02);
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    .item-selection {
-        ion-checkbox {
-            --size: 16px;
-            --border-radius: 4px;
-        }
-    }
-
-    .item-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-
-        .name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: $azul-oscuro;
-            line-height: 1.2;
-        }
-
-        .meta {
-            font-size: 0.68rem;
-            color: #888;
-            font-weight: 500;
-            line-height: 1.1;
-        }
-    }
-
-    &.selected {
-        background: rgba($azul-claro, 0.05);
-        border-color: rgba($azul-claro, 0.2);
-    }
-
-    &:hover {
-        background: #f0f4ff;
-    }
-}
-
-.registration-empty {
-    padding: 40px 20px;
-    text-align: center;
-    opacity: 0.6;
-
-    small {
-        display: block;
-        margin-top: 10px;
-        font-size: 0.8rem;
-    }
-}
-
-// === GRID DE NOVEDADES ===
-.novedades-grid-container {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: auto;
-    max-height: calc(100vh - 350px);
-    background: var(--ion-card-background, #fff);
-    border-radius: 12px;
-    padding: 0;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-// === GRID DE NOVEDADES (Adaptive Container) ===
-// Replaces .novedades-grid-container usage logic
-.novedades-adaptive-container {
-    width: 100%;
-    // Allow height to grow, container below handles scroll if needed
-}
-
-.novedades-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
-    table-layout: fixed;
-
-    thead {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-
-        th {
-            background: linear-gradient(180deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -8%) 100%);
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 16px 12px;
-            text-align: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 0.75rem;
-
-            &:last-child {
-                border-right: none;
-            }
-
-            &.student-col {
-                width: 40%;
-                min-width: 180px;
-                text-align: left;
-                padding-left: 20px;
-            }
-
-            &.novedad-col {
-                width: 80px;
-                font-size: 1.8rem;
-                padding: 12px 8px;
-                cursor: help;
-                background: transparent !important; // As requested
-                color: $azul-oscuro; // Darker text for visibility on light bg
-                border-right-color: rgba($azul-oscuro, 0.1);
-
-                // If it's sticky and transparent, we might see text below. 
-                // Usually "transparent" means it shouldn't have the dark header gradient.
-            }
-
-            &.actions-col {
-                width: 60px;
-            }
-        }
-    }
-
-    tbody {
-        tr.student-row {
-            transition: background-color 0.2s;
-
-            &:nth-child(even) {
-                background: rgba($azul-claro, 0.03);
-            }
-
-            &:hover {
-                background: rgba($azul-claro, 0.08);
-            }
-
-            td {
-                padding: 14px 12px;
-                vertical-align: middle;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-                border-right: 1px solid rgba(0, 0, 0, 0.04);
-                text-align: center;
-
-                &:last-child {
-                    border-right: none;
-                }
-
-                &.student-info-cell {
-                    text-align: left;
-                    padding-left: 20px;
-
-                    .student-name {
-                        font-weight: 600;
-                        color: $azul-oscuro;
-                        font-size: 0.9rem;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-
-                    .student-meta {
-                        color: var(--ion-color-medium);
-                        font-size: 0.75rem;
-                        margin-top: 2px;
-                    }
-                }
-
-                &.novedad-cell {
-                    .novedad-checkbox {
-                        background: transparent;
-                        border: 2px solid rgba(0, 0, 0, 0.15);
-                        cursor: pointer;
-                        padding: 6px;
-                        border-radius: 6px;
-                        transition: all 0.2s;
-                        display: inline-flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 40px;
-                        height: 40px;
-
-                        ion-icon {
-                            font-size: 1.6rem;
-                            color: var(--ion-color-medium);
-                        }
-
-                        &.checked {
-                            background: $azul-claro;
-                            border-color: $azul-claro;
-
-                            ion-icon {
-                                color: #fff;
-                                filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-                            }
-                        }
-
-                        &:hover {
-                            border-color: $azul-claro;
-                            background: rgba($azul-claro, 0.05);
-                        }
-                    }
-                }
-
-                &.actions-cell {
-                    ion-button {
-                        --padding-start: 6px;
-                        --padding-end: 6px;
-                    }
-                }
-            }
-        }
-    }
-}
-
-// === MOBILE/TABLET ADAPTIVE GRID ===
-.mobile-student-grid {
-    display: grid;
-    grid-template-columns: 1fr; // Mobile Portrait default
-    gap: 12px;
-    padding-bottom: 80px; // Extra space for FAB or scroll
-    margin-top: 10px;
-
-    // Tablet Portrait / Mobile Landscape: 2 Columns
-    @media (min-width: 576px) {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
-
-    .student-card-mobile {
-        margin: 0;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        background: var(--ion-card-background, #fff);
-        overflow: hidden;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-
-        .card-mobile-header {
-            padding: 12px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba($azul-claro, 0.03);
-
-            .student-details {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                min-width: 0;
-
-                .name {
-                    font-weight: 700;
-                    color: $azul-oscuro;
-                    font-size: 1rem;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-
-                .meta {
-                    font-size: 0.8rem;
-                    color: #666;
-                    margin-top: 2px;
-                }
-            }
-        }
-
-        .novedad-toggles-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); // 4 buttons
-            padding: 4px;
-
-            .novedad-toggle-btn {
-                background: transparent;
-                border: none;
-                border-right: 1px solid rgba(0, 0, 0, 0.05);
-                padding: 12px 4px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                min-height: 70px; // Good touch target
-
-                &:last-child {
-                    border-right: none;
-                }
-
-                ion-icon {
-                    font-size: 1.5rem;
-                    color: var(--ion-color-medium);
-                    transition: color 0.2s;
-                }
-
-                span {
-                    font-size: 0.65rem;
-                    font-weight: 600;
-                    color: var(--ion-color-medium);
-                    text-align: center;
-                    line-height: 1;
-                    word-break: break-word;
-                    hyphens: auto;
-                }
-
-                &.active {
-                    background: rgba($azul-claro, 0.1);
-
-                    ion-icon {
-                        color: $azul-claro;
-                        transform: scale(1.1);
-                    }
-
-                    span {
-                        color: $azul-claro;
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-// === COLUMNA 3: CONSTRUCCIÓN ===
-.construction-card {
-    background: var(--ion-card-background, #fff);
-    border-radius: 20px;
-    padding: 24px;
-    text-align: center;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-
-    // Optional: Add subtle top border for visual interest in both modes
-    border-top: 3px solid var(--ion-color-primary);
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg,
-                rgba(var(--ion-color-primary-rgb), 0.03) 0%,
-                rgba(var(--ion-color-primary-rgb), 0.01) 100%);
-        pointer-events: none;
-    }
-
-    h3 {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin: 0 0 16px 0;
-        font-size: 1.1rem;
-        color: var(--ion-text-color);
-        position: relative;
-
-        ion-icon {
-            font-size: 1.3rem;
-            color: var(--ion-color-primary);
-        }
-    }
-
-    .animation-placeholder {
-        width: 80px;
-        height: 80px;
-        background: rgba($azul-claro, 0.1);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 8px;
-
-        .animated-icon {
-            font-size: 2.5rem;
-            color: $azul-claro;
-            animation: gear-rotate 4s infinite linear;
-        }
-    }
-
-    h3 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: $azul-oscuro;
-    }
-
-    p {
-        margin: 0;
-        font-size: 0.85rem;
-        color: #666;
-        line-height: 1.5;
-    }
-
-    .feature-list-mini {
-        margin-top: 16px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 16px;
-            background: var(--ion-card-background, #fff);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-            text-align: left;
-            transition: all 0.2s ease;
-
-            ion-icon {
-                font-size: 1.2rem;
-            }
-
-            span {
-                font-size: 0.875rem;
-                font-weight: 600;
-                color: #555;
-            }
-
-            &.action-item {
-                cursor: pointer;
-                background: var(--ion-color-primary, #3880ff);
-                border: none;
-
-                ion-icon {
-                    color: #fff !important;
-                    font-size: 1.4rem;
-                }
-
-                span {
-                    color: #fff;
-                    font-weight: 700;
-                }
-
-                &:active {
-                    transform: scale(0.98);
-                }
-
-                &.disabled {
-                    opacity: 0.5;
-                    pointer-events: none;
-                }
-            }
-        }
-    }
-}
-
-@keyframes gear-rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-// === REGISTRATION MODAL ===
-.registration-modal {
-    --height: auto;
-    --max-height: 90vh;
-    --border-radius: 24px;
-    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
-
-    &::part(content) {
-        background: #f8fbff;
-    }
-
-    .modal-form-container {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        padding-bottom: 24px;
-
-        .form-section {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-
-            .section-label {
-                font-size: 0.9rem;
-                font-weight: 700;
-                color: $azul-oscuro;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                opacity: 0.7;
-            }
-        }
-
-        .selected-summary-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 12px;
-            background: var(--ion-card-background, #fff);
-            border-radius: 12px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .tipo-selector-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
-
-            .tipo-option-card {
-                position: relative;
-                background: var(--ion-card-background, #fff);
-                border-radius: 16px;
-                padding: 16px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-                cursor: pointer;
-                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-                border: 2px solid transparent;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-
-                ion-icon {
-                    font-size: 1.8rem;
-                    color: var(--tipo-color);
-                }
-
-                span {
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                    color: $azul-oscuro;
-                    text-align: center;
-                }
-
-                &.active {
-                    border-color: var(--tipo-color);
-                    background: rgba(var(--tipo-color), 0.05);
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-
-                    .check-badge {
-                        position: absolute;
-                        top: 8px;
-                        right: 8px;
-                        background: var(--tipo-color);
-                        color: #fff;
-                        width: 20px;
-                        height: 20px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 0.8rem;
-                    }
-                }
-            }
-        }
-
-        .origen-selector-row {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 4px;
-
-            .origen-option {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                background: var(--ion-card-background, #fff);
-                padding: 10px 14px;
-                border-radius: 50px;
-                cursor: pointer;
-                border: 1px solid rgba(0, 0, 0, 0.05);
-                transition: all 0.2s ease;
-
-                ion-icon {
-                    font-size: 1.4rem;
-                }
-
-                .origen-label {
-                    font-size: 0.875rem;
-                    font-weight: 600;
-                    color: $azul-oscuro;
-                }
-
-                &.active {
-                    background: $azul-claro;
-                    color: #fff;
-                    box-shadow: 0 4px 12px rgba($azul-claro, 0.3);
-
-                    ion-icon,
-                    .origen-label {
-                        color: #fff !important;
-                    }
-                }
-            }
-        }
-
-        .custom-textarea {
-            --background: var(--ion-card-background, #fff);
-            --border-radius: 16px;
-            --padding-start: 16px;
-            --padding-end: 16px;
-            --padding-top: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .form-actions-footer {
-            .confirm-btn {
-                --border-radius: 16px;
-                height: 56px;
-                font-weight: 700;
-                box-shadow: 0 8px 24px rgba($azul-claro, 0.25);
-            }
-        }
-    }
-}
-
-
-
-// === MEJORAS RESPONSIVE MOBILE/TABLET ===
-@media (max-width: 991px) {
-    .page-header {
-        padding: 8px 10px;
-        padding-top: calc(8px + env(safe-area-inset-top, 0px));
-
-        .header-top {
-            margin-bottom: 6px;
-        }
-
-        .tipos-filtro-chips {
-            gap: 4px;
-
-            ion-chip {
-                height: 28px;
-                font-size: 0.7rem;
-            }
-        }
-    }
-
-    .main-content-grid {
-        padding: 6px 4px;
-        padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-
-        // Reorder Right Column Content on Mobile: Novedades (Registration) First!
-        .right-column-container ion-row {
-            display: flex;
-            flex-direction: column;
-
-            .column-registration {
-                order: 1;
-            }
-
-            .column-placeholder {
+            @media (max-width: 991px) {
                 order: 2;
                 margin-top: 16px;
             }
         }
-    }
 
-    .course-card-premium {
-        ion-card-header {
-            padding: 10px 12px;
-            padding-left: 18px;
-
-            ion-card-title {
-                font-size: 0.95rem;
+        &.column-registration {
+            @media (min-width: 992px) {
+                order: 2;
             }
 
-            ion-card-subtitle {
-                font-size: 0.7rem;
+            @media (max-width: 991px) {
+                order: 1;
             }
         }
-    }
 
-    .student-selection-item {
-        padding: 5px 6px;
-        gap: 6px;
+        &.column-courses {
+            @media (min-width: 992px) {
+                order: 3;
+                border-left: 1px solid rgba(0, 0, 0, 0.05);
+                padding-right: 0;
+            }
 
-        .item-info .name {
-            font-size: 0.75rem;
-        }
-
-        .item-info .meta {
-            font-size: 0.65rem;
+            @media (max-width: 991px) {
+                order: 3;
+                margin-top: 24px;
+            }
         }
     }
 }
 
-// === TABLET OPTIMIZATIONS ===
-@media (min-width: 768px) and (max-width: 991px) {
-    .main-content-grid {
-        padding: 10px 8px;
-    }
+// === HISTORIAL STYLES ===
+.column-header-tabs {
+    display: flex;
+    background: rgba($azul-oscuro, 0.04);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 16px;
 
-    .column-container {
-        min-height: 300px;
-    }
-}
-
-// === DARK MODE SUPPORT ===
-[data-theme="dark"] {
-
-    // Main content background
-    .inicio-content {
-        --background: var(--background);
-    }
-
-    // Search results dropdown
-    .search-results-dropdown {
-        background: var(--bg-card);
-        color: var(--text-primary);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-
-        .search-result-item {
-            &:hover {
-                background: var(--bg-hover);
-            }
-
-            &.selected {
-                background: rgba($verde-exito, 0.2);
-            }
-
-            .result-name {
-                color: var(--text-primary);
-            }
-
-            .result-meta {
-                color: var(--text-secondary);
-            }
-        }
-
-        .dropdown-actions {
-            background: var(--background-tertiary);
-            border-bottom-color: var(--border-color);
-
-            .dropdown-hint {
-                color: var(--text-secondary);
-            }
-        }
-    }
-
-    // Column headers
-    .column-header {
-
-        ion-icon,
-        h2 {
-            color: var(--text-primary);
-        }
-    }
-
-    // Grupos selector bars
-    .grupos-selector-bar,
-    .grupos-selector-bar-global {
-        background: linear-gradient(135deg, var(--bg-card) 0%, var(--background-tertiary) 100%);
-        border-color: var(--border-color);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-        .grupos-selector-label {
-
-            ion-icon,
-            span {
-                color: var(--text-primary);
-            }
-        }
-
-        .hint-text {
-            background: rgba($azul-claro, 0.1);
-
-            span {
-                color: var(--text-secondary);
-            }
-        }
-    }
-
-    // Course cards
-    .course-card-premium {
-        background: var(--bg-card);
-        border-color: var(--border-color);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-        ion-card-header {
-            ion-card-title {
-                color: var(--text-primary);
-            }
-
-            ion-card-subtitle {
-                color: var(--text-secondary);
-            }
-        }
-
-        &.selected {
-            border-color: var(--course-color);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        &:hover {
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-        }
-    }
-
-    // Ellipsis Trigger
-    .card-options-trigger {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        right: 4px; // Close to right edge
-        width: 32px; // Slightly larger touch target
-        height: 32px;
-        border-radius: 50%;
+    .tab-item {
+        flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 10;
-        transition: background 0.2s;
+        gap: 6px;
+        padding: 8px 4px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
 
-        ion-icon {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
+        span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba($azul-oscuro, 0.6);
         }
 
-        &:hover {
-            background: rgba($azul-oscuro, 0.1);
+        &.active {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+            span {
+                color: $azul-oscuro;
+            }
 
             ion-icon {
-                color: $azul-oscuro;
+                color: $azul-claro;
             }
         }
     }
+}
 
-    // Floating Overlay
-    .floating-groups-overlay {
-        position: absolute;
-        top: 40px; // Below ellipsis
-        right: 8px; // Aligned right
-        width: 180px;
-        background: var(--bg-card);
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        border: 1px solid var(--border-color);
-        z-index: 100;
-        overflow: hidden;
-        animation: scaleIn 0.2s ease-out;
+.historial-sub-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
 
-        .floating-header {
-            padding: 8px 12px;
-            background: var(--background-tertiary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
+    .sub-tab {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        cursor: pointer;
+        background: rgba($gris-claro, 0.1);
+        color: #777;
+
+        &.active {
+            background: $azul-claro;
+            color: #fff;
+        }
+    }
+}
+
+.historial-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+
+    .historial-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .historial-estudiante {
+            font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-
-            ion-icon {
-                font-size: 1rem;
-                cursor: pointer;
-            }
+            color: $azul-oscuro;
         }
 
-        .floating-list {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 4px;
-
-            .floating-group-item {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 6px 10px;
-                margin-bottom: 2px;
-                border-radius: 6px;
-                cursor: pointer;
-                transition: background 0.2s;
-                font-size: 0.85rem;
-                color: var(--text-primary);
-
-                &:hover {
-                    background: var(--bg-hover);
-                }
-
-                &.selected {
-                    background: rgba($azul-claro, 0.1);
-                    font-weight: 600;
-                }
-            }
-        }
-
-        .floating-actions {
-            padding: 8px;
-            border-top: 1px solid var(--border-color);
+        .historial-meta {
             display: flex;
             align-items: center;
             gap: 6px;
-            cursor: pointer;
-            color: $azul-claro;
-            font-size: 0.8rem;
-            font-weight: 500;
-            justify-content: center;
-
-            &:hover {
-                background: var(--bg-hover);
-            }
-        }
-    }
-
-    &.column-courses {
-        padding-left: 0 !important; // Force left alignment
-        padding-right: 8px; // Reduced right padding
-
-        @media (max-width: 992px) {
-            padding: 16px; // Restore padding on mobile
-            width: 100%;
-        }
-    }
-
-    // Registration pane
-    .registration-control-pane {
-        background: var(--bg-card);
-        border-color: var(--border-color);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    // Student selection items
-    .student-selection-item {
-        background: var(--background-tertiary);
-        border-color: var(--border-color);
-
-        .item-info {
-            .name {
-                color: var(--text-primary);
-            }
-
-            .meta {
-                color: var(--text-secondary);
-            }
-        }
-
-        &.selected {
-            background: rgba($azul-claro, 0.15);
-            border-color: rgba($azul-claro, 0.3);
-        }
-
-        &:hover {
-            background: var(--bg-hover);
-        }
-    }
-
-    // Construction card
-    .construction-card {
-        background: var(--bg-card);
-        border-color: var(--border-color);
-
-        h3 {
-            color: var(--text-primary);
-        }
-
-        p {
-            color: var(--text-secondary);
-        }
-    }
-
-    .feature-list-mini {
-        .feature-item {
-            background: var(--background-tertiary);
-            border-color: var(--border-color);
-
-            span {
-                color: var(--text-primary);
-            }
-        }
-    }
-
-    // Empty states
-    .empty-state {
-        ion-icon {
-            color: var(--text-tertiary);
-        }
-
-        p {
-            color: var(--text-secondary);
-        }
-
-        small {
-            color: var(--text-tertiary);
-        }
-    }
-
-    // Modal form
-    .modal-form-container {
-        .section-label {
-            color: var(--text-primary);
-        }
-
-        .tipo-option-card {
-            background: var(--background-tertiary);
-            border-color: var(--border-color);
-            color: var(--text-primary);
-
-            &.active {
-                background: var(--bg-hover);
-                border-color: var(--tipo-color);
-            }
-
-            &:hover:not(.active) {
-                background: var(--bg-hover);
-            }
-        }
-
-        .origen-option {
-            background: var(--background-tertiary);
-            border-color: var(--border-color);
-
-            .origen-label {
-                color: var(--text-primary);
-            }
-
-            &.active {
-                background: var(--bg-hover);
-            }
-        }
-
-        .custom-textarea {
-            --background: var(--background-tertiary);
-            --color: var(--text-primary);
-            border-color: var(--border-color);
-        }
-    }
-
-    // Scrollbar (dark mode compatible)
-    .column-container::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .selected-students-scroll::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15);
-    }
-
-    // Force overflow for floating menu
-    .course-card-premium {
-        overflow: visible !important;
-        contain: none !important;
-    }
-
-    // STRICT LEFT ALIGNMENT OVERRIDE
-    @media (min-width: 992px) {
-        ion-grid {
-            padding-inline-start: 0 !important;
-            padding-inline-end: 0 !important;
-            --ion-grid-padding: 0;
-
-            ion-row {
-                padding: 0;
-            }
+            margin-top: 2px;
         }
     }
 }
 
-// === GROUP MEMBERS SECTION ===
-.group-members-section {
-    background: #fff;
-    border-radius: 16px;
-    padding: 12px;
-    margin-top: 0;
-    margin-bottom: 16px;
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.04);
-
-    @media (max-width: 991px) {
-        padding: 8px;
-        margin-bottom: 10px;
-        border-radius: 12px;
-    }
-
-    .section-header {
-        display: flex;
-        justify-content: flex-end; // Move actions to the right
-        align-items: center;
-        margin-bottom: 8px;
-        gap: 10px;
-
-        .actions-row {
-            display: flex;
-            gap: 4px;
-
-            ion-button {
-                --padding-start: 8px;
-                --padding-end: 8px;
-                height: 28px;
-                font-size: 0.8rem;
-                font-weight: 600;
-            }
-        }
-    }
-
-    .members-list-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 10px;
-        max-height: 400px;
-        overflow-y: auto;
-        padding-right: 4px;
-
-        // Banner scrollbar
-        &::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-        }
-
-        .member-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-
-            ion-checkbox {
-                --size: 18px;
-                --border-radius: 4px;
-                pointer-events: none; // Let container handle click
-            }
-
-            .member-info {
-                flex: 1;
-                min-width: 0;
-                display: flex;
-                align-items: center;
-
-                .name {
-                    font-size: 0.85rem;
-                    font-weight: 600;
-                    color: $azul-oscuro;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
-
-            &:hover {
-                background: #f0f4ff;
-                border-color: rgba($azul-claro, 0.2);
-            }
-
-            &.selected {
-                background: rgba($azul-claro, 0.08);
-                border-color: rgba($azul-claro, 0.3);
-
-                .member-info .name {
-                    color: $azul-claro;
-                }
-            }
-        }
-    }
-}
-
-// ========================================
-// NOVEDAD HEADER CLICKABLE
-// ========================================
-.novedad-header-clickable {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    background: transparent !important; // Forced transparent background
-
-    &:hover {
-        background: rgba($azul-claro, 0.1) !important;
-        transform: translateY(-2px);
-    }
-
-    &:active {
-        transform: scale(0.95);
-    }
-
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: 2px;
-        left: 50%;
-        width: 0;
-        height: 2px;
-        background: $azul-claro;
-        transition: all 0.2s ease;
-        transform: translateX(-50%);
-    }
-
-    &:hover::after {
-        width: 60%;
-    }
-}
-
-// ========================================
-// SESSION CONTROL BAR
-// ========================================
+// === NOVEDAD STYLES (CENTER) ===
 .session-control-bar {
-    padding: 12px 16px;
-    background: rgba($gris-claro, 0.3);
-    border-bottom: 1px solid rgba($azul-oscuro, 0.1);
-    transition: all 0.3s ease;
-
-    &.has-session {
-        background: rgba($verde-exito, 0.05);
-        border-bottom-color: rgba($verde-exito, 0.2);
-    }
-
-    .no-session-state {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: rgba($azul-oscuro, 0.6);
-            font-weight: 500;
-        }
-
-        ion-button {
-            --border-radius: 8px;
-            font-size: 0.75rem;
-            height: 30px;
-        }
-    }
+    padding: 12px;
+    background: rgba($gris-claro, 0.2);
+    border-radius: 12px;
+    margin-bottom: 16px;
 
     .active-session-state {
         display: flex;
         justify-content: space-between;
         align-items: center;
-
-        .session-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-
-            .session-status {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                background: #fff;
-                padding: 2px 8px;
-                border-radius: 12px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-                .status-label {
-                    font-size: 0.65rem;
-                    font-weight: 800;
-                    color: $verde-exito;
-                    letter-spacing: 0.5px;
-                }
-            }
-
-            .session-name {
-                font-size: 0.9rem;
-                font-weight: 600;
-                color: $azul-oscuro;
-            }
-
-            .session-time {
-                font-size: 0.75rem;
-                color: rgba($azul-oscuro, 0.5);
-                background: rgba($gris-claro, 0.5);
-                padding: 1px 6px;
-                border-radius: 4px;
-            }
-        }
-
-        ion-button {
-            --color: #f44336;
-            height: 32px;
-            width: 32px;
-            margin: 0;
-        }
     }
 }
 
-// ========================================
-// RESUMEN DE NOVEDADES SECTION
-// ========================================
-.novedades-resumen-section {
-    margin-top: 24px;
+.registration-control-pane {
+    background: #fff;
+    border-radius: 16px;
     padding: 16px;
-    background: linear-gradient(135deg,
-            rgba($azul-oscuro, 0.03) 0%,
-            rgba($azul-claro, 0.05) 100%);
-    border-radius: 12px;
-    border: 1px solid rgba($azul-oscuro, 0.1);
-
-    .resumen-header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 16px;
-
-        ion-icon {
-            font-size: 22px;
-            color: $azul-oscuro;
-        }
-
-        h4 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
-            color: $azul-oscuro;
-            flex: 1;
-        }
-
-        ion-badge {
-            font-size: 0.75rem;
-        }
-    }
-
-    .resumen-lista {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 16px;
-    }
-
-    .resumen-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 12px;
-        background: var(--ion-card-background, #fff);
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-
-        .resumen-nombre {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: $azul-oscuro;
-            flex: 1;
-            min-width: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-right: 12px;
-        }
-
-        .resumen-novedades {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-
-            ion-chip {
-                height: 24px;
-                font-size: 0.7rem;
-                margin: 0;
-                --padding-start: 6px;
-                --padding-end: 6px;
-            }
-        }
-    }
-
-    .comentarios-section {
-        margin-bottom: 16px;
-
-        .comentarios-textarea {
-            --background: var(--ion-card-background, #fff);
-            --border-radius: 8px;
-            --padding-start: 12px;
-            --padding-end: 12px;
-            border: 1px solid rgba($azul-oscuro, 0.15);
-            border-radius: 8px;
-            font-size: 0.9rem;
-
-            &:focus-within {
-                border-color: $azul-claro;
-                box-shadow: 0 0 0 2px rgba($azul-claro, 0.15);
-            }
-        }
-    }
-
-    .guardar-section {
-        ion-button {
-            --border-radius: 10px;
-            font-weight: 600;
-            text-transform: none;
-            letter-spacing: 0.3px;
-        }
-    }
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
-// ========================================
-// HISTORIAL NOVEDADES LIST
-// ========================================
-.historial-novedades-list {
+.modo-novedad-selector {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 400px;
-    overflow-y: auto;
-    padding-right: 4px;
+    background: #f0f4f8;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 16px;
 
-    // Scrollbar styling
-    &::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: rgba($azul-oscuro, 0.05);
-        border-radius: 2px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: rgba($azul-oscuro, 0.2);
-        border-radius: 2px;
-    }
-
-    .historial-item {
+    .modo-option {
+        flex: 1;
         display: flex;
-        gap: 10px;
-        padding: 10px 12px;
-        background: var(--ion-card-background, #fff);
-        border-radius: 8px;
-        border-left: 3px solid $azul-claro;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
-
-        &:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        &.grupo {
-            border-left-color: $verde-exito;
-            background: linear-gradient(135deg,
-                    var(--ion-card-background, #fff) 0%,
-                    rgba($verde-exito, 0.03) 100%);
-        }
-
-        .historial-consecutivo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            .consecutivo-numero {
-                font-size: 0.7rem;
-                font-weight: 700;
-                color: $azul-oscuro;
-                background: rgba($azul-claro, 0.1);
-                padding: 4px 6px;
-                border-radius: 4px;
-                white-space: nowrap;
-            }
-        }
-
-        .historial-info {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-
-            .historial-estudiante {
-                font-size: 0.85rem;
-                font-weight: 600;
-                color: $azul-oscuro;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .historial-meta {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                flex-wrap: wrap;
-
-                ion-chip {
-                    height: 20px;
-                    font-size: 0.65rem;
-                    margin: 0;
-                    --padding-start: 6px;
-                    --padding-end: 6px;
-                }
-
-                .historial-fecha {
-                    font-size: 0.7rem;
-                    color: rgba($azul-oscuro, 0.5);
-                }
-            }
-
-            .historial-grupo-id {
-                font-size: 0.65rem;
-                color: rgba($azul-oscuro, 0.4);
-                font-family: monospace;
-            }
-        }
-    }
-
-    .empty-state-mini {
-        display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 24px 16px;
-        text-align: center;
+        gap: 6px;
+        padding: 8px;
+        border-radius: 8px;
+        cursor: pointer;
 
-        ion-icon {
-            font-size: 32px;
-            color: rgba($azul-oscuro, 0.3);
-            margin-bottom: 8px;
+        span {
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        p {
-            margin: 0;
+        &.active {
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            color: $azul-claro;
+        }
+    }
+}
+
+.novedades-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        padding: 8px;
+        font-size: 0.85rem;
+        color: #666;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    .student-col {
+        text-align: left;
+        width: 40%;
+    }
+
+    .student-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: $azul-oscuro;
+    }
+
+    .novedad-checkbox {
+        width: 36px;
+        height: 36px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        cursor: pointer;
+
+        ion-icon {
+            font-size: 1.4rem;
+            color: #ccc;
+        }
+
+        &.checked {
+            background: $azul-claro;
+            border-color: $azul-claro;
+
+            ion-icon {
+                color: #fff;
+            }
+        }
+    }
+}
+
+// === CURSOS STYLES (RIGHT) ===
+.courses-card-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.course-card-premium {
+    width: calc(50% - 4px);
+    margin: 0;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+
+    .card-color-strip {
+        height: 4px;
+        width: 100%;
+        top: 0;
+        position: absolute;
+    }
+
+    ion-card-header {
+        padding: 12px 10px;
+    }
+
+    ion-card-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: $azul-oscuro;
+    }
+
+    &.selected {
+        border-color: var(--course-color);
+        background: rgba($verde-exito, 0.05);
+    }
+}
+
+.grupos-selector-bar-global {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    .grupos-buttons-grid ion-col {
+        padding: 4px;
+    }
+
+    .grupo-dynamic-btn {
+        --background: #f8f9fa;
+        --color: #555;
+        height: 36px;
+        font-weight: 600;
+
+        &.selected {
+            --background: rgba($azul-claro, 0.1);
+            --color: $azul-claro;
+        }
+    }
+}
+
+.group-members-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    .members-list-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .member-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        background: #f8fbff;
+        border-radius: 8px;
+        cursor: pointer;
+
+        .name {
             font-size: 0.85rem;
-            color: rgba($azul-oscuro, 0.5);
+            font-weight: 500;
+        }
+
+        &.selected {
+            background: rgba($azul-claro, 0.05);
+            border: 1px solid rgba($azul-claro, 0.2);
+        }
+    }
+}
+
+// Global Utilities
+.empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: #999;
+
+    ion-icon {
+        font-size: 2.5rem;
+        opacity: 0.5;
+        margin-bottom: 8px;
+    }
+}
+
+.empty-state-mini {
+    text-align: center;
+    padding: 16px;
+    color: #aaa;
+    font-size: 0.8rem;
+
+    ion-icon {
+        font-size: 1.5rem;
+    }
+}
+
+[data-theme="dark"] {
+
+    .registration-control-pane,
+    .course-card-premium,
+    .grupos-selector-bar-global,
+    .group-members-section,
+    .historial-item {
+        background: var(--ion-card-background);
+        border-color: var(--ion-border-color);
+    }
+
+    .main-content-grid .column-container {
+
+        &.column-placeholder,
+        &.column-courses {
+            border-color: rgba(255, 255, 255, 0.05);
         }
     }
 }

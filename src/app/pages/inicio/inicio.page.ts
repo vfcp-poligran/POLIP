@@ -14,16 +14,11 @@ import {
     IonRow,
     IonCol,
     IonTextarea,
-    IonFab,
-    IonFabButton,
     IonCard,
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
     IonModal,
-    IonInput,
-    IonDatetimeButton,
-    IonMenu,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -33,6 +28,7 @@ import {
     ActionSheetController,
     ToastController,
     MenuController,
+    AlertController,
     ViewWillEnter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -146,7 +142,7 @@ interface EstudianteSeleccionado {
 })
 export class InicioPage implements OnInit, ViewWillEnter {
     private dataService = inject(DataService);
-    private novedadService = inject(NovedadService);
+    public novedadService = inject(NovedadService);
     private actionSheetCtrl = inject(ActionSheetController);
     private toastController = inject(ToastController);
     private menuCtrl = inject(MenuController);
@@ -171,6 +167,46 @@ export class InicioPage implements OnInit, ViewWillEnter {
     // Sesión de revisión
     sessionActual = signal<SesionRevision | null>(null);
     tabHistorial = signal<'historial' | 'sesiones'>('historial');
+    sesionDetalle = signal<SesionRevision | null>(null);
+
+    // NEW: Computed for novelties of the detailed session
+    novedadesDeSesion = computed(() => {
+        const s = this.sesionDetalle();
+        if (!s) return [];
+        return this.novedadService.novedades().filter(n => n.sessionId === s.id);
+    });
+
+    modoVisualizacionHistorial = signal<'estudiante' | 'grupal'>('estudiante');
+
+    historialAgrupado = computed(() => {
+        const novedades = this.novedadService.novedades().sort((a, b) =>
+            new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime()
+        );
+
+        if (this.modoVisualizacionHistorial() === 'estudiante') {
+            return novedades.slice(0, 20);
+        } else {
+            // Agrupar por curso-grupo-tipo-sesion
+            const gruposMap = new Map<string, any>();
+            novedades.forEach(n => {
+                const key = `${n.cursoId || 'C'}-${n.grupo || '0'}-${n.tipoNovedadId}-${n.sessionId || 'S'}`;
+                if (!gruposMap.has(key)) {
+                    gruposMap.set(key, {
+                        ...n,
+                        estudiantesCount: 1,
+                        nombres: [n.estudianteNombre]
+                    });
+                } else {
+                    const existing = gruposMap.get(key);
+                    existing.estudiantesCount++;
+                    if (!existing.nombres.includes(n.estudianteNombre)) {
+                        existing.nombres.push(n.estudianteNombre);
+                    }
+                }
+            });
+            return Array.from(gruposMap.values()).slice(0, 20);
+        }
+    });
 
     // NEW: Course and group selection signals
     cursoSeleccionado = signal<string | null>(null);
@@ -239,6 +275,42 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     ngOnInit(): void {
         this.cargarCursos();
+        this.checkSesionesActivas();
+    }
+
+    /**
+     * Verifica si hay sesiones activas de hace demasiado tiempo
+     * y las pausa automáticamente para evitar "sesiones infinitas".
+     */
+    private checkSesionesActivas(): void {
+        const sesiones = this.novedadService.sesiones();
+        const ahora = new Date().getTime();
+        const LIMITE_HORAS = 4;
+        const MILISEGUNDOS_LIMITE = LIMITE_HORAS * 60 * 60 * 1000;
+
+        const activasAntiguas = sesiones.filter(s =>
+            s.estado === 'activo' &&
+            (ahora - new Date(s.fechaInicio).getTime()) > MILISEGUNDOS_LIMITE
+        );
+
+        if (activasAntiguas.length > 0) {
+            activasAntiguas.forEach(async s => {
+                await this.novedadService.pausarSesionRevision(s.id);
+                console.log(`[Auto-Pause] Sesión "${s.nombre}" pausada por antigüedad.`);
+            });
+
+            this.toastController.create({
+                message: 'Se pausaron sesiones antiguas automáticamente',
+                duration: 3000,
+                color: 'medium'
+            }).then(t => t.present());
+        }
+
+        // Si hay una sesión activa reciente, cargarla como la actual
+        const activaReciente = sesiones.find(s => s.estado === 'activo');
+        if (activaReciente) {
+            this.sessionActual.set(activaReciente);
+        }
     }
 
     ionViewWillEnter(): void {
@@ -660,6 +732,9 @@ export class InicioPage implements OnInit, ViewWillEnter {
         return this.novedadesMarcadas().size > 0;
     }
 
+    // For Undo functionality
+    lastBatchSaved = signal<string[]>([]);
+
     /**
      * Guarda todas las novedades marcadas
      */
@@ -667,7 +742,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const resumen = this.getResumenNovedades();
         if (resumen.length === 0) {
             const toast = await this.toastController.create({
-                message: 'No hay novedades para guardar',
+                message: 'No hay novedades para marcar',
                 duration: 2000,
                 color: 'warning'
             });
@@ -686,68 +761,100 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const session = this.sessionActual()!;
         const comentarios = this.descripcionNovedad();
         const grupoNovedadId = `GN-${Date.now()}`;
-        let contadorGuardados = 0;
+        const esGrupalSeleccionado = this.modoNovedad() === 'grupal';
 
-        // Identificar si es novedad de grupo o individual
-        // Se considera grupal si TODOS los integrantes de un grupo en la lista registradas tienen la misma novedad
-        // o si el usuario simplemente marcó todos. Por simplicidad, usemos esNovedadGrupal si afecta a > 1 persona del mismo grupo.
+        // Preparar lote de novedades
+        const novedadesParaBatch: any[] = [];
+        const novedadesActuales = this.novedadService.novedades();
 
-        const gruposEnResumen = new Set(resumen.map(item => {
-            const est = this.estudiantesRegistrados().find(e => e.correo === item.correo);
-            return est?.grupo;
-        }));
+        for (const item of resumen) {
+            const estudiante = this.estudiantesRegistrados().find(e => e.correo === item.correo);
+            if (!estudiante) continue;
 
-        for (const grupo of gruposEnResumen) {
-            const itemsDelGrupo = resumen.filter(item => {
-                const est = this.estudiantesRegistrados().find(e => e.correo === item.correo);
-                return est?.grupo === grupo;
-            });
+            for (const tipoNovedad of item.novedades) {
+                // Validación de duplicados en la misma sesión
+                const esDuplicado = novedadesActuales.some(n =>
+                    n.estudianteCorreo === estudiante.correo &&
+                    n.tipoNovedadId === tipoNovedad &&
+                    n.sessionId === session.id
+                );
 
-            const totalIntegrantesGrupo = this.estudiantesDeGruposSeleccionados().filter(e => e.grupo === grupo).length;
-            const esGrupal = itemsDelGrupo.length === totalIntegrantesGrupo && totalIntegrantesGrupo > 1;
+                if (esDuplicado) continue;
 
-            for (const item of itemsDelGrupo) {
-                const estudiante = this.estudiantesRegistrados().find(e => e.correo === item.correo);
-                if (!estudiante) continue;
-
-                for (const tipoNovedad of item.novedades) {
-                    await this.novedadService.registrarNovedad({
-                        estudianteCorreo: estudiante.correo,
-                        estudianteNombre: estudiante.nombre,
-                        cursoId: estudiante.curso,
-                        grupo: estudiante.grupo,
-                        tipoNovedadId: tipoNovedad,
-                        tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
-                        origen: 'presencial',
-                        descripcion: comentarios || undefined,
-                        estado: 'en_revision',
-                        grupoNovedadId: grupoNovedadId,
-                        esNovedadGrupal: esGrupal,
-                        sessionId: session.id
-                    });
-                    contadorGuardados++;
-                }
+                novedadesParaBatch.push({
+                    estudianteCorreo: estudiante.correo,
+                    estudianteNombre: estudiante.nombre,
+                    cursoId: estudiante.curso,
+                    grupo: estudiante.grupo,
+                    tipoNovedadId: tipoNovedad,
+                    tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
+                    origen: 'presencial',
+                    descripcion: comentarios || undefined,
+                    estado: 'en_revision',
+                    grupoNovedadId: grupoNovedadId,
+                    esNovedadGrupal: esGrupalSeleccionado,
+                    sessionId: session.id
+                });
             }
         }
 
+        if (novedadesParaBatch.length === 0) {
+            const toast = await this.toastController.create({
+                message: 'Estas novedades ya fueron registradas en esta sesión',
+                duration: 2000,
+                color: 'warning'
+            });
+            await toast.present();
+            return;
+        }
+
+        const creadas = await this.novedadService.registrarNovedadesBatch(novedadesParaBatch);
+        this.lastBatchSaved.set(creadas.map(c => c.id));
+
         const toast = await this.toastController.create({
-            message: `✓ ${contadorGuardados} novedades guardadas en ${session.nombre}`,
-            duration: 3000,
-            color: 'success'
+            message: `✓ ${creadas.length} novedades guardadas`,
+            duration: 4000,
+            color: 'success',
+            buttons: [
+                {
+                    text: 'DESHACER',
+                    role: 'cancel',
+                    handler: () => { this.deshacerUltimoGuardado(); }
+                }
+            ]
         });
         await toast.present();
 
-        // Limpiar estado de selección pero mantener sesión
+        // Limpiar estado
         this.novedadesMarcadas.set(new Map());
         this.descripcionNovedad.set('');
         this.limpiarRegistrados();
         this.cargarCursos();
     }
 
+    async deshacerUltimoGuardado() {
+        const ids = this.lastBatchSaved();
+        if (ids.length === 0) return;
+
+        for (const id of ids) {
+            await this.novedadService.eliminarNovedad(id);
+        }
+
+        this.lastBatchSaved.set([]);
+        const toast = await this.toastController.create({
+            message: 'Registro revertido correctamente',
+            duration: 2000,
+            color: 'medium'
+        });
+        await toast.present();
+    }
+
+    private alertCtrl = inject(AlertController);
+
     /**
      * Inicia una sesión de revisión
      */
-    async iniciarRevision(nombre?: string): Promise<void> {
+    async iniciarRevision(nombreAuto?: string): Promise<void> {
         const cursoId = this.cursoSeleccionado();
         if (!cursoId) {
             const toast = await this.toastController.create({
@@ -759,16 +866,94 @@ export class InicioPage implements OnInit, ViewWillEnter {
             return;
         }
 
-        const sesionNombre = nombre || `Revisión ${this.novedadService.sesiones().length + 1}`;
-        const session = await this.novedadService.iniciarSesionRevision(sesionNombre, cursoId);
+        if (nombreAuto) {
+            await this.ejecutarInicioSesion(nombreAuto, cursoId);
+            return;
+        }
+
+        const alert = await this.alertCtrl.create({
+            header: 'Nueva Sesión',
+            subHeader: 'Ingrese un nombre para identificar esta revisión',
+            inputs: [
+                {
+                    name: 'nombre',
+                    type: 'text',
+                    placeholder: `Revisión ${new Date().toLocaleDateString()}`,
+                    value: `Revisión ${this.novedadService.sesiones().length + 1}`
+                }
+            ],
+            buttons: [
+                {
+                    text: 'Cancelar',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Iniciar',
+                    handler: (data) => {
+                        const nombre = data.nombre || `Revisión ${new Date().toLocaleDateString()}`;
+                        this.ejecutarInicioSesion(nombre, cursoId);
+                    }
+                }
+            ]
+        });
+
+        await alert.present();
+    }
+
+    private async ejecutarInicioSesion(nombre: string, cursoId: string) {
+        const session = await this.novedadService.iniciarSesionRevision(nombre, cursoId);
         this.sessionActual.set(session);
+        this.tabHistorial.set('sesiones');
 
         const toast = await this.toastController.create({
-            message: `Sesión iniciada: ${sesionNombre}`,
+            message: `Sesión iniciada: ${nombre}`,
             duration: 2000,
             color: 'primary'
         });
         await toast.present();
+    }
+
+    /**
+     * Pausa la sesión actual (vuelve a borrador)
+     */
+    async pausarRevision(): Promise<void> {
+        const session = this.sessionActual();
+        if (!session) return;
+
+        await this.novedadService.pausarSesionRevision(session.id);
+        this.sessionActual.set(null);
+
+        const toast = await this.toastController.create({
+            message: 'Sesión guardada como borrador',
+            duration: 2000,
+            color: 'medium'
+        });
+        await toast.present();
+    }
+
+    /**
+     * Reanuda una sesión
+     */
+    async reanudarRevision(s: SesionRevision): Promise<void> {
+        await this.novedadService.reanudarSesionRevision(s.id);
+        this.sessionActual.set({ ...s, estado: 'activo' });
+
+        const toast = await this.toastController.create({
+            message: `Sesión reanudada: ${s.nombre}`,
+            duration: 2000,
+            color: 'success'
+        });
+        await toast.present();
+    }
+
+    /**
+     * Elimina una sesión
+     */
+    async eliminarSesion(id: string): Promise<void> {
+        await this.novedadService.eliminarSesion(id);
+        if (this.sessionActual()?.id === id) {
+            this.sessionActual.set(null);
+        }
     }
 
     /**
@@ -787,6 +972,30 @@ export class InicioPage implements OnInit, ViewWillEnter {
             color: 'success'
         });
         await toast.present();
+    }
+
+    async eliminarNovedadItem(id: string) {
+        const alert = await this.alertCtrl.create({
+            header: 'Eliminar Registro',
+            message: '¿Estás seguro de que deseas eliminar este registro del historial?',
+            buttons: [
+                { text: 'Cancelar', role: 'cancel' },
+                {
+                    text: 'Eliminar',
+                    role: 'destructive',
+                    handler: async () => {
+                        await this.novedadService.eliminarNovedad(id);
+                        const toast = await this.toastController.create({
+                            message: 'Registro eliminado',
+                            duration: 1500,
+                            color: 'medium'
+                        });
+                        await toast.present();
+                    }
+                }
+            ]
+        });
+        await alert.present();
     }
 
     /**
@@ -1088,21 +1297,13 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     /**
      * Calculate appropriate text color for background using WCAG 2.1 relative luminance.
-     * This ensures proper contrast ratios for accessibility (WCAG AA standard).
-     * 
-     * @param bgColor - Hex color code (e.g., "#4a90e2")
-     * @returns "#ffffff" (white) for dark backgrounds, "#000000" (black) for light backgrounds
      */
     getTextColorForBackground(bgColor: string): string {
-        // Handle invalid input
         if (!bgColor || bgColor === 'transparent') {
             return '#000000';
         }
 
-        // Convert hex to RGB
         const hex = bgColor.replace('#', '');
-
-        // Handle 3-digit hex codes
         const fullHex = hex.length === 3
             ? hex.split('').map(c => c + c).join('')
             : hex;
@@ -1111,25 +1312,12 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const g = parseInt(fullHex.substring(2, 4), 16);
         const b = parseInt(fullHex.substring(4, 6), 16);
 
-        // WCAG 2.1 relative luminance calculation
-        // Formula: L = 0.2126 * R + 0.7152 * G + 0.0722 * B
-        // where R, G, B are gamma-corrected values
-
         const toLinear = (channel: number): number => {
             const c = channel / 255;
-            return c <= 0.03928
-                ? c / 12.92
-                : Math.pow((c + 0.055) / 1.055, 2.4);
+            return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
         };
 
-        const rLinear = toLinear(r);
-        const gLinear = toLinear(g);
-        const bLinear = toLinear(b);
-
-        const luminance = 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
-
-        // Threshold at 0.5 provides good contrast
-        // For even better accessibility, could use 0.179 (WCAG AAA level)
+        const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
         return luminance > 0.5 ? '#000000' : '#ffffff';
     }
 
