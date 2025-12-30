@@ -103,6 +103,7 @@ interface EstudianteConNotas {
     IonContent,
     IonIcon,
     IonButton,
+    IonButtons,
     IonChip,
     IonLabel,
     IonCard,

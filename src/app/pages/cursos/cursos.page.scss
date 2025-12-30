@@ -10,6 +10,7 @@
 @use './styles/curso-info-compact';
 @use './styles/verification-panel';
 @use './styles/ingreso-config';
+@use './styles/mobile-toolbar'; // Mobile toolbar with hamburger
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
 @use '../../shared/styles/breakpoints' as bp; // Sistema de breakpoints
 @use '../../shared/styles/empty-state'; // Estados vacíos
@@ -100,8 +101,8 @@ ion-menu {
   }
 
   @include respond-to-max('sm') {
-    // Mobile: minimal spacing (no header)
-    padding-top: spacing('md'); // 16px
+    // Mobile: padding for toolbar (56px + safe area + spacing)
+    padding-top: calc(56px + env(safe-area-inset-top) + spacing('md'));
   }
 }
 
