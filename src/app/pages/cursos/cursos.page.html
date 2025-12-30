@@ -58,7 +58,7 @@
 
   <!-- FAB Crear Curso -->
   @if (!modoEdicion() && !isDesktop()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(95px + env(safe-area-inset-bottom))"
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(100px + env(safe-area-inset-bottom))"
     class="fab-crear-premium">
     <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
@@ -69,13 +69,15 @@
 
   <!-- FABs de edición -->
   @if (modoEdicion() && !isDesktop()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(85px + env(safe-area-inset-bottom))">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(128px + env(safe-area-inset-bottom))"
+    class="fab-guardar">
     <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
       [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(149px + env(safe-area-inset-bottom))">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(200px + env(safe-area-inset-bottom))"
+    class="fab-cancelar">
     <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
@@ -236,16 +238,17 @@
                         <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
                         <div class="import-cloud-grid">
                           <!-- Import Personas -->
-                          <div class="import-cloud-item" (click)="importEstudiantesInput.click()">
+                          <div class="import-cloud-item" (click)="onEstudiantesFileSelected($event)">
                             <div class="cloud-icon-wrapper">
                               <ion-icon name="cloud-upload"
                                 [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
                               <div class="cloud-label">Importar (Personas)</div>
                             </div>
+                            <!-- Input oculto para web (fallback) -->
                             <input type="file" #importEstudiantesInput
-                              accept=".csv,application/json,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel"
+                              accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
                               (change)="onEstudiantesFileSelected($event)"
-                              style="display: block; width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none;" />
+                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
                             @if (estudiantesFileName) {
                             <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
                               <ion-label>{{ estudiantesFileName }}</ion-label>
@@ -262,9 +265,9 @@
                               <div class="cloud-label">Importar (Calificaciones)</div>
                             </div>
                             <input type="file" #importCalificacionesInput
-                              accept=".csv,application/json,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel"
+                              accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
                               (change)="onCalificacionesFileSelected($event)"
-                              style="display: block; width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none;" />
+                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
                             @if (calificacionesFileName) {
                             <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
                               <ion-label>{{ calificacionesFileName }}</ion-label>

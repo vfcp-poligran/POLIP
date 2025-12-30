@@ -2,6 +2,8 @@ import { Component, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
+import { FilePickerService } from '@app/services/file-picker.service';
+import { Capacitor } from '@capacitor/core';
 import {
   IonContent,
   IonIcon,
@@ -133,6 +135,7 @@ export class CursosPage implements ViewWillEnter {
   private alertController = inject(AlertController);
   private preferencesService = inject(PreferencesService);
   private menuController = inject(MenuController);
+  private filePickerService = inject(FilePickerService);
 
 
 
@@ -587,7 +590,7 @@ export class CursosPage implements ViewWillEnter {
       if (!this.mostrarTabCaracteristicas() && this.subtabActivo() === 'detalle') {
         this.subtabActivo.set('integrantes');
       }
-    }, { allowSignalWrites: true });
+    });
 
     addIcons({ trash, menu, add, addCircle, informationCircle, people, cloudUpload, closeCircle, checkmark, peopleCircle, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
 
@@ -1072,17 +1075,64 @@ export class CursosPage implements ViewWillEnter {
     this.cd.detectChanges();
   }
 
+  /**
+   * Maneja la selección de archivo de estudiantes
+   * Usa FilePicker nativo en móvil, input HTML en web
+   */
   async onEstudiantesFileSelected(event: any) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+    // Verificar si es plataforma nativa
+    if (Capacitor.isNativePlatform()) {
+      // En nativo, siempre usar FilePicker
+      await this.seleccionarEstudiantesNativo();
+      return;
+    }
 
-    const file = input.files[0];
-    this.estudiantesFileName = file.name;
-    const isJson = file.name.toLowerCase().endsWith('.json');
+    // En web, verificar si es un evento de cambio del input o un click
+    if (event.target && event.target.files) {
+      // Es un cambio del input HTML - procesararchivo
+      const input = event.target as HTMLInputElement;
+      if (!input.files || input.files.length === 0) return;
+
+      const file = input.files[0];
+      await this.procesarArchivoEstudiantes(file.name, await this.filePickerService.readFileFromInput(file));
+    } else {
+      // Es un click en el área - activar el input HTML
+      const inputElement = this.importEstudiantesInput?.nativeElement;
+      if (inputElement) {
+        inputElement.click();
+      }
+    }
+  }
+
+  /**
+   * Selección nativa de archivo de estudiantes (móvil)
+   */
+  private async seleccionarEstudiantesNativo() {
+    try {
+      const result = await this.filePickerService.pickDataFile();
+
+      if (!result) {
+        Logger.log('[CursosPage] Selección de archivo cancelada');
+        return;
+      }
+
+      // Decodificar contenido base64 a texto
+      const contenido = this.filePickerService.decodeBase64ToText(result.data);
+      await this.procesarArchivoEstudiantes(result.name, contenido);
+    } catch (error) {
+      Logger.error('[CursosPage] Error al seleccionar archivo nativo:', error);
+      this.toastService.error('Error al seleccionar el archivo');
+    }
+  }
+
+  /**
+   * Procesa el contenido del archivo de estudiantes
+   */
+  private async procesarArchivoEstudiantes(fileName: string, contenido: string) {
+    this.estudiantesFileName = fileName;
+    const isJson = fileName.toLowerCase().endsWith('.json');
 
     try {
-      const contenido = await this.leerArchivo(file);
-
       if (!contenido) {
         throw new Error('El archivo está vacío o no se pudo leer');
       }
@@ -1269,7 +1319,7 @@ export class CursosPage implements ViewWillEnter {
           }
           enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
         } else {
-          nombreCompleto = file.name.replace('.csv', '');
+          nombreCompleto = fileName.replace('.csv', '');
           enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
         }
 
