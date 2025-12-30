@@ -59,11 +59,10 @@
             margin: 0 0 4px 0;
             color: var(--ion-text-color);
 
-            // Single line with ellipsis
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
+            // Allow full name display (stacked/wrapped)
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .student-email {
