@@ -239,8 +239,10 @@
                                 [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
                               <div class="cloud-label">Importar (Personas)</div>
                             </div>
-                            <input type="file" #importEstudiantesInput accept=".csv"
-                              (change)="onEstudiantesFileSelected($event)" hidden />
+                            <input type="file" #importEstudiantesInput
+                              accept=".csv,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel"
+                              (change)="onEstudiantesFileSelected($event)"
+                              style="display: block; width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none;" />
                             @if (estudiantesFileName) {
                             <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
                               <ion-label>{{ estudiantesFileName }}</ion-label>
@@ -256,8 +258,10 @@
                                 [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
                               <div class="cloud-label">Importar (Calificaciones)</div>
                             </div>
-                            <input type="file" #importCalificacionesInput accept=".csv"
-                              (change)="onCalificacionesFileSelected($event)" hidden />
+                            <input type="file" #importCalificacionesInput
+                              accept=".csv,text/csv,text/comma-separated-values,application/csv,application/vnd.ms-excel"
+                              (change)="onCalificacionesFileSelected($event)"
+                              style="display: block; width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none;" />
                             @if (calificacionesFileName) {
                             <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
                               <ion-label>{{ calificacionesFileName }}</ion-label>

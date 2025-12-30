@@ -1084,6 +1084,10 @@ export class CursosPage implements ViewWillEnter {
     try {
       const contenido = await this.leerArchivo(file);
 
+      if (!contenido) {
+        throw new Error('El archivo está vacío o no se pudo leer');
+      }
+
       // Parsear CSV con soporte para campos con comas entre comillas
       const lineas = contenido.split('\n').filter(l => l.trim());
       if (lineas.length < 2) throw new Error('Archivo CSV vacío');
@@ -2077,12 +2081,30 @@ export class CursosPage implements ViewWillEnter {
     await this.mostrarToastExito('Archivo de calificaciones eliminado');
   }
 
-  private leerArchivo(file: File): Promise<string> {
+  private async leerArchivo(file: File): Promise<string> {
+    // Pequeño delay de 300ms para asegurar que el picker de Android se haya cerrado
+    // y el sistema de archivos haya liberado el recurso
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
-      reader.onerror = () => reject(new Error('Error leyendo archivo'));
-      reader.readAsText(file);
+
+      reader.onload = (e) => {
+        const result = e.target?.result;
+        if (typeof result === 'string') {
+          resolve(result);
+        } else {
+          reject(new Error('Formato de resultado inválido'));
+        }
+      };
+
+      reader.onerror = (error) => {
+        Logger.error('❌ [FileReader] Error detectado:', error);
+        reject(new Error('Error de lectura física del archivo'));
+      };
+
+      // Intentar leer explícitamente como UTF-8
+      reader.readAsText(file, 'UTF-8');
     });
   }
 

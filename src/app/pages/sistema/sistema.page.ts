@@ -239,11 +239,18 @@ export class SistemaPage implements OnInit {
 
   private async importarBaseDatosCompleta(file: File) {
     try {
+      // Pequeño delay para Android
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       const reader = new FileReader();
 
       reader.onload = async (e) => {
         try {
           const contenido = e.target?.result as string;
+          if (!contenido) {
+            throw new Error('Archivo vacío');
+          }
+
           const backup = await this.backupService.parseBackup(contenido);
 
           // Validar backup
@@ -257,15 +264,17 @@ export class SistemaPage implements OnInit {
           await this.toastService.success('Base de datos importada exitosamente');
         } catch (error) {
           Logger.error('Error procesando backup:', error);
-          await this.toastService.error('Error al procesar archivo de backup');
+          const msg = error instanceof Error ? error.message : 'Error al procesar archivo de backup';
+          await this.toastService.error(msg);
         }
       };
 
-      reader.onerror = async () => {
-        await this.toastService.error('Error al leer archivo');
+      reader.onerror = async (err) => {
+        Logger.error('Error FileReader:', err);
+        await this.toastService.error('Error al leer archivo del sistema');
       };
 
-      reader.readAsText(file);
+      reader.readAsText(file, 'UTF-8');
     } catch (error) {
       Logger.error('Error importando base de datos:', error);
       await this.toastService.error('Error al importar base de datos');

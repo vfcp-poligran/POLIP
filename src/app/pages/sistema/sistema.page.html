@@ -162,8 +162,8 @@
               </ion-label>
               <ion-icon name="chevron-forward" slot="end"></ion-icon>
             </ion-item>
-            <input #fileInputDB type="file" accept=".json" style="display: none"
-              (change)="onBaseDatosFileSelected($event)" />
+            <input #fileInputDB type="file" accept=".json,application/json" (change)="onBaseDatosFileSelected($event)"
+              style="display: block; width: 0; height: 0; opacity: 0; position: absolute; pointer-events: none;" />
 
             <!-- Limpiar DB -->
             <ion-item button (click)="limpiarBaseDatosEstadoCero()">
@@ -229,7 +229,7 @@
                   <ion-icon name="code-slash" slot="start" color="tertiary"></ion-icon>
                   <ion-label>
                     <h3 class="h3-plataforma-blue">Versión</h3>
-                    <p class="text-gray-medium">3.7.0 (2025)</p>
+                    <p class="text-gray-medium">4.0.0 (2025)</p>
                   </ion-label>
                 </ion-item>
 
