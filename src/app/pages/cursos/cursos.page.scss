@@ -105,8 +105,8 @@ ion-menu {
 // ============================================
 
 .page-container {
-  // Desktop: maintain original spacing for header clearance
-  padding-top: 130px;
+  // Desktop: increased spacing for header + course tabs clearance
+  padding-top: 160px;
 
   @include respond-to-max('md') {
     // Tablet: reduced spacing

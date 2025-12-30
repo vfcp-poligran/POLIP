@@ -63,7 +63,7 @@
         overflow: hidden;
 
         // Desktop: allow full expansion
-        @include respond-to-min('lg') {
+        @media (min-width: 992px) {
             min-width: 180px;
             max-width: none;
         }

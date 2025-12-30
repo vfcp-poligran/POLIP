@@ -40,7 +40,7 @@
   <!-- ======================================== -->
 
   <!-- FAB Crear Curso -->
-  @if (!modoEdicion() && isMobile()) {
+  @if (!modoEdicion() && !isDesktop()) {
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(85px + env(safe-area-inset-bottom))"
     class="fab-crear-premium">
     <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
@@ -51,7 +51,7 @@
   }
 
   <!-- FABs de edición -->
-  @if (modoEdicion() && isMobile()) {
+  @if (modoEdicion() && !isDesktop()) {
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(85px + env(safe-area-inset-bottom))">
     <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
       [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
@@ -68,9 +68,9 @@
 
   <div class="page-container" id="main-content" role="main">
     <!-- ======================================== -->
-    <!-- 2. HEADER DE PÁGINA (DESKTOP + TABLET ONLY) -->
+    <!-- 2. HEADER DE PÁGINA (DESKTOP ONLY) -->
     <!-- ======================================== -->
-    @if (!isMobile()) {
+    @if (isDesktop()) {
     <div class="page-title-header">
       <div class="title-wrapper">
         <h2>Cursos</h2>
