@@ -36,7 +36,19 @@
 <ion-content [fullscreen]="false" id="cursos-page-content">
 
   <!-- ======================================== -->
-  <!-- 1. FABs FLOTANTES (MOBILE ONLY) -->
+  <!-- 1. MOBILE SIDEBAR TRIGGER (HAMBURGER) -->
+  <!-- ======================================== -->
+  @if (isMobile()) {
+  <ion-fab slot="fixed" vertical="top" horizontal="start"
+    style="top: calc(16px + env(safe-area-inset-top)); z-index: 1000;">
+    <ion-fab-button size="small" color="primary" (click)="toggleMenu()" [attr.aria-label]="'Abrir menú de cursos'">
+      <ion-icon name="menu"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
+
+  <!-- ======================================== -->
+  <!-- 2. ACTION FABs (MOBILE + TABLET) -->
   <!-- ======================================== -->
 
   <!-- FAB Crear Curso -->
