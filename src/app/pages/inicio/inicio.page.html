@@ -219,15 +219,46 @@
 
                         <!-- Sub-row para Registro y Placeholder -->
                         <ion-row>
-                            <!-- SUB-COL 1: FUNCIONALIDADES -->
+                            <!-- SUB-COL 1: FUNCIONALIDADES - Historial de Novedades -->
                             <ion-col size="12" size-lg="4" class="column-container column-placeholder">
                                 <div class="column-header">
-                                    <ion-icon name="apps-outline"></ion-icon>
-                                    <h2>Funcionalidades</h2>
+                                    <ion-icon name="time-outline"></ion-icon>
+                                    <h2>Historial</h2>
+                                    <ion-badge color="medium">{{ novedadesPendientes().length }}</ion-badge>
                                 </div>
 
-                                <div class="construction-card">
-                                    <!-- Contenido por implementar -->
+                                <div class="historial-novedades-list">
+                                    @if (novedadesPendientes().length > 0) {
+                                    @for (novedad of novedadesPendientes().slice(0, 10); track novedad.id; let i =
+                                    $index) {
+                                    <div class="historial-item" [class.grupo]="novedad.grupoNovedadId">
+                                        <div class="historial-consecutivo">
+                                            <span class="consecutivo-numero">#{{ i + 1 }}</span>
+                                        </div>
+                                        <div class="historial-info">
+                                            <span class="historial-estudiante">{{ novedad.estudianteNombre }}</span>
+                                            <div class="historial-meta">
+                                                <ion-chip size="small"
+                                                    [color]="novedad.tipoNovedadId === 'trabaja_solo' ? 'warning' : 
+                                                                                novedad.tipoNovedadId === 'grupo_bien' ? 'success' : 
+                                                                                novedad.tipoNovedadId === 'fantasma' ? 'medium' : 'tertiary'">
+                                                    {{ novedad.tipoNovedadNombre }}
+                                                </ion-chip>
+                                                <span class="historial-fecha">{{ novedad.fechaRegistro | date:'dd/MM
+                                                    HH:mm' }}</span>
+                                            </div>
+                                            @if (novedad.grupoNovedadId) {
+                                            <span class="historial-grupo-id">{{ novedad.grupoNovedadId }}</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    }
+                                    } @else {
+                                    <div class="empty-state-mini">
+                                        <ion-icon name="document-text-outline"></ion-icon>
+                                        <p>Sin novedades recientes</p>
+                                    </div>
+                                    }
                                 </div>
                             </ion-col>
 
@@ -245,12 +276,12 @@
                                     @if (estudiantesRegistrados().length > 0) {
                                     <div class="registration-actions-top">
                                         <div class="selection-tools">
-                                            @if (gruposSeleccionados().size > 0) {
-                                            <ion-button fill="clear" size="small" color="secondary"
-                                                (click)="agregarGruposSeleccionados()">
-                                                <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-                                                Agregar {{ gruposSeleccionados().size }} grupos
-                                            </ion-button>
+                                            <!-- Aplicar a seleccionados hint -->
+                                            @if (seleccionadosIndices().size > 0) {
+                                            <ion-chip color="primary" outline>
+                                                <ion-icon name="checkmark-done-outline"></ion-icon>
+                                                <ion-label>{{ seleccionadosIndices().size }} seleccionados</ion-label>
+                                            </ion-chip>
                                             }
 
                                             <ion-button fill="clear" size="small" color="danger"
@@ -264,15 +295,23 @@
                                     <!-- ADAPTIVE LAYOUT: TABLE (Desktop) vs GRID (Mobile) -->
                                     <div class="novedades-adaptive-container">
                                         @if (isDesktop()) {
-                                        <!-- DESKTOP VIEW: Data Table -->
+                                        <!-- DESKTOP VIEW: Data Table with CLICKABLE HEADERS -->
                                         <table class="novedades-table desktop-only-table">
                                             <thead>
                                                 <tr>
                                                     <th class="student-col">Estudiante</th>
-                                                    <th class="novedad-col" title="Trabaja Solo">👤</th>
-                                                    <th class="novedad-col" title="Grupo Bien">👥</th>
-                                                    <th class="novedad-col" title="Estudiante Fantasma">👻</th>
-                                                    <th class="novedad-col" title="Paracaídista">🪂</th>
+                                                    <th class="novedad-col novedad-header-clickable"
+                                                        title="Click para aplicar a todos los seleccionados"
+                                                        (click)="aplicarNovedadASeleccionados('trabaja_solo')">👤</th>
+                                                    <th class="novedad-col novedad-header-clickable"
+                                                        title="Click para aplicar a todos los seleccionados"
+                                                        (click)="aplicarNovedadASeleccionados('grupo_bien')">👥</th>
+                                                    <th class="novedad-col novedad-header-clickable"
+                                                        title="Click para aplicar a todos los seleccionados"
+                                                        (click)="aplicarNovedadASeleccionados('fantasma')">👻</th>
+                                                    <th class="novedad-col novedad-header-clickable"
+                                                        title="Click para aplicar a todos los seleccionados"
+                                                        (click)="aplicarNovedadASeleccionados('paracaidista')">🪂</th>
                                                     <th class="actions-col"></th>
                                                 </tr>
                                             </thead>
@@ -387,6 +426,54 @@
                                         </div>
                                         }
                                     </div>
+
+                                    <!-- RESUMEN DE NOVEDADES (Parte inferior) -->
+                                    @if (tieneNovedadesPendientes()) {
+                                    <div class="novedades-resumen-section">
+                                        <div class="resumen-header">
+                                            <ion-icon name="document-text-outline"></ion-icon>
+                                            <h4>Resumen de Novedades</h4>
+                                            <ion-badge color="primary">{{ getResumenNovedades().length }}</ion-badge>
+                                        </div>
+
+                                        <div class="resumen-lista">
+                                            @for (item of getResumenNovedades(); track item.correo) {
+                                            <div class="resumen-item">
+                                                <span class="resumen-nombre">{{ item.nombre }}</span>
+                                                <div class="resumen-novedades">
+                                                    @for (novedad of item.novedades; track novedad) {
+                                                    <ion-chip size="small"
+                                                        [color]="novedad === 'trabaja_solo' ? 'warning' : 
+                                                                                    novedad === 'grupo_bien' ? 'success' : 
+                                                                                    novedad === 'fantasma' ? 'medium' : 'tertiary'">
+                                                        {{ novedad === 'trabaja_solo' ? '👤 Solo' :
+                                                        novedad === 'grupo_bien' ? '👥 Bien' :
+                                                        novedad === 'fantasma' ? '👻 Fantasma' : '🪂 Paracaídista' }}
+                                                    </ion-chip>
+                                                    }
+                                                </div>
+                                            </div>
+                                            }
+                                        </div>
+
+                                        <!-- Área de comentarios -->
+                                        <div class="comentarios-section">
+                                            <ion-textarea [(ngModel)]="descripcionNovedad"
+                                                placeholder="Comentarios adicionales (opcional)..." rows="2"
+                                                class="comentarios-textarea">
+                                            </ion-textarea>
+                                        </div>
+
+                                        <!-- Botón Guardar -->
+                                        <div class="guardar-section">
+                                            <ion-button expand="block" color="primary" (click)="guardarNovedades()">
+                                                <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                                                Guardar Novedades ({{ getResumenNovedades().length }})
+                                            </ion-button>
+                                        </div>
+                                    </div>
+                                    }
+
                                     } @else {
                                     <div class="empty-state registration-empty">
                                         <ion-icon name="person-add-outline"></ion-icon>

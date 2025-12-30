@@ -584,6 +584,132 @@ export class InicioPage implements OnInit, ViewWillEnter {
     }
 
     /**
+     * Aplica una novedad a todos los estudiantes seleccionados (header clickeable)
+     */
+    aplicarNovedadASeleccionados(tipoNovedad: string): void {
+        const registrados = this.estudiantesRegistrados();
+        const seleccionados = this.seleccionadosIndices();
+
+        if (seleccionados.size === 0) {
+            // Si no hay selección, aplicar a todos
+            registrados.forEach(est => {
+                this.toggleNovedad(est.correo, tipoNovedad);
+            });
+        } else {
+            // Aplicar solo a los seleccionados
+            registrados.forEach((est, idx) => {
+                if (seleccionados.has(idx)) {
+                    // Agregar la novedad (no toggle, siempre agregar)
+                    this.novedadesMarcadas.update(map => {
+                        const newMap = new Map(map);
+                        const novedades = newMap.get(est.correo) || new Set();
+                        novedades.add(tipoNovedad);
+                        newMap.set(est.correo, novedades);
+                        return newMap;
+                    });
+                }
+            });
+        }
+
+        this.toastController.create({
+            message: `Novedad aplicada a ${seleccionados.size > 0 ? seleccionados.size : registrados.length} estudiantes`,
+            duration: 1500,
+            color: 'success'
+        }).then(t => t.present());
+    }
+
+    /**
+     * Obtiene el resumen de novedades para la sección inferior
+     */
+    getResumenNovedades(): { correo: string; nombre: string; novedades: string[] }[] {
+        const registrados = this.estudiantesRegistrados();
+        const marcadas = this.novedadesMarcadas();
+
+        return registrados
+            .filter(est => marcadas.has(est.correo))
+            .map(est => ({
+                correo: est.correo,
+                nombre: est.nombre,
+                novedades: Array.from(marcadas.get(est.correo) || [])
+            }));
+    }
+
+    /**
+     * Verifica si hay estudiantes con novedades marcadas
+     */
+    tieneNovedadesPendientes(): boolean {
+        return this.novedadesMarcadas().size > 0;
+    }
+
+    /**
+     * Guarda todas las novedades marcadas
+     */
+    async guardarNovedades(): Promise<void> {
+        const resumen = this.getResumenNovedades();
+        if (resumen.length === 0) {
+            const toast = await this.toastController.create({
+                message: 'No hay novedades para guardar',
+                duration: 2000,
+                color: 'warning'
+            });
+            await toast.present();
+            return;
+        }
+
+        const comentarios = this.descripcionNovedad();
+        const grupoNovedadId = `GN-${Date.now()}`; // ID único para agrupar novedades
+        const fechaRegistro = new Date();
+        let contadorGuardados = 0;
+
+        for (const item of resumen) {
+            const estudiante = this.estudiantesRegistrados().find(e => e.correo === item.correo);
+            if (!estudiante) continue;
+
+            for (const tipoNovedad of item.novedades) {
+                await this.novedadService.registrarNovedad({
+                    estudianteCorreo: estudiante.correo,
+                    estudianteNombre: estudiante.nombre,
+                    cursoId: estudiante.curso,
+                    grupo: estudiante.grupo,
+                    tipoNovedadId: tipoNovedad,
+                    tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
+                    origen: 'presencial',
+                    descripcion: comentarios || undefined,
+                    estado: 'en_revision',
+                    grupoNovedadId: grupoNovedadId // ID compartido para novedades grupales
+                });
+                contadorGuardados++;
+            }
+        }
+
+        const toast = await this.toastController.create({
+            message: `✓ ${contadorGuardados} novedades guardadas (ID: ${grupoNovedadId.slice(-6)})`,
+            duration: 3000,
+            color: 'success'
+        });
+        await toast.present();
+
+        // Limpiar estado
+        this.novedadesMarcadas.set(new Map());
+        this.descripcionNovedad.set('');
+        this.limpiarRegistrados();
+        this.cargarCursos();
+    }
+
+    /**
+     * Obtiene el nombre legible de una novedad
+     */
+    getNombreNovedad(tipo: string): string {
+        const nombres: Record<string, string> = {
+            'trabaja_solo': 'Trabaja Solo',
+            'grupo_bien': 'Grupo Bien',
+            'fantasma': 'Estudiante Fantasma',
+            'paracaidista': 'Paracaidísta'
+        };
+        return nombres[tipo] || tipo;
+    }
+
+    /**
      * Selecciona o deselecciona todos los items en la lista de registrados
      */
     toggleSeleccionarTodos(): void {
