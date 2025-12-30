@@ -1,31 +1,64 @@
-<ion-content [fullscreen]="false">
+<!-- MENU DRAWER: SELECCIÓN DE CURSOS (MOBILE ONLY) -->
+@if (isMobile()) {
+<ion-menu contentId="cursos-page-content" side="start" type="overlay">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Mis Cursos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <!-- Lista de Cursos -->
+    <ion-list>
+      <!-- "Crear" removed as per user request (use FAB) -->
+
+      @for (curso of cursosDisponibles(); track curso.codigo) {
+      <ion-item button [color]="cursoSeleccionado() === curso.codigo ? 'light' : ''"
+        (click)="seleccionarCurso(curso.codigo); closeMenu()" lines="full" class="menu-item-curso">
+        <!-- Mantener color del curso -->
+        <div class="curso-stripe" slot="start" [style.background]="getCursoColor(curso.codigo)"></div>
+        <ion-label>
+          <h2>{{ curso.nombre }}</h2>
+          <p>{{ curso.codigo }}</p>
+        </ion-label>
+        @if (modoEdicion()) {
+        <ion-button slot="end" fill="clear" color="danger"
+          (click)="confirmarEliminacion(curso); $event.stopPropagation()">
+          <ion-icon name="trash" slot="icon-only"></ion-icon>
+        </ion-button>
+        }
+      </ion-item>
+      }
+    </ion-list>
+  </ion-content>
+</ion-menu>
+}
+
+<ion-content [fullscreen]="false" id="cursos-page-content">
 
   <!-- ======================================== -->
-  <!-- 1. FABs FLOTANTES -->
+  <!-- 1. FABs FLOTANTES (MOBILE ONLY) -->
   <!-- ======================================== -->
 
   <!-- FAB Crear Curso -->
-  @if (!modoEdicion()) {
+  @if (!modoEdicion() && isMobile()) {
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(85px + env(safe-area-inset-bottom))"
-    class="ion-hide-md-up">
+    class="fab-crear-premium">
     <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
-      <ion-icon [name]="BUTTON_CONFIG.CREAR.icon"></ion-icon>
+      <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
   }
 
   <!-- FABs de edición -->
-  @if (modoEdicion()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(85px + env(safe-area-inset-bottom))"
-    class="ion-hide-md-up">
+  @if (modoEdicion() && isMobile()) {
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(85px + env(safe-area-inset-bottom))">
     <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
       [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(149px + env(safe-area-inset-bottom))"
-    class="ion-hide-md-up">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(149px + env(safe-area-inset-bottom))">
     <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
@@ -35,12 +68,14 @@
 
   <div class="page-container" id="main-content" role="main">
     <!-- ======================================== -->
-    <!-- 2. HEADER DE PÁGINA -->
+    <!-- 2. HEADER DE PÁGINA (DESKTOP + TABLET ONLY) -->
     <!-- ======================================== -->
+    @if (!isMobile()) {
     <div class="page-title-header">
       <div class="title-wrapper">
         <h2>Cursos</h2>
       </div>
+      <!-- HEADER ACTIONS: Visible on Desktop + Tablet -->
       <div class="header-actions">
         @if (!modoEdicion()) {
         <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()"
@@ -61,25 +96,31 @@
         </ion-button>
         }
         } @else {
-        <ion-button size="small" fill="solid" color="primary" (click)="guardarCurso()"
-          [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
-          <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon" slot="start"></ion-icon>
-          {{ BUTTON_CONFIG.GUARDAR.label }}
-        </ion-button>
-        <ion-button size="small" fill="solid" color="warning" (click)="cancelarCreacionCurso()"
-          [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
-          {{ BUTTON_CONFIG.CANCELAR.label }}
-        </ion-button>
+        <div class="edit-actions">
+          <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
+            [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
+            <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon" slot="start"></ion-icon>
+            {{ BUTTON_CONFIG.GUARDAR.label }}
+          </ion-button>
+          <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
+            [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
+            <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon" slot="start"></ion-icon>
+            {{ BUTTON_CONFIG.CANCELAR.label }}
+          </ion-button>
+        </div>
         }
       </div>
     </div>
+    }
 
     <!-- ======================================== -->
-    <!-- 3. CONTENEDOR PRINCIPAL DE CURSOS -->
+    <!-- 3. CONTENIDO PRINCIPAL -->
     <!-- ======================================== -->
     @if (cursosDisponibles().length > 0 || (modoEdicion() && !cursoSeleccionado())) {
     <div class="cursos-container" [class.solo-uno]="cursosDisponibles().length === 0 && modoEdicion()">
-      <!-- Tabs superiores de selección de curso -->
+
+      <!-- DESKTOP + TABLET: Tabs superiores de selección de curso (Horizontal Segment) -->
+      @if (!isMobile()) {
       <ion-segment
         [value]="cursoSeleccionado() || (modoEdicion() && !cursoSeleccionado() ? 'NUEVO' : cursosDisponibles()[0]?.codigo)"
         (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable>
@@ -95,14 +136,23 @@
         @for (curso of cursosDisponibles(); track curso.codigo) {
         <ion-segment-button [value]="curso.codigo" [style.--course-stripe-color]="getCursoColor(curso.codigo)">
           <ion-label class="tab-label-container">
-            <div class="tab-content-wrapper">
+            <!-- Tablet: Short Label (EPM-B01) -->
+            @if (isTablet()) {
+            <span class="tablet-label">{{ getCursoMobileLabel(curso) }}</span>
+            }
+
+            <!-- Desktop: Full Name + Code -->
+            @if (isDesktop()) {
+            <div class="tab-content-wrapper desktop-view">
               <span class="tab-nombre">{{ curso.nombre }}</span>
               <span class="tab-codigo">{{ curso.codigo }}</span>
             </div>
+            }
           </ion-label>
         </ion-segment-button>
         }
       </ion-segment>
+      }
 
       <!-- Contenido de la tarjeta del curso seleccionado o en creación -->
       @if (infoParaMostrar(); as info) {
@@ -113,41 +163,14 @@
         <div class="curso-card-header">
           <div class="curso-header-info">
             <ion-icon [name]="modoEdicion() ? 'settings-sharp' : 'information-circle'" class="header-icon"></ion-icon>
-            <h2 class="header-main-title">{{ modoEdicion() ? 'Configuración del Curso' : 'Información del Curso' }}</h2>
+            <h2 class="header-main-title">{{ modoEdicion() ? 'Configuración del Curso' : 'Detalles' }}</h2>
           </div>
         </div>
 
         <div class="curso-card-content">
           <!-- Subtabs: Detalle / Integrantes -->
           <!-- ADAPTIVE CONTENT: Tabs (Desktop) vs Accordions (Mobile) -->
-          @if (isDesktop()) {
-          <!-- DESKTOP VIEW: TABS -->
-          <ion-segment [value]="subtabActivo()" (ionChange)="subtabActivo.set($any($event).detail.value)" scrollable>
-            @if (mostrarTabCaracteristicas() && !isCursoConTabOculto(info.codigo)) {
-            <ion-segment-button value="detalle">
-              <ion-label>Características</ion-label>
-            </ion-segment-button>
-            }
-
-            @if (!info.esNuevo) {
-            <ion-segment-button value="integrantes">
-              <ion-icon name="people"></ion-icon>
-              <ion-label>Integrantes</ion-label>
-            </ion-segment-button>
-            }
-          </ion-segment>
-
-          <!-- CONTENIDO TABS DESKTOP -->
-          <div class="desktop-tab-content">
-            @if (subtabActivo() === 'detalle') {
-            <ng-container *ngTemplateOutlet="contentDetalle"></ng-container>
-            }
-            @if (subtabActivo() === 'integrantes') {
-            <ng-container *ngTemplateOutlet="contentIntegrantes"></ng-container>
-            }
-          </div>
-          } @else {
-          <!-- MOBILE VIEW: ACCORDIONS -->
+          <!-- UNIFIED VIEW: ACCORDIONS (Desktop & Mobile) -->
           <ion-accordion-group [multiple]="true" [value]="['detalle']">
 
             <!-- ACORDEÓN 1: CARACTERÍSTICAS -->
@@ -176,7 +199,6 @@
             </ion-accordion>
             }
           </ion-accordion-group>
-          }
 
           <!-- DEFINICIÓN DE TEMPLATES REUTILIZABLES -->
 

@@ -454,10 +454,15 @@ $touch-target: colors.$touch-target;
     gap: 8px;
 
     @media (max-width: 991px) {
-        padding: 8px;
-        margin-bottom: 4px;
+        padding: 12px;
+        margin-bottom: 12px;
+        margin-top: 8px; // Separation from cards
         border-radius: 12px;
-        gap: 4px;
+        gap: 8px;
+        position: relative;
+        z-index: 5; // Ensure it sits above standard content
+        background: #fff; // Solid background for contrast
+        border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .grupos-selector-header {
@@ -650,15 +655,19 @@ $touch-target: colors.$touch-target;
             // Allow columns to behave according to size-lg attributes
             align-items: flex-start; // Ensure top alignment
 
-            // Natural order: Courses (Left), Content (Right)
+            // Natural order: Content (Left), Courses (Right) - User Request Step 538
             .column-courses {
-                order: 1;
-                border-right: 1px solid rgba(0, 0, 0, 0.05); // Optional separator
+                order: 2;
+                border-left: 1px solid rgba(0, 0, 0, 0.05); // Separator on left
+                border-right: none;
+                padding-left: 16px; // Spacing from content
+                padding-right: 0;
             }
 
             .right-column-container {
-                order: 2;
-                padding-left: 16px; // Add spacing from sidebar
+                order: 1;
+                padding-right: 16px; // Spacing to courses
+                padding-left: 0;
             }
         }
     }
@@ -1119,6 +1128,8 @@ $touch-target: colors.$touch-target;
                     color: var(--ion-color-medium);
                     text-align: center;
                     line-height: 1;
+                    word-break: break-word;
+                    hyphens: auto;
                 }
 
                 &.active {

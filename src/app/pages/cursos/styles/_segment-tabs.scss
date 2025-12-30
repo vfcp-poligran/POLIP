@@ -11,7 +11,7 @@
 @use '../../../shared/styles/typography-mixins' as typo; // Typography mixins
 
 // ============================================
-// TABS PRINCIPALES DE CURSOS
+// COURSE SELECTOR TABS (DESKTOP + TABLET)
 // ============================================
 
 .cursos-container>ion-segment {
@@ -21,270 +21,272 @@
     margin-bottom: spacing('md');
     @include card-elevation(2);
 
-    // Tabs de cursos
     ion-segment {
         --background: transparent;
         padding: 0;
         margin: 0;
         overflow-x: auto;
-        overflow-y: visible; // Allow content to show
+        overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
-        min-height: 60px; // Reserve space for buttons
+        min-height: 56px; // WCAG touch target + padding
 
         &::-webkit-scrollbar {
             display: none;
         }
     }
 
-    // Botones de curso individuales
+    // Individual course buttons
     ion-segment-button {
         --background: #{$azul-oscuro};
         --background-checked: #{$azul-oscuro};
-        --color: rgba(255, 255, 255, 0.7);
-        --color-checked: #ffffff;
-        --indicator-color: var(--azul-claro, #1fb2de);
-        --indicator-height: 3px;
-        --border-radius: var(--rad-sm, 8px);
-        --padding-start: spacing('sm');
-        --padding-end: 0; // ALINEACIÓN: Remover padding interno para igualar con botón Crear
+        --color: rgba(255, 255, 255, 0.75);
+        --color-checked: var(--ion-color-primary-contrast);
+        --indicator-color: var(--azul-claro, var(--ion-color-primary));
+        --indicator-height: 2px; // Reduced from 3px
+        --border-radius: #{$radius-sm};
+        --padding-start: calc(#{spacing('sm')} + 12px); // Stripe width compensation
+        --padding-end: spacing('sm');
         --padding-top: spacing('xs');
         --padding-bottom: spacing('xs');
         --margin-end: spacing('xs');
-        min-width: 200px;
-        max-width: 280px; // Mobile: limitar ancho
+
+        min-width: 140px; // Tablet: compact
+        max-width: 240px; // Tablet: limit
         flex: 0 0 auto;
         text-transform: none;
-        font-weight: 600;
-        position: relative; // Para posicionar botones de acción
+        font-weight: font-weight('semibold');
+        position: relative;
         transition: all 0.2s ease;
-        box-shadow: var(--shadow-light, 0 2px 4px rgba(0, 0, 0, 0.1));
+        box-shadow: var(--shadow-light);
         margin-bottom: spacing('xs');
+        overflow: hidden;
 
-        // Desktop: permitir expansión completa
-        @media (min-width: 992px) {
+        // Desktop: allow full expansion
+        @include respond-to-min('lg') {
+            min-width: 180px;
             max-width: none;
         }
 
-        overflow: hidden; // Asegurar que el pseudo-elemento respete el borde redondeado
-        --padding-start: calc(#{spacing('sm')} + 15px); // Compensar ancho de la barra (15px)
-
-        // Barra vertical de color usando pseudo-elemento para permitir borde/contorno
+        // Color stripe (left edge)
         &::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             bottom: 0;
-            width: 15px; // Ancho fijo de 15px
+            width: 12px; // Reduced from 15px
             background: var(--course-stripe-color, var(--azul-oscuro));
-            border-right: 1px solid rgba(255, 255, 255, 0.3); // Contorno delgado SOLICITADO
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 1;
         }
 
         &:hover {
-            box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
+            box-shadow: var(--shadow-medium);
             transform: translateY(-1px);
         }
 
         &.segment-button-checked {
-            box-shadow: var(--shadow-medium, 0 4px 8px rgba(0, 0, 0, 0.15));
-            border: 2px solid #ffffff; // El borde blanco externo se mantiene o se quita? 
-            // Si el fondo es blanco, borde blanco no se ve.
-            // El usuario dijo "el borde debe ser de color blanco" en el paso anterior.
-            // Pero si el fondo es blanco, quizas el borde deba ser transparente o gris?
-            // Asumiré que quiere que RESALTE. Si el fondo es azul osucro (pagina) y tab blanco, el borde blanco no hace nada.
-            // Pero el contenedor de tabs tiene gradiente azul oscuro.
-            // Entonces fondo blanco RESALTA sobre el gradiente.
-            border: 2px solid #ffffff;
-            // Border-left ya no es necesario porque usamos ::before
-            // border-left-width: 15px;
-            // border-left-color: var(--course-stripe-color, var(--azul-claro));
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--ion-color-primary-contrast); // Reduced from 2px
+            --background: #{$azul-oscuro};
+            --color: var(--ion-color-primary-contrast);
 
             &::before {
-                border-right: 1px solid rgba(255, 255, 255, 0.8); // Contorno más visible al seleccionar
-                width: 15px;
+                border-right-color: rgba(255, 255, 255, 0.4);
             }
 
-            --background: #{$azul-oscuro}; // Fondo oscuro para texto blanco
-            --color: #ffffff;
-            --color-checked: #ffffff;
-
-            // Forzar estilos en elementos hijos para el estado seleccionado
-            .tab-nombre {
-                color: #ffffff !important;
-                font-weight: 800 !important; // Extra bold
+            .tab-nombre,
+            .tablet-label {
+                color: var(--ion-color-primary-contrast);
+                font-weight: font-weight('bold');
             }
 
             .tab-codigo {
-                color: rgba(255, 255, 255, 0.9) !important;
-                font-weight: 500;
+                color: rgba(255, 255, 255, 0.85);
             }
         }
+    }
+}
 
-        &.segment-button-layout-icon-top {
-            // Asegura que el contenido vertical esté bien alineado
-            min-height: 4rem; // ~64px
+// Additional segment button states
+ion-segment-button {
+
+    &.segment-button-layout-icon-top {
+        // Asegura que el contenido vertical esté bien alineado
+        min-height: 4rem; // ~64px
+    }
+
+    &.segment-button-checked {
+        font-weight: font-weight('bold');
+        --color: #ffffff;
+    }
+
+    &.segment-button-has-label-only {
+        // Ajustes para tabs con solo label
+        min-height: 3rem; // ~48px
+    }
+
+    // Contenedor de labels (nombre + código)
+    .tab-label-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: spacing('xs');
+        transition: all 0.2s ease;
+
+        // Simple Mobile Label (Hidden by default on Desktop)
+        .mobile-label {
+            display: none; // Default: hidden
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
         }
 
-        &.segment-button-checked {
-            font-weight: font-weight('bold');
-            --color: #ffffff;
+        .tab-content-wrapper.desktop-view {
+            display: flex; // Default: visible
         }
 
-        &.segment-button-has-label-only {
-            // Ajustes para tabs con solo label
-            min-height: 3rem; // ~48px
-        }
-
-        // Contenedor de labels (nombre + código)
-        .tab-label-container {
+        .tab-content-wrapper {
+            background: transparent;
+            padding: 0;
             width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: spacing('xs');
-            transition: all 0.2s ease;
-
-            .tab-content-wrapper {
-                background: transparent;
-                padding: 0;
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 2px;
-                border: none;
-                box-shadow: none;
-            }
-
-            // Nombre del curso
-            .tab-nombre {
-                display: block;
-                word-wrap: break-word; // Mobile: permitir saltos de línea
-                color: #ffffff;
-                @include typo.typography-tab-nombre;
-                text-align: left;
-                width: 100%;
-
-                // Desktop: una sola fila
-                @media (min-width: 992px) {
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-            }
-
-            // Código del curso - SEGUNDA FILA
-            .tab-codigo {
-                opacity: 0.75;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                width: 100%;
-                display: block;
-                color: rgba(255, 255, 255, 0.8);
-                @include typo.typography-tab-codigo;
-                text-align: left;
-            }
-        }
-
-        // Efecto hover/checked simplificado (sin contenedor interno)
-        &:hover {
-            --background: #{color.adjust($azul-oscuro, $lightness: 5%)};
-        }
-
-        &.segment-button-checked {
-            --background: #{color.adjust($azul-oscuro, $lightness: 8%)};
-        }
-
-        // Botones de acción dentro del tab - ESQUINA SUPERIOR DERECHA
-        .tab-actions {
-            position: absolute;
-            top: 4px;
-            right: -4px; // ALINEACIÓN: Compensar 16px de padding interno del Shadow DOM (12px - 16px = -4px)
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-
-            ion-button {
-                --padding-start: 6px;
-                --padding-end: 6px;
-                height: 32px; // ESTANDARIZADO
-                min-height: 32px;
-                min-width: auto;
-                font-size: 0.875rem; // 14px - NORMALIZADO con botón Crear
-
-                ion-icon {
-                    font-size: 0.95rem;
-                }
-
-                // Desktop: Mostrar texto + ícono + ANCHO UNIFORME
-                @media (min-width: 992px) {
-                    min-width: 90px; // ANCHO UNIFORME para todos los botones
-                    width: 90px; // Forzar ancho fijo
-
-                    .button-text {
-                        display: inline;
-                        margin-left: 4px;
-                    }
-                }
-
-                // Tablet y Mobile: Solo ícono
-                @media (max-width: 991px) {
-                    --padding-start: 4px;
-                    --padding-end: 4px;
-                    min-width: 28px;
-
-                    .button-text {
-                        display: none;
-                    }
-                }
-            }
-        }
-
-        // Mostrar botones al hover del tab
-        &:hover .tab-actions {
-            opacity: 1;
-        }
-
-        // Siempre mostrar botones en el tab activo
-        &.segment-button-checked .tab-actions {
-            opacity: 1;
-        }
-
-        ion-label {
-            text-transform: none;
-            overflow: visible;
-            white-space: normal;
-            line-height: 1.2;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            gap: 2px;
+            border: none;
+            box-shadow: none;
+        }
+
+        // Nombre del curso
+        .tab-nombre {
+            display: block;
+            word-wrap: break-word; // Mobile: permitir saltos de línea
+            color: #ffffff;
             text-align: left;
-            justify-content: center;
-            gap: 1px;
-            padding: spacing('xs') 0;
-            // Removido width: 100% para permitir que padding-right funcione
+            width: 100%;
+            @include typo.typography-tab-nombre;
+
+            // Desktop: una sola fila
+            @media (min-width: 992px) {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
 
-        .crear-icon {
-            font-size: 1.5rem;
-            color: $color-success !important;
-            --color: #{$color-success};
-            margin-bottom: 4px;
+        // Código del curso - SEGUNDA FILA
+        .tab-codigo {
+            opacity: 0.75;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            @include typo.typography-tab-codigo;
+            text-align: left;
         }
+    }
 
-        &::part(native) {
-            padding-left: spacing('md');
-            padding-right: spacing('md');
-        }
+    // Efecto hover/checked simplificado (sin contenedor interno)
+    &:hover {
+        --background: #{color.adjust($azul-oscuro, $lightness: 5%)};
+    }
 
-        &:hover {
-            --background: rgba(255, 255, 255, 0.15);
+    &.segment-button-checked {
+        --background: #{color.adjust($azul-oscuro, $lightness: 8%)};
+    }
+
+    // Botones de acción dentro del tab - ESQUINA SUPERIOR DERECHA
+    .tab-actions {
+        position: absolute;
+        top: 4px;
+        right: -4px; // ALINEACIÓN: Compensar 16px de padding interno del Shadow DOM (12px - 16px = -4px)
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+
+        ion-button {
+            --padding-start: 6px;
+            --padding-end: 6px;
+            height: 32px; // ESTANDARIZADO
+            min-height: 32px;
+            min-width: auto;
+            font-size: 0.875rem; // 14px - NORMALIZADO con botón Crear
+
+            ion-icon {
+                font-size: 0.95rem;
+            }
+
+            // Desktop: Mostrar texto + ícono + ANCHO UNIFORME
+            @media (min-width: 992px) {
+                min-width: 90px; // ANCHO UNIFORME para todos los botones
+                width: 90px; // Forzar ancho fijo
+
+                .button-text {
+                    display: inline;
+                    margin-left: 4px;
+                }
+            }
+
+            // Tablet y Mobile: Solo ícono
+            @media (max-width: 991px) {
+                --padding-start: 4px;
+                --padding-end: 4px;
+                min-width: 28px;
+
+                .button-text {
+                    display: none;
+                }
+            }
         }
+    }
+
+    // Mostrar botones al hover del tab
+    &:hover .tab-actions {
+        opacity: 1;
+    }
+
+    // Siempre mostrar botones en el tab activo
+    &.segment-button-checked .tab-actions {
+        opacity: 1;
+    }
+
+    ion-label {
+        text-transform: none;
+        overflow: visible;
+        white-space: normal;
+        line-height: 1.2;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        justify-content: center;
+        gap: 1px;
+        padding: spacing('xs') 0;
+        // Removido width: 100% para permitir que padding-right funcione
+    }
+
+    .crear-icon {
+        font-size: 1.5rem;
+        color: $color-success !important;
+        --color: #{$color-success};
+        margin-bottom: 4px;
+    }
+
+    &::part(native) {
+        padding-left: spacing('md');
+        padding-right: spacing('md');
+    }
+
+    &:hover {
+        --background: rgba(255, 255, 255, 0.15);
     }
 }
 
@@ -365,11 +367,29 @@ ion-card-content>ion-segment {
         padding: spacing('xs');
 
         ion-segment-button {
-            min-width: 100px;
+            min-width: auto; // Let content define width
+            max-width: none; // Allow full width if needed
+            width: auto;
+            flex: 0 0 auto;
+            padding-inline: 12px; // Ensure padding
             font-size: font-size('xs');
+            --padding-start: 12px; // Reduce padding since we don't have the big wrapper
 
             ion-label {
                 max-width: none;
+            }
+
+            // SHOW MOBILE LABEL, HIDE DESKTOP VIEW
+            .tab-label-container {
+                padding: 0; // Minimize padding
+
+                .mobile-label {
+                    display: block !important; // Force show simplified label
+                }
+
+                .desktop-view {
+                    display: none !important; // Force hide full details
+                }
             }
         }
     }

@@ -1,3 +1,4 @@
+@use "sass:color";
 // ============================================
 // IMPORTS
 // ============================================
@@ -15,6 +16,114 @@
 @use '../../shared/styles/card-system'; // Sistema de tarjetas
 @use '../../shared/styles/typography-variables' as typo-vars; // Variables tipográficas
 @use '../../shared/styles/typography-mixins' as typo; // Mixins tipográficos
+
+// ============================================
+// MENU DRAWER (MOBILE ONLY)
+// ============================================
+
+ion-menu {
+  --width: 280px; // Slightly narrower for mobile
+
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    --min-height: 56px; // Standard toolbar height
+  }
+
+  ion-content {
+    --background: var(--ion-background-color);
+    --padding-start: spacing('sm');
+    --padding-end: spacing('sm');
+  }
+
+  .menu-item-curso {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: 48px; // WCAG touch target
+    margin-bottom: spacing('xxs'); // Reduced from 2px
+    border-radius: $radius-sm;
+    overflow: hidden;
+
+    &.item-has-focus {
+      --background-focused: rgba(var(--ion-color-primary-rgb), 0.08);
+    }
+
+    .curso-stripe {
+      width: 4px; // Reduced from 6px
+      height: 100%;
+      margin-right: spacing('sm');
+      flex-shrink: 0;
+    }
+
+    ion-label {
+      h2 {
+        font-weight: font-weight('semibold'); // 600
+        font-size: font-size('md'); // 16px
+        color: var(--ion-text-color);
+        line-height: 1.4; // WCAG readability
+      }
+
+      p {
+        font-size: font-size('sm'); // 14px
+        color: var(--ion-color-medium);
+        line-height: 1.5;
+        margin-top: spacing('xxs'); // 4px
+      }
+    }
+  }
+}
+
+// ============================================
+// MOBILE MENU TRIGGER
+// ============================================
+
+.mobile-menu-trigger {
+  --color: var(--ion-color-light);
+  --padding-start: spacing('xs');
+  --padding-end: spacing('xs');
+  margin-right: spacing('xs');
+  position: relative;
+
+  ion-icon {
+    font-size: 24px; // Standard icon size
+  }
+
+  .menu-hint-dot {
+    position: absolute;
+    top: spacing('xs');
+    right: spacing('xs');
+    width: 6px; // Reduced from 8px
+    height: 6px;
+    background-color: var(--ion-color-warning);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--ion-background-color); // Ring effect
+  }
+}
+
+// ============================================
+// PAGE CONTAINER - RESPONSIVE SPACING
+// ============================================
+
+.page-container {
+  // Desktop: maintain original spacing for header clearance
+  padding-top: 130px;
+
+  @include respond-to-max('md') {
+    // Tablet: reduced spacing
+    padding-top: spacing('lg'); // 24px
+  }
+
+  @include respond-to-max('sm') {
+    // Mobile: minimal spacing (no header)
+    padding-top: spacing('md'); // 16px
+  }
+}
+
+// Hide or Adjust elements that might conflict
+.cursos-container {
+  // Remove margin if needed since top padding is handled
+  margin-top: 0;
+}
 
 // ============================================
 // CONTENEDOR PRINCIPAL - Usa estilos globales
@@ -820,7 +929,7 @@
         ion-col {
           flex: 1 1 45% !important; // 2 items per row
           max-width: 50%;
-          min-width: 130px;
+          min-width: 40%; // Allow more flexibility
           padding: 0;
         }
 
@@ -835,7 +944,7 @@
           h4.label {
             font-size: 0.6rem; // Small & Sharp
             letter-spacing: 0.5px;
-            color: lighten($gris-medio, 5%);
+            color: color.adjust($gris-medio, $lightness: 5%);
             margin-bottom: 2px;
           }
 
@@ -1482,5 +1591,25 @@ ion-select {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// === PREMIUM FAB STYLES ===
+.fab-crear-premium {
+  ion-fab-button {
+    --background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    --box-shadow: 0 4px 16px rgba(46, 204, 113, 0.4);
+    --border-radius: 50%;
+    --color: #fff;
+
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    ion-icon {
+      font-size: 28px;
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
   }
 }

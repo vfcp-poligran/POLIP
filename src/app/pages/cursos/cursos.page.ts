@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, signal } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
@@ -25,7 +25,13 @@ import {
   AlertController,
   ViewWillEnter,
   IonAccordionGroup,
-  IonAccordion
+  IonAccordion,
+  IonMenu,
+  // IonMenuButton REMOVED
+  IonHeader,
+  IonToolbar,
+  IonTitle
+  // IonItemDivider REMOVED
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -62,7 +68,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create
+  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -70,6 +76,7 @@ import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model'
 import { BUTTON_CONFIG } from '@app/constants/button-config';
 import { CapitalizePipe } from '@app/pipes/capitalize.pipe';
 import { PreferencesService } from '@app/services/preferences.service';
+import { MenuController } from '@ionic/angular';
 
 
 interface EstudianteConNotas {
@@ -115,13 +122,20 @@ interface EstudianteConNotas {
     IonNote,
     CapitalizePipe,
     IonAccordionGroup,
-    IonAccordion]
+    IonAccordion,
+    IonMenu,
+    IonHeader,
+    IonToolbar,
+    IonTitle]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
   private preferencesService = inject(PreferencesService);
+  private menuController = inject(MenuController);
+
+
 
   @ViewChild('estudiantesFileInput') estudiantesFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('calificacionesFileInput') calificacionesFileInput!: ElementRef<HTMLInputElement>;
@@ -140,10 +154,26 @@ export class CursosPage implements ViewWillEnter {
   subtabActivo = signal<string>('detalle');
   grupoActivo = signal<string>('todos');
   vistaActiva = signal<'general' | string>('general');
+
+  closeMenu() {
+    this.menuController.close('cursos-page-content');
+  }
+
+  toggleMenu() {
+    this.menuController.toggle('cursos-page-content');
+  }
+
+  async confirmarEliminacion(curso: any) {
+    if (this.modoEdicion()) {
+      await this.confirmarEliminarCurso(curso);
+    }
+  }
   busquedaTermino = signal<string>(''); // Término de búsqueda
 
-  // Responsive signal
+  // Responsive signals
   isDesktop = signal<boolean>(window.innerWidth >= 992);
+  isTablet = signal<boolean>(window.innerWidth >= 768 && window.innerWidth < 992);
+  isMobile = signal<boolean>(window.innerWidth < 768);
 
   rubricasAsociadas: any[] = [];
 
@@ -253,6 +283,24 @@ export class CursosPage implements ViewWillEnter {
       return parts.join('-');
     }
     return fullCode;
+  }
+
+  /**
+   * Genera la etiqueta corta para móvil (Portrait)
+   * Formato: SIGLAS-INGRESO+GRUPO (Ej: EPM-B01)
+   */
+  public getCursoMobileLabel(c: any): string {
+    if (!c) return '';
+    const siglas = c.siglas || this.generarAcronimoCurso(c.nombre || '');
+    const ingreso = c.ingreso || '';
+
+    // Extraer grupo
+    const grupo = c.grupo || '';
+    const matchCod = grupo.match(/([A-Z])?(\d+)/i);
+    const letra = matchCod?.[1]?.toUpperCase() || ingreso;
+    const numero = matchCod?.[2]?.padStart(2, '0') || '01';
+
+    return `${siglas}-${letra}${numero}`;
   }
 
   /**
@@ -535,11 +583,21 @@ export class CursosPage implements ViewWillEnter {
   readonly BUTTON_CONFIG = BUTTON_CONFIG;
 
   constructor() {
-    addIcons({ addCircle, informationCircle, people, cloudUpload, closeCircle, school, codeSlash, pricetag, calendar, desktop, checkmark, calendarOutline, pricetagOutline, desktopOutline, time, library, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, add, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, trash, chevronUp, chevronDown, create });
+    effect(() => {
+      // Si se oculta el tab de características y estaba seleccionado, cambiar a integrantes
+      if (!this.mostrarTabCaracteristicas() && this.subtabActivo() === 'detalle') {
+        this.subtabActivo.set('integrantes');
+      }
+    }, { allowSignalWrites: true });
+
+    addIcons({ trash, add, menu, addCircle, informationCircle, people, cloudUpload, closeCircle, checkmark, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
 
     // Listener for responsive changes
     window.addEventListener('resize', () => {
-      this.isDesktop.set(window.innerWidth >= 992);
+      const width = window.innerWidth;
+      this.isDesktop.set(width >= 992);
+      this.isTablet.set(width >= 768 && width < 992);
+      this.isMobile.set(width < 768);
     });
   }
 
