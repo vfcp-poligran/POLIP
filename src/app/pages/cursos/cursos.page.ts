@@ -71,7 +71,7 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu, peopleCircle
+  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu, peopleCircle, calculatorOutline
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -590,7 +590,7 @@ export class CursosPage implements ViewWillEnter {
       }
     });
 
-    addIcons({ trash, menu, add, addCircle, informationCircle, people, cloudUpload, closeCircle, checkmark, peopleCircle, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, documentTextOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, createOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
+    addIcons({ createOutline, trash, menu, add, addCircle, informationCircle, people, cloudUpload, closeCircle, documentTextOutline, calculatorOutline, checkmark, peopleCircle, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
 
     // Listener for responsive changes
     window.addEventListener('resize', () => {

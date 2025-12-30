@@ -604,8 +604,9 @@ ion-menu {
         --import-padding-block: #{spacing('md')};
         --import-padding-inline: #{spacing('sm')};
         --import-min-height: 140px;
-        --import-bg: #{rgba($azul-claro, 0.03)};
-        --import-border-color: #{rgba($azul-claro, 0.15)};
+        // Opción A: Mayor contraste
+        --import-bg: #{rgba($azul-claro, 0.06)};
+        --import-border-color: #{rgba($azul-claro, 0.25)};
         --import-border-width: 1px;
         --import-border-radius: #{$radius-sm};
 
@@ -644,6 +645,8 @@ ion-menu {
         align-items: flex-start;
         width: 100%;
         min-width: 0;
+        position: relative;
+        cursor: pointer;
 
         // Touch-friendly sizing
         --item-padding: #{spacing('xs')};
@@ -656,12 +659,48 @@ ion-menu {
         background: var(--item-bg);
         border-radius: var(--item-border-radius);
 
+        // Opción B: Touch feedback con transición suave
+        transition: background-color 0.15s ease, transform 0.1s ease;
+
         // Mobile enhancements
         @include bp.mobile-only {
           --item-padding: #{spacing('sm')};
-          --item-min-height: 50px;
-          --item-bg: #{rgba($azul-oscuro, 0.06)};
+          --item-min-height: 56px;
+          // Opción A: Mayor contraste del ítem
+          --item-bg: #{rgba($azul-oscuro, 0.08)};
           --item-border-radius: #{$radius-sm};
+
+          // Borde sutil para delimitar mejor
+          border: 1px solid rgba($azul-oscuro, 0.06);
+        }
+
+        // Opción B: Touch feedback - estado activo
+        &:active {
+          background: rgba($azul-claro, 0.15);
+          transform: scale(0.98);
+        }
+
+        // Hover para desktop
+        @include bp.desktop-only {
+          &:hover {
+            background: rgba($azul-claro, 0.05);
+          }
+        }
+
+        .cloud-icon-wrapper {
+          display: flex;
+          align-items: center;
+          gap: spacing('xs');
+          width: 100%;
+
+          ion-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+
+            @include bp.mobile-only {
+              font-size: 1.75rem;
+            }
+          }
         }
 
         .cloud-label {
@@ -675,6 +714,22 @@ ion-menu {
           }
         }
 
+        // Opción C: Placeholder cuando no hay archivo
+        .import-placeholder {
+          display: flex;
+          align-items: center;
+          gap: spacing('xs');
+          color: $gris-medio;
+          font-size: font-size('xs');
+          font-style: italic;
+          margin-top: spacing('xxs');
+
+          ion-icon {
+            font-size: 1rem;
+            opacity: 0.6;
+          }
+        }
+
         ion-chip {
           // Chip sizing variables
           --chip-height: 28px;
@@ -684,6 +739,7 @@ ion-menu {
           min-height: var(--chip-height);
           margin: 0;
           padding-block: 0;
+          margin-top: spacing('xxs');
 
           @include bp.mobile-only {
             --chip-height: 32px;

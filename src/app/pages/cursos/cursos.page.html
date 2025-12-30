@@ -241,7 +241,7 @@
                           <div class="import-cloud-item" (click)="onEstudiantesFileSelected($event)">
                             <div class="cloud-icon-wrapper">
                               <ion-icon name="cloud-upload"
-                                [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
+                                [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : 'var(--ion-color-primary)'"></ion-icon>
                               <div class="cloud-label">Importar (Personas)</div>
                             </div>
                             <!-- Input oculto para web (fallback) -->
@@ -254,6 +254,12 @@
                               <ion-label>{{ estudiantesFileName }}</ion-label>
                               <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
                             </ion-chip>
+                            } @else {
+                            <!-- Opción C: Placeholder visual -->
+                            <div class="import-placeholder">
+                              <ion-icon name="document-text-outline"></ion-icon>
+                              <span>Toca para seleccionar CSV</span>
+                            </div>
                             }
                           </div>
 
@@ -261,7 +267,7 @@
                           <div class="import-cloud-item" (click)="onCalificacionesFileSelected($event)">
                             <div class="cloud-icon-wrapper">
                               <ion-icon name="cloud-upload"
-                                [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : '#FF00FF'"></ion-icon>
+                                [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : 'var(--ion-color-primary)'"></ion-icon>
                               <div class="cloud-label">Importar (Calificaciones)</div>
                             </div>
                             <!-- Input oculto para web (fallback) -->
@@ -274,6 +280,12 @@
                               <ion-label>{{ calificacionesFileName }}</ion-label>
                               <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
                             </ion-chip>
+                            } @else {
+                            <!-- Opción C: Placeholder visual -->
+                            <div class="import-placeholder">
+                              <ion-icon name="calculator-outline"></ion-icon>
+                              <span>Toca para seleccionar CSV</span>
+                            </div>
                             }
                           </div>
                         </div>
