@@ -150,9 +150,9 @@
         @for (curso of cursosDisponibles(); track curso.codigo) {
         <ion-segment-button [value]="curso.codigo" [style.--course-stripe-color]="getCursoColor(curso.codigo)">
           <ion-label class="tab-label-container">
-            <!-- Tablet: Short Label (EPM-B01) -->
-            @if (isTablet()) {
-            <span class="tablet-label">{{ getCursoMobileLabel(curso) }}</span>
+            <!-- Mobile + Tablet: Short Label (EPM-B01) -->
+            @if (!isDesktop()) {
+            <span class="mobile-tablet-label">{{ getCursoMobileLabel(curso) }}</span>
             }
 
             <!-- Desktop: Full Name + Code -->

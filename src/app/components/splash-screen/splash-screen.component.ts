@@ -75,6 +75,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
       letter-spacing: 0.5px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       color: #0f385a;
+      white-space: nowrap; /* Prevent text wrapping */
     }
 
     .loader-container {

@@ -97,7 +97,8 @@
             }
 
             .tab-nombre,
-            .tablet-label {
+            .tablet-label,
+            .mobile-tablet-label {
                 color: var(--ion-color-primary-contrast);
                 font-weight: font-weight('bold');
             }
@@ -144,6 +145,16 @@ ion-segment-button {
             font-weight: 700;
             font-size: 1rem;
             letter-spacing: 0.5px;
+        }
+
+        // Mobile + Tablet Label (EPM-B01, EPM-B02) - Show full text
+        .mobile-tablet-label {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px; // Clear readable size
+            letter-spacing: 0.3px;
+            white-space: nowrap; // Keep on one line
+            text-align: center;
         }
 
         .tab-content-wrapper.desktop-view {
