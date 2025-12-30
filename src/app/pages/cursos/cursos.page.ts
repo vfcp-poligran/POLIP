@@ -1357,20 +1357,66 @@ export class CursosPage implements ViewWillEnter {
     }
   }
 
+  /**
+   * Maneja la selección de archivo de calificaciones
+   * Usa FilePicker nativo en móvil, input HTML en web
+   */
   async onCalificacionesFileSelected(event: any) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+    // Verificar si es plataforma nativa
+    if (Capacitor.isNativePlatform()) {
+      await this.seleccionarCalificacionesNativo();
+      return;
+    }
 
-    const file = input.files[0];
-    this.calificacionesFileName = file.name;
-    const isJson = file.name.toLowerCase().endsWith('.json');
+    // En web, verificar tipo de evento
+    if (event.target && event.target.files) {
+      const input = event.target as HTMLInputElement;
+      if (!input.files || input.files.length === 0) return;
+
+      const file = input.files[0];
+      const contenido = await this.filePickerService.readFileFromInput(file);
+      await this.procesarArchivoCalificaciones(file.name, contenido);
+    } else {
+      // Click en área - activar input HTML
+      const inputElement = this.importCalificacionesInput?.nativeElement;
+      if (inputElement) {
+        inputElement.click();
+      }
+    }
+  }
+
+  /**
+   * Selección nativa de archivo de calificaciones (móvil)
+   */
+  private async seleccionarCalificacionesNativo() {
+    try {
+      const result = await this.filePickerService.pickDataFile();
+
+      if (!result) {
+        Logger.log('[CursosPage] Selección de calificaciones cancelada');
+        return;
+      }
+
+      const contenido = this.filePickerService.decodeBase64ToText(result.data);
+      await this.procesarArchivoCalificaciones(result.name, contenido);
+    } catch (error) {
+      Logger.error('[CursosPage] Error al seleccionar archivo de calificaciones:', error);
+      this.toastService.error('Error al seleccionar el archivo de calificaciones');
+    }
+  }
+
+  /**
+   * Procesa el contenido del archivo de calificaciones
+   */
+  private async procesarArchivoCalificaciones(fileName: string, contenido: string) {
+    this.calificacionesFileName = fileName;
+    const isJson = fileName.toLowerCase().endsWith('.json');
 
     try {
       if (this.estudiantesCargados.length === 0) {
         throw new Error('Primero debe cargar el archivo de Personas');
       }
 
-      const contenido = await this.leerArchivo(file);
       let calificaciones: any[] = [];
 
       if (isJson) {
@@ -1386,7 +1432,7 @@ export class CursosPage implements ViewWillEnter {
       }
 
       this.calificacionesCargadas = {
-        nombre: file.name,
+        nombre: fileName,
         fechaCarga: new Date().toISOString(),
         contenidoOriginal: isJson ? JSON.stringify(calificaciones) : contenido,
         calificaciones: calificaciones
