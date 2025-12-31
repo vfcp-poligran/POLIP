@@ -1250,11 +1250,15 @@ export class CursosPage implements ViewWillEnter {
             grupoNumero = grupoMatch ? grupoMatch[0] : '';
           }
 
+          // Aplicar normalización de caracteres especiales a nombres
+          const nombreNormalizado = this.normalizarCaracteresEspeciales(nombre);
+          const apellidoNormalizado = this.normalizarCaracteresEspeciales(apellido);
+
           const estudiante: any = {
             canvasUserId: canvasUserIdIndex >= 0 ? (valores[canvasUserIdIndex] || '').trim() : '',
             canvasGroupId: canvasGroupIdIndex >= 0 ? (valores[canvasGroupIdIndex] || '').trim() : '',
-            apellidos: apellido,
-            nombres: nombre,
+            apellidos: apellidoNormalizado,
+            nombres: nombreNormalizado,
             correo: loginIdIndex >= 0 ? (valores[loginIdIndex] || '').trim() : (correoIndex >= 0 ? (valores[correoIndex] || '').trim() : ''),
             grupo: grupoNumero,
             groupName: groupNameValue,
@@ -1345,8 +1349,11 @@ export class CursosPage implements ViewWillEnter {
         }
         this.onIngresoChange();
 
+        // Normalizar el nombre del curso para corregir posibles caracteres corruptos
+        const nombreCursoNormalizado = this.normalizarCaracteresEspeciales(nombreCompleto);
+
         cursoDetectado = {
-          nombre: nombreCompleto,
+          nombre: nombreCursoNormalizado,
           siglas: enfasisSiglas,
           grupo: grupoSolo,
           codigo: '',
@@ -1625,6 +1632,53 @@ export class CursosPage implements ViewWillEnter {
     return result;
   }
 
+  /**
+   * Normaliza caracteres especiales corruptos en texto
+   * Corrige problemas de codificación UTF-8 mal interpretada
+   * Ejemplos: "GARCÍA" -> "GARCÍA", "MARTÍNEZ" -> "MARTÍNEZ"
+   */
+  private normalizarCaracteresEspeciales(texto: string): string {
+    if (!texto) return '';
+
+    // Mapa de correcciones: caracteres corruptos -> caracteres correctos
+    const correcciones: [RegExp, string][] = [
+      // Vocales acentuadas minúsculas
+      [/Ã¡/g, 'á'],
+      [/Ã©/g, 'é'],
+      [/Ã­/g, 'í'],
+      [/Ã³/g, 'ó'],
+      [/Ãº/g, 'ú'],
+      // Vocales acentuadas mayúsculas
+      [/Ã/g, 'Á'],
+      [/Ã‰/g, 'É'],
+      [/Ã/g, 'Í'],
+      [/Ã"/g, 'Ó'],
+      [/Ãš/g, 'Ú'],
+      // Ñ y ñ
+      [/Ã±/g, 'ñ'],
+      [/Ã'/g, 'Ñ'],
+      // Diéresis
+      [/Ã¼/g, 'ü'],
+      [/Ãœ/g, 'Ü'],
+      // Otros caracteres especiales comunes en español
+      [/Â°/g, '°'],
+      [/Â¿/g, '¿'],
+      [/Â¡/g, '¡'],
+      // Comillas tipográficas
+      [/â€œ/g, '"'],
+      [/â€/g, '"'],
+      [/â€™/g, "'"],
+      [/â€˜/g, "'"],
+    ];
+
+    let resultado = texto;
+    for (const [patron, reemplazo] of correcciones) {
+      resultado = resultado.replace(patron, reemplazo);
+    }
+
+    return resultado;
+  }
+
   parsearCalificaciones(contenido: string) {
     const lineas = contenido.split('\n').filter(l => l.trim());
     if (lineas.length < 2) return;
@@ -1651,8 +1705,13 @@ export class CursosPage implements ViewWillEnter {
     // Parsear estudiantes con calificaciones
     this.calificacionesParseadas = lineasDatos.map(linea => {
       const valores = parsearLineaCSV(linea);
+
+      // Normalizar el nombre del estudiante
+      const nombreOriginal = valores[nombreIndex] || '';
+      const nombreNormalizado = this.normalizarCaracteresEspeciales(nombreOriginal);
+
       const estudiante: any = {
-        nombre: valores[nombreIndex] || '',
+        nombre: nombreNormalizado,
         correo: valores[loginIdIndex] || '',
         seccion: valores[seccionesIndex] || '',
         calificaciones: {}
