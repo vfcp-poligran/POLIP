@@ -91,8 +91,8 @@ $touch-target: colors.$touch-target;
 // === CONTENIDO PRINCIPAL GRID (3 COLUMNS) ===
 .main-content-grid {
     padding: 12px;
-    max-width: 100%;
-    margin: 0;
+    max-width: 1400px;
+    margin: 0 auto;
 
     ion-grid {
         padding: 0;
@@ -158,39 +158,41 @@ $touch-target: colors.$touch-target;
             }
         }
 
+        // HISTORIAL: Tercera columna (derecha en desktop, última en móvil)
         &.column-placeholder {
             @media (min-width: 992px) {
-                order: 1;
-                border-right: 1px solid rgba(0, 0, 0, 0.05);
-                padding-left: 0;
-            }
-
-            @media (max-width: 991px) {
-                order: 2;
-                margin-top: 16px;
-            }
-        }
-
-        &.column-registration {
-            @media (min-width: 992px) {
-                order: 2;
-            }
-
-            @media (max-width: 991px) {
-                order: 1;
-            }
-        }
-
-        &.column-courses {
-            @media (min-width: 992px) {
-                order: 3;
+                order: 3; // Tercera columna en desktop
                 border-left: 1px solid rgba(0, 0, 0, 0.05);
                 padding-right: 0;
             }
 
             @media (max-width: 991px) {
-                order: 3;
+                order: 3; // Última en móvil
                 margin-top: 24px;
+            }
+        }
+
+        // NOVEDAD: Segunda columna (centro en todos los viewports)
+        &.column-registration {
+            @media (min-width: 992px) {
+                order: 2; // Segunda columna en desktop
+            }
+
+            @media (max-width: 991px) {
+                order: 2; // Segunda en móvil
+            }
+        }
+
+        // CURSOS: Primera columna (izquierda en desktop, primera en móvil)
+        &.column-courses {
+            @media (min-width: 992px) {
+                order: 1; // Primera columna en desktop
+                border-right: 1px solid rgba(0, 0, 0, 0.05);
+                padding-left: 0;
+            }
+
+            @media (max-width: 991px) {
+                order: 1; // Primera en móvil
             }
         }
     }
@@ -288,17 +290,32 @@ $touch-target: colors.$touch-target;
     }
 }
 
-// === NOVEDAD STYLES (CENTER) ===
-.session-control-bar {
+
+// === BARRA DE CONTROL DE SESIÓN SIMPLE ===
+.session-control-bar-simple {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 12px;
-    background: rgba($gris-claro, 0.2);
-    border-radius: 12px;
+    background: rgba($azul-claro, 0.05);
+    border-radius: 8px;
     margin-bottom: 16px;
 
-    .active-session-state {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    @include respond-to-max('sm') {
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+
+    ion-button {
+        --padding-start: 16px;
+        --padding-end: 16px;
+        font-weight: 600;
+
+        @include respond-to-max('sm') {
+            --padding-start: 12px;
+            --padding-end: 12px;
+            font-size: 0.9rem;
+        }
     }
 }
 
@@ -530,6 +547,122 @@ $touch-target: colors.$touch-target;
         &.column-placeholder,
         &.column-courses {
             border-color: rgba(255, 255, 255, 0.05);
+        }
+    }
+}
+
+// === FAB BÚSQUEDA (MÓVIL/TABLET) ===
+.fab-search {
+    ion-fab-button {
+        --background: #{$azul-claro};
+        --background-activated: #{color.adjust($azul-claro, $lightness: -10%)};
+    }
+}
+
+// === MODAL DE BÚSQUEDA (MÓVIL/TABLET) ===
+.search-modal {
+    --height: 90%;
+    --border-radius: 16px 16px 0 0;
+
+    .search-modal-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .modal-searchbar {
+        --background: rgba($azul-claro, 0.1);
+        --border-radius: 10px;
+        padding: 0;
+    }
+
+    .search-results-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.selected {
+                background: rgba($azul-claro, 0.1);
+                border-color: $azul-claro;
+            }
+
+            .result-info {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+
+                .result-name {
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    color: $azul-oscuro;
+                }
+
+                .result-meta {
+                    font-size: 0.8rem;
+                    color: #666;
+                }
+            }
+
+            ion-icon {
+                font-size: 1.5rem;
+
+                &.selected-icon {
+                    color: $verde-exito;
+                }
+            }
+        }
+
+        &.cursos-dropdown {
+            .dropdown-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                font-weight: 600;
+                color: $azul-oscuro;
+                font-size: 0.9rem;
+            }
+
+            .curso-color-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    .selected-students-section {
+        margin-top: 16px;
+        padding: 16px;
+        background: rgba($azul-claro, 0.05);
+        border-radius: 12px;
+
+        h4 {
+            margin: 0 0 12px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: $azul-oscuro;
+        }
+
+        .selected-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
         }
     }
 }

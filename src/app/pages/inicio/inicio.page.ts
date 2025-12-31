@@ -75,7 +75,7 @@ import {
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
     analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline, playOutline, stopCircleOutline,
-    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox
+    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -140,7 +140,7 @@ interface EstudianteSeleccionado {
         IonCardTitle,
         IonCardSubtitle,
         IonSkeletonText,
-        IonSpinner
+
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -159,6 +159,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     busquedaTermino = signal<string>('');
     resultadosBusqueda = signal<EstudianteSeleccionado[]>([]);
     isModalRegistroVisible = signal<boolean>(false);
+    isSearchModalVisible = signal<boolean>(false);
     tipoNovedadSeleccionado = signal<TipoNovedad | null>(null);
     origenSeleccionado = signal<OrigenMensaje>('teams');
     descripcionNovedad = signal<string>('');
@@ -268,7 +269,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, timeOutline, listOutline, trashOutline, documentTextOutline, informationCircleOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, checkmarkCircleOutline, playOutline, personOutline, peopleOutline, closeCircle, personAddOutline, pinOutline, lockOpenOutline, checkmarkCircle, checkboxOutline, squareOutline, add, checkmarkOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
+        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, timeOutline, listOutline, trashOutline, documentTextOutline, informationCircleOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, checkmarkCircleOutline, playOutline, personOutline, peopleOutline, closeCircle, personAddOutline, pinOutline, lockOpenOutline, checkmarkCircle, checkboxOutline, squareOutline, search, add, checkmarkOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -1038,6 +1039,17 @@ export class InicioPage implements OnInit, ViewWillEnter {
         this.isModalRegistroVisible.set(false);
         this.limpiarFormulario();
     }
+
+    // === MODAL DE BÚSQUEDA (MÓVIL/TABLET) ===
+
+    toggleSearchModal(): void {
+        this.isSearchModalVisible.set(!this.isSearchModalVisible());
+    }
+
+    closeSearchModal(): void {
+        this.isSearchModalVisible.set(false);
+    }
+
 
     /**
      * Confirma el registro final de las novedades en el servicio

@@ -193,7 +193,6 @@
           <ion-accordion-group [multiple]="true" [value]="['detalle']">
 
             <!-- ACORDEÓN 1: CARACTERÍSTICAS -->
-            @if (mostrarTabCaracteristicas() && !isCursoConTabOculto(info.codigo)) {
             <ion-accordion value="detalle" class="course-accordion">
               <ion-item slot="header" color="light">
                 <ion-icon name="information-circle" slot="start" color="primary"></ion-icon>
@@ -203,7 +202,6 @@
                 <ng-container *ngTemplateOutlet="contentDetalle"></ng-container>
               </div>
             </ion-accordion>
-            }
 
             <!-- ACORDEÓN 2: INTEGRANTES -->
             @if (!info.esNuevo) {

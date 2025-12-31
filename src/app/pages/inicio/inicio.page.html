@@ -2,84 +2,6 @@
 
 <ion-content id="main-content" class="inicio-content" [fullscreen]="true">
     <div class="page-container">
-        <!-- HEADER CON BÚSQUEDA (Simplificado - Solo Desktop/Tablet) -->
-        <div class="page-header ion-hide-md-down">
-            <!-- Barra de búsqueda -->
-            <div class="search-tipos-row">
-                <div class="search-container">
-                    <ion-searchbar [value]="busquedaTermino()" (ionInput)="onBusquedaChange($event)"
-                        placeholder="Buscar estudiante... (#C cursos, #G1 grupo)" mode="ios" class="student-searchbar">
-                    </ion-searchbar>
-
-                    <!-- Resultados de búsqueda -->
-                    @if (resultadosBusqueda().length > 0) {
-                    <div class="search-results-dropdown">
-                        <div class="dropdown-actions">
-                            <span class="dropdown-hint">Click para seleccionar/deseleccionar</span>
-                            <ion-button fill="clear" size="small" (click)="limpiarBusqueda()">
-                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                            </ion-button>
-                        </div>
-                        @for (resultado of resultadosBusqueda(); track resultado.correo) {
-                        <div class="search-result-item" [class.selected]="isEstudianteSeleccionado(resultado.correo)"
-                            (click)="seleccionarEstudiante(resultado)">
-                            <ion-icon
-                                [name]="isEstudianteSeleccionado(resultado.correo) ? 'checkmark-circle' : 'person-outline'"
-                                [class.selected-icon]="isEstudianteSeleccionado(resultado.correo)"></ion-icon>
-                            <div class="result-info">
-                                <span class="result-name">{{ resultado.nombre }}</span>
-                                <span class="result-meta">{{ getCodigoCorto(resultado.curso) }} - Grupo {{
-                                    resultado.grupo
-                                    }}</span>
-                            </div>
-                            <ion-icon
-                                [name]="isEstudianteSeleccionado(resultado.correo) ? 'checkmark-outline' : 'add-outline'"
-                                class="add-icon"></ion-icon>
-                        </div>
-                        }
-                    </div>
-                    }
-
-                    <!-- Dropdown de cursos para comando #C -->
-                    @if (sugerenciasCursos().length > 0) {
-                    <div class="search-results-dropdown cursos-dropdown">
-                        <div class="dropdown-header">
-                            <ion-icon name="school-outline"></ion-icon>
-                            <span>Seleccionar curso</span>
-                        </div>
-                        @for (curso of sugerenciasCursos(); track curso.codigo) {
-                        <div class="search-result-item curso-item" (click)="seleccionarCursoFiltro(curso)">
-                            <div class="curso-color-dot" [style.background]="curso.color"></div>
-                            <div class="result-info">
-                                <span class="result-name">{{ getCodigoCorto(curso.codigo) }}</span>
-                                <span class="result-meta">{{ curso.estudiantes }} estudiantes</span>
-                            </div>
-                            <ion-icon name="chevron-forward-outline" class="add-icon"></ion-icon>
-                        </div>
-                        }
-                    </div>
-                    }
-                </div>
-
-                <!-- Chips de estudiantes seleccionados -->
-                @if (estudiantesSeleccionados().length > 0) {
-                <div class="selected-students-bar">
-                    <div class="selected-chips">
-                        @for (est of estudiantesSeleccionados(); track est.correo) {
-                        <ion-chip class="student-chip" [style.--chip-color]="'#4a90e2'">
-                            <ion-label>{{ est.nombre.split(' ')[0] }}</ion-label>
-                            <ion-icon name="close-outline" (click)="removerEstudiante(est.correo)"></ion-icon>
-                        </ion-chip>
-                        }
-                    </div>
-                    <ion-button fill="solid" color="primary" size="small" (click)="registrarEnLista()">
-                        <ion-icon name="add-outline" slot="start"></ion-icon>
-                        Registrar ({{ estudiantesSeleccionados().length }})
-                    </ion-button>
-                </div>
-                }
-            </div>
-        </div>
 
         <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
         <div class="main-content-grid">
@@ -221,57 +143,16 @@
                             </ion-badge>
                         </div>
 
-                        <!-- Session Control -->
-                        <div class="session-control-bar" [class.has-session]="sessionActual()">
-                            @if (!sessionActual()) {
-                            <div class="no-session-state">
-                                <p>No hay una sesión de revisión activa</p>
-                                <ion-button size="small" (click)="iniciarRevision()">
-                                    <ion-icon slot="start" name="play-outline"></ion-icon>
-                                    Iniciar Sesión
-                                </ion-button>
-                            </div>
-                            } @else {
-                            <div class="active-session-state">
-                                <div class="session-info">
-                                    <div class="session-status">
-                                        <ion-spinner name="dots" color="success" size="small"></ion-spinner>
-                                        <span class="status-label">EN VIVO</span>
-                                    </div>
-                                    <span class="session-name">{{ sessionActual()?.nombre }}</span>
-                                    <span class="session-time">{{ sessionActual()?.fechaInicio | date:'HH:mm'
-                                        }}</span>
-                                </div>
-                                <div class="session-actions-mini">
-                                    <ion-button size="small" color="medium" fill="clear" (click)="pausarRevision()"
-                                        title="Pausar">
-                                        <ion-icon slot="icon-only" name="stop-circle-outline"></ion-icon>
-                                    </ion-button>
-                                    <ion-button size="small" color="danger" fill="clear" (click)="cerrarRevision()"
-                                        title="Cerrar">
-                                        <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
-                                    </ion-button>
-                                </div>
-                            </div>
-                            }
+                        <!-- Barra de Control de Sesión Simple -->
+                        <div class="session-control-bar-simple">
+                            <ion-button size="small" color="primary" (click)="iniciarRevision()">
+                                <ion-icon slot="start" name="play-outline"></ion-icon>
+                                Iniciar Sesión
+                            </ion-button>
                         </div>
 
                         <div class="registration-control-pane">
                             <div class="registration-actions-top">
-                                <!-- NEW: Modo Novedad Toggle -->
-                                <div class="modo-novedad-selector">
-                                    <div class="modo-option" [class.active]="modoNovedad() === 'individual'"
-                                        (click)="modoNovedad.set('individual')">
-                                        <ion-icon name="person-outline"></ion-icon>
-                                        <span>Individual</span>
-                                    </div>
-                                    <div class="modo-option" [class.active]="modoNovedad() === 'grupal'"
-                                        (click)="modoNovedad.set('grupal')">
-                                        <ion-icon name="people-outline"></ion-icon>
-                                        <span>Grupal</span>
-                                    </div>
-                                </div>
-
                                 <div class="selection-tools">
                                     @if (estudiantesRegistrados().length > 0) {
                                     <ion-button fill="clear" size="small" (click)="toggleSeleccionarTodos()">
@@ -614,6 +495,14 @@
 
 
 
+        <!-- FAB Búsqueda (Solo Móvil/Tablet) -->
+        <ion-fab slot="fixed" vertical="bottom" horizontal="start" style="bottom: 70px"
+            class="ion-hide-md-up fab-search">
+            <ion-fab-button color="primary" (click)="toggleSearchModal()">
+                <ion-icon name="search"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+
         <!-- FAB Registrar (Solo Móvil) -->
         <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 70px" class="ion-hide-lg-up"
             *ngIf="estudiantesSeleccionados().length > 0">
@@ -759,6 +648,94 @@
                             </div>
                             }
                         </div>
+                    </div>
+                </ion-content>
+            </ng-template>
+        </ion-modal>
+
+        <!-- MODAL DE BÚSQUEDA (Móvil/Tablet) -->
+        <ion-modal [isOpen]="isSearchModalVisible()" (didDismiss)="closeSearchModal()" class="search-modal">
+            <ng-template>
+                <ion-header>
+                    <ion-toolbar color="primary">
+                        <ion-title>Buscar Estudiante</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button (click)="closeSearchModal()">
+                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content class="ion-padding">
+                    <div class="search-modal-container">
+                        <!-- Barra de búsqueda -->
+                        <ion-searchbar [value]="busquedaTermino()" (ionInput)="onBusquedaChange($event)"
+                            placeholder="Buscar estudiante... (#C cursos, #G1 grupo)" mode="ios"
+                            class="modal-searchbar">
+                        </ion-searchbar>
+
+                        <!-- Resultados de búsqueda -->
+                        @if (resultadosBusqueda().length > 0) {
+                        <div class="search-results-list">
+                            @for (resultado of resultadosBusqueda(); track resultado.correo) {
+                            <div class="search-result-item"
+                                [class.selected]="isEstudianteSeleccionado(resultado.correo)"
+                                (click)="seleccionarEstudiante(resultado)">
+                                <ion-icon
+                                    [name]="isEstudianteSeleccionado(resultado.correo) ? 'checkmark-circle' : 'person-outline'"
+                                    [class.selected-icon]="isEstudianteSeleccionado(resultado.correo)"></ion-icon>
+                                <div class="result-info">
+                                    <span class="result-name">{{ resultado.nombre }}</span>
+                                    <span class="result-meta">{{ getCodigoCorto(resultado.curso) }} - Grupo {{
+                                        resultado.grupo
+                                        }}</span>
+                                </div>
+                                <ion-icon
+                                    [name]="isEstudianteSeleccionado(resultado.correo) ? 'checkmark-outline' : 'add-outline'"
+                                    class="add-icon"></ion-icon>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        <!-- Dropdown de cursos para comando #C -->
+                        @if (sugerenciasCursos().length > 0) {
+                        <div class="search-results-list cursos-dropdown">
+                            <div class="dropdown-header">
+                                <ion-icon name="school-outline"></ion-icon>
+                                <span>Seleccionar curso</span>
+                            </div>
+                            @for (curso of sugerenciasCursos(); track curso.codigo) {
+                            <div class="search-result-item curso-item" (click)="seleccionarCursoFiltro(curso)">
+                                <div class="curso-color-dot" [style.background]="curso.color"></div>
+                                <div class="result-info">
+                                    <span class="result-name">{{ getCodigoCorto(curso.codigo) }}</span>
+                                    <span class="result-meta">{{ curso.estudiantes }} estudiantes</span>
+                                </div>
+                                <ion-icon name="chevron-forward-outline" class="add-icon"></ion-icon>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        <!-- Chips de estudiantes seleccionados -->
+                        @if (estudiantesSeleccionados().length > 0) {
+                        <div class="selected-students-section">
+                            <h4>Seleccionados</h4>
+                            <div class="selected-chips">
+                                @for (est of estudiantesSeleccionados(); track est.correo) {
+                                <ion-chip class="student-chip" [style.--chip-color]="'#4a90e2'">
+                                    <ion-label>{{ est.nombre.split(' ')[0] }}</ion-label>
+                                    <ion-icon name="close-outline" (click)="removerEstudiante(est.correo)"></ion-icon>
+                                </ion-chip>
+                                }
+                            </div>
+                            <ion-button expand="block" color="primary" (click)="registrarEnLista(); closeSearchModal()">
+                                <ion-icon name="add-outline" slot="start"></ion-icon>
+                                Registrar ({{ estudiantesSeleccionados().length }})
+                            </ion-button>
+                        </div>
+                        }
                     </div>
                 </ion-content>
             </ng-template>
