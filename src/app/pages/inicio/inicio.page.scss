@@ -1,6 +1,7 @@
 @use "sass:color";
 @use '../../shared/styles/color-tokens' as colors;
 @use '../../shared/styles/typography-mixins' as typo;
+@use '../../shared/styles/breakpoints' as *;
 
 // Use centralized color tokens
 $azul-oscuro: colors.$azul-oscuro;

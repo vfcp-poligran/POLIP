@@ -173,6 +173,14 @@ export class InicioPage implements OnInit, ViewWillEnter {
     tabHistorial = signal<'historial' | 'sesiones'>('historial');
     sesionDetalle = signal<SesionRevision | null>(null);
 
+    // Configuración de sesión mejorada
+    sesionInicio = signal<string>(new Date().toISOString());
+    sesionFin = signal<string>(new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()); // +2 horas
+    sesionActiva = signal<boolean>(false);
+
+    // Alertas del sistema
+    alertasSesion = signal<Array<{ id: string; tipo: 'info' | 'warning' | 'error'; mensaje: string }>>([]);
+
     // NEW: Computed for novelties of the detailed session
     novedadesDeSesion = computed(() => {
         const s = this.sesionDetalle();

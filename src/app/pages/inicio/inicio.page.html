@@ -143,13 +143,70 @@
                             </ion-badge>
                         </div>
 
-                        <!-- Barra de Control de Sesión Simple -->
-                        <div class="session-control-bar-simple">
-                            <ion-button size="small" color="primary" (click)="iniciarRevision()">
+                        <!-- Configuración de Sesión Mejorada -->
+                        <div class="session-config-section">
+                            <div class="session-header">
+                                <ion-icon name="calendar-outline"></ion-icon>
+                                <h3>Configuración de Sesión</h3>
+                            </div>
+
+                            <div class="session-datetime-row">
+                                <div class="datetime-field">
+                                    <label>Inicio</label>
+                                    <ion-datetime-button datetime="datetime-inicio"></ion-datetime-button>
+                                    <ion-modal [keepContentsMounted]="true">
+                                        <ng-template>
+                                            <ion-datetime id="datetime-inicio" presentation="date-time"
+                                                [value]="sesionInicio()" (ionChange)="onSesionInicioChange($event)"
+                                                locale="es-ES">
+                                            </ion-datetime>
+                                        </ng-template>
+                                    </ion-modal>
+                                </div>
+                                <div class="datetime-field">
+                                    <label>Fin</label>
+                                    <ion-datetime-button datetime="datetime-fin"></ion-datetime-button>
+                                    <ion-modal [keepContentsMounted]="true">
+                                        <ng-template>
+                                            <ion-datetime id="datetime-fin" presentation="date-time"
+                                                [value]="sesionFin()" (ionChange)="onSesionFinChange($event)"
+                                                locale="es-ES">
+                                            </ion-datetime>
+                                        </ng-template>
+                                    </ion-modal>
+                                </div>
+                            </div>
+
+                            <ion-button expand="block" size="small" color="primary" (click)="iniciarRevision()"
+                                [disabled]="!sesionInicio() || !sesionFin()">
                                 <ion-icon slot="start" name="play-outline"></ion-icon>
-                                Iniciar Sesión
+                                {{ sesionActiva() ? 'Sesión Activa' : 'Iniciar Sesión' }}
                             </ion-button>
                         </div>
+
+                        <!-- Sección de Alertas -->
+                        @if (alertasSesion().length > 0) {
+                        <div class="alerts-section">
+                            <div class="alerts-header">
+                                <ion-icon name="notifications-outline"></ion-icon>
+                                <span>Alertas</span>
+                                <ion-badge color="warning">{{ alertasSesion().length }}</ion-badge>
+                            </div>
+                            <div class="alerts-list">
+                                @for (alerta of alertasSesion(); track alerta.id) {
+                                <div class="alert-item" [class]="'alert-' + alerta.tipo">
+                                    <ion-icon
+                                        [name]="alerta.tipo === 'info' ? 'information-circle' : 
+                                                      alerta.tipo === 'warning' ? 'warning' : 'alert-circle'"></ion-icon>
+                                    <span>{{ alerta.mensaje }}</span>
+                                    <ion-button fill="clear" size="small" (click)="descartarAlerta(alerta.id)">
+                                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                    </ion-button>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
 
                         <div class="registration-control-pane">
                             <div class="registration-actions-top">
