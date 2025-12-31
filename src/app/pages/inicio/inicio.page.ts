@@ -29,7 +29,10 @@ import {
     ToastController,
     MenuController,
     AlertController,
-    ViewWillEnter, IonFab, IonFabButton } from '@ionic/angular/standalone';
+    ViewWillEnter,
+    IonFab,
+    IonFabButton
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
     homeOutline,
@@ -42,6 +45,7 @@ import {
     checkmarkCircleOutline,
     timeOutline,
     addOutline,
+    add,
     closeOutline,
     chevronDownOutline,
     chevronUpOutline,
@@ -111,7 +115,7 @@ interface EstudianteSeleccionado {
     styleUrls: ['./inicio.page.scss'],
     standalone: true,
     animations: [pageEnterAnimation, listAnimation, itemAnimation, modalAnimation], // Add modalAnimation
-    imports: [IonFabButton, IonFab, 
+    imports: [IonFabButton, IonFab,
         CommonModule,
         FormsModule,
         IonContent,
@@ -264,7 +268,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({closeOutline,schoolOutline,chevronForwardOutline,addOutline,timeOutline,listOutline,trashOutline,documentTextOutline,informationCircleOutline,playCircle,stopCircleOutline,checkmarkDoneOutline,checkmarkCircleOutline,playOutline,personOutline,peopleOutline,closeCircle,personAddOutline,pinOutline,lockOpenOutline,checkmarkCircle,checkboxOutline,squareOutline,add,checkmarkOutline,peopleCircleOutline,addCircleOutline,hammerOutline,constructOutline,analyticsOutline,calendarOutline,notificationsOutline,homeOutline,cloudOfflineOutline,appsOutline,checkmarkDoneCircleOutline,createOutline,bulbOutline,chevronDownOutline,checkmarkDoneCircle,alertCircleOutline,closeCircleOutline,optionsOutline,searchOutline,warningOutline,chevronUpOutline,gridOutline,chatboxEllipsesOutline,person,people,warning,stopCircle,checkmarkDone,checkbox});
+        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, timeOutline, listOutline, trashOutline, documentTextOutline, informationCircleOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, checkmarkCircleOutline, playOutline, personOutline, peopleOutline, closeCircle, personAddOutline, pinOutline, lockOpenOutline, checkmarkCircle, checkboxOutline, squareOutline, add, checkmarkOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
