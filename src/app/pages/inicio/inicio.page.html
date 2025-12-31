@@ -31,6 +31,12 @@
 
                         <div class="historial-tab-content">
                             @if (tabHistorial() === 'historial') {
+                            <!-- Buscador Exclusivo Historial -->
+                            <ion-searchbar [value]="busquedaHistorialTermino()"
+                                (ionInput)="onBusquedaHistorialChange($event)" placeholder="Buscar en historial..."
+                                mode="ios" class="historial-searchbar">
+                            </ion-searchbar>
+
                             <!-- SUB-TABS: Estudiante vs Grupal -->
                             <div class="historial-sub-tabs">
                                 <div class="sub-tab" [class.active]="modoVisualizacionHistorial() === 'estudiante'"

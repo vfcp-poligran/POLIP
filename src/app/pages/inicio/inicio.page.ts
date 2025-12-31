@@ -208,9 +208,19 @@ export class InicioPage implements OnInit, ViewWillEnter {
     modoVisualizacionHistorial = signal<'estudiante' | 'grupal'>('estudiante');
 
     historialAgrupado = computed(() => {
-        const novedades = this.novedadService.novedades().sort((a, b) =>
+        let novedades = this.novedadService.novedades().sort((a, b) =>
             new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime()
         );
+
+        const termino = this.busquedaHistorialTermino().toLowerCase();
+        if (termino) {
+            novedades = novedades.filter(n =>
+                (n.estudianteNombre || '').toLowerCase().includes(termino) ||
+                String(n.grupo).toLowerCase().includes(termino) ||
+                (n.tipoNovedadNombre || '').toLowerCase().includes(termino) ||
+                String(n.cursoId).toLowerCase().includes(termino)
+            );
+        }
 
         if (this.modoVisualizacionHistorial() === 'estudiante') {
             return novedades.slice(0, 20);
@@ -508,6 +518,10 @@ export class InicioPage implements OnInit, ViewWillEnter {
     /**
      * Verifica si un estudiante está seleccionado en los resultados de búsqueda
      */
+    onBusquedaHistorialChange(event: any) {
+        this.busquedaHistorialTermino.set(event.detail.value || '');
+    }
+
     isEstudianteSeleccionado(correo: string): boolean {
         return this.estudiantesSeleccionados().some(e => e.correo === correo);
     }
