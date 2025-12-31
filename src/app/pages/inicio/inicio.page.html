@@ -47,36 +47,72 @@
 
                             <div class="historial-novedades-list">
                                 @if (historialAgrupado().length > 0) {
-                                @for (novedad of historialAgrupado(); track novedad.id) {
-                                <div class="historial-item" [class.grupo]="modoVisualizacionHistorial() === 'grupal'">
-                                    <div class="historial-consecutivo">
-                                        <ion-icon
-                                            [name]="modoVisualizacionHistorial() === 'grupal' ? 'people' : 'person'"></ion-icon>
-                                    </div>
-                                    <div class="historial-info">
-                                        <span class="historial-estudiante">
-                                            @if (modoVisualizacionHistorial() === 'grupal') {
-                                            Grupo {{ novedad.grupo }} <small>({{ novedad.estudiantesCount }}
-                                                est.)</small>
-                                            } @else {
-                                            {{ novedad.estudianteNombre }} <small>G{{ novedad.grupo }}</small>
-                                            }
-                                        </span>
-                                        <div class="historial-meta">
-                                            <ion-chip size="small"
-                                                [style.--background]="getTipoColor(novedad.tipoNovedadId)"
-                                                class="mini-chip">
-                                                {{ novedad.tipoNovedadNombre }}
-                                            </ion-chip>
-                                            <span class="historial-fecha">{{ novedad.fechaRegistro |
-                                                date:'HH:mm' }}</span>
-                                        </div>
-                                    </div>
-                                    <ion-button fill="clear" size="small" color="danger" class="delete-btn"
-                                        (click)="eliminarNovedadItem(novedad.id)">
-                                        <ion-icon name="trash-outline"></ion-icon>
-                                    </ion-button>
-                                </div>
+                                @if (modoVisualizacionHistorial() === 'estudiante') {
+                                <!-- TABLA ESTUDIANTE (Individual) -->
+                                <table class="historial-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Estudiante</th>
+                                            <th>Novedad</th>
+                                            <th>Hora</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (novedad of historialAgrupado(); track novedad.id) {
+                                        <tr>
+                                            <td>
+                                                <div class="table-name">{{ novedad.estudianteNombre }}</div>
+                                                <div class="table-meta">G{{ novedad.grupo }}</div>
+                                            </td>
+                                            <td>
+                                                <ion-chip size="small"
+                                                    [style.--background]="getTipoColor(novedad.tipoNovedadId)"
+                                                    class="mini-chip">
+                                                    {{ novedad.tipoNovedadNombre }}
+                                                </ion-chip>
+                                            </td>
+                                            <td class="table-time">{{ novedad.fechaRegistro | date:'HH:mm' }}</td>
+                                            <td>
+                                                <ion-button fill="clear" size="small" color="danger"
+                                                    (click)="eliminarNovedadItem(novedad.id)">
+                                                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                                                </ion-button>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                } @else {
+                                <!-- TABLA GRUPAL (VCS Style Trigger) -->
+                                <table class="historial-table group-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Grupo</th>
+                                            <th class="text-center">Cambios</th>
+                                            <th>Última</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (grupo of historialAgrupado(); track grupo.key) {
+                                        <tr (click)="abrirModalVcs(grupo)" class="clickable-row">
+                                            <td>
+                                                <div class="table-name">Grupo {{ grupo.grupo }}</div>
+                                                <div class="table-meta">{{ grupo.cursoId }}</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <ion-badge color="primary">{{ grupo.cambiosCount }}</ion-badge>
+                                            </td>
+                                            <td class="table-time text-muted">{{ grupo.fechaUltima | date:'HH:mm' }}
+                                            </td>
+                                            <td>
+                                                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
                                 }
                                 } @else {
                                 <div class="empty-state-mini">
@@ -824,5 +860,42 @@
                 </ion-content>
             </ng-template>
         </ion-modal>
+        <!-- MODAL NOVEDADES VCS (Historial de Cambios) -->
+        <ion-modal [isOpen]="isVcsModalVisible()" (didDismiss)="cerrarModalVcs()" class="vcs-modal"
+            [initialBreakpoint]="vcsModalInitialBreakpoint()" [breakpoints]="vcsModalBreakpoints()">
+            <ng-template>
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>Historial {{ vcsGrupoTitulo() }}</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button (click)="cerrarModalVcs()">Close</ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content class="ion-padding">
+                    <div class="vcs-timeline">
+                        @for (log of vcsHistorialSeleccionado(); track log.id) {
+                        <div class="timeline-item">
+                            <div class="timeline-time">{{ log.fechaRegistro | date:'HH:mm' }}</div>
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <span class="author">{{ log.estudianteNombre }}</span>
+                                    <ion-chip size="small" [style.--background]="getTipoColor(log.tipoNovedadId)"
+                                        class="mini-chip-vcs">
+                                        {{ log.tipoNovedadNombre }}
+                                    </ion-chip>
+                                </div>
+                                @if (log.observacion) {
+                                <p class="timeline-msg">{{ log.observacion }}</p>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </ion-content>
+            </ng-template>
+        </ion-modal>
+
     </div><!-- /page-container -->
 </ion-content>

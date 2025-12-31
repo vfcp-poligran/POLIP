@@ -207,6 +207,11 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     modoVisualizacionHistorial = signal<'estudiante' | 'grupal'>('estudiante');
 
+    // VCS History Modal Signals
+    isVcsModalVisible = signal<boolean>(false);
+    vcsHistorialSeleccionado = signal<any[]>([]);
+    vcsGrupoTitulo = signal<string>('');
+
     historialAgrupado = computed(() => {
         let novedades = this.novedadService.novedades().sort((a, b) =>
             new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime()
@@ -223,27 +228,32 @@ export class InicioPage implements OnInit, ViewWillEnter {
         }
 
         if (this.modoVisualizacionHistorial() === 'estudiante') {
-            return novedades.slice(0, 20);
+            // FILTER: Solo novedades individuales (excluir grupales como 'grupo_bien')
+            // Asumimos que las grupales tienen un ID especifico o logica. 
+            // Por ahora filtramos 'grupo_bien'. Si hay otras, agregar aqui.
+            return novedades.filter(n => n.tipoNovedadId !== 'grupo_bien').slice(0, 20);
         } else {
-            // Agrupar por curso-grupo-tipo-sesion
+            // Agrupar por curso-grupo (ESTRICTO)
             const gruposMap = new Map<string, any>();
             novedades.forEach(n => {
-                const key = `${n.cursoId || 'C'}-${n.grupo || '0'}-${n.tipoNovedadId}-${n.sessionId || 'S'}`;
+                const key = `${n.cursoId}-${n.grupo}`; // Agrupación estricta por Grupo
                 if (!gruposMap.has(key)) {
                     gruposMap.set(key, {
-                        ...n,
-                        estudiantesCount: 1,
-                        nombres: [n.estudianteNombre]
+                        key: key,
+                        cursoId: n.cursoId,
+                        grupo: n.grupo,
+                        fechaUltima: n.fechaRegistro,
+                        cambiosCount: 1,
+                        novedades: [n] // Guardamos todas para el VCS modal
                     });
                 } else {
                     const existing = gruposMap.get(key);
-                    existing.estudiantesCount++;
-                    if (!existing.nombres.includes(n.estudianteNombre)) {
-                        existing.nombres.push(n.estudianteNombre);
-                    }
+                    existing.cambiosCount++;
+                    existing.novedades.push(n);
+                    // Mantener fecha mas reciente si la lista no esta ordenada, pero ya lo esta
                 }
             });
-            return Array.from(gruposMap.values()).slice(0, 20);
+            return Array.from(gruposMap.values());
         }
     });
 
@@ -1154,6 +1164,27 @@ export class InicioPage implements OnInit, ViewWillEnter {
     closeSearchModal(): void {
         this.isSearchModalVisible.set(false);
     }
+
+    // VCS Modal Methods
+    abrirModalVcs(grupo: any) {
+        this.vcsGrupoTitulo.set(`${grupo.cursoId} - Grupo ${grupo.grupo}`);
+        this.vcsHistorialSeleccionado.set(grupo.novedades || []);
+        this.isVcsModalVisible.set(true);
+    }
+
+    cerrarModalVcs() {
+        this.isVcsModalVisible.set(false);
+    }
+
+    // Modal breakpoints: undefined on desktop (to center), sheet on mobile
+    vcsModalBreakpoints = computed(() => {
+        return this.isDesktop() ? undefined : [0, 0.6, 1];
+    });
+
+    // Also initial breakpoint
+    vcsModalInitialBreakpoint = computed(() => {
+        return this.isDesktop() ? undefined : 0.6;
+    });
 
 
     /**
