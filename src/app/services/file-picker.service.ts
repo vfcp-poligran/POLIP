@@ -151,44 +151,149 @@ export class FilePickerService {
     }
 
     /**
-     * Convierte data base64 a texto con soporte UTF-8
-     * Maneja correctamente caracteres acentuados (é, á, ñ, etc.)
+     * Convierte data base64 a texto con soporte completo de caracteres especiales
+     * Maneja correctamente caracteres acentuados (é, á, ñ, ü, etc.) y otros caracteres Unicode
      */
     decodeBase64ToText(base64: string): string {
         try {
-            // En algunos casos el contenido ya está en texto plano
+            // Verificar si ya es texto plano (no base64)
             if (this.isPlainText(base64)) {
-                return base64;
+                // Aún así, limpiar posibles problemas de codificación
+                return this.fixEncodingIssues(base64);
             }
 
-            // Método correcto para decodificar Base64 a UTF-8:
-            // 1. atob() decodifica Base64 a bytes (como string Latin-1)
-            // 2. Convertir cada byte a Uint8Array
-            // 3. TextDecoder interpreta los bytes como UTF-8
+            // Decodificar Base64 a bytes
             const binaryString = atob(base64);
             const bytes = new Uint8Array(binaryString.length);
             for (let i = 0; i < binaryString.length; i++) {
                 bytes[i] = binaryString.charCodeAt(i);
             }
 
-            // TextDecoder con UTF-8 maneja correctamente caracteres multi-byte
-            const decoder = new TextDecoder('utf-8');
-            return decoder.decode(bytes);
+            // Intentar decodificar como UTF-8 primero
+            let decoded = this.tryDecodeWithEncoding(bytes, 'utf-8');
+
+            // Verificar si la decodificación produjo caracteres corruptos
+            if (this.hasEncodingIssues(decoded)) {
+                // Intentar con Windows-1252 (común en archivos Excel de Windows)
+                const decodedLatin = this.tryDecodeWithEncoding(bytes, 'windows-1252');
+                if (!this.hasEncodingIssues(decodedLatin)) {
+                    console.log('[FilePickerService] Archivo detectado como Windows-1252, convertido a UTF-8');
+                    decoded = decodedLatin;
+                } else {
+                    // Intentar con ISO-8859-1 (Latin-1)
+                    const decodedIso = this.tryDecodeWithEncoding(bytes, 'iso-8859-1');
+                    if (!this.hasEncodingIssues(decodedIso)) {
+                        console.log('[FilePickerService] Archivo detectado como ISO-8859-1, convertido a UTF-8');
+                        decoded = decodedIso;
+                    }
+                }
+            }
+
+            // Aplicar correcciones adicionales si aún hay problemas
+            return this.fixEncodingIssues(decoded);
         } catch (error) {
-            console.warn('[FilePickerService] Error decodificando base64, intentando como texto plano:', error);
-            // Si falla decodificación, asumir que ya es texto
-            return base64;
+            console.warn('[FilePickerService] Error decodificando base64:', error);
+            // Si falla decodificación, intentar limpiar como texto plano
+            return this.fixEncodingIssues(base64);
         }
     }
 
     /**
-     * Verifica si el contenido parece ser texto plano
+     * Intenta decodificar bytes con una codificación específica
+     */
+    private tryDecodeWithEncoding(bytes: Uint8Array, encoding: string): string {
+        try {
+            const decoder = new TextDecoder(encoding);
+            return decoder.decode(bytes);
+        } catch {
+            return '';
+        }
+    }
+
+    /**
+     * Detecta si el texto tiene problemas de codificación comunes
+     * (caracteres UTF-8 mal interpretados)
+     */
+    private hasEncodingIssues(text: string): boolean {
+        // Patrones comunes de UTF-8 mal decodificado
+        const corruptPatterns = [
+            /Ã¡/,  // á mal decodificado
+            /Ã©/,  // é mal decodificado  
+            /Ã­/,  // í mal decodificado
+            /Ã³/,  // ó mal decodificado
+            /Ãº/,  // ú mal decodificado
+            /Ã±/,  // ñ mal decodificado
+            /Ã¼/,  // ü mal decodificado
+            /Â°/,  // ° mal decodificado
+            /Ã‰/,  // É mal decodificado
+            /Ã'/,  // Ñ mal decodificado
+            /â€/,  // Comillas tipográficas mal decodificadas
+            /\ufffd/  // Carácter de reemplazo Unicode
+        ];
+
+        return corruptPatterns.some(pattern => pattern.test(text));
+    }
+
+    /**
+     * Corrige problemas de codificación conocidos
+     * Mapea secuencias UTF-8 mal interpretadas a los caracteres correctos
+     */
+    private fixEncodingIssues(text: string): string {
+        // Mapa de correcciones: UTF-8 mal interpretado -> carácter correcto
+        const fixes: [RegExp, string][] = [
+            // Vocales acentuadas minúsculas
+            [/Ã¡/g, 'á'],
+            [/Ã©/g, 'é'],
+            [/Ã­/g, 'í'],
+            [/Ã³/g, 'ó'],
+            [/Ãº/g, 'ú'],
+            // Vocales acentuadas mayúsculas
+            [/Ã/g, 'Á'],
+            [/Ã‰/g, 'É'],
+            [/Ã/g, 'Í'],
+            [/Ã"/g, 'Ó'],
+            [/Ãš/g, 'Ú'],
+            // Ñ y ñ
+            [/Ã±/g, 'ñ'],
+            [/Ã'/g, 'Ñ'],
+            // Diéresis
+            [/Ã¼/g, 'ü'],
+            [/Ãœ/g, 'Ü'],
+            // Otros caracteres especiales
+            [/Â°/g, '°'],
+            [/Â¿/g, '¿'],
+            [/Â¡/g, '¡'],
+            // Comillas tipográficas
+            [/â€œ/g, '"'],
+            [/â€/g, '"'],
+            [/â€™/g, "'"],
+            [/â€˜/g, "'"],
+            // Guiones
+            [/â€"/g, '–'],
+            [/â€"/g, '—'],
+            // Euro y otros
+            [/â‚¬/g, '€'],
+        ];
+
+        let fixed = text;
+        for (const [pattern, replacement] of fixes) {
+            fixed = fixed.replace(pattern, replacement);
+        }
+
+        return fixed;
+    }
+
+    /**
+     * Verifica si el contenido parece ser texto plano (no Base64)
      */
     private isPlainText(content: string): boolean {
-        // Si tiene caracteres de CSV/JSON, probablemente es texto plano
-        return content.includes(',') ||
-            content.includes('{') ||
-            content.includes('\n');
+        // Base64 válido solo contiene estos caracteres: A-Z, a-z, 0-9, +, /, =
+        // Si tiene otros caracteres comunes de CSV/JSON, es texto plano
+        const hasNonBase64 = /[;:{}[\]\n\r]/.test(content);
+        const hasNewlines = content.includes('\n') || content.includes('\r');
+        const startsWithHeader = /^(Student|ID|Nombre|")/i.test(content.trim());
+
+        return hasNonBase64 || hasNewlines || startsWithHeader;
     }
 
     /**

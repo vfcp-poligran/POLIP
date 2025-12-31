@@ -163,10 +163,17 @@ export class CursosPage implements ViewWillEnter {
     this.menuController.toggle('cursos-page-content');
   }
 
+  /**
+   * Confirmar eliminación de curso desde el menú lateral (móvil)
+   * No requiere estar en modo edición
+   */
   async confirmarEliminacion(curso: any) {
-    if (this.modoEdicion()) {
-      await this.confirmarEliminarCurso(curso);
-    }
+    // Cerrar el menú lateral primero
+    await this.closeMenu();
+
+    // Mostrar diálogo de confirmación (crear evento dummy para eliminarCurso)
+    const dummyEvent = { stopPropagation: () => { } } as Event;
+    await this.eliminarCurso(curso, dummyEvent);
   }
   busquedaTermino = signal<string>(''); // Término de búsqueda
 
