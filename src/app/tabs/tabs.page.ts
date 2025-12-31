@@ -59,6 +59,8 @@ import {
   personOutline,
   peopleOutline,
   searchOutline,
+  search,
+  close,
   closeOutline,
   menuOutline,
   chevronForwardOutline,
@@ -121,6 +123,15 @@ export interface NavigationItem {
       transition(':leave', [
         animate('300ms ease-in-out', style({ height: '0', opacity: '0' }))
       ])
+    ]),
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ height: '0', opacity: '0', overflow: 'hidden' }),
+        animate('250ms ease-out', style({ height: '*', opacity: '1' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ height: '0', opacity: '0' }))
+      ])
     ])
   ]
 })
@@ -152,6 +163,11 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   // Búsqueda global
   busquedaGlobal = '';
+
+  // Panel de búsqueda móvil
+  isSearchOpen = false;
+  globalSearchTerm = '';
+  globalSearchResults: Array<{ id: string; type: 'student' | 'course'; name: string; meta: string }> = [];
 
   // Detectar si es desktop o móvil
   isDesktop = false;
@@ -362,9 +378,75 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     return parseInt(value, 10) || 0;
   }
 
+  /** Toggle del panel de búsqueda móvil */
+  toggleSearch(): void {
+    this.isSearchOpen = !this.isSearchOpen;
+    if (!this.isSearchOpen) {
+      this.globalSearchTerm = '';
+      this.globalSearchResults = [];
+    }
+  }
 
+  /** Maneja la búsqueda global */
+  onGlobalSearch(event: any): void {
+    const term = event.target?.value?.toLowerCase() || '';
+    if (!term || term.length < 2) {
+      this.globalSearchResults = [];
+      return;
+    }
 
+    // Buscar en cursos y estudiantes
+    const cursos = this.dataService.cursos();
+    const results: Array<{ id: string; type: 'student' | 'course'; name: string; meta: string }> = [];
 
+    Object.entries(cursos || {}).forEach(([codigo, curso]) => {
+      // Buscar el curso por nombre o código
+      if (codigo.toLowerCase().includes(term) || (curso as any).nombre?.toLowerCase().includes(term)) {
+        results.push({
+          id: codigo,
+          type: 'course',
+          name: (curso as any).nombre || codigo,
+          meta: `${(curso as any).integrantes?.length || 0} estudiantes`
+        });
+      }
 
+      // Buscar estudiantes
+      ((curso as any).integrantes || []).forEach((est: any) => {
+        const nombreCompleto = `${est.nombres || ''} ${est.apellidos || ''}`.toLowerCase();
+        if (nombreCompleto.includes(term) || est.correo?.toLowerCase().includes(term)) {
+          results.push({
+            id: est.correo || est.id,
+            type: 'student',
+            name: `${est.nombres || ''} ${est.apellidos || ''}`.trim(),
+            meta: `${codigo} - Grupo ${est.grupo || '?'}`
+          });
+        }
+      });
+    });
+
+    this.globalSearchResults = results.slice(0, 10); // Limitar a 10 resultados
+  }
+
+  /** Ejecutar búsqueda al presionar Enter */
+  executeSearch(): void {
+    if (this.globalSearchResults.length > 0) {
+      this.navigateToResult(this.globalSearchResults[0]);
+    }
+  }
+
+  /** Navegar al resultado seleccionado */
+  navigateToResult(result: { id: string; type: 'student' | 'course'; name: string; meta: string }): void {
+    this.isSearchOpen = false;
+    this.globalSearchTerm = '';
+    this.globalSearchResults = [];
+
+    if (result.type === 'course') {
+      this.router.navigate(['/tabs/cursos'], { queryParams: { curso: result.id } });
+    } else {
+      // Para estudiantes, navegar al curso correspondiente
+      const cursoId = result.meta.split(' - ')[0];
+      this.router.navigate(['/tabs/inicio'], { queryParams: { buscar: result.name } });
+    }
+  }
 
 }
