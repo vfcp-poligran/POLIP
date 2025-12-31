@@ -31,7 +31,15 @@ import {
     AlertController,
     ViewWillEnter,
     IonFab,
-    IonFabButton
+    IonFabButton,
+    IonList,
+    IonItem,
+    IonAccordion,
+    IonAccordionGroup,
+    IonDatetime,
+    IonDatetimeButton,
+    IonSelect,
+    IonSelectOption
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -57,6 +65,7 @@ import {
     mailOutline,
     ellipsisHorizontalOutline,
     checkmarkOutline,
+    checkmark,
     trashOutline,
     createOutline,
     syncOutline,
@@ -140,7 +149,14 @@ interface EstudianteSeleccionado {
         IonCardTitle,
         IonCardSubtitle,
         IonSkeletonText,
-
+        IonList,
+        IonItem,
+        IonAccordion,
+        IonAccordionGroup,
+        IonDatetime,
+        IonDatetimeButton,
+        IonSelect,
+        IonSelectOption
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -157,6 +173,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     seleccionadosIndices = signal<Set<number>>(new Set()); // Índices seleccionados en lista Novedades
     sugerenciasCursos = signal<CursoResumen[]>([]); // Para comando #C
     busquedaTermino = signal<string>('');
+    busquedaHistorialTermino = signal<string>(''); // Nuevo buscador exclusivo historial
     resultadosBusqueda = signal<EstudianteSeleccionado[]>([]);
     isModalRegistroVisible = signal<boolean>(false);
     isSearchModalVisible = signal<boolean>(false);
@@ -277,7 +294,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ closeOutline, schoolOutline, chevronForwardOutline, addOutline, timeOutline, listOutline, trashOutline, documentTextOutline, informationCircleOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, checkmarkCircleOutline, playOutline, personOutline, peopleOutline, closeCircle, personAddOutline, pinOutline, lockOpenOutline, checkmarkCircle, checkboxOutline, squareOutline, search, add, checkmarkOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, calendarOutline, notificationsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
+        addIcons({ timeOutline, listOutline, trashOutline, documentTextOutline, informationCircleOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, checkmarkCircleOutline, calendarOutline, playOutline, notificationsOutline, closeOutline, closeCircle, personAddOutline, schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, checkboxOutline, squareOutline, search, add, checkmarkOutline, checkmark, chevronForwardOutline, addOutline, personOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -1010,9 +1027,75 @@ export class InicioPage implements OnInit, ViewWillEnter {
         await alert.present();
     }
 
-    /**
-     * Obtiene el nombre legible de una novedad
-     */
+    // === CONTROL DE SESIÓN MEJORADO ===
+
+    onSesionInicioChange(event: any) {
+        this.sesionInicio.set(event.detail.value);
+        this.validarRangoSesion();
+    }
+
+    onSesionFinChange(event: any) {
+        this.sesionFin.set(event.detail.value);
+        this.validarRangoSesion();
+    }
+
+    private validarRangoSesion() {
+        const inicio = new Date(this.sesionInicio());
+        const fin = new Date(this.sesionFin());
+
+        if (fin < inicio) {
+            // Ajustar fin automáticamente si es menor a inicio
+            this.sesionFin.set(new Date(inicio.getTime() + 2 * 60 * 60 * 1000).toISOString());
+        }
+    }
+
+    async activarSesionLocal(): Promise<void> {
+        if (!this.sesionInicio() || !this.sesionFin()) return;
+
+        this.sesionActiva.set(true);
+        this.generarAlertasSesion();
+
+        const toast = await this.toastController.create({
+            message: 'Sesión iniciada correctamente',
+            duration: 2000,
+            color: 'success'
+        });
+        await toast.present();
+    }
+
+    private generarAlertasSesion() {
+        const alertas: Array<{ id: string; tipo: 'info' | 'warning' | 'error'; mensaje: string }> = [];
+        const inicio = new Date(this.sesionInicio());
+        const now = new Date();
+
+        // Alerta de tiempo transcurrido
+        if (now > inicio) {
+            const diffMinutes = Math.floor((now.getTime() - inicio.getTime()) / 60000);
+            if (diffMinutes > 0) {
+                alertas.push({
+                    id: Date.now().toString() + '1',
+                    tipo: 'info',
+                    mensaje: `Sesión activa desde hace ${diffMinutes} minutos`
+                });
+            }
+        }
+
+        // Alerta placeholder de novedades pendientes
+        const pendientes = this.estudiantesRegistrados().length; // Usando registrados como pendientes por confirmar
+        if (pendientes > 0) {
+            alertas.push({
+                id: Date.now().toString() + '2',
+                tipo: 'warning',
+                mensaje: `${pendientes} novedades pendientes en el buffer`
+            });
+        }
+
+        this.alertasSesion.set(alertas);
+    }
+
+    descartarAlerta(id: string) {
+        this.alertasSesion.update(current => current.filter(a => a.id !== id));
+    }
     getNombreNovedad(tipo: string): string {
         const nombres: Record<string, string> = {
             'trabaja_solo': 'Trabaja Solo',
@@ -1375,5 +1458,88 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const days = Math.floor(hours / 24);
         if (days === 1) return 'Ayer';
         return `Hace ${days} días`;
+    }
+    // === SELECCIÓN MULTIPLE DESDE MODAL ===
+
+    isEstudianteSeleccionadoModal(correo: string): boolean {
+        return this.estudiantesSeleccionados().some(e => e.correo === correo);
+    }
+
+    toggleEstudianteSeleccionModal(estudiante: any, cursoCodigo: string) {
+        const estSeleccionado: EstudianteSeleccionado = {
+            correo: estudiante.correo,
+            nombre: estudiante.nombres || estudiante.nombre, // Compatibilidad con Estudiante model
+            curso: cursoCodigo,
+            grupo: String(estudiante.grupo)
+        };
+
+        this.estudiantesSeleccionados.update(list => {
+            const exists = list.some(e => e.correo === estSeleccionado.correo);
+            if (exists) {
+                return list.filter(e => e.correo !== estSeleccionado.correo);
+            } else {
+                return [...list, estSeleccionado];
+            }
+        });
+    }
+
+    isGrupoSeleccionadoModal(cursoCodigo: string, grupo: string): boolean {
+        const estudiantesGrupo = this.dataService.cursos()[cursoCodigo]?.filter(e => String(e.grupo) === String(grupo)) || [];
+        if (estudiantesGrupo.length === 0) return false;
+
+        const seleccionados = this.estudiantesSeleccionados();
+        // Verificar si TODOS los del grupo están seleccionados
+        return estudiantesGrupo.every(e => seleccionados.some(sel => sel.correo === e.correo));
+    }
+
+    toggleGrupoSeleccionModal(cursoCodigo: string, grupo: string) {
+        const estudiantesGrupo = this.dataService.cursos()[cursoCodigo]?.filter(e => String(e.grupo) === String(grupo)) || [];
+        if (estudiantesGrupo.length === 0) return;
+
+        const todosSeleccionados = this.isGrupoSeleccionadoModal(cursoCodigo, grupo);
+
+        this.estudiantesSeleccionados.update(list => {
+            if (todosSeleccionados) {
+                // Deseleccionar todos los del grupo
+                return list.filter(sel => !estudiantesGrupo.some(e => e.correo === sel.correo));
+            } else {
+                // Agregar los que falten
+                const nuevos = estudiantesGrupo
+                    .filter(e => !list.some(sel => sel.correo === e.correo))
+                    .map(e => ({
+                        correo: e.correo,
+                        nombre: e.nombres || (e as any).nombre,
+                        curso: cursoCodigo,
+                        grupo: String(e.grupo)
+                    }));
+                return [...list, ...nuevos];
+            }
+        });
+    }
+
+    agregarAlBuffer(): void {
+        const seleccionados = this.estudiantesSeleccionados();
+        if (seleccionados.length === 0) return;
+
+        this.estudiantesRegistrados.update(list => {
+            const nuevos = seleccionados.filter(sel => !list.some(reg => reg.correo === sel.correo));
+            return [...list, ...nuevos];
+        });
+
+        this.estudiantesSeleccionados.set([]);
+        this.closeSearchModal();
+
+        this.toastController.create({
+            message: `${seleccionados.length} estudiantes agregados al buffer`,
+            duration: 2000,
+            color: 'success'
+        }).then(t => t.present());
+    }
+
+    /**
+     * Obtiene los estudiantes de un curso y grupo específico
+     */
+    getEstudiantesGrupo(cursoCodigo: string, grupo: string): any[] {
+        return this.dataService.cursos()[cursoCodigo]?.filter(e => String(e.grupo) === String(grupo)) || [];
     }
 }
