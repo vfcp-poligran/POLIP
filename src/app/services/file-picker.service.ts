@@ -151,7 +151,8 @@ export class FilePickerService {
     }
 
     /**
-     * Convierte data base64 a texto
+     * Convierte data base64 a texto con soporte UTF-8
+     * Maneja correctamente caracteres acentuados (é, á, ñ, etc.)
      */
     decodeBase64ToText(base64: string): string {
         try {
@@ -159,8 +160,22 @@ export class FilePickerService {
             if (this.isPlainText(base64)) {
                 return base64;
             }
-            return atob(base64);
-        } catch {
+
+            // Método correcto para decodificar Base64 a UTF-8:
+            // 1. atob() decodifica Base64 a bytes (como string Latin-1)
+            // 2. Convertir cada byte a Uint8Array
+            // 3. TextDecoder interpreta los bytes como UTF-8
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            // TextDecoder con UTF-8 maneja correctamente caracteres multi-byte
+            const decoder = new TextDecoder('utf-8');
+            return decoder.decode(bytes);
+        } catch (error) {
+            console.warn('[FilePickerService] Error decodificando base64, intentando como texto plano:', error);
             // Si falla decodificación, asumir que ya es texto
             return base64;
         }
@@ -208,7 +223,7 @@ export class FilePickerService {
                 reject(new Error('Error al leer el archivo'));
             };
 
-            reader.readAsText(file);
+            reader.readAsText(file, 'UTF-8');
         });
     }
 

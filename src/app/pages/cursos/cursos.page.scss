@@ -495,9 +495,18 @@ ion-menu {
     border-top: none;
   }
 
-  // En modo Vista, limitar el ancho del parsed-course-info para que coincida con la columna izquierda del modo Editar
+  // MOBILE: Contenedor scrolleable para evitar solapamiento
+  @include bp.mobile-only {
+    padding: spacing('xxs') spacing('xs');
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // En modo Vista, limitar el ancho del parsed-course-info
   >.parsed-course-info {
-    max-width: calc(100% - 340px - spacing('lg')); // Mismo ancho que la columna izquierda en desktop
+    max-width: calc(100% - 340px - spacing('lg'));
 
     @include bp.tablet-only {
       max-width: calc(100% - 300px - spacing('md'));
@@ -509,8 +518,8 @@ ion-menu {
   }
 
   .form-main-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 340px; // Two columns on desktop
+    display: grid;
+    grid-template-columns: 1fr 340px;
     grid-template-rows: auto;
     gap: spacing('lg');
     align-items: flex-start;
@@ -524,30 +533,35 @@ ion-menu {
 
     @include bp.mobile-only {
       grid-template-columns: 1fr;
-      gap: spacing('md');
+      gap: spacing('sm');
     }
 
-    // Columna izquierda - debe ocupar el primer espacio del grid
+    // Columna izquierda
     .main-content-side {
       display: flex;
       flex-direction: column;
       gap: spacing('md');
-      min-width: 0; // Prevent flex overflow
-      grid-column: 1; // Explicitly first column
+      min-width: 0;
+      grid-column: 1;
+
+      @include bp.mobile-only {
+        gap: spacing('sm');
+      }
     }
 
-    // Columna derecha - debe ocupar el segundo espacio del grid
+    // Columna derecha
     .config-side-panel {
       display: flex;
       flex-direction: column;
       gap: spacing('md');
       position: sticky;
       top: 0;
-      grid-column: 2; // Explicitly second column
+      grid-column: 2;
 
       @include bp.mobile-only {
         position: static;
-        grid-column: 1; // Stack on mobile
+        grid-column: 1;
+        gap: spacing('sm');
       }
     }
 
@@ -973,55 +987,61 @@ ion-menu {
 
   // Grid de características del curso usando ion-grid nativo
   .parsed-course-info {
-    // Ocupar todo el ancho disponible del contenedor padre
+    // CSS Custom Properties para responsividad limpia
+    --grid-margin-top: #{spacing('md')};
+    --grid-padding-block: #{spacing('md')};
+    --grid-column-padding: 8px;
+    --grid-border-top: 1px dashed #{rgba($azul-oscuro, 0.08)};
+    --row-margin-bottom: #{spacing('sm')};
+    --col-flex: 1 1 0px;
+    --col-padding: 0 4px;
+
+    // Layout base
     width: 100%;
     box-sizing: border-box;
-
-    padding: spacing('md') 0;
-
-    // Explicitly set zero horizontal margins for desktop
-    margin: spacing('md') 0 0 0;
+    padding: var(--grid-padding-block) 0;
+    margin: var(--grid-margin-top) 0 0 0;
     margin-inline: 0;
-
-    border-top: 1px dashed rgba($azul-oscuro, 0.08);
-
-    // Variables de Ionic Grid para control de ancho
+    border-top: var(--grid-border-top);
     --ion-grid-padding: 0;
-    --ion-grid-column-padding: 8px;
-    --ion-grid-width: 100%; // Force full width
-    max-width: none; // Override any inherited max-width from Ionic defaults
+    --ion-grid-column-padding: var(--grid-column-padding);
+    --ion-grid-width: 100%;
+    max-width: none;
 
+    // MOBILE: Compacto
     @include bp.mobile-only {
-      margin-left: 0;
-      margin-right: 0;
-      padding-left: 0;
-      padding-right: 0;
+      --grid-margin-top: #{spacing('xs')};
+      --grid-padding-block: #{spacing('xs')};
+      --grid-column-padding: #{spacing('xxs')};
+      --grid-border-top: none;
+      --row-margin-bottom: #{spacing('xs')};
+      --col-flex: 0 0 50%;
+      --col-padding: 0 #{spacing('xxs')};
     }
 
     ion-row {
-      // Separación entre filas
-      margin-bottom: spacing('sm');
-      display: flex !important; // Force flex
-      flex-wrap: nowrap !important; // Desktop: everything in one row
+      margin-bottom: var(--row-margin-bottom);
+      display: flex;
+      flex-wrap: nowrap;
       align-items: stretch;
-      width: 100% !important;
+      width: 100%;
 
       &:last-child {
         margin-bottom: 0;
       }
+
+      @include bp.mobile-only {
+        flex-wrap: wrap;
+        gap: spacing('xxs');
+      }
     }
 
     ion-col {
-      padding: 0 4px; // tighter padding for more content space
+      padding: var(--col-padding);
       display: flex;
       flex-direction: column;
-      flex: 1 1 0px !important; // Force equal width
-      min-width: 0; // Allow shrinking
-
-      @include bp.mobile-only {
-        flex: 0 0 50% !important; // 2 per row on mobile
-        flex-wrap: wrap;
-      }
+      flex: var(--col-flex);
+      min-width: 0;
     }
 
     // Items de características individuales
@@ -1074,46 +1094,54 @@ ion-menu {
     }
 
     // ===============================================
-    // MOBILE COMPACT STYLES (Requested hierarchy)
+    // MOBILE COMPACT STYLES
     // ===============================================
     &.mobile-compact {
+      // Variables móviles compactas
+      --compact-item-height: 40px;
+      --compact-item-padding: #{spacing('xxs')} #{spacing('xs')};
+      --compact-border-width: 2px;
+      --compact-label-size: #{font-size('xs')};
+      --compact-value-size: 0.75rem;
+
       @include bp.mobile-only {
         margin-top: 0;
-        padding-top: 0;
+        padding-top: spacing('xxs');
         border-top: none;
 
         ion-row {
-          flex-wrap: wrap !important;
-          gap: 6px;
+          flex-wrap: wrap;
+          gap: spacing('xxs');
+          margin-bottom: spacing('xxs');
         }
 
         ion-col {
-          flex: 1 1 45% !important; // 2 items per row
+          flex: 1 1 45%;
           max-width: 50%;
-          min-width: 40%; // Allow more flexibility
-          padding: 0;
+          min-width: 40%;
+          padding: 0 spacing('xxs');
         }
 
         .characteristic-item {
-          min-height: 48px;
-          padding: 6px 8px;
-          border-left-width: 3px;
-          background: rgba($azul-oscuro, 0.02);
+          min-height: var(--compact-item-height);
+          padding: var(--compact-item-padding);
+          border-left-width: var(--compact-border-width);
+          background: $azul-oscuro-03;
           box-shadow: none;
-          border: 1px solid rgba($azul-oscuro, 0.05);
+          border: 1px solid $azul-oscuro-08;
 
           h4.label {
-            font-size: 0.6rem; // Small & Sharp
-            letter-spacing: 0.5px;
-            color: color.adjust($gris-medio, $lightness: 5%);
-            margin-bottom: 2px;
+            font-size: var(--compact-label-size);
+            letter-spacing: 0.3px;
+            color: $gris-medio;
+            margin-bottom: spacing('xxs');
           }
 
           p.value {
-            font-size: 0.85rem; // Compact & Readable
-            line-height: 1.2;
+            font-size: var(--compact-value-size);
+            line-height: 1.1;
             color: $azul-oscuro;
-            font-weight: 600;
+            font-weight: font-weight('semibold');
           }
         }
       }
