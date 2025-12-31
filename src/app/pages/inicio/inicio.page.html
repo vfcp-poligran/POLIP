@@ -2,8 +2,8 @@
 
 <ion-content id="main-content" class="inicio-content" [fullscreen]="true">
     <div class="page-container">
-        <!-- HEADER CON BÚSQUEDA (Simplificado) -->
-        <div class="page-header">
+        <!-- HEADER CON BÚSQUEDA (Simplificado - Solo Desktop/Tablet) -->
+        <div class="page-header ion-hide-md-down">
             <!-- Barra de búsqueda -->
             <div class="search-tipos-row">
                 <div class="search-container">
@@ -613,6 +613,17 @@
         </div>
 
 
+
+        <!-- FAB Registrar (Solo Móvil) -->
+        <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 70px" class="ion-hide-lg-up"
+            *ngIf="estudiantesSeleccionados().length > 0">
+            <ion-fab-button color="primary" (click)="registrarEnLista()">
+                <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+            <ion-badge color="danger" class="fab-badge"
+                style="position: absolute; top: -5px; right: -5px; border-radius: 50%;">{{
+                estudiantesSeleccionados().length }}</ion-badge>
+        </ion-fab>
 
         <!-- MODAL DE REGISTRO DE NOVEDAD -->
         <ion-modal [isOpen]="isModalRegistroVisible()" (didDismiss)="cerrarModalRegistro()" class="registration-modal"
