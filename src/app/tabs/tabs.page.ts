@@ -210,7 +210,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     addIcons({
       // Filled icons
       home, library, clipboard, ribbon, settings, school, people, grid, trophy, chatbubble, person, book,
-      documentText, star, cog, speedometer,
+      documentText, star, cog, speedometer, search, close,
       // Estado icons
       checkmarkCircle, gitMerge, closeCircle,
       // Outline icons

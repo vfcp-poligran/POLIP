@@ -430,6 +430,92 @@ div.main-content-area {
 }
 
 // ========================================
+// PANEL DE BÚSQUEDA MÓVIL DESPLEGABLE
+// ========================================
+.mobile-search-panel {
+  background: var(--azul-oscuro, #0f385a);
+  padding: 8px 12px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .global-searchbar {
+    --background: rgba(255, 255, 255, 0.95);
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --placeholder-color: #666;
+    --icon-color: var(--azul-oscuro);
+    margin: 0;
+    padding: 0;
+  }
+
+  .search-results-panel {
+    margin-top: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: background 0.15s ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover, &:active {
+        background: rgba(31, 178, 222, 0.08);
+      }
+
+      ion-icon {
+        font-size: 20px;
+        color: var(--azul-oscuro);
+        flex-shrink: 0;
+
+        &.chevron {
+          color: #999;
+          font-size: 16px;
+          margin-left: auto;
+        }
+      }
+
+      .result-info {
+        flex: 1;
+        min-width: 0;
+
+        .result-name {
+          display: block;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: #333;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .result-meta {
+          display: block;
+          font-size: 0.75rem;
+          color: #666;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+}
+
+// Ajuste del contenido cuando el panel de búsqueda está abierto
+.main-content-area.search-open {
+  padding-top: calc(48px + 60px + env(safe-area-inset-top)); // Header + Search panel
+}
+
+// ========================================
 // LOGO EN SIDEBAR
 // ========================================
 .sidebar-logo-container {
