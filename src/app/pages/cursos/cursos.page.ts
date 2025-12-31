@@ -1165,6 +1165,15 @@ export class CursosPage implements ViewWillEnter {
         const lineas = contenido.split('\n').filter(l => l.trim());
         if (lineas.length < 2) throw new Error('Archivo CSV vacío');
 
+        // Log para debugging de codificación
+        const primeraLinea = lineas[0];
+        const tieneCaracteresEspeciales = /[áéíóúñüÁÉÍÓÚÑÜ¿¡°]/.test(primeraLinea);
+        const tieneCaracteresCorruptos = /[Ã¡Ã©Ã­Ã³ÃºÃ±Ã¼Â]/.test(primeraLinea);
+        Logger.log(`[CursosPage] 📄 CSV Personas - Líneas: ${lineas.length}, Caracteres especiales: ${tieneCaracteresEspeciales}, Corruptos: ${tieneCaracteresCorruptos}`);
+        if (tieneCaracteresCorruptos) {
+          Logger.warn('[CursosPage] ⚠️ Se detectaron caracteres corruptos en el CSV, la corrección de codificación puede no haber funcionado completamente');
+        }
+
         const headers = this.parseCSVRow(lineas[0]);
         const nombreIndex = headers.findIndex(h => {
           const lower = h.toLowerCase().trim();
@@ -1556,6 +1565,15 @@ export class CursosPage implements ViewWillEnter {
   }> {
     const lineas = contenido.split('\n').filter(l => l.trim());
     if (lineas.length < 3) return [];
+
+    // Log para debugging de codificación
+    const primeraLinea = lineas[0];
+    const tieneCaracteresEspeciales = /[áéíóúñüÁÉÍÓÚÑÜ¿¡°]/.test(primeraLinea);
+    const tieneCaracteresCorruptos = /[Ã¡Ã©Ã­Ã³ÃºÃ±Ã¼Â]/.test(primeraLinea);
+    Logger.log(`[CursosPage] 📊 CSV Calificaciones - Líneas: ${lineas.length}, Caracteres especiales: ${tieneCaracteresEspeciales}, Corruptos: ${tieneCaracteresCorruptos}`);
+    if (tieneCaracteresCorruptos) {
+      Logger.warn('[CursosPage] ⚠️ Se detectaron caracteres corruptos en el CSV de calificaciones');
+    }
 
     // Saltar header (línea 0) y "Points Possible" (línea 1)
     const calificaciones = [];

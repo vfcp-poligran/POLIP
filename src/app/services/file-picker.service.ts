@@ -313,15 +313,36 @@ export class FilePickerService {
     }
 
     /**
-     * Lee un archivo File (desde input HTML)
+     * Lee un archivo File (desde input HTML) con soporte multi-codificación
+     * Intenta detectar y corregir problemas de codificación automáticamente
      */
     async readFileFromInput(file: File): Promise<string> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
 
-            reader.onload = (e) => {
-                const content = e.target?.result as string;
-                resolve(content || '');
+            reader.onload = async (e) => {
+                let content = e.target?.result as string || '';
+
+                // Verificar si hay problemas de codificación
+                if (this.hasEncodingIssues(content)) {
+                    console.log('[FilePickerService] Detectados problemas de codificación en archivo web, intentando alternativas...');
+
+                    // Intentar leer con ArrayBuffer para probar otras codificaciones
+                    try {
+                        const alternativeContent = await this.readWithAlternativeEncoding(file);
+                        if (alternativeContent && !this.hasEncodingIssues(alternativeContent)) {
+                            content = alternativeContent;
+                        } else {
+                            // Aplicar correcciones manuales
+                            content = this.fixEncodingIssues(content);
+                        }
+                    } catch {
+                        // Si falla, aplicar correcciones manuales
+                        content = this.fixEncodingIssues(content);
+                    }
+                }
+
+                resolve(content);
             };
 
             reader.onerror = () => {
@@ -329,6 +350,50 @@ export class FilePickerService {
             };
 
             reader.readAsText(file, 'UTF-8');
+        });
+    }
+
+    /**
+     * Intenta leer el archivo con codificaciones alternativas (Windows-1252, ISO-8859-1)
+     */
+    private async readWithAlternativeEncoding(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const arrayBuffer = e.target?.result as ArrayBuffer;
+                if (!arrayBuffer) {
+                    reject(new Error('No se pudo leer el archivo'));
+                    return;
+                }
+
+                const bytes = new Uint8Array(arrayBuffer);
+
+                // Probar Windows-1252 (común en Excel/Windows)
+                let decoded = this.tryDecodeWithEncoding(bytes, 'windows-1252');
+                if (decoded && !this.hasEncodingIssues(decoded)) {
+                    console.log('[FilePickerService] Archivo web detectado como Windows-1252');
+                    resolve(decoded);
+                    return;
+                }
+
+                // Probar ISO-8859-1
+                decoded = this.tryDecodeWithEncoding(bytes, 'iso-8859-1');
+                if (decoded && !this.hasEncodingIssues(decoded)) {
+                    console.log('[FilePickerService] Archivo web detectado como ISO-8859-1');
+                    resolve(decoded);
+                    return;
+                }
+
+                // Si nada funciona, devolver vacío
+                resolve('');
+            };
+
+            reader.onerror = () => {
+                reject(new Error('Error al leer archivo con codificación alternativa'));
+            };
+
+            reader.readAsArrayBuffer(file);
         });
     }
 
