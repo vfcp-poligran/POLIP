@@ -81,7 +81,7 @@ import {
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
     analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline, playOutline, stopCircleOutline,
-    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search
+    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -319,7 +319,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ timeOutline, listOutline, trashOutline, documentTextOutline, informationCircleOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, checkmarkCircleOutline, calendarOutline, playOutline, notificationsOutline, closeOutline, closeCircle, personAddOutline, schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, checkboxOutline, squareOutline, search, add, checkmarkOutline, checkmark, chevronForwardOutline, addOutline, personOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
+        addIcons({ timeOutline, archiveOutline, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline, notificationsOutline, closeOutline, trashOutline, closeCircle, personAddOutline, schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, search, add, checkmarkOutline, checkmark, listOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, calendarOutline, playOutline, addOutline, personOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -775,54 +775,38 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const cursoId = this.cursoSeleccionado();
         if (!cursoId) return;
 
-        // Asegurar que hay una sesión iniciada
-        if (!this.sessionActual()) {
-            await this.iniciarRevision(`Revisión automática ${new Date().toLocaleDateString()}`);
-        }
-
-        const session = this.sessionActual()!;
         const comentarios = this.descripcionNovedad();
         const grupoNovedadId = `GN-${Date.now()}`;
         const esGrupalSeleccionado = this.modoNovedad() === 'grupal';
 
         // Preparar lote de novedades
         const novedadesParaBatch: any[] = [];
-        const novedadesActuales = this.novedadService.novedades();
 
         for (const item of resumen) {
             const estudiante = this.estudiantesRegistrados().find(e => e.correo === item.correo);
             if (!estudiante) continue;
 
             for (const tipoNovedad of item.novedades) {
-                // Validación de duplicados en la misma sesión
-                const esDuplicado = novedadesActuales.some(n =>
-                    n.estudianteCorreo === estudiante.correo &&
-                    n.tipoNovedadId === tipoNovedad &&
-                    n.sessionId === session.id
-                );
-
-                if (esDuplicado) continue;
-
                 novedadesParaBatch.push({
                     estudianteCorreo: estudiante.correo,
                     estudianteNombre: estudiante.nombre,
                     cursoId: estudiante.curso,
+                    cursoNombre: this.cursosResumen().find(c => c.codigo === estudiante.curso)?.nombre,
                     grupo: estudiante.grupo,
                     tipoNovedadId: tipoNovedad,
                     tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
-                    origen: 'presencial',
+                    origen: 'presencial' as const,
                     descripcion: comentarios || undefined,
-                    estado: 'en_revision',
+                    estado: 'en_revision' as const,
                     grupoNovedadId: grupoNovedadId,
-                    esNovedadGrupal: esGrupalSeleccionado,
-                    sessionId: session.id
+                    esNovedadGrupal: esGrupalSeleccionado
                 });
             }
         }
 
         if (novedadesParaBatch.length === 0) {
             const toast = await this.toastController.create({
-                message: 'Estas novedades ya fueron registradas en esta sesión',
+                message: 'No hay novedades para registrar',
                 duration: 2000,
                 color: 'warning'
             });
@@ -873,129 +857,6 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     private alertCtrl = inject(AlertController);
 
-    /**
-     * Inicia una sesión de revisión
-     */
-    async iniciarRevision(nombreAuto?: string): Promise<void> {
-        const cursoId = this.cursoSeleccionado();
-        if (!cursoId) {
-            const toast = await this.toastController.create({
-                message: 'Selecciona un curso primero',
-                duration: 2000,
-                color: 'warning'
-            });
-            await toast.present();
-            return;
-        }
-
-        if (nombreAuto) {
-            await this.ejecutarInicioSesion(nombreAuto, cursoId);
-            return;
-        }
-
-        const alert = await this.alertCtrl.create({
-            header: 'Nueva Sesión',
-            subHeader: 'Ingrese un nombre para identificar esta revisión',
-            inputs: [
-                {
-                    name: 'nombre',
-                    type: 'text',
-                    placeholder: `Revisión ${new Date().toLocaleDateString()}`,
-                    value: `Revisión ${this.novedadService.sesiones().length + 1}`
-                }
-            ],
-            buttons: [
-                {
-                    text: 'Cancelar',
-                    role: 'cancel'
-                },
-                {
-                    text: 'Iniciar',
-                    handler: (data) => {
-                        const nombre = data.nombre || `Revisión ${new Date().toLocaleDateString()}`;
-                        this.ejecutarInicioSesion(nombre, cursoId);
-                    }
-                }
-            ]
-        });
-
-        await alert.present();
-    }
-
-    private async ejecutarInicioSesion(nombre: string, cursoId: string) {
-        const session = await this.novedadService.iniciarSesionRevision(nombre, cursoId);
-        this.sessionActual.set(session);
-        this.tabHistorial.set('sesiones');
-
-        const toast = await this.toastController.create({
-            message: `Sesión iniciada: ${nombre}`,
-            duration: 2000,
-            color: 'primary'
-        });
-        await toast.present();
-    }
-
-    /**
-     * Pausa la sesión actual (vuelve a borrador)
-     */
-    async pausarRevision(): Promise<void> {
-        const session = this.sessionActual();
-        if (!session) return;
-
-        await this.novedadService.pausarSesionRevision(session.id);
-        this.sessionActual.set(null);
-
-        const toast = await this.toastController.create({
-            message: 'Sesión guardada como borrador',
-            duration: 2000,
-            color: 'medium'
-        });
-        await toast.present();
-    }
-
-    /**
-     * Reanuda una sesión
-     */
-    async reanudarRevision(s: SesionRevision): Promise<void> {
-        await this.novedadService.reanudarSesionRevision(s.id);
-        this.sessionActual.set({ ...s, estado: 'activo' });
-
-        const toast = await this.toastController.create({
-            message: `Sesión reanudada: ${s.nombre}`,
-            duration: 2000,
-            color: 'success'
-        });
-        await toast.present();
-    }
-
-    /**
-     * Elimina una sesión
-     */
-    async eliminarSesion(id: string): Promise<void> {
-        await this.novedadService.eliminarSesion(id);
-        if (this.sessionActual()?.id === id) {
-            this.sessionActual.set(null);
-        }
-    }
-
-    /**
-     * Cierra la sesión de revisión actual
-     */
-    async cerrarRevision(): Promise<void> {
-        const session = this.sessionActual();
-        if (!session) return;
-
-        await this.novedadService.cerrarSesionRevision(session.id);
-        this.sessionActual.set(null);
-
-        const toast = await this.toastController.create({
-            message: `Sesión finalizada: ${session.nombre}`,
-            duration: 2000,
-            color: 'success'
-        });
-        await toast.present();
-    }
-
     async eliminarNovedadItem(id: string) {
         const alert = await this.alertCtrl.create({
             header: 'Eliminar Registro',
@@ -1020,75 +881,6 @@ export class InicioPage implements OnInit, ViewWillEnter {
         await alert.present();
     }
 
-    // === CONTROL DE SESIÓN MEJORADO ===
-
-    onSesionInicioChange(event: any) {
-        this.sesionInicio.set(event.detail.value);
-        this.validarRangoSesion();
-    }
-
-    onSesionFinChange(event: any) {
-        this.sesionFin.set(event.detail.value);
-        this.validarRangoSesion();
-    }
-
-    private validarRangoSesion() {
-        const inicio = new Date(this.sesionInicio());
-        const fin = new Date(this.sesionFin());
-
-        if (fin < inicio) {
-            // Ajustar fin automáticamente si es menor a inicio
-            this.sesionFin.set(new Date(inicio.getTime() + 2 * 60 * 60 * 1000).toISOString());
-        }
-    }
-
-    async activarSesionLocal(): Promise<void> {
-        if (!this.sesionInicio() || !this.sesionFin()) return;
-
-        this.sesionActiva.set(true);
-        this.generarAlertasSesion();
-
-        const toast = await this.toastController.create({
-            message: 'Sesión iniciada correctamente',
-            duration: 2000,
-            color: 'success'
-        });
-        await toast.present();
-    }
-
-    private generarAlertasSesion() {
-        const alertas: Array<{ id: string; tipo: 'info' | 'warning' | 'error'; mensaje: string }> = [];
-        const inicio = new Date(this.sesionInicio());
-        const now = new Date();
-
-        // Alerta de tiempo transcurrido
-        if (now > inicio) {
-            const diffMinutes = Math.floor((now.getTime() - inicio.getTime()) / 60000);
-            if (diffMinutes > 0) {
-                alertas.push({
-                    id: Date.now().toString() + '1',
-                    tipo: 'info',
-                    mensaje: `Sesión activa desde hace ${diffMinutes} minutos`
-                });
-            }
-        }
-
-        // Alerta placeholder de novedades pendientes
-        const pendientes = this.estudiantesRegistrados().length; // Usando registrados como pendientes por confirmar
-        if (pendientes > 0) {
-            alertas.push({
-                id: Date.now().toString() + '2',
-                tipo: 'warning',
-                mensaje: `${pendientes} novedades pendientes en el buffer`
-            });
-        }
-
-        this.alertasSesion.set(alertas);
-    }
-
-    descartarAlerta(id: string) {
-        this.alertasSesion.update(current => current.filter(a => a.id !== id));
-    }
     getNombreNovedad(tipo: string): string {
         const nombres: Record<string, string> = {
             'trabaja_solo': 'Trabaja Solo',

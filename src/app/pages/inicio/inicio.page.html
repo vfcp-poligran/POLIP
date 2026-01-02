@@ -16,14 +16,14 @@
                             <div class="tab-item" [class.active]="tabHistorial() === 'historial'"
                                 (click)="tabHistorial.set('historial')">
                                 <ion-icon name="time-outline"></ion-icon>
-                                <span>Historia</span>
+                                <span>Historial</span>
                             </div>
-                            <div class="tab-item" [class.active]="tabHistorial() === 'sesiones'"
-                                (click)="tabHistorial.set('sesiones')">
-                                <ion-icon name="list-outline"></ion-icon>
-                                <span>Sesiones</span>
-                                @if (novedadService.sesionesBorrador().length > 0) {
-                                <ion-badge color="warning">{{ novedadService.sesionesBorrador().length
+                            <div class="tab-item" [class.active]="tabHistorial() === 'archivadas'"
+                                (click)="tabHistorial.set('archivadas')">
+                                <ion-icon name="archive-outline"></ion-icon>
+                                <span>Archivadas</span>
+                                @if (novedadService.novedadesArchivadas().length > 0) {
+                                <ion-badge color="medium">{{ novedadService.novedadesArchivadas().length
                                     }}</ion-badge>
                                 }
                             </div>
@@ -115,52 +115,17 @@
                                 }
                             </div>
                             } @else {
-                            <div class="sesiones-list">
-                                @if (novedadService.sesiones().length > 0) {
-                                @for (s of novedadService.sesiones(); track s.id) {
-                                <div class="sesion-item" [class.activo]="s.estado === 'activo'"
-                                    [class.borrador]="s.estado === 'borrador'">
-                                    <div class="sesion-main">
-                                        <div class="sesion-status-indicator" [title]="s.estado"></div>
-                                        <div class="sesion-details">
-                                            <span class="sesion-name">{{ s.nombre }}</span>
-                                            <span class="sesion-meta">
-                                                {{ s.fechaInicio | date:'dd/MM' }} • {{ s.cursoId }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="sesion-actions">
-                                        <ion-button fill="clear" size="small" color="primary"
-                                            (click)="sesionDetalle.set(s)">
-                                            <ion-icon name="information-circle-outline"></ion-icon>
-                                        </ion-button>
-                                        @if (s.estado === 'borrador') {
-                                        <ion-button fill="clear" size="small" color="success"
-                                            (click)="reanudarRevision(s)" title="Iniciar">
-                                            <ion-icon name="play-circle"></ion-icon>
-                                        </ion-button>
-                                        }
-                                        @if (s.estado === 'activo') {
-                                        <ion-button fill="clear" size="small" color="medium" (click)="pausarRevision()"
-                                            title="Pausar">
-                                            <ion-icon slot="icon-only" name="stop-circle-outline"></ion-icon>
-                                        </ion-button>
-                                        <ion-button fill="clear" size="small" color="danger" (click)="cerrarRevision()"
-                                            title="Cerrar">
-                                            <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
-                                        </ion-button>
-                                        }
-                                        <ion-button fill="clear" size="small" color="danger"
-                                            (click)="eliminarSesion(s.id)">
-                                            <ion-icon name="trash-outline"></ion-icon>
-                                        </ion-button>
-                                    </div>
+                            <!-- Pestaña Archivadas -->
+                            <div class="archivadas-list">
+                                @if (novedadService.novedadesArchivadas().length > 0) {
+                                <div class="archivadas-info">
+                                    <ion-icon name="archive-outline"></ion-icon>
+                                    <span>{{ novedadService.novedadesArchivadas().length }} novedades archivadas</span>
                                 </div>
-                                }
                                 } @else {
                                 <div class="empty-state-mini">
-                                    <ion-icon name="list-outline"></ion-icon>
-                                    <p>No hay sesiones registradas</p>
+                                    <ion-icon name="archive-outline"></ion-icon>
+                                    <p>No hay novedades archivadas</p>
                                 </div>
                                 }
                             </div>
@@ -178,67 +143,7 @@
                             </ion-badge>
                         </div>
 
-                        <!-- Configuración de Sesión COMPACTA -->
-                        <div class="session-compact-bar">
-                            <div class="session-compact-left">
-                                <div class="compact-time-group">
-                                    <div class="time-label">APERTURA</div>
-                                    <ion-datetime-button datetime="datetime-inicio"></ion-datetime-button>
-                                    <ion-modal [keepContentsMounted]="true">
-                                        <ng-template>
-                                            <ion-datetime id="datetime-inicio" presentation="date-time"
-                                                [value]="sesionInicio()" (ionChange)="onSesionInicioChange($event)"
-                                                locale="es-ES">
-                                            </ion-datetime>
-                                        </ng-template>
-                                    </ion-modal>
-                                </div>
-                                <div class="time-divider"></div>
-                                <div class="compact-time-group">
-                                    <div class="time-label">CIERRE</div>
-                                    <ion-datetime-button datetime="datetime-fin"></ion-datetime-button>
-                                    <ion-modal [keepContentsMounted]="true">
-                                        <ng-template>
-                                            <ion-datetime id="datetime-fin" presentation="date-time"
-                                                [value]="sesionFin()" (ionChange)="onSesionFinChange($event)"
-                                                locale="es-ES">
-                                            </ion-datetime>
-                                        </ng-template>
-                                    </ion-modal>
-                                </div>
-                            </div>
 
-                            <div class="session-compact-right">
-                                <ion-button class="session-play-btn" [color]="sesionActiva() ? 'success' : 'primary'"
-                                    (click)="iniciarRevision()" [disabled]="!sesionInicio() || !sesionFin()">
-                                    <ion-icon slot="icon-only" [name]="sesionActiva() ? 'pulse' : 'play'"></ion-icon>
-                                </ion-button>
-                            </div>
-                        </div>
-
-                        <!-- Sección de Alertas -->
-                        @if (alertasSesion().length > 0) {
-                        <div class="alerts-section">
-                            <div class="alerts-header">
-                                <ion-icon name="notifications-outline"></ion-icon>
-                                <span>Alertas</span>
-                                <ion-badge color="warning">{{ alertasSesion().length }}</ion-badge>
-                            </div>
-                            <div class="alerts-list">
-                                @for (alerta of alertasSesion(); track alerta.id) {
-                                <div class="alert-item" [class]="'alert-' + alerta.tipo">
-                                    <ion-icon
-                                        [name]="alerta.tipo === 'info' ? 'information-circle' : 
-                                                      alerta.tipo === 'warning' ? 'warning' : 'alert-circle'"></ion-icon>
-                                    <span>{{ alerta.mensaje }}</span>
-                                    <ion-button fill="clear" size="small" (click)="descartarAlerta(alerta.id)">
-                                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                                    </ion-button>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
 
                         <div class="registration-control-pane">
                             <div class="registration-actions-top">
@@ -688,58 +593,7 @@
             </ng-template>
         </ion-modal>
 
-        <!-- MODAL DE DETALLES DE SESIÓN -->
-        <ion-modal [isOpen]="!!sesionDetalle()" (didDismiss)="sesionDetalle.set(null)" class="details-modal">
-            <ng-template>
-                <ion-header>
-                    <ion-toolbar>
-                        <ion-title>{{ sesionDetalle()?.nombre }}</ion-title>
-                        <ion-buttons slot="end">
-                            <ion-button (click)="sesionDetalle.set(null)">Cerrar</ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding">
-                    <div class="session-details-content">
-                        <div class="detail-header">
-                            <div class="detail-meta">
-                                <span>{{ sesionDetalle()?.cursoId }}</span>
-                                <span>{{ sesionDetalle()?.fechaInicio | date:'dd/MM/yyyy HH:mm' }}</span>
-                            </div>
-                            <ion-badge [color]="sesionDetalle()?.estado === 'cerrado' ? 'success' : 'warning'">
-                                {{ sesionDetalle()?.estado }}
-                            </ion-badge>
-                        </div>
 
-                        <div class="novelties-details-list">
-                            <h3>Novedades en esta sesión ({{ novedadesDeSesion().length }})</h3>
-                            @if (novedadesDeSesion().length > 0) {
-                            @for (n of novedadesDeSesion(); track n.id) {
-                            <div class="novelty-detail-card" [class.grupal]="n.esNovedadGrupal">
-                                <div class="n-header">
-                                    <span class="estudiante">{{ n.estudianteNombre }}</span>
-                                    <span class="grupo">G{{ n.grupo }}</span>
-                                </div>
-                                <div class="n-body">
-                                    <ion-chip size="small" [style.--background]="getTipoColor(n.tipoNovedadId)">
-                                        {{ n.tipoNovedadNombre }}
-                                    </ion-chip>
-                                    @if (n.descripcion) {
-                                    <p class="description">{{ n.descripcion }}</p>
-                                    }
-                                </div>
-                            </div>
-                            }
-                            } @else {
-                            <div class="empty-state-mini">
-                                <p>No hay novedades guardadas en esta sesión.</p>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                </ion-content>
-            </ng-template>
-        </ion-modal>
 
         <!-- MODAL DE BÚSQUEDA Y REGISTRO -->
         <ion-modal [isOpen]="isSearchModalVisible()" (didDismiss)="closeSearchModal()" class="search-modal">
