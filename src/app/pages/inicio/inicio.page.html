@@ -178,16 +178,11 @@
                             </ion-badge>
                         </div>
 
-                        <!-- Configuración de Sesión Mejorada -->
-                        <div class="session-config-section">
-                            <div class="session-header">
-                                <ion-icon name="calendar-outline"></ion-icon>
-                                <h3>Configuración de Sesión</h3>
-                            </div>
-
-                            <div class="session-datetime-row">
-                                <div class="datetime-field">
-                                    <label>Inicio</label>
+                        <!-- Configuración de Sesión COMPACTA -->
+                        <div class="session-compact-bar">
+                            <div class="session-compact-left">
+                                <div class="compact-time-group">
+                                    <div class="time-label">INICIO</div>
                                     <ion-datetime-button datetime="datetime-inicio"></ion-datetime-button>
                                     <ion-modal [keepContentsMounted]="true">
                                         <ng-template>
@@ -198,8 +193,9 @@
                                         </ng-template>
                                     </ion-modal>
                                 </div>
-                                <div class="datetime-field">
-                                    <label>Fin</label>
+                                <div class="time-divider"></div>
+                                <div class="compact-time-group">
+                                    <div class="time-label">FIN</div>
                                     <ion-datetime-button datetime="datetime-fin"></ion-datetime-button>
                                     <ion-modal [keepContentsMounted]="true">
                                         <ng-template>
@@ -212,11 +208,12 @@
                                 </div>
                             </div>
 
-                            <ion-button expand="block" size="small" color="primary" (click)="iniciarRevision()"
-                                [disabled]="!sesionInicio() || !sesionFin()">
-                                <ion-icon slot="start" name="play-outline"></ion-icon>
-                                {{ sesionActiva() ? 'Sesión Activa' : 'Iniciar Sesión' }}
-                            </ion-button>
+                            <div class="session-compact-right">
+                                <ion-button class="session-play-btn" [color]="sesionActiva() ? 'success' : 'primary'"
+                                    (click)="iniciarRevision()" [disabled]="!sesionInicio() || !sesionFin()">
+                                    <ion-icon slot="icon-only" [name]="sesionActiva() ? 'pulse' : 'play'"></ion-icon>
+                                </ion-button>
+                            </div>
                         </div>
 
                         <!-- Sección de Alertas -->

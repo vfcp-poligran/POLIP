@@ -328,6 +328,72 @@ $touch-target: colors.$touch-target;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
+.session-compact-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    gap: 12px;
+
+    .session-compact-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+
+        .compact-time-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            .time-label {
+                font-size: 0.65rem;
+                font-weight: 700;
+                color: #888;
+                text-transform: uppercase;
+                padding-left: 4px;
+            }
+
+            ion-datetime-button {
+                &::part(native) {
+                    background: #f4f6f8;
+                    border-radius: 6px;
+                    padding: 4px 8px;
+                    font-size: 0.85rem;
+                    color: colors.$azul-oscuro;
+                }
+            }
+        }
+
+        .time-divider {
+            width: 1px;
+            height: 24px;
+            background: #eee;
+            margin: 0 4px;
+        }
+    }
+
+    .session-compact-right {
+        .session-play-btn {
+            --padding-start: 12px;
+            --padding-end: 12px;
+            height: 42px;
+            width: 42px;
+            --border-radius: 50%;
+            margin: 0;
+
+            ion-icon {
+                font-size: 1.4rem;
+            }
+        }
+    }
+}
+
 .modo-novedad-selector {
     display: flex;
     background: #f0f4f8;
@@ -832,6 +898,102 @@ $touch-target: colors.$touch-target;
                 font-size: 0.85rem;
                 color: var(--ion-color-medium-shade);
                 line-height: 1.3;
+            }
+        }
+    }
+}
+
+// === ESTILOS FALTANTES CARDS MOVIL (Agregados para corrección) ===
+.mobile-student-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 80px; // Espacio para el FAB
+
+    .student-card-mobile {
+        margin: 0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 12px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        .card-mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+
+            .student-details {
+                display: flex;
+                flex-direction: column;
+
+                .name {
+                    font-weight: 700;
+                    font-size: 1rem;
+                    color: colors.$azul-oscuro;
+                }
+
+                .meta {
+                    font-size: 0.85rem;
+                    color: #666;
+                }
+            }
+        }
+
+        .novedad-toggles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+
+            @media (max-width: 360px) {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .novedad-toggle-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                background: #f8f9fa;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 10px 4px;
+                min-height: 70px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                ion-icon {
+                    font-size: 1.5rem;
+                    color: #aaa;
+                    margin-bottom: 2px;
+                }
+
+                span {
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    color: #777;
+                    text-align: center;
+                    line-height: 1.1;
+                    width: 100%;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                &.active {
+                    background: rgba(colors.$azul-claro, 0.1);
+                    border-color: colors.$azul-claro;
+
+                    ion-icon {
+                        color: colors.$azul-claro;
+                    }
+
+                    span {
+                        color: colors.$azul-claro;
+                    }
+                }
             }
         }
     }
