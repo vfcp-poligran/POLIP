@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.poligran.gestorproyectos',
-  appName: 'POLIProject',
+  appName: 'TEOv4',
   webDir: 'www/browser',
   // Configuración del servidor para desarrollo
   server: {
