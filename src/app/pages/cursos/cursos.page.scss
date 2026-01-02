@@ -102,8 +102,9 @@ ion-menu {
   }
 
   @include respond-to-max('sm') {
-    // Mobile: padding for toolbar (48px + safe area + spacing)
-    padding-top: calc(48px + env(safe-area-inset-top) + spacing('md'));
+    // Mobile: NO padding-top extra - el header es relative, no fixed
+    // El contenido se apila naturalmente debajo del header
+    padding-top: spacing('sm'); // Solo un poco de breathing room
   }
 }
 
@@ -216,19 +217,7 @@ ion-menu {
   }
 }
 
-/* Contenedor de cursos */
-.cursos-container {
-  // Espaciado responsivo entre header y tabs de cursos
-  margin-top: 0.75rem; // Mobile: compacto (12px)
-
-  @include bp.tablet-only {
-    margin-top: 1rem; // Tablet: medio (16px)
-  }
-
-  @include bp.desktop-only {
-    margin-top: 1.5rem; // Desktop: amplio (24px)
-  }
-}
+/* NOTE: .cursos-container estilos consolidados arriba (línea ~111) */
 
 /* Acciones en card */
 .card-actions {

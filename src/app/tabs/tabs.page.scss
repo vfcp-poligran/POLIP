@@ -1,58 +1,55 @@
 /* ============================================================
-   CONFIGURACIÓN DE LAYOUT SIN ION-SPLIT-PANE
-   Layout simple: ion-menu (móvil) + ion-card sidebar (desktop)
+   CONFIGURACIÓN DE LAYOUT CON ION-TABS
+   Sistema responsivo: Mobile < 768px | Tablet 768-991px | Desktop >= 992px
+   Usa mixins de _breakpoints.scss para consistencia
    ============================================================ */
+@use '../shared/styles/breakpoints' as bp;
 
-/* Host element - usar flexbox para layout */
+/* Host element - flex container principal */
 :host {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   position: relative;
 }
 
-/* Desktop sidebar styles removed (unused) */
-
-
-/* Contenedor principal - SOLO div sin ion-tabs */
+/* Contenedor principal - flex column para header + contenido */
 .shell-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  position: relative;
+  overflow: hidden;
 
-  // En desktop, agregar padding-top para la navegación fija
-  @media (min-width: 992px) {
-    padding-top: 64px; // Altura de desktop-nav-bar
+  // Desktop: agregar margin-top para la navegación fija
+  @include bp.desktop-only {
+    margin-top: 64px; // Altura de desktop-nav-bar
   }
 }
 
+/* Área de contenido principal - ocupa el espacio restante */
 div#main-content.main-content-area,
 div.main-content-area {
-  display: block;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 100%;
+  min-height: 0; // Importante para scroll en flex children
   position: relative;
   overflow: hidden;
-  transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-  /* FIX: Padding dinámico para compensar Header Móvil + Notch */
-  padding-top: calc(48px + env(safe-area-inset-top));
+  // &.full-width ya no necesita estilos especiales en flex layout
 
-  &.full-width {
-    right: 0 !important;
-  }
-
-
-  @media (min-width: 992px) {
+  // Desktop: layout fijo con sidebar
+  @include bp.desktop-only {
     position: fixed;
-    top: 0; // Start from top
+    top: 64px; // Debajo del nav
     bottom: 0;
     left: 0;
     right: 360px;
     width: auto;
     z-index: 1;
-    padding-top: 64px; // Add padding to account for fixed nav bar
   }
 
   @media (min-width: 1600px) {
@@ -60,14 +57,10 @@ div.main-content-area {
   }
 
   ion-router-outlet {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: auto;
+    flex: 1;
+    position: relative;
+    width: 100%;
     height: 100%;
-    pointer-events: auto;
     overflow: hidden;
   }
 }
@@ -105,13 +98,19 @@ div.main-content-area {
 
 /* ========================================
    MOBILE HEADER - Top Bar
+   IMPORTANTE: position: relative para stacking natural en flex
    ======================================== */
 .mobile-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative; // NO fixed - se apila naturalmente
+  flex-shrink: 0;
   z-index: 100;
+  width: 100%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+
+  // Ocultar en desktop
+  @include bp.desktop-only {
+    display: none;
+  }
 
   ion-toolbar {
     --background: var(--azul-oscuro, #0f385a);
@@ -119,6 +118,7 @@ div.main-content-area {
     --min-height: 48px;
     --padding-start: 8px;
     --padding-end: 8px;
+    --padding-top: env(safe-area-inset-top); // Manejar notch
   }
 
   .mobile-app-title {
@@ -265,7 +265,14 @@ div.main-content-area {
   }
 }
 
-@media (max-width: 991px) {
+// Desktop nav bar solo visible en desktop
+@include bp.mobile-only {
+  .desktop-nav-bar {
+    display: none;
+  }
+}
+
+@include bp.tablet-only {
   .desktop-nav-bar {
     display: none;
   }
@@ -373,16 +380,20 @@ div.main-content-area {
 
 /* Ajuste del contenido principal cuando hay bottom tabs */
 .main-content-area.has-bottom-tabs {
-  padding-top: 48px; // Espacio para header
-  padding-bottom: 56px; // Espacio para bottom tabs
+  // En flex layout, el padding-bottom reserva espacio para la tab bar fija
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
 
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding-top: 40px;
-    padding-bottom: 48px;
+  @media (orientation: landscape) and (max-height: 500px) {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
   }
 
-  @media (min-width: 768px) and (max-width: 1024px) {
-    padding-bottom: 52px;
+  @include bp.tablet-only {
+    padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+  }
+
+  // Desktop no tiene bottom tabs
+  @include bp.desktop-only {
+    padding-bottom: 0;
   }
 }
 
@@ -469,7 +480,8 @@ div.main-content-area {
         border-bottom: none;
       }
 
-      &:hover, &:active {
+      &:hover,
+      &:active {
         background: rgba(31, 178, 222, 0.08);
       }
 

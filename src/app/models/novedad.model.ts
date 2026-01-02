@@ -54,8 +54,9 @@ export interface Novedad {
     estado: EstadoNovedad;
     descripcion?: string;         // Texto adicional opcional
 
-    // Sesión de revisión
-    sessionId?: string;           // ID de la sesión de seguimiento vinculada
+    // Archivado
+    archivado?: boolean;
+    fechaArchivado?: Date;
 
     // Auditoría
     fechaRegistro: Date;
@@ -71,19 +72,7 @@ export interface Novedad {
     localTimestamp?: number;
 }
 
-/**
- * Sesión de Seguimiento / Revisión
- */
-export interface SesionRevision {
-    id: string;
-    nombre: string;               // Ej: "Revisión 1"
-    cursoId: string;
-    fechaInicio: Date;
-    fechaFin?: Date;
-    estado: 'borrador' | 'activo' | 'cerrado';
-    comentarios?: string;
-    novedadesIds: string[];       // IDs de las novedades registradas en esta sesión
-}
+// SesionRevision eliminada - ya no se usa
 
 /**
  * Historial con metadatos de novedades

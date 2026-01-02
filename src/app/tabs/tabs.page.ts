@@ -22,6 +22,7 @@ import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Logger } from '@app/core/utils/logger';
+import { ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   // Iconos filled
@@ -173,7 +174,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   // Panel de búsqueda móvil
   isSearchOpen = false;
   globalSearchTerm = '';
-  globalSearchResults: Array<{ id: string; type: 'student' | 'course'; name: string; meta: string }> = [];
+  globalSearchResults: Array<{ id: string; type: 'student' | 'course' | 'novedad'; name: string; meta: string }> = [];
 
 
 
@@ -361,19 +362,35 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   /** Maneja la búsqueda global */
   onGlobalSearch(event: any): void {
-    const term = event.target?.value?.toLowerCase() || '';
-    if (!term || term.length < 2) {
+    const term = event.target?.value || '';
+
+    // Comando: nb. o Nb. → Buscar novedad
+    if (/^[nN][bB]\./.test(term)) {
+      const query = term.substring(3).trim().toLowerCase();
+      this.buscarNovedadesComando(query);
+      return;
+    }
+
+    // Comando: n. o N. → Registrar novedad (abrir modal)
+    if (/^[nN]\.$/.test(term.trim())) {
+      this.abrirModalRegistroNovedad();
+      return;
+    }
+
+    // Búsqueda normal
+    const lowerTerm = term.toLowerCase();
+    if (!lowerTerm || lowerTerm.length < 2) {
       this.globalSearchResults = [];
       return;
     }
 
     // Buscar en cursos y estudiantes
     const cursos = this.dataService.cursos();
-    const results: Array<{ id: string; type: 'student' | 'course'; name: string; meta: string }> = [];
+    const results: Array<{ id: string; type: 'student' | 'course' | 'novedad'; name: string; meta: string }> = [];
 
     Object.entries(cursos || {}).forEach(([codigo, curso]) => {
       // Buscar el curso por nombre o código
-      if (codigo.toLowerCase().includes(term) || (curso as any).nombre?.toLowerCase().includes(term)) {
+      if (codigo.toLowerCase().includes(lowerTerm) || (curso as any).nombre?.toLowerCase().includes(lowerTerm)) {
         results.push({
           id: codigo,
           type: 'course',
@@ -385,7 +402,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
       // Buscar estudiantes
       ((curso as any).integrantes || []).forEach((est: any) => {
         const nombreCompleto = `${est.nombres || ''} ${est.apellidos || ''}`.toLowerCase();
-        if (nombreCompleto.includes(term) || est.correo?.toLowerCase().includes(term)) {
+        if (nombreCompleto.includes(lowerTerm) || est.correo?.toLowerCase().includes(lowerTerm)) {
           results.push({
             id: est.correo || est.id,
             type: 'student',
@@ -399,6 +416,29 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     this.globalSearchResults = results.slice(0, 10); // Limitar a 10 resultados
   }
 
+  /** Buscar novedades con comando nb. */
+  private buscarNovedadesComando(query: string): void {
+    const novedades = this.novedadService.buscarNovedades(query);
+    this.globalSearchResults = novedades.slice(0, 10).map(n => ({
+      id: n.id,
+      type: 'novedad' as const,
+      name: n.estudianteNombre || n.estudianteCorreo,
+      meta: `${n.tipoNovedadNombre || 'Novedad'} - ${n.cursoNombre || n.cursoId}`
+    }));
+  }
+
+  /** Abrir modal de registro de novedad */
+  private async abrirModalRegistroNovedad(): Promise<void> {
+    this.isSearchOpen = false;
+    this.globalSearchTerm = '';
+    this.globalSearchResults = [];
+
+    // Navegar a inicio con parámetro para abrir registro
+    this.router.navigate(['/tabs/inicio'], {
+      queryParams: { abrirRegistroNovedad: 'true' }
+    });
+  }
+
   /** Ejecutar búsqueda al presionar Enter */
   executeSearch(): void {
     if (this.globalSearchResults.length > 0) {
@@ -407,16 +447,18 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }
 
   /** Navegar al resultado seleccionado */
-  navigateToResult(result: { id: string; type: 'student' | 'course'; name: string; meta: string }): void {
+  navigateToResult(result: { id: string; type: 'student' | 'course' | 'novedad'; name: string; meta: string }): void {
     this.isSearchOpen = false;
     this.globalSearchTerm = '';
     this.globalSearchResults = [];
 
     if (result.type === 'course') {
       this.router.navigate(['/tabs/cursos'], { queryParams: { curso: result.id } });
+    } else if (result.type === 'novedad') {
+      // Para novedades, navegar a inicio con el ID de la novedad
+      this.router.navigate(['/tabs/inicio'], { queryParams: { novedadId: result.id } });
     } else {
       // Para estudiantes, navegar al curso correspondiente
-      const cursoId = result.meta.split(' - ')[0];
       this.router.navigate(['/tabs/inicio'], { queryParams: { buscar: result.name } });
     }
   }
