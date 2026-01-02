@@ -32,14 +32,11 @@ import {
     ViewWillEnter,
     IonFab,
     IonFabButton,
-    IonList,
     IonItem,
     IonAccordion,
     IonAccordionGroup,
     IonDatetime,
-    IonDatetimeButton,
-    IonSelect,
-    IonSelectOption
+    IonDatetimeButton
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -149,14 +146,11 @@ interface EstudianteSeleccionado {
         IonCardTitle,
         IonCardSubtitle,
         IonSkeletonText,
-        IonList,
         IonItem,
         IonAccordion,
         IonAccordionGroup,
         IonDatetime,
-        IonDatetimeButton,
-        IonSelect,
-        IonSelectOption
+        IonDatetimeButton
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -228,10 +222,36 @@ export class InicioPage implements OnInit, ViewWillEnter {
         }
 
         if (this.modoVisualizacionHistorial() === 'estudiante') {
-            // FILTER: Solo novedades individuales (excluir grupales como 'grupo_bien')
-            // Asumimos que las grupales tienen un ID especifico o logica. 
-            // Por ahora filtramos 'grupo_bien'. Si hay otras, agregar aqui.
-            return novedades.filter(n => n.tipoNovedadId !== 'grupo_bien').slice(0, 20);
+            // Agrupar por ESTUDIANTE (VCS Style)
+            const estudiantesMap = new Map<string, any>();
+
+            // Filtramos novedades grupales puras si es necesario, 
+            // pero si queremos ver todo lo de un estudiante, incluimos todo.
+            // Para mantener consistencia con "individual", filtramos 'grupo_bien' si se desea.
+            const novedadesFiltradas = novedades.filter(n => n.tipoNovedadId !== 'grupo_bien');
+
+            novedadesFiltradas.forEach(n => {
+                // Clave única: Nombre + Grupo (por si hay homónimos en diferentes grupos, o usar ID si existe)
+                // Usamos n.estudianteNombre como clave principal visual
+                const key = `${n.estudianteNombre}-${n.grupo}`;
+
+                if (!estudiantesMap.has(key)) {
+                    estudiantesMap.set(key, {
+                        key: key,
+                        estudianteNombre: n.estudianteNombre,
+                        grupo: n.grupo,
+                        cursoId: n.cursoId,
+                        fechaUltima: n.fechaRegistro,
+                        cambiosCount: 1,
+                        novedades: [n] // Historial personal
+                    });
+                } else {
+                    const existing = estudiantesMap.get(key);
+                    existing.cambiosCount++;
+                    existing.novedades.push(n);
+                }
+            });
+            return Array.from(estudiantesMap.values());
         } else {
             // Agrupar por curso-grupo (ESTRICTO)
             const gruposMap = new Map<string, any>();
@@ -1166,9 +1186,14 @@ export class InicioPage implements OnInit, ViewWillEnter {
     }
 
     // VCS Modal Methods
-    abrirModalVcs(grupo: any) {
-        this.vcsGrupoTitulo.set(`${grupo.cursoId} - Grupo ${grupo.grupo}`);
-        this.vcsHistorialSeleccionado.set(grupo.novedades || []);
+    // VCS Modal Methods
+    abrirModalVcs(item: any) {
+        if (item.estudianteNombre) {
+            this.vcsGrupoTitulo.set(`${item.estudianteNombre}`);
+        } else {
+            this.vcsGrupoTitulo.set(`${item.cursoId} - Grupo ${item.grupo}`);
+        }
+        this.vcsHistorialSeleccionado.set(item.novedades || []);
         this.isVcsModalVisible.set(true);
     }
 

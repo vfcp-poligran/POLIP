@@ -1,13 +1,13 @@
-# Gestor de Seguimiento de Proyectos v3.5
+# Gestor de Seguimiento de Proyectos v4.0.0
 
 Una aplicación Ionic multiplataforma para la gestión y evaluación de estudiantes basada en rúbricas del Politécnico Grancolombiano.
 
-## 🆕 Novedades v3.5.0
+## 🆕 Novedades v4.0.0
 
-- **🧹 Interfaz Simplificada**: Eliminación de funcionalidad de evaluación duplicada
-- **📐 Enfoque en Rúbricas**: Gestión centralizada de criterios de evaluación
-- **⚡ Optimización**: Mejor rendimiento y código más limpio
-- **🔧 Estabilidad**: Corrección de errores de sintaxis y mejoras técnicas
+- **🚀 Core Moderno**: Migración completa a Ionic 8 + Angular 18 (Standalone).
+- **🎨 Diseño Modular**: Nuevo sistema de estilos SCSS con variables y mixins.
+- **♿ Accesibilidad**: Mejoras WCAG 2.1 (Navegación, contraste, lectores).
+- **⚡ Rendimiento**: Tabla de cursos optimizada y carga diferida.
 
 ## 🚀 Características
 

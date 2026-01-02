@@ -48,36 +48,29 @@
                             <div class="historial-novedades-list">
                                 @if (historialAgrupado().length > 0) {
                                 @if (modoVisualizacionHistorial() === 'estudiante') {
-                                <!-- TABLA ESTUDIANTE (Individual) -->
-                                <table class="historial-table">
+                                <!-- TABLA ESTUDIANTE (VCS Style) -->
+                                <table class="historial-table group-table">
                                     <thead>
                                         <tr>
                                             <th>Estudiante</th>
-                                            <th>Novedad</th>
-                                            <th>Hora</th>
+                                            <th class="text-center">Cambios</th>
+                                            <th>Última</th>
                                             <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @for (novedad of historialAgrupado(); track novedad.id) {
-                                        <tr>
+                                        @for (est of historialAgrupado(); track est.key) {
+                                        <tr (click)="abrirModalVcs(est)" class="clickable-row">
                                             <td>
-                                                <div class="table-name">{{ novedad.estudianteNombre }}</div>
-                                                <div class="table-meta">G{{ novedad.grupo }}</div>
+                                                <div class="table-name">{{ est.estudianteNombre }}</div>
+                                                <div class="table-meta">G{{ est.grupo }}</div>
                                             </td>
-                                            <td>
-                                                <ion-chip size="small"
-                                                    [style.--background]="getTipoColor(novedad.tipoNovedadId)"
-                                                    class="mini-chip">
-                                                    {{ novedad.tipoNovedadNombre }}
-                                                </ion-chip>
+                                            <td class="text-center">
+                                                <ion-badge color="secondary">{{ est.cambiosCount }}</ion-badge>
                                             </td>
-                                            <td class="table-time">{{ novedad.fechaRegistro | date:'HH:mm' }}</td>
+                                            <td class="table-time text-muted">{{ est.fechaUltima | date:'HH:mm' }}</td>
                                             <td>
-                                                <ion-button fill="clear" size="small" color="danger"
-                                                    (click)="eliminarNovedadItem(novedad.id)">
-                                                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                                                </ion-button>
+                                                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
                                             </td>
                                         </tr>
                                         }
@@ -880,11 +873,8 @@
                             <div class="timeline-dot"></div>
                             <div class="timeline-content">
                                 <div class="timeline-header">
-                                    <span class="author">{{ log.estudianteNombre }}</span>
-                                    <ion-chip size="small" [style.--background]="getTipoColor(log.tipoNovedadId)"
-                                        class="mini-chip-vcs">
-                                        {{ log.tipoNovedadNombre }}
-                                    </ion-chip>
+                                    <span class="author">{{ log.tipoNovedadNombre }}</span>
+                                    <span class="timeline-meta-text">{{ log.estudianteNombre }}</span>
                                 </div>
                                 @if (log.observacion) {
                                 <p class="timeline-msg">{{ log.observacion }}</p>
