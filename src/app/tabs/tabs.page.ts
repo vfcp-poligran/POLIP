@@ -83,6 +83,7 @@ import { DataService } from '../services/data.service';
 import { FullscreenService } from '../services/fullscreen.service';
 import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo, EstadoEstudiante } from '../services/seguimiento.service';
 import { NovedadService } from '../services/novedad.service';
+import { ViewportService } from '../core/services/viewport.service';
 
 export interface NavigationItem {
   path: string;
@@ -153,11 +154,16 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   public fullscreenService = inject(FullscreenService);
   private novedadService = inject(NovedadService);
   private cdr = inject(ChangeDetectorRef);
-  private ngZone = inject(NgZone);
+  // Viewport service centralizado
+  public viewport = inject(ViewportService);
+
+  // Alias para compatibilidad con templates existentes
+  get isDesktop(): boolean {
+    return this.viewport.isDesktop();
+  }
 
   @ViewChild('searchBar', { read: ElementRef }) searchbarRef!: ElementRef;
 
-  private resizeHandler: (() => void) | null = null;
   private subscriptions: Subscription[] = [];
   selectedGrupo: number = 0; // Grupo seleccionado en UI (para botones)
 
@@ -169,8 +175,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   globalSearchTerm = '';
   globalSearchResults: Array<{ id: string; type: 'student' | 'course'; name: string; meta: string }> = [];
 
-  // Detectar si es desktop o móvil
-  isDesktop = false;
+
 
   // URL actual para resaltar navegación activa
   currentUrl = '';
@@ -301,21 +306,13 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Configurar layout inicial y listener de resize optimizado
-    this.updateDesktopState();
-    this.setupResizeListener();
+    // ViewportService maneja el resize automáticamente
   }
 
   ngOnDestroy(): void {
     // Limpiar todas las subscripciones para prevenir memory leaks
     this.subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
     this.subscriptions = [];
-
-    // Limpiar resize listener
-    if (this.resizeHandler) {
-      window.removeEventListener('resize', this.resizeHandler);
-      this.resizeHandler = null;
-    }
   }
 
   /**
@@ -338,32 +335,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     Logger.log('[TabsPage] Búsqueda global aplicada:', valor.trim());
   }
 
-  /** Actualiza isDesktop solo si cambió - evita detecciones innecesarias */
-  private updateDesktopState(): void {
-    if (typeof window === 'undefined') return;
-    const newIsDesktop = window.innerWidth >= 992;
-    if (this.isDesktop !== newIsDesktop) {
-      this.isDesktop = newIsDesktop;
-      this.cdr.detectChanges();
-    }
-  }
 
-  /** Configura el resize listener fuera de Angular zone para mejor performance */
-  private setupResizeListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      let resizeTimeout: ReturnType<typeof setTimeout>;
-
-      this.resizeHandler = () => {
-        // Debounce de 150ms para evitar múltiples actualizaciones
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-          this.ngZone.run(() => this.updateDesktopState());
-        }, 150);
-      };
-
-      window.addEventListener('resize', this.resizeHandler);
-    });
-  }
 
 
 
