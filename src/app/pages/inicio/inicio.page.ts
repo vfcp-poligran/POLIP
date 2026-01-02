@@ -88,7 +88,6 @@ import { DataService } from '../../services/data.service';
 import { NovedadService } from '../../services/novedad.service';
 import {
     Novedad,
-    SesionRevision,
     TipoNovedad,
     OrigenMensaje,
     ORIGEN_CONFIG,
@@ -179,25 +178,11 @@ export class InicioPage implements OnInit, ViewWillEnter {
     tiposFiltro = signal<Set<string>>(new Set()); // Tipos de novedad seleccionados como filtro
     isLoading = signal<boolean>(true); // Para skeleton loaders
 
-    // Sesión de revisión
-    sessionActual = signal<SesionRevision | null>(null);
-    tabHistorial = signal<'historial' | 'sesiones'>('historial');
-    sesionDetalle = signal<SesionRevision | null>(null);
+    // Tab historial
+    tabHistorial = signal<'historial' | 'archivadas'>('historial');
 
-    // Configuración de sesión mejorada
-    sesionInicio = signal<string>(new Date().toISOString());
-    sesionFin = signal<string>(new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()); // +2 horas
-    sesionActiva = signal<boolean>(false);
-
-    // Alertas del sistema
-    alertasSesion = signal<Array<{ id: string; tipo: 'info' | 'warning' | 'error'; mensaje: string }>>([]);
-
-    // NEW: Computed for novelties of the detailed session
-    novedadesDeSesion = computed(() => {
-        const s = this.sesionDetalle();
-        if (!s) return [];
-        return this.novedadService.novedades().filter(n => n.sessionId === s.id);
-    });
+    // Novedades seleccionadas para archivar/borrar
+    novedadesSeleccionadasHistorial = signal<Set<string>>(new Set());
 
     modoVisualizacionHistorial = signal<'estudiante' | 'grupal'>('estudiante');
 
@@ -344,42 +329,6 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     ngOnInit(): void {
         this.cargarCursos();
-        this.checkSesionesActivas();
-    }
-
-    /**
-     * Verifica si hay sesiones activas de hace demasiado tiempo
-     * y las pausa automáticamente para evitar "sesiones infinitas".
-     */
-    private checkSesionesActivas(): void {
-        const sesiones = this.novedadService.sesiones();
-        const ahora = new Date().getTime();
-        const LIMITE_HORAS = 4;
-        const MILISEGUNDOS_LIMITE = LIMITE_HORAS * 60 * 60 * 1000;
-
-        const activasAntiguas = sesiones.filter(s =>
-            s.estado === 'activo' &&
-            (ahora - new Date(s.fechaInicio).getTime()) > MILISEGUNDOS_LIMITE
-        );
-
-        if (activasAntiguas.length > 0) {
-            activasAntiguas.forEach(async s => {
-                await this.novedadService.pausarSesionRevision(s.id);
-                console.log(`[Auto-Pause] Sesión "${s.nombre}" pausada por antigüedad.`);
-            });
-
-            this.toastController.create({
-                message: 'Se pausaron sesiones antiguas automáticamente',
-                duration: 3000,
-                color: 'medium'
-            }).then(t => t.present());
-        }
-
-        // Si hay una sesión activa reciente, cargarla como la actual
-        const activaReciente = sesiones.find(s => s.estado === 'activo');
-        if (activaReciente) {
-            this.sessionActual.set(activaReciente);
-        }
     }
 
     ionViewWillEnter(): void {
