@@ -113,6 +113,13 @@ interface EstudianteSeleccionado {
     novedadesCount?: number; // Contador de novedades activas (no archivadas)
 }
 
+interface TimelineGroup {
+    tipoNovedadNombre: string;
+    descripcion?: string;
+    origen: OrigenMensaje;
+    items: Novedad[];
+}
+
 @Component({
     selector: 'app-inicio',
     templateUrl: './inicio.page.html',
@@ -186,8 +193,9 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     // VCS History Modal Signals
     isVcsModalVisible = signal<boolean>(false);
-    vcsHistorialSeleccionado = signal<any[]>([]);
     vcsGrupoTitulo = signal<string>('');
+    vcsGrupoSubtitulo = signal<string>(''); // Nueva señal para curso/grupo
+    vcsHistorialSeleccionado = signal<Novedad[]>([]);
 
     historialAgrupado = computed(() => {
         const source = this.tabHistorial() === 'historial'
@@ -255,6 +263,38 @@ export class InicioPage implements OnInit, ViewWillEnter {
         }
     });
 
+    /**
+     * Timeline agrupado por novedades idénticas consecutivas para visualización compacta
+     */
+    vcsTimelineGroups = computed(() => {
+        const historial = this.vcsHistorialSeleccionado();
+        const groups: TimelineGroup[] = [];
+
+        if (historial.length === 0) return groups;
+
+        let currentGroup: TimelineGroup | null = null;
+
+        historial.forEach(item => {
+            if (!currentGroup ||
+                item.tipoNovedadId !== currentGroup.items[0].tipoNovedadId ||
+                item.descripcion !== currentGroup.items[0].descripcion ||
+                item.origen !== currentGroup.items[0].origen) {
+
+                currentGroup = {
+                    tipoNovedadNombre: item.tipoNovedadNombre || 'Novedad',
+                    descripcion: item.descripcion,
+                    origen: item.origen,
+                    items: [item]
+                };
+                groups.push(currentGroup);
+            } else {
+                currentGroup.items.push(item);
+            }
+        });
+
+        return groups;
+    });
+
     // NEW: Course and group selection signals
     cursoSeleccionado = signal<string | null>(null);
     gruposSeleccionados = signal<Set<string>>(new Set()); // Multi-selection support
@@ -312,7 +352,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ timeOutline, archiveOutline, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline, notificationsOutline, closeOutline, trashOutline, closeCircle, personAddOutline, schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, search, add, checkmarkOutline, checkmark, listOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, calendarOutline, playOutline, addOutline, personOutline, peopleCircleOutline, addCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
+        addIcons({timeOutline,archiveOutline,trashOutline,closeOutline,chevronForwardOutline,documentTextOutline,checkmarkCircleOutline,closeCircle,personAddOutline,schoolOutline,pinOutline,lockOpenOutline,checkmarkCircle,peopleOutline,informationCircleOutline,checkboxOutline,squareOutline,search,add,checkmarkOutline,checkmark,addCircleOutline,statsChartOutline,notificationsOutline,listOutline,playCircle,stopCircleOutline,checkmarkDoneOutline,calendarOutline,playOutline,addOutline,personOutline,peopleCircleOutline,hammerOutline,constructOutline,analyticsOutline,homeOutline,cloudOfflineOutline,appsOutline,checkmarkDoneCircleOutline,createOutline,bulbOutline,chevronDownOutline,checkmarkDoneCircle,alertCircleOutline,closeCircleOutline,optionsOutline,searchOutline,warningOutline,chevronUpOutline,gridOutline,chatboxEllipsesOutline,person,people,warning,stopCircle,checkmarkDone,checkbox});
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -412,7 +452,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
                     resultados.push({
                         correo: est.correo,
-                        nombre: `${est.nombres} ${est.apellidos}`,
+                        nombre: `${est.nombres || ''} ${est.apellidos || ''}`.trim() || 'Estudiante',
                         curso: cursoKey,
                         grupo: String(est.grupo || ''),
                         novedadesCount: novedadesCount
@@ -437,7 +477,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
                 .forEach(est => {
                     estudiantesGrupo.push({
                         correo: est.correo,
-                        nombre: `${est.nombres} ${est.apellidos}`,
+                        nombre: `${est.nombres || ''} ${est.apellidos || ''}`.trim() || 'Estudiante',
                         curso: cursoKey,
                         grupo: String(est.grupo || '')
                     });
@@ -920,12 +960,14 @@ export class InicioPage implements OnInit, ViewWillEnter {
     }
 
     // VCS Modal Methods
-    // VCS Modal Methods
     abrirModalVcs(item: any) {
         if (item.estudianteNombre) {
             this.vcsGrupoTitulo.set(`${item.estudianteNombre}`);
-        } else {
-            this.vcsGrupoTitulo.set(`${item.cursoId} - Grupo ${item.grupo}`);
+            // El item en la tabla grupal (modo estudiante) suele tener grupo y cursoId
+            this.vcsGrupoSubtitulo.set(`${item.cursoId} - Grupo ${item.grupo}`);
+        } else if (item.grupo) {
+            this.vcsGrupoTitulo.set(`Grupo ${item.grupo}`);
+            this.vcsGrupoSubtitulo.set(`${item.cursoId}`);
         }
         this.vcsHistorialSeleccionado.set(item.novedades || []);
         this.isVcsModalVisible.set(true);
@@ -1101,7 +1143,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
         const nuevos: EstudianteSeleccionado[] = estudiantes.map(est => ({
             correo: est.correo,
-            nombre: est.nombre,
+            nombre: est.nombre || 'Estudiante',
             curso: this.cursoSeleccionado()!,
             grupo: String(est.grupo || '')
         }));
@@ -1272,7 +1314,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     toggleEstudianteSeleccionModal(estudiante: any, cursoCodigo: string) {
         const estSeleccionado: EstudianteSeleccionado = {
             correo: estudiante.correo,
-            nombre: estudiante.nombres || estudiante.nombre, // Compatibilidad con Estudiante model
+            nombre: (estudiante.nombres || estudiante.nombre || 'Estudiante').trim(),
             curso: cursoCodigo,
             grupo: String(estudiante.grupo)
         };
@@ -1312,7 +1354,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
                     .filter(e => !list.some(sel => sel.correo === e.correo))
                     .map(e => ({
                         correo: e.correo,
-                        nombre: e.nombres || (e as any).nombre,
+                        nombre: (e.nombres || (e as any).nombre || 'Estudiante').trim(),
                         curso: cursoCodigo,
                         grupo: String(e.grupo)
                     }));
@@ -1462,6 +1504,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
         if (novedades.length > 0) {
             this.vcsHistorialSeleccionado.set(novedades);
             this.vcsGrupoTitulo.set(est.nombre);
+            this.vcsGrupoSubtitulo.set(`${est.curso} - Grupo ${est.grupo}`);
             this.isVcsModalVisible.set(true);
         } else {
             this.toastController.create({
@@ -1482,9 +1525,9 @@ export class InicioPage implements OnInit, ViewWillEnter {
         const primerNovedad = novedades[0];
         const est: EstudianteSeleccionado = {
             correo: primerNovedad.estudianteCorreo,
-            nombre: primerNovedad.estudianteNombre,
-            curso: primerNovedad.cursoId,
-            grupo: primerNovedad.grupo
+            nombre: primerNovedad.estudianteNombre || 'Estudiante',
+            curso: primerNovedad.cursoId || '',
+            grupo: primerNovedad.grupo || ''
         };
 
         // Cerrar modal de historial
@@ -1505,6 +1548,16 @@ export class InicioPage implements OnInit, ViewWillEnter {
             duration: 2000,
             color: 'primary'
         }).then(t => t.present());
+    }
+
+    /**
+     * Compara si dos novedades son idénticas para la lógica de intervalos
+     */
+    esNovedadIdentica(actual: Novedad, anterior: Novedad | null): boolean {
+        if (!anterior) return false;
+        return actual.tipoNovedadId === anterior.tipoNovedadId &&
+            actual.descripcion === anterior.descripcion &&
+            actual.origen === anterior.origen;
     }
 
     /**

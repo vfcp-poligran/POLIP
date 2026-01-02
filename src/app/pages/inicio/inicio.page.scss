@@ -1022,3 +1022,219 @@ $touch-target: colors.$touch-target;
         }
     }
 }
+
+// === VCS MODAL & TIMELINE (REFINADO) ===
+.vcs-modal {
+    --height: 85%;
+    --width: 90%;
+    --max-width: 600px;
+    --border-radius: 16px;
+
+    ion-header {
+        ion-toolbar {
+            --background: #{$azul-oscuro};
+            --color: #fff;
+        }
+    }
+
+    .vcs-title-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 5px 0;
+
+        .vcs-main-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vcs-subtitle {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+        }
+    }
+
+    .vcs-modal-split-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px; // Timeline flexible, Panel fijo
+        gap: 0;
+        min-height: 100%;
+
+        @include mobile {
+            grid-template-columns: 1fr;
+        }
+
+        .vcs-timeline-column {
+            padding-right: 20px;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+
+            @include mobile {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 2px dashed rgba(0, 0, 0, 0.05);
+                padding-bottom: 30px;
+            }
+        }
+
+        .vcs-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            .timeline-group {
+                display: grid;
+                grid-template-columns: 85px 1fr;
+                align-items: center;
+                gap: 15px;
+                position: relative;
+                min-height: 50px;
+
+                .timeline-time-stack {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    padding-right: 15px;
+                    position: relative;
+                    border-right: 2px solid rgba($azul-claro, 0.2);
+
+                    .time-item {
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
+                        gap: 10px;
+                        position: relative;
+
+                        .time-labels {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-end;
+                            line-height: 1.1;
+
+                            .time-date {
+                                font-size: 0.7rem;
+                                font-weight: 700;
+                                color: $azul-oscuro;
+                            }
+
+                            .time-hour {
+                                font-size: 0.6rem;
+                                color: #666;
+                            }
+                        }
+
+                        .time-dot {
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 50%;
+                            background: $azul-claro;
+                            margin-right: -19px;
+                            z-index: 2;
+                            border: 2px solid #fff;
+                            box-shadow: 0 0 0 1px rgba($azul-claro, 0.2);
+                            flex-shrink: 0;
+                        }
+                    }
+                }
+
+                .timeline-content {
+                    padding: 12px 15px;
+                    background: rgba(0, 0, 0, 0.02);
+                    border-radius: 8px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    min-height: 40px;
+
+                    .timeline-header {
+                        margin-bottom: 2px;
+
+                        .author {
+                            font-size: 0.85rem;
+                            font-weight: 800;
+                            color: $azul-oscuro;
+                            text-transform: uppercase;
+                        }
+                    }
+
+                    .timeline-msg {
+                        margin: 0;
+                        font-size: 0.85rem;
+                        color: #444;
+                        line-height: 1.4;
+                        font-style: italic;
+                    }
+                }
+            }
+        }
+
+        .vcs-comparative-panel {
+            padding-left: 20px;
+            background: rgba($azul-oscuro, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            @include mobile {
+                padding: 30px 0 0 0;
+                background: transparent;
+            }
+
+            .comparative-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 10px;
+
+                ion-icon {
+                    font-size: 1.2rem;
+                    color: $azul-claro;
+                }
+
+                h4 {
+                    margin: 0;
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                    color: $azul-oscuro;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+            }
+
+            .comparative-placeholder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 20px;
+                opacity: 0.6;
+
+                .empty-state-comparative {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 15px;
+                    text-align: center;
+
+                    ion-icon {
+                        font-size: 2.5rem;
+                        color: rgba($azul-oscuro, 0.3);
+                    }
+
+                    p {
+                        margin: 0;
+                        font-size: 0.85rem;
+                        color: #666;
+                        font-style: italic;
+                    }
+                }
+            }
+        }
+    }
+}

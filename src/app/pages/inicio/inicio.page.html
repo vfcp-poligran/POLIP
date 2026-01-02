@@ -750,7 +750,12 @@
                                 <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
                             </ion-button>
                         </ion-buttons>
-                        <ion-title>Historial {{ vcsGrupoTitulo() }}</ion-title>
+                        <ion-title>
+                            <div class="vcs-title-container">
+                                <div class="vcs-main-title">Historial {{ vcsGrupoTitulo() }}</div>
+                                <div class="vcs-subtitle">{{ vcsGrupoSubtitulo() }}</div>
+                            </div>
+                        </ion-title>
                         <ion-buttons slot="end">
                             <ion-button (click)="cerrarModalVcs()">
                                 <ion-icon slot="icon-only" name="close-outline"></ion-icon>
@@ -759,22 +764,65 @@
                     </ion-toolbar>
                 </ion-header>
                 <ion-content class="ion-padding">
-                    <div class="vcs-timeline">
-                        @for (log of vcsHistorialSeleccionado(); track log.id) {
-                        <div class="timeline-item">
-                            <div class="timeline-time">{{ log.fechaRegistro | date:'HH:mm' }}</div>
-                            <div class="timeline-dot"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-header">
-                                    <span class="author">{{ log.tipoNovedadNombre }}</span>
-                                    <span class="timeline-meta-text">{{ log.estudianteNombre }}</span>
+                    <div class="vcs-modal-split-layout">
+                        <!-- Timeline (Lado Izquierdo) -->
+                        <div class="vcs-timeline-column">
+                            <div class="vcs-timeline">
+                                @for (group of vcsTimelineGroups(); track group) {
+                                <div class="timeline-group">
+                                    <div class="timeline-time-stack">
+                                        @for (item of group.items; track item.fechaRegistro) {
+                                        <div class="time-item">
+                                            <div class="time-labels">
+                                                <span class="time-date">{{ item.fechaRegistro | date:'dd/MM' }}</span>
+                                                <span class="time-hour">{{ item.fechaRegistro | date:'HH:mm' }}</span>
+                                            </div>
+                                            <div class="time-dot"></div>
+                                        </div>
+                                        }
+                                    </div>
+
+                                    <div class="timeline-content">
+                                        <div class="timeline-header">
+                                            <span class="author">{{ group.tipoNovedadNombre }}</span>
+                                        </div>
+                                        @if (group.descripcion) {
+                                        <p class="timeline-msg">{{ group.descripcion }}</p>
+                                        }
+                                    </div>
                                 </div>
-                                @if (log.observacion) {
-                                <p class="timeline-msg">{{ log.observacion }}</p>
+                                } @empty {
+                                <div class="empty-state">
+                                    <ion-icon name="document-text-outline"></ion-icon>
+                                    <p>No hay novedades registradas para este periodo.</p>
+                                </div>
                                 }
                             </div>
                         </div>
-                        }
+
+                        <!-- Panel Comparativo (Lado Derecho - Por implementar) -->
+                        <div class="vcs-comparative-panel">
+                            <div class="comparative-header">
+                                <ion-icon name="stats-chart-outline"></ion-icon>
+                                <h4>Comportamiento Grupal</h4>
+                            </div>
+
+                            <div class="comparative-placeholder">
+                                <div class="placeholder-card group-avg">
+                                    <span class="label">Promedio Grupo</span>
+                                    <div class="shimmer-bar"></div>
+                                </div>
+
+                                <div class="placeholder-card student-position">
+                                    <span class="label">Posición del Estudiante</span>
+                                    <div class="shimmer-circle"></div>
+                                </div>
+
+                                <p class="coming-soon-text">
+                                    Métricas comparativas en desarrollo.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </ion-content>
             </ng-template>
