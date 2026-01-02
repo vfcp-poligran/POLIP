@@ -34,9 +34,7 @@ import {
     IonFabButton,
     IonItem,
     IonAccordion,
-    IonAccordionGroup,
-    IonDatetime,
-    IonDatetimeButton
+    IonAccordionGroup
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -112,6 +110,7 @@ interface EstudianteSeleccionado {
     curso: string;
     grupo: string;
     foto?: string;
+    novedadesCount?: number; // Contador de novedades activas (no archivadas)
 }
 
 @Component({
@@ -147,9 +146,7 @@ interface EstudianteSeleccionado {
         IonSkeletonText,
         IonItem,
         IonAccordion,
-        IonAccordionGroup,
-        IonDatetime,
-        IonDatetimeButton
+        IonAccordionGroup
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -158,6 +155,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     private actionSheetCtrl = inject(ActionSheetController);
     private toastController = inject(ToastController);
     private menuCtrl = inject(MenuController);
+    private alertCtrl = inject(AlertController);
 
     // === SIGNALS ===
     cursosResumen = signal<CursoResumen[]>([]);
@@ -192,7 +190,11 @@ export class InicioPage implements OnInit, ViewWillEnter {
     vcsGrupoTitulo = signal<string>('');
 
     historialAgrupado = computed(() => {
-        let novedades = this.novedadService.novedades().sort((a, b) =>
+        const source = this.tabHistorial() === 'historial'
+            ? this.novedadService.novedadesActivas()
+            : this.novedadService.novedadesArchivadas();
+
+        let novedades = [...source].sort((a, b) =>
             new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime()
         );
 
@@ -207,19 +209,11 @@ export class InicioPage implements OnInit, ViewWillEnter {
         }
 
         if (this.modoVisualizacionHistorial() === 'estudiante') {
-            // Agrupar por ESTUDIANTE (VCS Style)
             const estudiantesMap = new Map<string, any>();
-
-            // Filtramos novedades grupales puras si es necesario, 
-            // pero si queremos ver todo lo de un estudiante, incluimos todo.
-            // Para mantener consistencia con "individual", filtramos 'grupo_bien' si se desea.
             const novedadesFiltradas = novedades.filter(n => n.tipoNovedadId !== 'grupo_bien');
 
             novedadesFiltradas.forEach(n => {
-                // Clave única: Nombre + Grupo (por si hay homónimos en diferentes grupos, o usar ID si existe)
-                // Usamos n.estudianteNombre como clave principal visual
                 const key = `${n.estudianteNombre}-${n.grupo}`;
-
                 if (!estudiantesMap.has(key)) {
                     estudiantesMap.set(key, {
                         key: key,
@@ -228,7 +222,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
                         cursoId: n.cursoId,
                         fechaUltima: n.fechaRegistro,
                         cambiosCount: 1,
-                        novedades: [n] // Historial personal
+                        novedades: [n]
                     });
                 } else {
                     const existing = estudiantesMap.get(key);
@@ -238,10 +232,9 @@ export class InicioPage implements OnInit, ViewWillEnter {
             });
             return Array.from(estudiantesMap.values());
         } else {
-            // Agrupar por curso-grupo (ESTRICTO)
             const gruposMap = new Map<string, any>();
             novedades.forEach(n => {
-                const key = `${n.cursoId}-${n.grupo}`; // Agrupación estricta por Grupo
+                const key = `${n.cursoId}-${n.grupo}`;
                 if (!gruposMap.has(key)) {
                     gruposMap.set(key, {
                         key: key,
@@ -387,23 +380,6 @@ export class InicioPage implements OnInit, ViewWillEnter {
         // Limpiar sugerencias de cursos
         this.sugerenciasCursos.set([]);
 
-        // Comando #C: Mostrar cursos disponibles
-        if (termino === '#C' || termino === '#c') {
-            this.sugerenciasCursos.set(this.cursosResumen());
-            this.resultadosBusqueda.set([]);
-            return;
-        }
-
-        // Comando #GX: Agregar todos los integrantes del grupo X
-        const grupoMatch = termino.match(/^#[Gg](\d+)$/);
-        if (grupoMatch) {
-            const grupoNumero = grupoMatch[1];
-            this.agregarGrupoCompleto(grupoNumero);
-            this.busquedaTermino.set('');
-            this.resultadosBusqueda.set([]);
-            return;
-        }
-
         if (terminoLower.length < 2) {
             this.resultadosBusqueda.set([]);
             return;
@@ -414,20 +390,38 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
         Object.keys(cursos).forEach(cursoKey => {
             const estudiantes = cursos[cursoKey] || [];
+
+            // Mejorar búsqueda para incluir coincidencia de curso y grupo
+            const matchesCurso = cursoKey.toLowerCase().includes(terminoLower);
+
             estudiantes.forEach(est => {
                 const nombreCompleto = `${est.nombres || ''} ${est.apellidos || ''}`.toLowerCase();
-                if (nombreCompleto.includes(terminoLower) || est.correo?.toLowerCase().includes(terminoLower)) {
+                const matchesNombre = nombreCompleto.includes(terminoLower);
+                const matchesCorreo = est.correo?.toLowerCase().includes(terminoLower);
+
+                // Flexibilidad en búsqueda de grupo: '7', 'G7', 'g7'
+                const grupoEst = String(est.grupo || '').toLowerCase();
+                const matchesGrupo = grupoEst === terminoLower ||
+                    `g${grupoEst}` === terminoLower ||
+                    grupoEst === terminoLower.replace('g', '');
+
+                if (matchesNombre || matchesCorreo || matchesCurso || matchesGrupo) {
+                    // CALCULAR CONTEO DE NOVEDADES ACTIVAS
+                    const novedadesCount = this.novedadService.novedadesActivas()
+                        .filter(n => n.estudianteCorreo === est.correo).length;
+
                     resultados.push({
                         correo: est.correo,
                         nombre: `${est.nombres} ${est.apellidos}`,
                         curso: cursoKey,
-                        grupo: String(est.grupo || '')
+                        grupo: String(est.grupo || ''),
+                        novedadesCount: novedadesCount
                     });
                 }
             });
         });
 
-        this.resultadosBusqueda.set(resultados.slice(0, 10));
+        this.resultadosBusqueda.set(resultados.slice(0, 15));
     }
 
     /**
@@ -772,9 +766,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
             return;
         }
 
-        const cursoId = this.cursoSeleccionado();
-        if (!cursoId) return;
-
+        // Ya no dependemos estrictamente de cursoSeleccionado() si los estudiantes ya tienen su curso asignado
         const comentarios = this.descripcionNovedad();
         const grupoNovedadId = `GN-${Date.now()}`;
         const esGrupalSeleccionado = this.modoNovedad() === 'grupal';
@@ -787,11 +779,12 @@ export class InicioPage implements OnInit, ViewWillEnter {
             if (!estudiante) continue;
 
             for (const tipoNovedad of item.novedades) {
+                const cursoMetadata = this.cursosResumen().find(c => c.codigo === estudiante.curso);
                 novedadesParaBatch.push({
                     estudianteCorreo: estudiante.correo,
                     estudianteNombre: estudiante.nombre,
                     cursoId: estudiante.curso,
-                    cursoNombre: this.cursosResumen().find(c => c.codigo === estudiante.curso)?.nombre,
+                    cursoNombre: cursoMetadata?.nombre || estudiante.curso,
                     grupo: estudiante.grupo,
                     tipoNovedadId: tipoNovedad,
                     tipoNovedadNombre: this.getNombreNovedad(tipoNovedad),
@@ -855,7 +848,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
         await toast.present();
     }
 
-    private alertCtrl = inject(AlertController);
+
 
     async eliminarNovedadItem(id: string) {
         const alert = await this.alertCtrl.create({
@@ -1344,6 +1337,173 @@ export class InicioPage implements OnInit, ViewWillEnter {
             message: `${seleccionados.length} estudiantes agregados al buffer`,
             duration: 2000,
             color: 'success'
+        }).then(t => t.present());
+    }
+
+    /**
+     * Gestión de selección en historial
+     */
+    toggleSeleccionNovedadHistorial(novedadId: string): void {
+        this.novedadesSeleccionadasHistorial.update(set => {
+            const next = new Set(set);
+            if (next.has(novedadId)) {
+                next.delete(novedadId);
+            } else {
+                next.add(novedadId);
+            }
+            return next;
+        });
+    }
+
+    isNovedadSeleccionada(novedadId: string): boolean {
+        return this.novedadesSeleccionadasHistorial().has(novedadId);
+    }
+
+    limpiarSeleccionHistorial(): void {
+        this.novedadesSeleccionadasHistorial.set(new Set());
+    }
+
+    /**
+     * Acciones masivas de historial
+     */
+    async archivarSeleccionadosHistorial(): Promise<void> {
+        const ids = Array.from(this.novedadesSeleccionadasHistorial());
+        if (ids.length === 0) return;
+
+        await this.novedadService.archivarNovedades(ids);
+        this.limpiarSeleccionHistorial();
+
+        const toast = await this.toastController.create({
+            message: `${ids.length} novedades archivadas`,
+            duration: 2000,
+            color: 'medium'
+        });
+        toast.present();
+    }
+
+    async restaurarSeleccionadosHistorial(): Promise<void> {
+        const ids = Array.from(this.novedadesSeleccionadasHistorial());
+        if (ids.length === 0) return;
+
+        await this.novedadService.restaurarNovedades(ids);
+        this.limpiarSeleccionHistorial();
+
+        const toast = await this.toastController.create({
+            message: `${ids.length} novedades restauradas`,
+            duration: 2000,
+            color: 'success'
+        });
+        toast.present();
+    }
+
+    async eliminarSeleccionadosHistorial(): Promise<void> {
+        const ids = Array.from(this.novedadesSeleccionadasHistorial());
+        if (ids.length === 0) return;
+
+        const alert = await this.alertCtrl.create({
+            header: 'Eliminar Historial',
+            message: `¿Estás seguro de que deseas eliminar permanentemente ${ids.length} novedades? Esta acción no se puede deshacer.`,
+            buttons: [
+                { text: 'Cancelar', role: 'cancel' },
+                {
+                    text: 'Eliminar',
+                    role: 'destructive',
+                    handler: async () => {
+                        await this.novedadService.borrarNovedades(ids);
+                        this.limpiarSeleccionHistorial();
+                        const toast = await this.toastController.create({
+                            message: `${ids.length} novedades eliminadas`,
+                            duration: 2000,
+                            color: 'danger'
+                        });
+                        toast.present();
+                    }
+                }
+            ]
+        });
+        alert.present();
+    }
+
+    async vaciarHistorialCompleto(): Promise<void> {
+        const alert = await this.alertCtrl.create({
+            header: 'Vaciar Historial',
+            message: '¿Estás seguro de que deseas borrar TODO el historial de novedades? Esta acción eliminará permanentemente todos los registros.',
+            buttons: [
+                { text: 'Cancelar', role: 'cancel' },
+                {
+                    text: 'Vaciar Todo',
+                    role: 'destructive',
+                    handler: async () => {
+                        await this.novedadService.borrarTodoHistorial();
+                        this.limpiarSeleccionHistorial();
+                        const toast = await this.toastController.create({
+                            message: 'Historial vaciado por completo',
+                            duration: 2000,
+                            color: 'danger'
+                        });
+                        toast.present();
+                    }
+                }
+            ]
+        });
+        alert.present();
+    }
+
+    /**
+     * Abre el historial (VCS Modal) desde los resultados de búsqueda
+     */
+    abrirHistorialDesdeBusqueda(est: EstudianteSeleccionado, event: Event): void {
+        event.stopPropagation(); // Evitar seleccionar al estudiante al clicar el contador
+
+        const novedades = this.novedadService.novedadesActivas()
+            .filter(n => n.estudianteCorreo === est.correo)
+            .sort((a, b) => new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime());
+
+        if (novedades.length > 0) {
+            this.vcsHistorialSeleccionado.set(novedades);
+            this.vcsGrupoTitulo.set(est.nombre);
+            this.isVcsModalVisible.set(true);
+        } else {
+            this.toastController.create({
+                message: 'No hay novedades registradas para este estudiante',
+                duration: 2000,
+                color: 'medium'
+            }).then(t => t.present());
+        }
+    }
+
+    /**
+     * Abre el registro de novedad para un estudiante desde el modal de historial
+     */
+    abrirRegistroDesdeHistorial(): void {
+        const novedades = this.vcsHistorialSeleccionado();
+        if (novedades.length === 0) return;
+
+        const primerNovedad = novedades[0];
+        const est: EstudianteSeleccionado = {
+            correo: primerNovedad.estudianteCorreo,
+            nombre: primerNovedad.estudianteNombre,
+            curso: primerNovedad.cursoId,
+            grupo: primerNovedad.grupo
+        };
+
+        // Cerrar modal de historial
+        this.isVcsModalVisible.set(false);
+
+        // Cerrar modal de búsqueda si estaba abierto
+        this.isSearchModalVisible.set(false);
+
+        // Agregar a la lista de registrados si no está
+        const registrados = this.estudiantesRegistrados();
+        if (!registrados.some(r => r.correo === est.correo)) {
+            this.estudiantesRegistrados.update(list => [...list, est]);
+        }
+
+        // Desplazarse a la sección de registro o mostrar feedback
+        this.toastController.create({
+            message: `Listo para registrar novedad de ${est.nombre}`,
+            duration: 2000,
+            color: 'primary'
         }).then(t => t.present());
     }
 

@@ -162,6 +162,14 @@ export class NovedadService {
         await this.saveToStorage();
     }
 
+    /**
+     * Elimina todas las novedades del historial permanentemente
+     */
+    async borrarTodoHistorial(): Promise<void> {
+        this._novedades.set([]);
+        await this.saveToStorage();
+    }
+
 
 
     // === CRUD NOVEDADES ===

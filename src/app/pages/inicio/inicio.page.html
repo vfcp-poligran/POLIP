@@ -27,6 +27,10 @@
                                     }}</ion-badge>
                                 }
                             </div>
+                            <ion-button fill="clear" size="small" color="danger" (click)="vaciarHistorialCompleto()"
+                                class="btn-clear-all" title="Vaciar Historial">
+                                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                            </ion-button>
                         </div>
 
                         <div class="historial-tab-content">
@@ -44,6 +48,29 @@
                                 <div class="sub-tab" [class.active]="modoVisualizacionHistorial() === 'grupal'"
                                     (click)="modoVisualizacionHistorial.set('grupal')">Grupal</div>
                             </div>
+
+                            <!-- Acciones Masivas Historial -->
+                            @if (novedadesSeleccionadasHistorial().size > 0) {
+                            <div class="mass-actions-bar historial-actions animate__animated animate__fadeInDown">
+                                <div class="selected-count">
+                                    {{ novedadesSeleccionadasHistorial().size }} seleccionados
+                                </div>
+                                <div class="action-buttons">
+                                    <ion-button fill="clear" size="small" (click)="archivarSeleccionadosHistorial()">
+                                        <ion-icon slot="start" name="archive-outline"></ion-icon>
+                                        Archivar
+                                    </ion-button>
+                                    <ion-button fill="clear" size="small" color="danger"
+                                        (click)="eliminarSeleccionadosHistorial()">
+                                        <ion-icon slot="start" name="trash-outline"></ion-icon>
+                                        Borrar
+                                    </ion-button>
+                                    <ion-button fill="clear" size="small" (click)="limpiarSeleccionHistorial()">
+                                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                    </ion-button>
+                                </div>
+                            </div>
+                            }
 
                             <div class="historial-novedades-list">
                                 @if (historialAgrupado().length > 0) {
@@ -627,7 +654,15 @@
                                 [name]="isEstudianteSeleccionadoModal(resultado.correo) ? 'checkmark-circle' : 'person-outline'"
                                 [class.selected-icon]="isEstudianteSeleccionadoModal(resultado.correo)"></ion-icon>
                             <div class="result-info">
-                                <div class="main-text">{{ resultado.nombre }}</div>
+                                <div class="main-text">
+                                    @if (resultado.novedadesCount && resultado.novedadesCount > 0) {
+                                    <span class="novelty-badge-mini"
+                                        (click)="abrirHistorialDesdeBusqueda(resultado, $event)">
+                                        {{ resultado.novedadesCount }}
+                                    </span>
+                                    }
+                                    {{ resultado.nombre }}
+                                </div>
                                 <div class="sub-text">
                                     <span>{{ resultado.correo }}</span>
                                     <span class="meta-tag">{{ resultado.curso }}</span>
@@ -710,9 +745,16 @@
             <ng-template>
                 <ion-header>
                     <ion-toolbar>
+                        <ion-buttons slot="start">
+                            <ion-button (click)="abrirRegistroDesdeHistorial()" color="primary">
+                                <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
                         <ion-title>Historial {{ vcsGrupoTitulo() }}</ion-title>
                         <ion-buttons slot="end">
-                            <ion-button (click)="cerrarModalVcs()">Close</ion-button>
+                            <ion-button (click)="cerrarModalVcs()">
+                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                            </ion-button>
                         </ion-buttons>
                     </ion-toolbar>
                 </ion-header>

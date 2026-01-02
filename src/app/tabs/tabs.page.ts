@@ -364,18 +364,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
   onGlobalSearch(event: any): void {
     const term = event.target?.value || '';
 
-    // Comando: nb. o Nb. → Buscar novedad
-    if (/^[nN][bB]\./.test(term)) {
-      const query = term.substring(3).trim().toLowerCase();
-      this.buscarNovedadesComando(query);
-      return;
-    }
-
-    // Comando: n. o N. → Registrar novedad (abrir modal)
-    if (/^[nN]\.$/.test(term.trim())) {
-      this.abrirModalRegistroNovedad();
-      return;
-    }
 
     // Búsqueda normal
     const lowerTerm = term.toLowerCase();
@@ -416,28 +404,6 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     this.globalSearchResults = results.slice(0, 10); // Limitar a 10 resultados
   }
 
-  /** Buscar novedades con comando nb. */
-  private buscarNovedadesComando(query: string): void {
-    const novedades = this.novedadService.buscarNovedades(query);
-    this.globalSearchResults = novedades.slice(0, 10).map(n => ({
-      id: n.id,
-      type: 'novedad' as const,
-      name: n.estudianteNombre || n.estudianteCorreo,
-      meta: `${n.tipoNovedadNombre || 'Novedad'} - ${n.cursoNombre || n.cursoId}`
-    }));
-  }
-
-  /** Abrir modal de registro de novedad */
-  private async abrirModalRegistroNovedad(): Promise<void> {
-    this.isSearchOpen = false;
-    this.globalSearchTerm = '';
-    this.globalSearchResults = [];
-
-    // Navegar a inicio con parámetro para abrir registro
-    this.router.navigate(['/tabs/inicio'], {
-      queryParams: { abrirRegistroNovedad: 'true' }
-    });
-  }
 
   /** Ejecutar búsqueda al presionar Enter */
   executeSearch(): void {
