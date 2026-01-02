@@ -1,6 +1,6 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-const config: CapacitorConfig = {
+const config = {
   appId: 'com.poligran.gestorproyectos',
   appName: 'TEOv4',
   webDir: 'www/browser',
