@@ -33,6 +33,11 @@
                 "glob": "**/*",
                 "input": "public",
                 "output": "."
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
               }
             ],
             "styles": [
@@ -70,7 +75,10 @@
               "buildTarget": "app:build:production"
             },
             "development": {
-              "buildTarget": "app:build:development"
+              "buildTarget": "app:build:development",
+              "allowedHosts": [
+                "all"
+              ]
             }
           },
           "defaultConfiguration": "development"

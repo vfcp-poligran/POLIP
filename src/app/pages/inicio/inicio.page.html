@@ -4,109 +4,66 @@
     <div class="page-container">
 
         <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
+        <!-- TOP: COURSE RIBBON & GROUPS -->
+        <div class="top-navigation-area">
+            <!-- 1. CINTA DE CURSOS (Horizontal Swipe) -->
+            <div class="courses-ribbon-container">
+                @if (isLoading()) {
+                <div class="courses-ribbon-skeleton">
+                    @for (i of [1,2,3,4,5]; track i) {
+                    <div class="skeleton-ribbon-item">
+                        <ion-skeleton-text animated style="width: 100%; height: 100%"></ion-skeleton-text>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <div class="courses-ribbon-scroll">
+                    @for (curso of cursosResumen(); track curso.codigo) {
+                    <div class="course-ribbon-item" [class.selected]="cursoSeleccionado() === curso.codigo"
+                        [style.--item-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)">
+                        <div class="ribbon-color-dot" [style.background]="curso.color"></div>
+                        <span class="ribbon-label">{{ getCodigoCorto(curso.codigo) }}</span>
+                        @if (cursoSeleccionado() === curso.codigo) {
+                        <ion-icon name="checkmark-circle" class="ribbon-check"></ion-icon>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <!-- 2. SELECTOR DE GRUPOS (Horizontal) -->
+            @if (cursoSeleccionado()) {
+            <div class="groups-ribbon-container animate__animated animate__fadeIn">
+                <div class="groups-scroll">
+                    @for (grupo of gruposDelCursoSeleccionado(); track grupo) {
+                    <div class="group-ribbon-item" [class.selected]="gruposSeleccionados().has(grupo)"
+                        [style.--group-color]="colorDelCursoSeleccionado()"
+                        (click)="toggleGrupoSeleccion(grupo, $event)">
+                        <span class="group-label">G{{ grupo }}</span>
+                        @if (gruposSeleccionados().has(grupo)) {
+                        <ion-icon name="checkmark-circle" class="group-check"></ion-icon>
+                        }
+                    </div>
+                    }
+                </div>
+                <div class="group-hint">
+                    <small>Selecciona uno o varios grupos</small>
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
         <div class="main-content-grid">
-            <!-- Dynamic Group Buttons (appears when course selected - ABOVE ALL COLUMNS) -->
-
-
             <ion-grid>
                 <ion-row class="main-layout-row">
-                    <!-- COLUMNA 1: HISTORIAL (Izquierda) -->
-                    <ion-col size="12" size-lg="3" class="column-container column-courses">
-                        <div class="courses-card-list" [@listAnimation]="cursosResumen().length">
-                            @if (isLoading()) {
-                            <!-- Skeleton loaders durante la carga -->
-                            @for (i of [1, 2, 3]; track i) {
-                            <ion-card class="course-card-premium skeleton-card">
-                                <div class="card-color-strip" style="background: #e0e0e0;"></div>
-                                <ion-card-header>
-                                    <ion-card-title>
-                                        <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-                                    </ion-card-title>
-                                    <ion-card-subtitle>
-                                        <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-                                    </ion-card-subtitle>
-                                </ion-card-header>
-                            </ion-card>
-                            }
-                            } @else if (cursosResumen().length === 0) {
-                            <div class="empty-state">
-                                <ion-icon name="school-outline"></ion-icon>
-                                <p>No hay cursos cargados</p>
-                            </div>
-                            } @else {
-                            @for (curso of cursosResumen(); track curso.codigo) {
-                            <ion-card class="course-card-premium"
-                                [class.selected]="cursoSeleccionado() === curso.codigo"
-                                [style.--course-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)"
-                                @itemAnimation>
-                                <div class="card-color-strip" [style.background]="curso.color"></div>
-
-                                <!-- Mobile selection mode indicator (only on mobile) -->
-                                @if (!isDesktop()) {
-                                <div class="card-mobile-mode-icon">
-                                    @if (gruposSeleccionados().size > 1) {
-                                    <ion-icon name="pin-outline" [style.color]="curso.color"></ion-icon>
-                                    } @else if (gruposSeleccionados().size === 1) {
-                                    <ion-icon name="lock-open-outline" [style.color]="curso.color"></ion-icon>
-                                    }
-                                </div>
-                                }
-
-                                <!-- Desktop selection indicator -->
-                                @if (isDesktop()) {
-                                <div class="card-selection-indicator">
-                                    @if (cursoSeleccionado() === curso.codigo) {
-                                    <ion-icon name="checkmark-circle" color="primary"></ion-icon>
-                                    }
-                                </div>
-                                }
-
-                                <ion-card-header>
-                                    <ion-card-title>{{ getCodigoCorto(curso.codigo) }}</ion-card-title>
-                                </ion-card-header>
-                            </ion-card>
-                            }
-                            }
-                        </div>
-
-                        <!-- Dynamic Group Buttons (Moved below courses) -->
-                        @if (cursoSeleccionado()) {
-                        <div class="grupos-selector-bar-global">
-                            <div class="grupos-selector-header">
-                                <div class="grupos-selector-label">
-                                    <ion-icon name="people-outline"></ion-icon>
-                                    <span>Grupos de {{ getCodigoCorto(cursoSeleccionado()!) }}</span>
-                                </div>
-                            </div>
-                            <ion-grid class="grupos-buttons-grid">
-                                <ion-row>
-                                    @for (grupo of gruposDelCursoSeleccionado(); track grupo) {
-                                    <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4">
-                                        <ion-button [fill]="'clear'" size="small" expand="block"
-                                            class="grupo-dynamic-btn"
-                                            [class.selected]="gruposSeleccionados().has(grupo)"
-                                            [style.--color]="colorDelCursoSeleccionado()"
-                                            (click)="toggleGrupoSeleccion(grupo, $event)">
-                                            @if (gruposSeleccionados().has(grupo)) {
-                                            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
-                                            }
-                                            G{{ grupo }}
-                                        </ion-button>
-                                    </ion-col>
-                                    }
-                                </ion-row>
-                            </ion-grid>
-                            <div class="hint-text">
-                                <ion-icon name="information-circle-outline"></ion-icon>
-                                <span>Ctrl/Cmd + Click para seleccionar múltiples grupos</span>
-                            </div>
-                        </div>
-                        }
-
-                        <!-- SECTION: Group Members List (Available to Select) -->
+                    <!-- COLUMNA 1: LISTA DE ESTUDIANTES (Disponible) -->
+                    <ion-col size="12" size-lg="4" class="column-container column-members">
                         @if (estudiantesDeGruposSeleccionados().length > 0) {
                         <div class="group-members-section">
                             <div class="section-header">
+                                <h4>Estudiantes ({{ estudiantesDeGruposSeleccionados().length }})</h4>
                                 <div class="actions-row">
                                     <ion-button fill="clear" size="small" (click)="seleccionarTodosGrupo()">
                                         <ion-icon slot="start" name="checkbox-outline"></ion-icon>
@@ -115,7 +72,7 @@
                                     <ion-button fill="clear" size="small" color="medium"
                                         (click)="deseleccionarTodosGrupo()">
                                         <ion-icon slot="start" name="square-outline"></ion-icon>
-                                        Ninguno
+                                        Nada
                                     </ion-button>
                                 </div>
                             </div>
@@ -139,20 +96,31 @@
                                 }
                             </div>
                         </div>
+                        } @else if (cursoSeleccionado()) {
+                        <div class="empty-state-mini">
+                            <ion-icon name="people-outline"></ion-icon>
+                            <p>Selecciona un grupo para ver estudiantes</p>
+                        </div>
+                        } @else {
+                        <div class="empty-state-side">
+                            <div class="illustration-container">
+                                <ion-icon name="school-outline" color="primary"></ion-icon>
+                            </div>
+                            <h3>Bienvenido</h3>
+                            <p>Selecciona un curso de la cinta superior para comenzar.</p>
+                        </div>
                         }
                     </ion-col>
 
                     <!-- COLUMNA 2: NOVEDAD (Centro) -->
-                    <ion-col size="12" size-lg="6" class="column-container column-registration">
+                    <ion-col size="12" size-lg="5" class="column-container column-registration">
                         <div class="column-header">
                             <ion-icon name="checkmark-circle-outline"></ion-icon>
-                            <h2>Novedad</h2>
+                            <h2>Registro de Novedad</h2>
                             <ion-badge [color]="estudiantesRegistrados().length > 0 ? 'primary' : 'medium'">
                                 {{ estudiantesRegistrados().length }}
                             </ion-badge>
                         </div>
-
-
 
                         <div class="registration-control-pane">
                             <div class="registration-actions-top">
@@ -360,14 +328,14 @@
                             } @else {
                             <div class="empty-state registration-empty">
                                 <ion-icon name="person-add-outline"></ion-icon>
-                                <p>No hay estudiantes seleccionados</p>
-                                <small>Usa el buscador arriba para agregar estudiantes a esta lista.</small>
+                                <p>No hay estudiantes en proceso</p>
+                                <small>Selecciona estudiantes de la izquierda.</small>
                             </div>
                             }
                         </div>
                     </ion-col>
 
-                    <!-- COLUMNA 3: PANORAMA DE CURSOS (Derecha) -->
+                    <!-- COLUMNA 3: PANORAMA DE CURSOS / HISTORIAL (Derecha) -->
                     <ion-col size="12" size-lg="3" class="column-container column-placeholder">
                         <div class="column-header-tabs">
                             <div class="tab-item" [class.active]="tabHistorial() === 'historial'"

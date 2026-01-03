@@ -12,7 +12,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         <!-- Logo del Politécnico -->
         <div class="logo-container">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/7/76/Logo_del_Polit%C3%A9cnico_Grancolombiano.svg"
+            src="/assets/icon/splash-logo.png"
             alt="Politécnico Grancolombiano"
             class="logo"
             (error)="onLogoError($event)"
