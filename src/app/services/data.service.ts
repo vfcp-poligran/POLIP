@@ -46,12 +46,15 @@ export class DataService implements OnDestroy {
   private stateService = inject(StateService);
   private canvasService = inject(CanvasService);
 
+  private readonly CURRENT_APP_VERSION = '4.1'; // Versión actual de la app
+
   private readonly STORAGE_KEYS = {
     CURSOS: 'gestorCursosData',
     EVALUACIONES: 'evaluacionesData',
     UI_STATE: 'appUIState',
     RUBRICAS: 'rubricDefinitionsData',
-    COMENTARIOS_GRUPO: 'comentariosGrupoData'
+    COMENTARIOS_GRUPO: 'comentariosGrupoData',
+    APP_VERSION: 'appVersion'
   };
 
   // Global search term
@@ -208,6 +211,18 @@ export class DataService implements OnDestroy {
   private async initializeData() {
     try {
       await this.storage.init();
+
+      // === VERIFICACIÓN DE VERSIÓN ===
+      const storedVersion = await this.storage.get(this.STORAGE_KEYS.APP_VERSION);
+      if (storedVersion !== this.CURRENT_APP_VERSION) {
+        Logger.log(`🚀 [DataService] Nueva versión detectada: ${storedVersion || 'Instalación limpia'} -> ${this.CURRENT_APP_VERSION}`);
+        // Actualizar registro de versión
+        await this.storage.set(this.STORAGE_KEYS.APP_VERSION, this.CURRENT_APP_VERSION);
+        Logger.log(`✅ [DataService] Versión actualizada a ${this.CURRENT_APP_VERSION}`);
+      } else {
+        Logger.log(`✅ [DataService] Verificación de instancia completada. Versión: ${this.CURRENT_APP_VERSION}`);
+      }
+
       await this.courseService.loadCursos();
       await this.evaluationService.loadEvaluaciones();
       await this.stateService.loadUIState();

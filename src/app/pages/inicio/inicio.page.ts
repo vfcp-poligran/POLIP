@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -24,7 +25,7 @@ import {
     IonSpinner,
     ActionSheetController,
     ToastController,
-    ModalController, // Add import
+    ModalController,
     MenuController,
     AlertController,
     ViewWillEnter,
@@ -190,6 +191,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     private toastController = inject(ToastController);
     private menuCtrl = inject(MenuController);
     private alertCtrl = inject(AlertController);
+    private route = inject(ActivatedRoute);
 
     // === SIGNALS ===
     cursosResumen = signal<CursoResumen[]>([]);
@@ -402,6 +404,17 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     ionViewWillEnter(): void {
         this.cargarCursos();
+
+        // Verificar si hay término de búsqueda global
+        const terminoGlobal = this.route.snapshot.queryParams['buscar'];
+        if (terminoGlobal) {
+            this.isSearchModalVisible.set(true);
+            // Pequeño delay para asegurar que el modal se monte
+            setTimeout(() => {
+                this.busquedaTermino.set(terminoGlobal);
+                this.onBusquedaChange({ detail: { value: terminoGlobal } });
+            }, 300);
+        }
     }
 
     // === CARGA DE DATOS ===

@@ -65,7 +65,9 @@ import {
   create,
   construct,
   ellipse,
+
   checkmarkCircle,
+  speedometer,
 } from 'ionicons/icons';
 
 @Component({
@@ -254,7 +256,7 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
       brush,
       construct,
       ellipse,
-      gitBranch, copy, people, person, add, checkmarkCircle
+      gitBranch, copy, people, person, add, checkmarkCircle, speedometer
     });
   }
 

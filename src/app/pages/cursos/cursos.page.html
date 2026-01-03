@@ -1,55 +1,32 @@
-<!-- MENU DRAWER: SELECCIÓN DE CURSOS (MOBILE ONLY) -->
+<!-- ======================================== -->
+<!-- 1. MOBILE TOOLBAR (NO HAMBURGER) -->
+<!-- ======================================== -->
 @if (isMobile()) {
-<ion-menu contentId="cursos-page-content" side="start" type="overlay">
-  <ion-header>
-    <ion-toolbar color="primary">
-      <ion-title>Mis Cursos</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="ion-padding">
-    <!-- Lista de Cursos -->
-    <ion-list>
-      <!-- "Crear" removed as per user request (use FAB) -->
-
-      @for (curso of cursosDisponibles(); track curso.codigo) {
-      <ion-item button [color]="cursoSeleccionado() === curso.codigo ? 'light' : ''"
-        (click)="seleccionarCurso(curso.codigo); closeMenu()" lines="full" class="menu-item-curso">
-        <!-- Mantener color del curso -->
-        <div class="curso-stripe" slot="start" [style.background]="getCursoColor(curso.codigo)"></div>
-        <ion-label>
-          <h2>{{ curso.nombre }}</h2>
-          <p>{{ curso.codigo }}</p>
-        </ion-label>
-        <div class="menu-item-actions" slot="end">
-          <ion-button fill="clear" color="secondary"
-            (click)="editarCurso(curso); closeMenu(); $event.stopPropagation()">
-            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" color="danger" (click)="confirmarEliminacion(curso); $event.stopPropagation()">
-            <ion-icon name="trash" slot="icon-only"></ion-icon>
-          </ion-button>
-        </div>
-      </ion-item>
-      }
-    </ion-list>
-  </ion-content>
-</ion-menu>
+<ion-header class="mobile-toolbar">
+  <ion-toolbar color="primary">
+    <ion-title>Cursos</ion-title>
+  </ion-toolbar>
+</ion-header>
 }
 
 <ion-content [fullscreen]="false" id="cursos-page-content">
 
-  <!-- ======================================== -->
-  <!-- 1. MOBILE TOOLBAR WITH HAMBURGER -->
-  <!-- ======================================== -->
+  <!-- MOBILE COURSE RIBBON (Horizontal Scroll) - MOVED HERE -->
   @if (isMobile()) {
-  <ion-header class="mobile-toolbar">
-    <ion-toolbar color="primary">
-      <ion-button slot="start" fill="clear" (click)="toggleMenu()" [attr.aria-label]="'Abrir menú de cursos'">
-        <ion-icon slot="icon-only" name="menu"></ion-icon>
-      </ion-button>
-      <ion-title>Cursos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="courses-ribbon-container">
+    <div class="courses-ribbon-scroll">
+      @for (curso of cursosDisponibles(); track curso.codigo) {
+      <div class="course-ribbon-item" [class.selected]="cursoSeleccionado() === curso.codigo"
+        [style.--item-color]="getCursoColor(curso.codigo)" (click)="seleccionarCurso(curso.codigo)">
+        <div class="ribbon-color-dot" [style.background]="getCursoColor(curso.codigo)"></div>
+        <span class="ribbon-label">{{ getCursoMobileLabel(curso) }}</span>
+        @if (cursoSeleccionado() === curso.codigo) {
+        <ion-icon name="checkmark-circle" class="ribbon-check"></ion-icon>
+        }
+      </div>
+      }
+    </div>
+  </div>
   }
 
   <!-- ======================================== -->
@@ -58,8 +35,8 @@
 
   <!-- FAB Crear Curso -->
   @if (!modoEdicion() && !isDesktop()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(100px + env(safe-area-inset-bottom))"
-    class="fab-crear-premium">
+  <ion-fab slot="fixed" vertical="top" horizontal="end"
+    style="top: calc(8px + env(safe-area-inset-top)); z-index: 1100;" class="fab-crear-premium">
     <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
       <ion-icon name="add"></ion-icon>
@@ -69,15 +46,15 @@
 
   <!-- FABs de edición -->
   @if (modoEdicion() && !isDesktop()) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(128px + env(safe-area-inset-bottom))"
-    class="fab-guardar">
+  <ion-fab slot="fixed" vertical="top" horizontal="end"
+    style="top: calc(8px + env(safe-area-inset-top)); z-index: 1100;" class="fab-guardar">
     <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
       [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: calc(200px + env(safe-area-inset-bottom))"
-    class="fab-cancelar">
+  <ion-fab slot="fixed" vertical="top" horizontal="end"
+    style="top: calc(72px + env(safe-area-inset-top)); z-index: 1100;" class="fab-cancelar">
     <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
       [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
       <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
@@ -183,6 +160,13 @@
           <div class="curso-header-info">
             <ion-icon [name]="modoEdicion() ? 'settings-sharp' : 'information-circle'" class="header-icon"></ion-icon>
             <h2 class="header-main-title">{{ modoEdicion() ? 'Configuración del Curso' : 'Detalles' }}</h2>
+            <!-- BOTÓN EDITAR (MÓVIL) -->
+            @if (!modoEdicion() && !isDesktop() && cursoSeleccionado()) {
+            <ion-button fill="clear" size="small" (click)="editarCursoSeleccionado()" class="mobile-edit-btn"
+              color="medium">
+              <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            }
           </div>
         </div>
 
@@ -231,6 +215,15 @@
                   <div class="form-main-grid">
                     <!-- Columna Izquierda: Importación y Datos del Curso -->
                     <div class="main-content-side">
+                      <!-- CAMPO DE NOMBRE DEL CURSO (EDITABLE) -->
+                      <div class="course-name-edit-section" style="margin-bottom: 16px;">
+                        <ion-item fill="outline" class="course-name-input">
+                          <ion-label position="stacked">Nombre del Curso</ion-label>
+                          <ion-input [(ngModel)]="cursoParseado.nombre" type="text"
+                            placeholder="Ej: Énfasis Profesional I"></ion-input>
+                        </ion-item>
+                      </div>
+
                       <!-- Sección de Importación -->
                       <div class="import-side">
                         <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>

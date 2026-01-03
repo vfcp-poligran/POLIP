@@ -13,6 +13,7 @@
 @use './styles/mobile-toolbar'; // Mobile toolbar with hamburger
 @use './styles/grupos-accordion'; // Groups accordion for Tablet/Mobile
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
+
 @use '../../shared/styles/breakpoints' as bp; // Sistema de breakpoints
 @use '../../shared/styles/empty-state'; // Estados vacíos
 @use '../../shared/styles/card-system'; // Sistema de tarjetas
@@ -20,9 +21,89 @@
 @use '../../shared/styles/typography-mixins' as typo; // Mixins tipográficos
 
 // ============================================
-// SIDEBAR MENU (MOBILE ONLY)
+// MOBILE COURSE RIBBON (Horizontal)
 // ============================================
 
+.courses-ribbon-container {
+  width: 100%;
+  background: var(--ion-color-light); // Contrast background
+  padding: 4px 0; // Reduced from 8px for compactness
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  // Fix overlap with fixed header on mobile
+  // Assuming header height ~56px
+  margin-top: 56px;
+
+  @include bp.mobile-only {
+    margin-top: 56px; // Force clearance
+  }
+
+  .courses-ribbon-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-inline: 12px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; // Hide scrollbar Firefox
+
+    &::-webkit-scrollbar {
+      display: none; // Hide scrollbar Chrome/Safari
+    }
+  }
+
+  .course-ribbon-item {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px; // Reduced gap
+    height: 32px; // Reduced from 36px
+    padding: 0 10px 0 4px; // Slightly tighter padding
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    .ribbon-color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .ribbon-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ion-text-color);
+      white-space: nowrap;
+    }
+
+    .ribbon-check {
+      color: var(--ion-color-primary);
+      font-size: 1rem;
+      margin-left: 2px;
+    }
+
+    &.selected {
+      background: var(--ion-color-primary-contrast);
+      border-color: var(--item-color, var(--ion-color-primary));
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+
+      .ribbon-label {
+        color: var(--item-color, var(--ion-color-primary));
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// ============================================
+// SIDEBAR MENU (MOBILE ONLY) - REMOVED
+// ============================================
+// Styles kept just in case but drawer is removed from HTML
 ion-menu {
   --width: 280px;
   --max-width: 85vw; // Responsive width limit
@@ -102,9 +183,9 @@ ion-menu {
   }
 
   @include respond-to-max('sm') {
-    // Mobile: NO padding-top extra - el header es relative, no fixed
-    // El contenido se apila naturalmente debajo del header
-    padding-top: spacing('sm'); // Solo un poco de breathing room
+    // Mobile: Compact view - reduce padding to minimum
+    padding-top: 4px; // Was spacing('sm') ~8-12px
+    padding-inline: 8px; // Ensure consistent side padding
   }
 }
 

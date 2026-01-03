@@ -149,7 +149,8 @@ export class CursosPage implements ViewWillEnter {
   private cursoSeleccionadoClave = signal<string | null>(null);
 
   // Preferencias de visibilidad del tab Características
-  mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
+  // mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
+  mostrarTabCaracteristicas = signal(true); // Siempre visible (Opción suprimida)
   modoEdicion = signal<boolean>(false);
   subtabActivo = signal<string>('detalle');
   grupoActivo = signal<string>('todos');
@@ -1337,8 +1338,26 @@ export class CursosPage implements ViewWillEnter {
           }
           enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
         } else {
-          nombreCompleto = fileName.replace('.csv', '');
-          enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+          nombreCompleto = fileName.replace('.csv', '').replace('.CSV', '');
+
+          // INTENTO 1: Detectar formato CODIGO_GRUPO (ej: EPM_B01)
+          const matchCodigo = nombreCompleto.match(/^([A-Z0-9]+)[_-]([A-Z]?\d+)$/i);
+
+          if (matchCodigo) {
+            // Es un código directo, usar tal cual
+            nombreCompleto = matchCodigo[1].toUpperCase(); // EPM
+            grupoSolo = matchCodigo[2].toUpperCase(); // B01
+            enfasisSiglas = nombreCompleto; // Las siglas SON el código (EPM)
+
+            // Ajustar ingreso según la letra del grupo si existe
+            const letraGrupo = grupoSolo.match(/[A-Z]/)?.[0];
+            if (letraGrupo && ['A', 'B', 'C', 'E'].includes(letraGrupo)) {
+              this.cohorteForm.ingreso = letraGrupo as any;
+            }
+          } else {
+            // Formato libre: generar acrónimo
+            enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+          }
         }
 
         if (bloqueTexto) {
@@ -2283,10 +2302,15 @@ export class CursosPage implements ViewWillEnter {
   public generarAcronimoCurso(nombreCompleto: string): string {
     // Normalizar texto: quitar tildes y convertir a mayúsculas
     const normalizarTexto = (texto: string): string => {
-      return texto
+      // 1. Descomponer caracteres (NFD) y eliminar diacríticos
+      let res = texto
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toUpperCase();
+
+      // 2. Eliminar cualquier caracter que no sea letra o número (para limpieza final de palabra)
+      res = res.replace(/[^A-Z0-9]/g, '');
+      return res;
     };
 
     // Lista de preposiciones a excluir
@@ -2295,12 +2319,18 @@ export class CursosPage implements ViewWillEnter {
       'A', 'CON', 'PARA', 'POR', 'Y', 'AL'
     ]);
 
-    const palabras = nombreCompleto.split(/\s+/);
+    // Dividir por espacios, guiones o guiones bajos
+    // Limpiar paréntesis antes de dividir
+    const nombreLimpio = nombreCompleto.replace(/[\(\)\[\]]/g, ' ');
+    const palabras = nombreLimpio.split(/[\s_\-]+/);
     const letrasSignificativas: string[] = [];
 
     palabras.forEach((palabra, index) => {
-      // Normalizar la palabra
+      // Normalizar la palabra (esto eliminará '(' si quedó pegado, aunque el split debería manejarlo)
       const palabraNormalizada = normalizarTexto(palabra);
+
+      // Si quedó vacía tras limpieza, saltar
+      if (!palabraNormalizada) return;
 
       // CASO ESPECIAL: Primera palabra es "ÉNFASIS" → tomar "E"
       if (index === 0 && palabraNormalizada === 'ENFASIS') {
@@ -2320,7 +2350,8 @@ export class CursosPage implements ViewWillEnter {
       }
 
       // Saltar palabras muy cortas (1-2 letras) que no sean números
-      if (palabra.length <= 2) {
+      // Excepción: Si es la PRIMERA palabra del nombre (Ej: "UX Design" -> U)
+      if (palabraNormalizada.length <= 2 && index > 0) {
         return;
       }
 

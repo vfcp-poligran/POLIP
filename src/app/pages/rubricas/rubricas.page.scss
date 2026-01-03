@@ -13,6 +13,12 @@
 // ion-content y .page-container estilos en:
 // src/app/shared/styles/_page-container.scss
 
+.page-container {
+  @media (max-width: 768px) {
+    margin-top: 56px;
+  }
+}
+
 // ============================================
 // GRID PRINCIPAL - LAYOUT FLEXBOX VERTICAL
 // ============================================
