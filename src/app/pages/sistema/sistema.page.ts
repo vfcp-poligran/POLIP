@@ -79,7 +79,6 @@ import { ALERT_BUTTONS } from '@app/constants/button-config';
     IonToggle,
     IonSegment,
     IonSegmentButton,
-    IonCheckbox,
     IonAccordion,
     IonAccordionGroup,
     ThemeToggleComponent
@@ -363,41 +362,6 @@ export class SistemaPage implements OnInit {
     });
 
     await alert.present();
-  }
-
-  /**
-   * Toggle global Características tab visibility
-   */
-  toggleTabCaracteristicas(event: any): void {
-    const mostrar = event.detail.checked;
-    this.preferencesService.setMostrarTabCaracteristicas(mostrar);
-
-    if (mostrar) {
-      this.toastService.success('Tab Características habilitado');
-    } else {
-      this.toastService.info('Tab Características deshabilitado en todos los cursos');
-    }
-  }
-
-  /**
-   * Toggle Características tab for a specific course
-   */
-  toggleCursoTabOculto(codigoCurso: string): void {
-    this.preferencesService.toggleTabCaracteristicasCurso(codigoCurso);
-    const oculto = this.preferencesService.isCursoConTabOculto(codigoCurso);
-
-    if (oculto) {
-      this.toastService.info(`Tab oculto en curso ${codigoCurso}`);
-    } else {
-      this.toastService.success(`Tab visible en curso ${codigoCurso}`);
-    }
-  }
-
-  /**
-   * Check if a course has the tab hidden
-   */
-  isCursoConTabOculto(codigoCurso: string): boolean {
-    return this.preferencesService.isCursoConTabOculto(codigoCurso);
   }
 }
 

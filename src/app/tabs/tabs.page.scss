@@ -115,10 +115,11 @@ div.main-content-area {
   ion-toolbar {
     --background: var(--azul-oscuro, #0f385a);
     --color: white;
-    --min-height: 48px;
+    --min-height: 44px; // Optimized for mobile
     --padding-start: 8px;
     --padding-end: 8px;
     --padding-top: env(safe-area-inset-top); // Manejar notch
+    padding-top: env(safe-area-inset-top); // Ensure native padding applies
   }
 
   .mobile-app-title {

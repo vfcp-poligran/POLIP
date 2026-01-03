@@ -4,6 +4,7 @@
     <div class="page-container">
 
         <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
+        @if (cursosResumen().length > 0 || isLoading()) {
         <!-- TOP: COURSE RIBBON & GROUPS -->
         <div class="top-navigation-area">
             <!-- 1. CINTA DE CURSOS (Horizontal Swipe) -->
@@ -488,17 +489,9 @@
             </ion-grid>
         </div>
 
-
-
-        <!-- FAB Búsqueda (Todos los Viewports) -->
-        <ion-fab slot="fixed" vertical="bottom" horizontal="start" style="bottom: 70px" class="fab-search">
-            <ion-fab-button color="primary" (click)="toggleSearchModal()">
-                <ion-icon name="search"></ion-icon>
-            </ion-fab-button>
-        </ion-fab>
-
         <!-- FAB Registrar (Solo Móvil) -->
-        <ion-fab slot="fixed" vertical="bottom" horizontal="end" style="bottom: 70px" class="ion-hide-lg-up"
+        <ion-fab slot="fixed" vertical="bottom" horizontal="end"
+            style="bottom: calc(90px + env(safe-area-inset-bottom, 20px));" class="ion-hide-lg-up"
             *ngIf="estudiantesSeleccionados().length > 0">
             <ion-fab-button color="primary" (click)="registrarEnLista()">
                 <ion-icon name="add"></ion-icon>
@@ -507,10 +500,26 @@
                 style="position: absolute; top: -5px; right: -5px; border-radius: 50%;">{{
                 estudiantesSeleccionados().length }}</ion-badge>
         </ion-fab>
+        } @else {
+        <!-- EMPTY STATE GLOBAL -->
+        <div class="global-empty-state">
+            <div class="empty-state-content">
+                <div class="icon-bubble">
+                    <ion-icon name="school-outline"></ion-icon>
+                </div>
+                <h2>¡Bienvenido a Poli Project!</h2>
+                <p>No tienes cursos registrados actualmente.</p>
+                <p class="subtext">Ve a la sección <strong>Cursos</strong> para crear tu primer grupo.</p>
+                <ion-button routerLink="/tabs/cursos" shape="round">
+                    Ir a Cursos
+                    <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+                </ion-button>
+            </div>
+        </div>
+        }
 
-        <!-- MODAL DE REGISTRO DE NOVEDAD -->
-        <ion-modal [isOpen]="isModalRegistroVisible()" (didDismiss)="cerrarModalRegistro()" class="registration-modal"
-            @modalAnimation>
+        <!-- MODAL DE REGISTRO DE NOVEDAD --> <ion-modal [isOpen]="isModalRegistroVisible()"
+            (didDismiss)="cerrarModalRegistro()" class="registration-modal" @modalAnimation>
             <ng-template>
                 <ion-header>
                     <ion-toolbar color="primary">

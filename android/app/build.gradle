@@ -7,7 +7,7 @@ android {
         applicationId "com.poligran.gestorproyectos"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 40300
+        versionCode 50001
         versionName "4.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -49,6 +49,7 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    implementation 'net.zetetic:sqlcipher-android:4.5.4'
 }
 
 apply from: 'capacitor.build.gradle'

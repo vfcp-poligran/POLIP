@@ -11,16 +11,19 @@ $gris-claro: colors.$gris-claro;
 $touch-target: colors.$touch-target;
 
 // Contenedor principal
+// Contenedor principal
 .inicio-content {
     --padding-bottom: calc(60px + env(safe-area-inset-bottom, 20px)); // Más espacio para tabs
-    --padding-top: calc(64px + env(safe-area-inset-top, 24px)); // Asegurar espacio para header móvil estándar
+    // Removido safe-area-inset-top ya que el header global lo maneja
+    --padding-top: 10px;
 }
 
 // === HEADER ===
 .page-header {
     background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
     padding: 10px 12px;
-    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    // Removido safe-area-inset-top redundante
+    padding-top: 10px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -1753,6 +1756,66 @@ $touch-target: colors.$touch-target;
                     }
                 }
             }
+        }
+    }
+}
+
+// === GLOBAL EMPTY STATE ===
+.global-empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; // Occupy most of the screen vertically
+    text-align: center;
+    padding: 24px;
+    animation: fadeIn 0.5s ease-out;
+
+    .empty-state-content {
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+
+        .icon-bubble {
+            width: 120px;
+            height: 120px;
+            background: rgba($azul-claro, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+
+            ion-icon {
+                font-size: 64px;
+                color: $azul-claro;
+            }
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1rem;
+            color: $gris-claro;
+            margin: 0;
+            line-height: 1.5;
+
+            &.subtext {
+                font-size: 0.9rem;
+                color: color.adjust($gris-claro, $lightness: -10%);
+            }
+        }
+
+        ion-button {
+            margin-top: 16px;
+            --padding-start: 32px;
+            --padding-end: 32px;
         }
     }
 }

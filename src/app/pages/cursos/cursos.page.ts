@@ -80,6 +80,7 @@ import { BUTTON_CONFIG } from '@app/constants/button-config';
 import { CapitalizePipe } from '@app/pipes/capitalize.pipe';
 import { PreferencesService } from '@app/services/preferences.service';
 import { MenuController } from '@ionic/angular';
+import { parsearNombreCurso } from '../../utils/curso-parser.util';
 
 
 interface EstudianteConNotas {
@@ -1313,31 +1314,60 @@ export class CursosPage implements ViewWillEnter {
         let grupoSolo = '';
 
         if (primeraSeccion) {
-          const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
-          if (fullMatch) {
-            bloqueTexto = fullMatch[1].trim();
-            modalidadTexto = fullMatch[2].trim();
-            nombreCompleto = fullMatch[3].trim();
-            const letraGrupo = fullMatch[4].trim();
-            grupoSolo = fullMatch[5].trim();
-            if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
-              this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
+          try {
+            // Usar la utilidad centralizada para parsing robusto
+            const parsed = parsearNombreCurso(primeraSeccion);
+
+            // Actualizar formulario de cohorte
+            this.cohorteForm.bloque = parsed.bloque;
+            if (['A', 'B', 'C'].includes(parsed.ingreso)) {
+              this.cohorteForm.ingreso = parsed.ingreso as any;
             }
-          } else {
-            bloqueTexto = (primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i)?.[1] || '').trim();
-            modalidadTexto = (primeraSeccion.match(/BLOQUE-([^\/]+)\//i)?.[1] || 'VIRTUAL').trim();
-            nombreCompleto = (primeraSeccion.match(/\/([^-]+)-/)?.[1] || '').trim();
-            const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z])(\d+)\]/i);
-            if (grupoMatch) {
-              const letraGrupo = grupoMatch[1].toUpperCase();
-              grupoSolo = grupoMatch[2];
-              if (['A', 'B', 'C', 'E'].includes(letraGrupo)) {
-                this.cohorteForm.ingreso = letraGrupo as any;
+            this.onIngresoChange();
+
+            // Configurar curso detectado
+            cursoDetectado = {
+              nombre: parsed.nombre,
+              siglas: parsed.codigoBase, // Usamos el código base (ej: EPM) como siglas
+              grupo: parsed.grupo,      // Ej: B01
+              codigo: parsed.codigo,    // Ej: EPM-B01
+              bloque: parsed.bloque,
+              ingreso: parsed.ingreso,
+              modalidad: parsed.modalidad,
+              modalidadCodigo: this.getModalityInitials(parsed.modalidad)
+            };
+
+            Logger.log(`[CursosPage] ✅ Parsing exitoso con utilidad:`, cursoDetectado);
+
+          } catch (error) {
+            Logger.warn(`[CursosPage] ⚠️ Error parseando con utilidad, usando fallback:`, error);
+
+            // Fallback: lógica antigua simplificada para casos extremos
+            const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
+            if (fullMatch) {
+              bloqueTexto = fullMatch[1].trim();
+              modalidadTexto = fullMatch[2].trim();
+              nombreCompleto = fullMatch[3].trim();
+              const letraGrupo = fullMatch[4].trim();
+              grupoSolo = fullMatch[5].trim();
+              if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
+                this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
               }
+              enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+              cursoDetectado = {
+                nombre: this.normalizarCaracteresEspeciales(nombreCompleto),
+                siglas: enfasisSiglas,
+                grupo: grupoSolo,
+                codigo: '',
+                bloque: this.cohorteForm.bloque || bloqueTexto,
+                ingreso: this.cohorteForm.ingreso || '',
+                modalidad: modalidadTexto,
+                modalidadCodigo: this.getModalityInitials(modalidadTexto)
+              };
             }
           }
-          enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
         } else {
+          // Lógica para cuando no hay 'Secciones' (fallback a nombre de archivo)
           nombreCompleto = fileName.replace('.csv', '').replace('.CSV', '');
 
           // INTENTO 1: Detectar formato CODIGO_GRUPO (ej: EPM_B01)
@@ -1358,29 +1388,20 @@ export class CursosPage implements ViewWillEnter {
             // Formato libre: generar acrónimo
             enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
           }
+
+          const nombreCursoNormalizado = this.normalizarCaracteresEspeciales(nombreCompleto);
+
+          cursoDetectado = {
+            nombre: nombreCursoNormalizado,
+            siglas: enfasisSiglas,
+            grupo: grupoSolo,
+            codigo: '',
+            bloque: this.cohorteForm.bloque || 'PRIMERO',
+            ingreso: this.cohorteForm.ingreso || '',
+            modalidad: 'VIRTUAL',
+            modalidadCodigo: 'V'
+          };
         }
-
-        if (bloqueTexto) {
-          const bt = bloqueTexto.toUpperCase();
-          if (bt.includes('PRIMER')) this.cohorteForm.bloque = 'PRIMERO';
-          else if (bt.includes('SEGUNDO')) this.cohorteForm.bloque = 'SEGUNDO';
-          else if (bt.includes('TRANSVERSAL')) this.cohorteForm.bloque = 'TRANSVERSAL';
-        }
-        this.onIngresoChange();
-
-        // Normalizar el nombre del curso para corregir posibles caracteres corruptos
-        const nombreCursoNormalizado = this.normalizarCaracteresEspeciales(nombreCompleto);
-
-        cursoDetectado = {
-          nombre: nombreCursoNormalizado,
-          siglas: enfasisSiglas,
-          grupo: grupoSolo,
-          codigo: '',
-          bloque: this.cohorteForm.bloque || bloqueTexto,
-          ingreso: this.cohorteForm.ingreso || '',
-          modalidad: modalidadTexto,
-          modalidadCodigo: this.getModalityInitials(modalidadTexto)
-        };
       }
 
       this.estudiantesCargados = estudiantes;

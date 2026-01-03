@@ -127,38 +127,7 @@
                 </ion-button>
               </div>
             </ion-item>
-            <ion-item>
-              <ion-icon name="list" slot="start" color="primary"></ion-icon>
-              <ion-label>
-                <h3 class="h3-plataforma-blue">Tab Características en Cursos</h3>
-                <p class="text-gray-medium">Mostrar tab de características en todos los cursos</p>
-              </ion-label>
-              <ion-toggle slot="end" [checked]="mostrarTabCaracteristicas()"
-                (ionChange)="toggleTabCaracteristicas($event)">
-              </ion-toggle>
-            </ion-item>
           </ion-list>
-          @if (mostrarTabCaracteristicas()) {
-          <ion-list class="cursos-checkbox-list">
-            <ion-item>
-              <ion-label>
-                <h3 class="h3-plataforma-blue">Ocultar en cursos específicos</h3>
-                <p class="text-gray-medium">Selecciona los cursos donde NO quieres ver el tab</p>
-              </ion-label>
-            </ion-item>
-            @for (curso of cursosDisponibles(); track curso.codigo) {
-            <ion-item>
-              <ion-checkbox slot="start" [checked]="isCursoConTabOculto(curso.codigo)"
-                (ionChange)="toggleCursoTabOculto(curso.codigo)">
-              </ion-checkbox>
-              <ion-label>
-                <h4>{{ curso.nombre }}</h4>
-                <p>{{ curso.codigo }}</p>
-              </ion-label>
-            </ion-item>
-            }
-          </ion-list>
-          }
         </ion-card-content>
       </ion-card>
     </ng-template>
@@ -218,7 +187,7 @@
         <ion-card-header>
           <ion-card-title>
             <ion-icon name="information-circle"></ion-icon>
-            Información del Sistema
+            Información
           </ion-card-title>
           <ion-card-subtitle>Detalles del stack tecnológico</ion-card-subtitle>
         </ion-card-header>
