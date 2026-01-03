@@ -80,8 +80,7 @@ import {
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
     analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline, playOutline, stopCircleOutline,
-    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline
-} from 'ionicons/icons';
+    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline, personCircleOutline, refreshOutline } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
 import { NovedadService } from '../../services/novedad.service';
@@ -388,7 +387,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({ timeOutline, archiveOutline, trashOutline, closeOutline, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline, closeCircle, personAddOutline, schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, search, add, checkmarkOutline, checkmark, addCircleOutline, statsChartOutline, notificationsOutline, listOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, calendarOutline, playOutline, addOutline, personOutline, peopleCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
+        addIcons({schoolOutline,pinOutline,lockOpenOutline,checkmarkCircle,peopleOutline,informationCircleOutline,checkboxOutline,squareOutline,checkmarkCircleOutline,trashOutline,closeOutline,documentTextOutline,closeCircle,personAddOutline,timeOutline,archiveOutline,chevronForwardOutline,search,add,checkmarkOutline,checkmark,addCircleOutline,createOutline,personOutline,personCircleOutline,refreshOutline,statsChartOutline,notificationsOutline,listOutline,playCircle,stopCircleOutline,checkmarkDoneOutline,calendarOutline,playOutline,addOutline,peopleCircleOutline,hammerOutline,constructOutline,analyticsOutline,homeOutline,cloudOfflineOutline,appsOutline,checkmarkDoneCircleOutline,bulbOutline,chevronDownOutline,checkmarkDoneCircle,alertCircleOutline,closeCircleOutline,optionsOutline,searchOutline,warningOutline,chevronUpOutline,gridOutline,chatboxEllipsesOutline,person,people,warning,stopCircle,checkmarkDone,checkbox});
 
         // Listener de resize
         window.addEventListener('resize', () => {

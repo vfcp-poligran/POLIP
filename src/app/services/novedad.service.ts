@@ -183,6 +183,7 @@ export class NovedadService {
             ...data,
             id: novedadId,
             fechaRegistro: new Date(),
+            registradoPor: data.registradoPor || 'instructor', // Añadir registro de quién creó
             syncStatus: this._isOnline() ? 'synced' : 'pending',
             localTimestamp: Date.now()
         };
@@ -212,6 +213,7 @@ export class NovedadService {
                 ...data,
                 id,
                 fechaRegistro: new Date(),
+                registradoPor: data.registradoPor || 'instructor', // Añadir registro de quién creó
                 syncStatus: this._isOnline() ? 'synced' : 'pending',
                 localTimestamp: timestamp
             };
@@ -292,7 +294,11 @@ export class NovedadService {
      */
     async actualizarNovedad(novedadId: string, cambios: Partial<Novedad>): Promise<void> {
         this._novedades.update(novedades =>
-            novedades.map(n => n.id === novedadId ? { ...n, ...cambios } : n)
+            novedades.map(n => n.id === novedadId ? {
+                ...n,
+                ...cambios,
+                fechaActualizacion: new Date() // Registrar fecha de actualización
+            } : n)
         );
         await this.saveToStorage();
     }

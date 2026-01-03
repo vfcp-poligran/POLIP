@@ -793,13 +793,17 @@
                                         <div class="col-student">
                                             @if (row.studentGroup) {
                                             <div class="event-card student-card"
-                                                [style.border-left]="'4px solid ' + row.studentGroup.tipoColor">
+                                                [style.border-left]="'4px solid ' + row.studentGroup.tipoColor"
+                                                [class.grupal-card]="row.studentGroup.items[0]?.esNovedadGrupal">
                                                 <div class="card-header">
                                                     <ion-icon [name]="row.studentGroup.tipoIcono"
                                                         [style.color]="row.studentGroup.tipoColor"
                                                         class="tipo-icon"></ion-icon>
                                                     <span class="tipo-nombre">{{ row.studentGroup.tipoNovedadNombre
                                                         }}</span>
+                                                    @if (row.studentGroup.items[0]?.esNovedadGrupal) {
+                                                    <ion-badge color="tertiary" class="grupal-badge">Grupal</ion-badge>
+                                                    }
                                                     <div class="card-actions">
                                                         <ion-icon name="create-outline" class="action-icon edit-icon"
                                                             (click)="editarNovedadDesdeHistorial(row.studentGroup.items[0])"
@@ -821,6 +825,20 @@
                                                 @if (row.studentGroup.descripcion) {
                                                 <p class="card-msg">{{ row.studentGroup.descripcion }}</p>
                                                 }
+                                                <!-- Footer VCS: Quién registró y cuándo -->
+                                                <div class="card-footer-vcs">
+                                                    <span class="registrado-por">
+                                                        <ion-icon name="person-circle-outline"></ion-icon>
+                                                        {{ row.studentGroup.items[0]?.registradoPor || 'instructor' }}
+                                                    </span>
+                                                    @if (row.studentGroup.items[0]?.fechaActualizacion) {
+                                                    <span class="fecha-actualizacion">
+                                                        <ion-icon name="refresh-outline"></ion-icon>
+                                                        {{ row.studentGroup.items[0].fechaActualizacion | date:'dd/MM
+                                                        HH:mm' }}
+                                                    </span>
+                                                    }
+                                                </div>
                                             </div>
                                             }
                                         </div>
