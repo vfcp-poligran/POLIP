@@ -13,6 +13,7 @@ $touch-target: colors.$touch-target;
 // Contenedor principal
 .inicio-content {
     --padding-bottom: calc(56px + env(safe-area-inset-bottom, 16px));
+    --padding-top: calc(60px + env(safe-area-inset-top, 0px)); // Space for fixed header
 }
 
 // === HEADER ===

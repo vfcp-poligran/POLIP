@@ -620,129 +620,183 @@
                                 <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
                                 Confirmar Registro
                             </ion-button>
-                        </div>
-                    </div>
-                </ion-content>
-            </ng-template>
-        </ion-modal>
+
+                            <!-- MODAL DE BÚSQUEDA -->
+                            <ion-modal [isOpen]="isSearchModalVisible()" (didDismiss)="cerrarSearchModal()"
+                                class="search-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+                                <ng-template>
+                                    <ion-header>
+                                        <ion-toolbar color="primary">
+                                            <ion-title>Buscar Estudiante</ion-title>
+                                            <ion-buttons slot="end">
+                                                <ion-button (click)="cerrarSearchModal()">
+                                                    <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                                </ion-button>
+                                            </ion-buttons>
+                                        </ion-toolbar>
+                                        <ion-toolbar color="primary">
+                                            <ion-searchbar placeholder="Nombre o correo..." [value]="busquedaTermino()"
+                                                (ionInput)="onBusquedaChange($event)" [debounce]="300"
+                                                animated></ion-searchbar>
+                                        </ion-toolbar>
+                                    </ion-header>
+                                    <ion-content class="ion-padding">
+                                        <!-- Resultados de búsqueda -->
+                                        @if (busquedaTermino().length > 0) {
+                                        @if (resultadosBusqueda().length > 0) {
+                                        <ion-list>
+                                            @for (est of resultadosBusqueda(); track est.correo) {
+                                            <ion-item button (click)="seleccionarEstudiante(est)">
+                                                <ion-avatar slot="start">
+                                                    <img [src]="est.foto || 'assets/default-avatar.png'" alt="avatar" />
+                                                </ion-avatar>
+                                                <ion-label>
+                                                    <h2>{{ est.nombre }}</h2>
+                                                    <p>{{ est.correo }}</p>
+                                                    <p class="small-text">{{ est.curso }}</p>
+                                                </ion-label>
+                                                @if (isEstudianteSeleccionado(est.correo)) {
+                                                <ion-icon name="checkmark-circle" color="primary" slot="end"></ion-icon>
+                                                }
+                                            </ion-item>
+                                            }
+                                        </ion-list>
+                                        } @else {
+                                        <div class="empty-state">
+                                            <ion-icon name="search-outline"></ion-icon>
+                                            <p>No se encontraron estudiantes</p>
+                                        </div>
+                                        }
+                                        } @else {
+                                        <div class="empty-state">
+                                            <ion-icon name="search-outline"></ion-icon>
+                                            <p>Busca por nombre o correo</p>
+                                        </div>
+                                        }
+                                    </ion-content>
+                                    <ion-footer>
+                                        <ion-toolbar>
+                                            <ion-buttons slot="end">
+                                                @if (estudiantesSeleccionados().length > 0) {
+                                                <ion-button color="primary" (click)="registrarEnLista()">
+                                                    Registrar ({{ estudiantesSeleccionados().length }})
+                                                </ion-button>
+                                                }
+                                            </ion-buttons>
+                                        </ion-toolbar>
+                                    </ion-footer>
+                                </ng-template>
+                            </ion-modal>
 
 
 
-        <!-- MODAL DE BÚSQUEDA Y REGISTRO -->
-        <ion-modal [isOpen]="isSearchModalVisible()" (didDismiss)="closeSearchModal()" class="search-modal">
-            <ng-template>
-                <ion-header>
-                    <ion-toolbar color="primary">
-                        <ion-title>Registrar Novedad</ion-title>
-                        <ion-buttons slot="end">
-                            <ion-button (click)="closeSearchModal()">
-                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-header>
-                <ion-content class="ion-padding relative-content">
+                            <ion-content class="ion-padding relative-content">
 
-                    <!-- Barra de búsqueda -->
-                    <ion-searchbar [value]="busquedaTermino()" (ionInput)="onBusquedaChange($event)"
-                        placeholder="Buscar estudiante... (#C cursos, #G grupo)" mode="ios" class="modal-searchbar">
-                    </ion-searchbar>
+                                <!-- Barra de búsqueda -->
+                                <ion-searchbar [value]="busquedaTermino()" (ionInput)="onBusquedaChange($event)"
+                                    placeholder="Buscar estudiante... (#C cursos, #G grupo)" mode="ios"
+                                    class="modal-searchbar">
+                                </ion-searchbar>
 
-                    <!-- CAJÓN DE RESULTADOS (BÚSQUEDA ACTIVA) -->
-                    @if (busquedaTermino().length > 0) {
-                    <div class="search-results-list">
-                        @if (resultadosBusqueda().length > 0) {
-                        @for (resultado of resultadosBusqueda(); track resultado.correo) {
-                        <div class="search-result-item"
-                            [class.selected]="isEstudianteSeleccionadoModal(resultado.correo)"
-                            (click)="toggleEstudianteSeleccionModal(resultado, resultado.curso!)">
-                            <ion-icon
-                                [name]="isEstudianteSeleccionadoModal(resultado.correo) ? 'checkmark-circle' : 'person-outline'"
-                                [class.selected-icon]="isEstudianteSeleccionadoModal(resultado.correo)"></ion-icon>
-                            <div class="result-info">
-                                <div class="main-text">
-                                    @if (resultado.novedadesCount && resultado.novedadesCount > 0) {
-                                    <span class="novelty-badge-mini"
-                                        (click)="abrirHistorialDesdeBusqueda(resultado, $event)">
-                                        {{ resultado.novedadesCount }}
-                                    </span>
+                                <!-- CAJÓN DE RESULTADOS (BÚSQUEDA ACTIVA) -->
+                                @if (busquedaTermino().length > 0) {
+                                <div class="search-results-list">
+                                    @if (resultadosBusqueda().length > 0) {
+                                    @for (resultado of resultadosBusqueda(); track resultado.correo) {
+                                    <div class="search-result-item"
+                                        [class.selected]="isEstudianteSeleccionadoModal(resultado.correo)"
+                                        (click)="toggleEstudianteSeleccionModal(resultado, resultado.curso!)">
+                                        <ion-icon
+                                            [name]="isEstudianteSeleccionadoModal(resultado.correo) ? 'checkmark-circle' : 'person-outline'"
+                                            [class.selected-icon]="isEstudianteSeleccionadoModal(resultado.correo)"></ion-icon>
+                                        <div class="result-info">
+                                            <div class="main-text">
+                                                @if (resultado.novedadesCount && resultado.novedadesCount > 0) {
+                                                <span class="novelty-badge-mini"
+                                                    (click)="abrirHistorialDesdeBusqueda(resultado, $event)">
+                                                    {{ resultado.novedadesCount }}
+                                                </span>
+                                                }
+                                                {{ resultado.nombre }}
+                                            </div>
+                                            <div class="sub-text">
+                                                <span>{{ resultado.correo }}</span>
+                                                <span class="meta-tag">{{ resultado.curso }}</span>
+                                                <span class="meta-tag">G{{ resultado.grupo }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     }
-                                    {{ resultado.nombre }}
+                                    } @else {
+                                    <div class="empty-state-mini">
+                                        <p>No se encontraron resultados</p>
+                                    </div>
+                                    }
                                 </div>
-                                <div class="sub-text">
-                                    <span>{{ resultado.correo }}</span>
-                                    <span class="meta-tag">{{ resultado.curso }}</span>
-                                    <span class="meta-tag">G{{ resultado.grupo }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        }
-                        } @else {
-                        <div class="empty-state-mini">
-                            <p>No se encontraron resultados</p>
-                        </div>
-                        }
-                    </div>
-                    } @else {
-                    <!-- ACORDEONES DE CURSOS (BÚSQUEDA INACTIVA) -->
-                    <div class="accordion-list">
-                        <ion-accordion-group>
-                            @for (curso of cursosResumen(); track curso.codigo) {
-                            <ion-accordion [value]="curso.codigo">
-                                <ion-item slot="header" color="light">
-                                    <ion-label>
-                                        <h2>{{ curso.nombre }}</h2>
-                                        <p>{{ curso.codigo }} • {{ curso.estudiantes }} estudiantes</p>
-                                    </ion-label>
-                                </ion-item>
-                                <div slot="content">
+                                } @else {
+                                <!-- ACORDEONES DE CURSOS (BÚSQUEDA INACTIVA) -->
+                                <div class="accordion-list">
                                     <ion-accordion-group>
-                                        @for (grupo of curso.grupos; track grupo) {
-                                        <ion-accordion [value]="curso.codigo + '-' + grupo">
-                                            <ion-item slot="header">
-                                                <ion-checkbox slot="start"
-                                                    [checked]="isGrupoSeleccionadoModal(curso.codigo, grupo)"
-                                                    (click)="$event.stopPropagation(); toggleGrupoSeleccionModal(curso.codigo, grupo)">
-                                                </ion-checkbox>
-                                                <ion-label>Grupo {{ grupo }}</ion-label>
+                                        @for (curso of cursosResumen(); track curso.codigo) {
+                                        <ion-accordion [value]="curso.codigo">
+                                            <ion-item slot="header" color="light">
+                                                <ion-label>
+                                                    <h2>{{ curso.nombre }}</h2>
+                                                    <p>{{ curso.codigo }} • {{ curso.estudiantes }} estudiantes
+                                                    </p>
+                                                </ion-label>
                                             </ion-item>
                                             <div slot="content">
-                                                @for (est of getEstudiantesGrupo(curso.codigo, grupo); track est.correo)
-                                                {
-                                                <ion-item lines="full">
-                                                    <ion-checkbox slot="start"
-                                                        [checked]="isEstudianteSeleccionadoModal(est.correo)"
-                                                        (click)="toggleEstudianteSeleccionModal(est, curso.codigo)">
-                                                    </ion-checkbox>
-                                                    <ion-label>
-                                                        <h3>{{ est.nombres }} {{ est.apellidos }}</h3>
-                                                        <p>{{ est.correo }}</p>
-                                                    </ion-label>
-                                                </ion-item>
-                                                }
+                                                <ion-accordion-group>
+                                                    @for (grupo of curso.grupos; track grupo) {
+                                                    <ion-accordion [value]="curso.codigo + '-' + grupo">
+                                                        <ion-item slot="header">
+                                                            <ion-checkbox slot="start"
+                                                                [checked]="isGrupoSeleccionadoModal(curso.codigo, grupo)"
+                                                                (click)="$event.stopPropagation(); toggleGrupoSeleccionModal(curso.codigo, grupo)">
+                                                            </ion-checkbox>
+                                                            <ion-label>Grupo {{ grupo }}</ion-label>
+                                                        </ion-item>
+                                                        <div slot="content">
+                                                            @for (est of getEstudiantesGrupo(curso.codigo,
+                                                            grupo); track est.correo)
+                                                            {
+                                                            <ion-item lines="full">
+                                                                <ion-checkbox slot="start"
+                                                                    [checked]="isEstudianteSeleccionadoModal(est.correo)"
+                                                                    (click)="toggleEstudianteSeleccionModal(est, curso.codigo)">
+                                                                </ion-checkbox>
+                                                                <ion-label>
+                                                                    <h3>{{ est.nombres }} {{ est.apellidos }}
+                                                                    </h3>
+                                                                    <p>{{ est.correo }}</p>
+                                                                </ion-label>
+                                                            </ion-item>
+                                                            }
+                                                        </div>
+                                                    </ion-accordion>
+                                                    }
+                                                </ion-accordion-group>
                                             </div>
                                         </ion-accordion>
                                         }
                                     </ion-accordion-group>
                                 </div>
-                            </ion-accordion>
-                            }
-                        </ion-accordion-group>
-                    </div>
-                    }
+                                }
 
-                    <!-- FAB AGREGAR AL BUFFER -->
-                    @if (estudiantesSeleccionados().length > 0) {
-                    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-                        <ion-fab-button (click)="agregarAlBuffer()" color="success">
-                            <ion-icon name="checkmark"></ion-icon>
-                        </ion-fab-button>
-                        <ion-badge color="danger" style="position: absolute; top: -5px; right: -5px; z-index: 10;">
-                            {{ estudiantesSeleccionados().length }}
-                        </ion-badge>
-                    </ion-fab>
-                    }
-                </ion-content>
+                                <!-- FAB AGREGAR AL BUFFER -->
+                                @if (estudiantesSeleccionados().length > 0) {
+                                <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+                                    <ion-fab-button (click)="agregarAlBuffer()" color="success">
+                                        <ion-icon name="checkmark"></ion-icon>
+                                    </ion-fab-button>
+                                    <ion-badge color="danger"
+                                        style="position: absolute; top: -5px; right: -5px; z-index: 10;">
+                                        {{ estudiantesSeleccionados().length }}
+                                    </ion-badge>
+                                </ion-fab>
+                                }
+                            </ion-content>
             </ng-template>
         </ion-modal>
         <!-- MODAL NOVEDADES VCS (Historial de Cambios) -->
@@ -776,7 +830,8 @@
                             <ion-item slot="header" color="light" lines="none">
                                 <ion-label>
                                     <h3 class="accordion-date-title">{{ day.fechaLabel }}</h3>
-                                    <p class="accordion-date-subtitle">{{ day.totalCambiosIndividuales }} cambios indv.
+                                    <p class="accordion-date-subtitle">{{
+                                        day.totalCambiosIndividuales }} cambios indv.
                                         · {{ day.totalCambiosGrupales }} eventos grupales</p>
                                 </ion-label>
                                 @if (day.isCoincidentDay) {
@@ -799,9 +854,11 @@
                                                     <ion-icon [name]="row.studentGroup.tipoIcono"
                                                         [style.color]="row.studentGroup.tipoColor"
                                                         class="tipo-icon"></ion-icon>
-                                                    <span class="tipo-nombre">{{ row.studentGroup.tipoNovedadNombre
+                                                    <span class="tipo-nombre">{{
+                                                        row.studentGroup.tipoNovedadNombre
                                                         }}</span>
-                                                    @if (row.studentGroup.items[0]?.esNovedadGrupal) {
+                                                    @if (row.studentGroup.items[0]?.esNovedadGrupal)
+                                                    {
                                                     <ion-badge color="tertiary" class="grupal-badge">Grupal</ion-badge>
                                                     }
                                                     <div class="card-actions">
@@ -817,52 +874,72 @@
                                                     <ion-icon name="person-outline" class="estudiante-icon"></ion-icon>
                                                     <div class="estudiante-detalles">
                                                         <span class="estudiante-nombre">{{
-                                                            row.studentGroup.estudianteNombre }}</span>
-                                                        <span class="estudiante-curso-grupo">{{ row.studentGroup.curso
-                                                            }} - G{{ row.studentGroup.grupo }}</span>
+                                                            row.studentGroup.estudianteNombre
+                                                            }}</span>
+                                                        <span class="estudiante-curso-grupo">{{
+                                                            row.studentGroup.curso
+                                                            }} - G{{ row.studentGroup.grupo
+                                                            }}</span>
                                                     </div>
                                                 </div>
                                                 @if (row.studentGroup.descripcion) {
-                                                <p class="card-msg">{{ row.studentGroup.descripcion }}</p>
+                                                <p class="card-msg">{{ row.studentGroup.descripcion
+                                                    }}</p>
                                                 }
                                                 <!-- Footer VCS: Quién registró y cuándo -->
                                                 <div class="card-footer-vcs">
                                                     <span class="registrado-por">
                                                         <ion-icon name="person-circle-outline"></ion-icon>
-                                                        {{ row.studentGroup.items[0]?.registradoPor || 'instructor' }}
+                                                        {{ row.studentGroup.items[0]?.registradoPor
+                                                        || 'instructor' }}
                                                     </span>
-                                                    @if (row.studentGroup.items[0]?.fechaActualizacion) {
+                                                    @if
+                                                    (row.studentGroup.items[0]?.fechaActualizacion)
+                                                    {
                                                     <span class="fecha-actualizacion">
                                                         <ion-icon name="refresh-outline"></ion-icon>
-                                                        {{ row.studentGroup.items[0].fechaActualizacion | date:'dd/MM
+                                                        {{
+                                                        row.studentGroup.items[0].fechaActualizacion
+                                                        | date:'dd/MM
                                                         HH:mm' }}
                                                     </span>
                                                     }
                                                 </div>
                                                 <!-- Historial de cambios VCS (expandible) -->
-                                                @if ((row.studentGroup.items[0]?.historialCambios?.length ?? 0) > 0) {
+                                                @if
+                                                ((row.studentGroup.items[0]?.historialCambios?.length
+                                                ?? 0) > 0) {
                                                 <details class="historial-cambios-container">
                                                     <summary class="historial-summary">
                                                         <ion-icon name="git-branch-outline"></ion-icon>
-                                                        {{ row.studentGroup.items[0]?.historialCambios?.length ?? 0 }}
+                                                        {{
+                                                        row.studentGroup.items[0]?.historialCambios?.length
+                                                        ?? 0 }}
                                                         cambio(s)
                                                     </summary>
                                                     <div class="historial-lista">
-                                                        @for (cambio of (row.studentGroup.items[0]?.historialCambios ??
+                                                        @for (cambio of
+                                                        (row.studentGroup.items[0]?.historialCambios
+                                                        ??
                                                         []); track cambio.fecha) {
                                                         <div class="cambio-item">
-                                                            <span class="cambio-fecha">{{ cambio.fecha | date:'dd/MM
+                                                            <span class="cambio-fecha">{{
+                                                                cambio.fecha | date:'dd/MM
                                                                 HH:mm' }}</span>
-                                                            <span class="cambio-campo">{{ cambio.campoModificado
+                                                            <span class="cambio-campo">{{
+                                                                cambio.campoModificado
                                                                 }}</span>
                                                             <span class="cambio-valores">
-                                                                <span class="valor-anterior">{{ cambio.valorAnterior ||
+                                                                <span class="valor-anterior">{{
+                                                                    cambio.valorAnterior ||
                                                                     '(vacío)' }}</span>
                                                                 <ion-icon name="arrow-forward-outline"></ion-icon>
-                                                                <span class="valor-nuevo">{{ cambio.valorNuevo ||
+                                                                <span class="valor-nuevo">{{
+                                                                    cambio.valorNuevo ||
                                                                     '(vacío)' }}</span>
                                                             </span>
-                                                            <span class="cambio-autor">por {{ cambio.modificadoPor
+                                                            <span class="cambio-autor">por {{
+                                                                cambio.modificadoPor
                                                                 }}</span>
                                                         </div>
                                                         }
@@ -876,13 +953,16 @@
                                         <!-- Axis Column -->
                                         <div class="col-axis">
                                             <div class="time-info">
-                                                <span class="time-label">{{ row.fecha | date:'HH:mm' }}</span>
-                                                <span class="date-label">{{ row.fecha | date:'dd/MM' }}</span>
+                                                <span class="time-label">{{ row.fecha | date:'HH:mm'
+                                                    }}</span>
+                                                <span class="date-label">{{ row.fecha | date:'dd/MM'
+                                                    }}</span>
                                             </div>
                                             <div class="axis-node" [class.coincident-node]="row.coincide"
                                                 [style.background]="row.studentGroup?.tipoColor || '#fff'"
                                                 [style.border-color]="row.studentGroup?.tipoColor || '#ddd'"
-                                                [title]="(row.fecha | date:'dd/MM/yyyy HH:mm:ss')"></div>
+                                                [title]="(row.fecha | date:'dd/MM/yyyy HH:mm:ss')">
+                                            </div>
                                             <div class="axis-line"></div>
                                         </div>
 
@@ -891,9 +971,11 @@
                                             @if (row.groupEvent) {
                                             <div class="event-card group-card">
                                                 <div class="card-header">
-                                                    <span class="author">{{ row.groupEvent.tipo }}</span>
+                                                    <span class="author">{{ row.groupEvent.tipo
+                                                        }}</span>
                                                 </div>
-                                                <p class="card-msg">{{ row.groupEvent.descripcion }}</p>
+                                                <p class="card-msg">{{ row.groupEvent.descripcion }}
+                                                </p>
                                             </div>
                                             }
                                         </div>

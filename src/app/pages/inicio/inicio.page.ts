@@ -35,7 +35,10 @@ import {
     IonFabButton,
     IonItem,
     IonAccordion,
-    IonAccordionGroup
+    IonAccordionGroup,
+    IonList,
+    IonAvatar,
+    IonFooter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -80,7 +83,8 @@ import {
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
     analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline, playOutline, stopCircleOutline,
-    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline, personCircleOutline, refreshOutline, gitBranchOutline, arrowForwardOutline } from 'ionicons/icons';
+    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline, personCircleOutline, refreshOutline, gitBranchOutline, arrowForwardOutline
+} from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
 import { NovedadService } from '../../services/novedad.service';
@@ -179,7 +183,10 @@ interface DailyGroup {
         IonSkeletonText,
         IonItem,
         IonAccordion,
-        IonAccordionGroup
+        IonAccordionGroup,
+        IonList,
+        IonAvatar,
+        IonFooter
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -387,7 +394,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({schoolOutline,pinOutline,lockOpenOutline,checkmarkCircle,peopleOutline,informationCircleOutline,checkboxOutline,squareOutline,checkmarkCircleOutline,trashOutline,closeOutline,documentTextOutline,closeCircle,personAddOutline,timeOutline,archiveOutline,chevronForwardOutline,search,add,checkmarkOutline,checkmark,addCircleOutline,createOutline,personOutline,personCircleOutline,refreshOutline,gitBranchOutline,arrowForwardOutline,statsChartOutline,notificationsOutline,listOutline,playCircle,stopCircleOutline,checkmarkDoneOutline,calendarOutline,playOutline,addOutline,peopleCircleOutline,hammerOutline,constructOutline,analyticsOutline,homeOutline,cloudOfflineOutline,appsOutline,checkmarkDoneCircleOutline,bulbOutline,chevronDownOutline,checkmarkDoneCircle,alertCircleOutline,closeCircleOutline,optionsOutline,searchOutline,warningOutline,chevronUpOutline,gridOutline,chatboxEllipsesOutline,person,people,warning,stopCircle,checkmarkDone,checkbox});
+        addIcons({ schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, checkmarkCircleOutline, trashOutline, closeOutline, documentTextOutline, closeCircle, personAddOutline, timeOutline, archiveOutline, chevronForwardOutline, search, add, checkmarkOutline, checkmark, addCircleOutline, createOutline, personOutline, personCircleOutline, refreshOutline, gitBranchOutline, arrowForwardOutline, statsChartOutline, notificationsOutline, listOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, calendarOutline, playOutline, addOutline, peopleCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -684,6 +691,20 @@ export class InicioPage implements OnInit, ViewWillEnter {
         this.busquedaTermino.set('');
         this.resultadosBusqueda.set([]);
         this.sugerenciasCursos.set([]);
+    }
+
+    /**
+     * Toggle del modal de búsqueda (FAB)
+     */
+    toggleSearchModal(): void {
+        this.isSearchModalVisible.update(v => !v);
+    }
+
+    /**
+     * Cierra el modal de búsqueda
+     */
+    cerrarSearchModal(): void {
+        this.isSearchModalVisible.set(false);
     }
 
     /**
@@ -1016,15 +1037,6 @@ export class InicioPage implements OnInit, ViewWillEnter {
         this.limpiarFormulario();
     }
 
-    // === MODAL DE BÚSQUEDA (MÓVIL/TABLET) ===
-
-    toggleSearchModal(): void {
-        this.isSearchModalVisible.set(!this.isSearchModalVisible);
-    }
-
-    closeSearchModal(): void {
-        this.isSearchModalVisible.set(false);
-    }
 
     // VCS Modal Methods
     abrirModalVcs(item: any) {
@@ -1577,7 +1589,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
         });
 
         this.estudiantesSeleccionados.set([]);
-        this.closeSearchModal();
+        this.cerrarSearchModal();
 
         this.toastController.create({
             message: `${seleccionados.length} estudiantes agregados al buffer`,
