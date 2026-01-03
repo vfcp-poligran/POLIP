@@ -1891,7 +1891,10 @@ export class InicioPage implements OnInit, ViewWillEnter {
         return Array.from(dailyMap.values()).sort((a, b) => b.fullDate.getTime() - a.fullDate.getTime());
     });
 
+
+
     getEstudiantesGrupo(cursoCodigo: string, grupo: string): any[] {
         return this.dataService.cursos()[cursoCodigo]?.filter(e => String(e.grupo) === String(grupo)) || [];
     }
+
 }
