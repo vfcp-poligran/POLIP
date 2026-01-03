@@ -11,153 +11,129 @@
             <ion-grid>
                 <ion-row class="main-layout-row">
                     <!-- COLUMNA 1: HISTORIAL (Izquierda) -->
-                    <ion-col size="12" size-lg="3" class="column-container column-placeholder">
-                        <div class="column-header-tabs">
-                            <div class="tab-item" [class.active]="tabHistorial() === 'historial'"
-                                (click)="tabHistorial.set('historial')">
-                                <ion-icon name="time-outline"></ion-icon>
-                                <span>Historial</span>
-                            </div>
-                            <div class="tab-item" [class.active]="tabHistorial() === 'archivadas'"
-                                (click)="tabHistorial.set('archivadas')">
-                                <ion-icon name="archive-outline"></ion-icon>
-                                <span>Archivadas</span>
-                                @if (novedadService.novedadesArchivadas().length > 0) {
-                                <ion-badge color="medium">{{ novedadService.novedadesArchivadas().length
-                                    }}</ion-badge>
-                                }
-                            </div>
-                            <ion-button fill="clear" size="small" color="danger" (click)="vaciarHistorialCompleto()"
-                                class="btn-clear-all" title="Vaciar Historial">
-                                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                            </ion-button>
-                        </div>
-
-                        <div class="historial-tab-content">
-                            @if (tabHistorial() === 'historial') {
-                            <!-- Buscador Exclusivo Historial -->
-                            <ion-searchbar [value]="busquedaHistorialTermino()"
-                                (ionInput)="onBusquedaHistorialChange($event)" placeholder="Buscar en historial..."
-                                mode="ios" class="historial-searchbar">
-                            </ion-searchbar>
-
-                            <!-- SUB-TABS: Estudiante vs Grupal -->
-                            <div class="historial-sub-tabs">
-                                <div class="sub-tab" [class.active]="modoVisualizacionHistorial() === 'estudiante'"
-                                    (click)="modoVisualizacionHistorial.set('estudiante')">Estudiante</div>
-                                <div class="sub-tab" [class.active]="modoVisualizacionHistorial() === 'grupal'"
-                                    (click)="modoVisualizacionHistorial.set('grupal')">Grupal</div>
-                            </div>
-
-                            <!-- Acciones Masivas Historial -->
-                            @if (novedadesSeleccionadasHistorial().size > 0) {
-                            <div class="mass-actions-bar historial-actions animate__animated animate__fadeInDown">
-                                <div class="selected-count">
-                                    {{ novedadesSeleccionadasHistorial().size }} seleccionados
-                                </div>
-                                <div class="action-buttons">
-                                    <ion-button fill="clear" size="small" (click)="archivarSeleccionadosHistorial()">
-                                        <ion-icon slot="start" name="archive-outline"></ion-icon>
-                                        Archivar
-                                    </ion-button>
-                                    <ion-button fill="clear" size="small" color="danger"
-                                        (click)="eliminarSeleccionadosHistorial()">
-                                        <ion-icon slot="start" name="trash-outline"></ion-icon>
-                                        Borrar
-                                    </ion-button>
-                                    <ion-button fill="clear" size="small" (click)="limpiarSeleccionHistorial()">
-                                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                                    </ion-button>
-                                </div>
-                            </div>
+                    <ion-col size="12" size-lg="3" class="column-container column-courses">
+                        <div class="courses-card-list" [@listAnimation]="cursosResumen().length">
+                            @if (isLoading()) {
+                            <!-- Skeleton loaders durante la carga -->
+                            @for (i of [1, 2, 3]; track i) {
+                            <ion-card class="course-card-premium skeleton-card">
+                                <div class="card-color-strip" style="background: #e0e0e0;"></div>
+                                <ion-card-header>
+                                    <ion-card-title>
+                                        <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
+                                    </ion-card-title>
+                                    <ion-card-subtitle>
+                                        <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+                                    </ion-card-subtitle>
+                                </ion-card-header>
+                            </ion-card>
                             }
-
-                            <div class="historial-novedades-list">
-                                @if (historialAgrupado().length > 0) {
-                                @if (modoVisualizacionHistorial() === 'estudiante') {
-                                <!-- TABLA ESTUDIANTE (VCS Style) -->
-                                <table class="historial-table group-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Estudiante</th>
-                                            <th class="text-center">Cambios</th>
-                                            <th>Última</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @for (est of historialAgrupado(); track est.key) {
-                                        <tr (click)="abrirModalVcs(est)" class="clickable-row">
-                                            <td>
-                                                <div class="table-name">{{ est.estudianteNombre }}</div>
-                                                <div class="table-meta">G{{ est.grupo }}</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <ion-badge color="secondary">{{ est.cambiosCount }}</ion-badge>
-                                            </td>
-                                            <td class="table-time text-muted">{{ est.fechaUltima | date:'HH:mm' }}</td>
-                                            <td>
-                                                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
-                                            </td>
-                                        </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                                } @else {
-                                <!-- TABLA GRUPAL (VCS Style Trigger) -->
-                                <table class="historial-table group-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Grupo</th>
-                                            <th class="text-center">Cambios</th>
-                                            <th>Última</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @for (grupo of historialAgrupado(); track grupo.key) {
-                                        <tr (click)="abrirModalVcs(grupo)" class="clickable-row">
-                                            <td>
-                                                <div class="table-name">Grupo {{ grupo.grupo }}</div>
-                                                <div class="table-meta">{{ grupo.cursoId }}</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <ion-badge color="primary">{{ grupo.cambiosCount }}</ion-badge>
-                                            </td>
-                                            <td class="table-time text-muted">{{ grupo.fechaUltima | date:'HH:mm' }}
-                                            </td>
-                                            <td>
-                                                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
-                                            </td>
-                                        </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                                }
-                                } @else {
-                                <div class="empty-state-mini">
-                                    <ion-icon name="document-text-outline"></ion-icon>
-                                    <p>Sin novedades recientes</p>
-                                </div>
-                                }
+                            } @else if (cursosResumen().length === 0) {
+                            <div class="empty-state">
+                                <ion-icon name="school-outline"></ion-icon>
+                                <p>No hay cursos cargados</p>
                             </div>
                             } @else {
-                            <!-- Pestaña Archivadas -->
-                            <div class="archivadas-list">
-                                @if (novedadService.novedadesArchivadas().length > 0) {
-                                <div class="archivadas-info">
-                                    <ion-icon name="archive-outline"></ion-icon>
-                                    <span>{{ novedadService.novedadesArchivadas().length }} novedades archivadas</span>
+                            @for (curso of cursosResumen(); track curso.codigo) {
+                            <ion-card class="course-card-premium"
+                                [class.selected]="cursoSeleccionado() === curso.codigo"
+                                [style.--course-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)"
+                                @itemAnimation>
+                                <div class="card-color-strip" [style.background]="curso.color"></div>
+
+                                <!-- Mobile selection mode indicator (only on mobile) -->
+                                @if (!isDesktop()) {
+                                <div class="card-mobile-mode-icon">
+                                    @if (gruposSeleccionados().size > 1) {
+                                    <ion-icon name="pin-outline" [style.color]="curso.color"></ion-icon>
+                                    } @else if (gruposSeleccionados().size === 1) {
+                                    <ion-icon name="lock-open-outline" [style.color]="curso.color"></ion-icon>
+                                    }
                                 </div>
-                                } @else {
-                                <div class="empty-state-mini">
-                                    <ion-icon name="archive-outline"></ion-icon>
-                                    <p>No hay novedades archivadas</p>
+                                }
+
+                                <!-- Desktop selection indicator -->
+                                @if (isDesktop()) {
+                                <div class="card-selection-indicator">
+                                    @if (cursoSeleccionado() === curso.codigo) {
+                                    <ion-icon name="checkmark-circle" color="primary"></ion-icon>
+                                    }
+                                </div>
+                                }
+
+                                <ion-card-header>
+                                    <ion-card-title>{{ getCodigoCorto(curso.codigo) }}</ion-card-title>
+                                </ion-card-header>
+                            </ion-card>
+                            }
+                            }
+                        </div>
+
+                        <!-- Dynamic Group Buttons (Moved below courses) -->
+                        @if (cursoSeleccionado()) {
+                        <div class="grupos-selector-bar-global">
+                            <div class="grupos-selector-header">
+                                <div class="grupos-selector-label">
+                                    <ion-icon name="people-outline"></ion-icon>
+                                    <span>Grupos de {{ getCodigoCorto(cursoSeleccionado()!) }}</span>
+                                </div>
+                            </div>
+                            <ion-grid class="grupos-buttons-grid">
+                                <ion-row>
+                                    @for (grupo of gruposDelCursoSeleccionado(); track grupo) {
+                                    <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4">
+                                        <ion-button [fill]="'clear'" size="small" expand="block"
+                                            class="grupo-dynamic-btn"
+                                            [class.selected]="gruposSeleccionados().has(grupo)"
+                                            [style.--color]="colorDelCursoSeleccionado()"
+                                            (click)="toggleGrupoSeleccion(grupo, $event)">
+                                            @if (gruposSeleccionados().has(grupo)) {
+                                            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                                            }
+                                            G{{ grupo }}
+                                        </ion-button>
+                                    </ion-col>
+                                    }
+                                </ion-row>
+                            </ion-grid>
+                            <div class="hint-text">
+                                <ion-icon name="information-circle-outline"></ion-icon>
+                                <span>Ctrl/Cmd + Click para seleccionar múltiples grupos</span>
+                            </div>
+                        </div>
+                        }
+
+                        <!-- SECTION: Group Members List (Available to Select) -->
+                        @if (estudiantesDeGruposSeleccionados().length > 0) {
+                        <div class="group-members-section">
+                            <div class="section-header">
+                                <div class="actions-row">
+                                    <ion-button fill="clear" size="small" (click)="seleccionarTodosGrupo()">
+                                        <ion-icon slot="start" name="checkbox-outline"></ion-icon>
+                                        Todos
+                                    </ion-button>
+                                    <ion-button fill="clear" size="small" color="medium"
+                                        (click)="deseleccionarTodosGrupo()">
+                                        <ion-icon slot="start" name="square-outline"></ion-icon>
+                                        Ninguno
+                                    </ion-button>
+                                </div>
+                            </div>
+
+                            <div class="members-list-grid">
+                                @for (est of estudiantesDeGruposSeleccionados(); track est.correo) {
+                                <div class="member-item" [class.selected]="isEstudianteGrupoSeleccionado(est.correo)"
+                                    (click)="toggleSeleccionEstudianteGrupo(est.correo)">
+                                    <ion-checkbox [checked]="isEstudianteGrupoSeleccionado(est.correo)"
+                                        (click)="$event.stopPropagation()"></ion-checkbox>
+                                    <div class="member-info">
+                                        <span class="name">{{ est.nombre }}</span>
+                                    </div>
                                 </div>
                                 }
                             </div>
-                            }
                         </div>
+                        }
                     </ion-col>
 
                     <!-- COLUMNA 2: NOVEDAD (Centro) -->
@@ -386,129 +362,153 @@
                     </ion-col>
 
                     <!-- COLUMNA 3: PANORAMA DE CURSOS (Derecha) -->
-                    <ion-col size="12" size-lg="3" class="column-container column-courses">
-                        <div class="courses-card-list" [@listAnimation]="cursosResumen().length">
-                            @if (isLoading()) {
-                            <!-- Skeleton loaders durante la carga -->
-                            @for (i of [1, 2, 3]; track i) {
-                            <ion-card class="course-card-premium skeleton-card">
-                                <div class="card-color-strip" style="background: #e0e0e0;"></div>
-                                <ion-card-header>
-                                    <ion-card-title>
-                                        <ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text>
-                                    </ion-card-title>
-                                    <ion-card-subtitle>
-                                        <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
-                                    </ion-card-subtitle>
-                                </ion-card-header>
-                            </ion-card>
+                    <ion-col size="12" size-lg="3" class="column-container column-placeholder">
+                        <div class="column-header-tabs">
+                            <div class="tab-item" [class.active]="tabHistorial() === 'historial'"
+                                (click)="tabHistorial.set('historial')">
+                                <ion-icon name="time-outline"></ion-icon>
+                                <span>Historial</span>
+                            </div>
+                            <div class="tab-item" [class.active]="tabHistorial() === 'archivadas'"
+                                (click)="tabHistorial.set('archivadas')">
+                                <ion-icon name="archive-outline"></ion-icon>
+                                <span>Archivadas</span>
+                                @if (novedadService.novedadesArchivadas().length > 0) {
+                                <ion-badge color="medium">{{ novedadService.novedadesArchivadas().length
+                                    }}</ion-badge>
+                                }
+                            </div>
+                            <ion-button fill="clear" size="small" color="danger" (click)="vaciarHistorialCompleto()"
+                                class="btn-clear-all" title="Vaciar Historial">
+                                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                            </ion-button>
+                        </div>
+
+                        <div class="historial-tab-content">
+                            @if (tabHistorial() === 'historial') {
+                            <!-- Buscador Exclusivo Historial -->
+                            <ion-searchbar [value]="busquedaHistorialTermino()"
+                                (ionInput)="onBusquedaHistorialChange($event)" placeholder="Buscar en historial..."
+                                mode="ios" class="historial-searchbar">
+                            </ion-searchbar>
+
+                            <!-- SUB-TABS: Estudiante vs Grupal -->
+                            <div class="historial-sub-tabs">
+                                <div class="sub-tab" [class.active]="modoVisualizacionHistorial() === 'estudiante'"
+                                    (click)="modoVisualizacionHistorial.set('estudiante')">Estudiante</div>
+                                <div class="sub-tab" [class.active]="modoVisualizacionHistorial() === 'grupal'"
+                                    (click)="modoVisualizacionHistorial.set('grupal')">Grupal</div>
+                            </div>
+
+                            <!-- Acciones Masivas Historial -->
+                            @if (novedadesSeleccionadasHistorial().size > 0) {
+                            <div class="mass-actions-bar historial-actions animate__animated animate__fadeInDown">
+                                <div class="selected-count">
+                                    {{ novedadesSeleccionadasHistorial().size }} seleccionados
+                                </div>
+                                <div class="action-buttons">
+                                    <ion-button fill="clear" size="small" (click)="archivarSeleccionadosHistorial()">
+                                        <ion-icon slot="start" name="archive-outline"></ion-icon>
+                                        Archivar
+                                    </ion-button>
+                                    <ion-button fill="clear" size="small" color="danger"
+                                        (click)="eliminarSeleccionadosHistorial()">
+                                        <ion-icon slot="start" name="trash-outline"></ion-icon>
+                                        Borrar
+                                    </ion-button>
+                                    <ion-button fill="clear" size="small" (click)="limpiarSeleccionHistorial()">
+                                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                    </ion-button>
+                                </div>
+                            </div>
                             }
-                            } @else if (cursosResumen().length === 0) {
-                            <div class="empty-state">
-                                <ion-icon name="school-outline"></ion-icon>
-                                <p>No hay cursos cargados</p>
+
+                            <div class="historial-novedades-list">
+                                @if (historialAgrupado().length > 0) {
+                                @if (modoVisualizacionHistorial() === 'estudiante') {
+                                <!-- TABLA ESTUDIANTE (VCS Style) -->
+                                <table class="historial-table group-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Estudiante</th>
+                                            <th class="text-center">Cambios</th>
+                                            <th>Última</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (est of historialAgrupado(); track est.key) {
+                                        <tr (click)="abrirModalVcs(est)" class="clickable-row">
+                                            <td>
+                                                <div class="table-name">{{ est.estudianteNombre }}</div>
+                                                <div class="table-meta">G{{ est.grupo }}</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <ion-badge color="secondary">{{ est.cambiosCount }}</ion-badge>
+                                            </td>
+                                            <td class="table-time text-muted">{{ est.fechaUltima | date:'HH:mm' }}</td>
+                                            <td>
+                                                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                } @else {
+                                <!-- TABLA GRUPAL (VCS Style Trigger) -->
+                                <table class="historial-table group-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Grupo</th>
+                                            <th class="text-center">Cambios</th>
+                                            <th>Última</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (grupo of historialAgrupado(); track grupo.key) {
+                                        <tr (click)="abrirModalVcs(grupo)" class="clickable-row">
+                                            <td>
+                                                <div class="table-name">Grupo {{ grupo.grupo }}</div>
+                                                <div class="table-meta">{{ grupo.cursoId }}</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <ion-badge color="primary">{{ grupo.cambiosCount }}</ion-badge>
+                                            </td>
+                                            <td class="table-time text-muted">{{ grupo.fechaUltima | date:'HH:mm' }}
+                                            </td>
+                                            <td>
+                                                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                }
+                                } @else {
+                                <div class="empty-state-mini">
+                                    <ion-icon name="document-text-outline"></ion-icon>
+                                    <p>Sin novedades recientes</p>
+                                </div>
+                                }
                             </div>
                             } @else {
-                            @for (curso of cursosResumen(); track curso.codigo) {
-                            <ion-card class="course-card-premium"
-                                [class.selected]="cursoSeleccionado() === curso.codigo"
-                                [style.--course-color]="curso.color" (click)="toggleCursoSeleccion(curso.codigo)"
-                                @itemAnimation>
-                                <div class="card-color-strip" [style.background]="curso.color"></div>
-
-                                <!-- Mobile selection mode indicator (only on mobile) -->
-                                @if (!isDesktop()) {
-                                <div class="card-mobile-mode-icon">
-                                    @if (gruposSeleccionados().size > 1) {
-                                    <ion-icon name="pin-outline" [style.color]="curso.color"></ion-icon>
-                                    } @else if (gruposSeleccionados().size === 1) {
-                                    <ion-icon name="lock-open-outline" [style.color]="curso.color"></ion-icon>
-                                    }
+                            <!-- Pestaña Archivadas -->
+                            <div class="archivadas-list">
+                                @if (novedadService.novedadesArchivadas().length > 0) {
+                                <div class="archivadas-info">
+                                    <ion-icon name="archive-outline"></ion-icon>
+                                    <span>{{ novedadService.novedadesArchivadas().length }} novedades archivadas</span>
+                                </div>
+                                } @else {
+                                <div class="empty-state-mini">
+                                    <ion-icon name="archive-outline"></ion-icon>
+                                    <p>No hay novedades archivadas</p>
                                 </div>
                                 }
-
-                                <!-- Desktop selection indicator -->
-                                @if (isDesktop()) {
-                                <div class="card-selection-indicator">
-                                    @if (cursoSeleccionado() === curso.codigo) {
-                                    <ion-icon name="checkmark-circle" color="primary"></ion-icon>
-                                    }
-                                </div>
-                                }
-
-                                <ion-card-header>
-                                    <ion-card-title>{{ getCodigoCorto(curso.codigo) }}</ion-card-title>
-                                </ion-card-header>
-                            </ion-card>
-                            }
+                            </div>
                             }
                         </div>
-
-                        <!-- Dynamic Group Buttons (Moved below courses) -->
-                        @if (cursoSeleccionado()) {
-                        <div class="grupos-selector-bar-global">
-                            <div class="grupos-selector-header">
-                                <div class="grupos-selector-label">
-                                    <ion-icon name="people-outline"></ion-icon>
-                                    <span>Grupos de {{ getCodigoCorto(cursoSeleccionado()!) }}</span>
-                                </div>
-                            </div>
-                            <ion-grid class="grupos-buttons-grid">
-                                <ion-row>
-                                    @for (grupo of gruposDelCursoSeleccionado(); track grupo) {
-                                    <ion-col size="6" size-sm="4" size-md="3" size-lg="2.4">
-                                        <ion-button [fill]="'clear'" size="small" expand="block"
-                                            class="grupo-dynamic-btn"
-                                            [class.selected]="gruposSeleccionados().has(grupo)"
-                                            [style.--color]="colorDelCursoSeleccionado()"
-                                            (click)="toggleGrupoSeleccion(grupo, $event)">
-                                            @if (gruposSeleccionados().has(grupo)) {
-                                            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
-                                            }
-                                            G{{ grupo }}
-                                        </ion-button>
-                                    </ion-col>
-                                    }
-                                </ion-row>
-                            </ion-grid>
-                            <div class="hint-text">
-                                <ion-icon name="information-circle-outline"></ion-icon>
-                                <span>Ctrl/Cmd + Click para seleccionar múltiples grupos</span>
-                            </div>
-                        </div>
-                        }
-
-                        <!-- SECTION: Group Members List (Available to Select) -->
-                        @if (estudiantesDeGruposSeleccionados().length > 0) {
-                        <div class="group-members-section">
-                            <div class="section-header">
-                                <div class="actions-row">
-                                    <ion-button fill="clear" size="small" (click)="seleccionarTodosGrupo()">
-                                        <ion-icon slot="start" name="checkbox-outline"></ion-icon>
-                                        Todos
-                                    </ion-button>
-                                    <ion-button fill="clear" size="small" color="medium"
-                                        (click)="deseleccionarTodosGrupo()">
-                                        <ion-icon slot="start" name="square-outline"></ion-icon>
-                                        Ninguno
-                                    </ion-button>
-                                </div>
-                            </div>
-
-                            <div class="members-list-grid">
-                                @for (est of estudiantesDeGruposSeleccionados(); track est.correo) {
-                                <div class="member-item" [class.selected]="isEstudianteGrupoSeleccionado(est.correo)"
-                                    (click)="toggleSeleccionEstudianteGrupo(est.correo)">
-                                    <ion-checkbox [checked]="isEstudianteGrupoSeleccionado(est.correo)"
-                                        (click)="$event.stopPropagation()"></ion-checkbox>
-                                    <div class="member-info">
-                                        <span class="name">{{ est.nombre }}</span>
-                                    </div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
                     </ion-col>
                 </ion-row>
             </ion-grid>
@@ -764,66 +764,69 @@
                     </ion-toolbar>
                 </ion-header>
                 <ion-content class="ion-padding">
-                    <div class="vcs-modal-split-layout">
-                        <!-- Timeline (Lado Izquierdo) -->
-                        <div class="vcs-timeline-column">
-                            <div class="vcs-timeline">
-                                @for (group of vcsTimelineGroups(); track group) {
-                                <div class="timeline-group">
-                                    <div class="timeline-time-stack">
-                                        @for (item of group.items; track item.fechaRegistro) {
-                                        <div class="time-item">
-                                            <div class="time-labels">
-                                                <span class="time-date">{{ item.fechaRegistro | date:'dd/MM' }}</span>
-                                                <span class="time-hour">{{ item.fechaRegistro | date:'HH:mm' }}</span>
-                                            </div>
-                                            <div class="time-dot"></div>
-                                        </div>
-                                        }
-                                    </div>
-
-                                    <div class="timeline-content">
-                                        <div class="timeline-header">
-                                            <span class="author">{{ group.tipoNovedadNombre }}</span>
-                                        </div>
-                                        @if (group.descripcion) {
-                                        <p class="timeline-msg">{{ group.descripcion }}</p>
-                                        }
-                                    </div>
-                                </div>
-                                } @empty {
-                                <div class="empty-state">
-                                    <ion-icon name="document-text-outline"></ion-icon>
-                                    <p>No hay novedades registradas para este periodo.</p>
-                                </div>
+                    <ion-accordion-group class="vcs-daily-accordions" [value]="['0']" [multiple]="true">
+                        @for (day of vcsDailyComparison(); track day.fullDate; let i = $index) {
+                        <ion-accordion [value]="i.toString()">
+                            <ion-item slot="header" color="light" lines="none">
+                                <ion-label>
+                                    <h3 class="accordion-date-title">{{ day.fechaLabel }}</h3>
+                                    <p class="accordion-date-subtitle">{{ day.totalCambiosIndividuales }} cambios indv.
+                                        · {{ day.totalCambiosGrupales }} eventos grupales</p>
+                                </ion-label>
+                                @if (day.isCoincidentDay) {
+                                <ion-badge slot="end" color="success" mode="ios">Coincidencia</ion-badge>
                                 }
-                            </div>
-                        </div>
+                            </ion-item>
+                            <div class="ion-no-padding" slot="content">
+                                <div class="comparison-grid">
+                                    @for (row of day.rows; track row.fecha) {
+                                    <!-- Row Wrapper -->
+                                    <div class="comparison-row" [class.coincident]="row.coincide">
 
-                        <!-- Panel Comparativo (Lado Derecho - Por implementar) -->
-                        <div class="vcs-comparative-panel">
-                            <div class="comparative-header">
-                                <ion-icon name="stats-chart-outline"></ion-icon>
-                                <h4>Comportamiento Grupal</h4>
-                            </div>
+                                        <!-- Student Column -->
+                                        <div class="col-student">
+                                            @if (row.studentGroup) {
+                                            <div class="event-card student-card">
+                                                <div class="card-header">
+                                                    <span class="author">{{ row.studentGroup.tipoNovedadNombre }}</span>
+                                                </div>
+                                                @if (row.studentGroup.descripcion) {
+                                                <p class="card-msg">{{ row.studentGroup.descripcion }}</p>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
 
-                            <div class="comparative-placeholder">
-                                <div class="placeholder-card group-avg">
-                                    <span class="label">Promedio Grupo</span>
-                                    <div class="shimmer-bar"></div>
+                                        <!-- Axis Column -->
+                                        <div class="col-axis">
+                                            <div class="time-label">{{ row.fecha | date:'HH:mm' }}</div>
+                                            <div class="axis-node" [class.coincident-node]="row.coincide"></div>
+                                            <div class="axis-line"></div>
+                                        </div>
+
+                                        <!-- Group Column -->
+                                        <div class="col-group">
+                                            @if (row.groupEvent) {
+                                            <div class="event-card group-card">
+                                                <div class="card-header">
+                                                    <span class="author">{{ row.groupEvent.tipo }}</span>
+                                                </div>
+                                                <p class="card-msg">{{ row.groupEvent.descripcion }}</p>
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    }
                                 </div>
-
-                                <div class="placeholder-card student-position">
-                                    <span class="label">Posición del Estudiante</span>
-                                    <div class="shimmer-circle"></div>
-                                </div>
-
-                                <p class="coming-soon-text">
-                                    Métricas comparativas en desarrollo.
-                                </p>
                             </div>
+                        </ion-accordion>
+                        } @empty {
+                        <div class="empty-state">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                            <p>No hay historial disponible.</p>
                         </div>
-                    </div>
+                        }
+                    </ion-accordion-group>
                 </ion-content>
             </ng-template>
         </ion-modal>

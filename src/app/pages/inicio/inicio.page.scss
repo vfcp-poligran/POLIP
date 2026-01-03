@@ -1023,17 +1023,25 @@ $touch-target: colors.$touch-target;
     }
 }
 
-// === VCS MODAL & TIMELINE (REFINADO) ===
+// === VCS MODAL & TIMELINE (PARALLEL) ===
 .vcs-modal {
-    --height: 85%;
-    --width: 90%;
-    --max-width: 600px;
+    --height: 90%;
+    --width: 95%;
+    --max-width: 800px; // Wider for parallel view
     --border-radius: 16px;
+
+    @include mobile-only {
+        --max-width: 100%;
+        --height: 95%;
+        --width: 100%;
+        --border-radius: 16px 16px 0 0;
+    }
 
     ion-header {
         ion-toolbar {
-            --background: #{$azul-oscuro};
+            --background: #{-oscuro};
             --color: #fff;
+            --min-height: 50px;
         }
     }
 
@@ -1062,179 +1070,228 @@ $touch-target: colors.$touch-target;
     }
 
     .vcs-modal-split-layout {
-        display: grid;
-        grid-template-columns: 1fr 280px; // Timeline flexible, Panel fijo
-        gap: 0;
-        min-height: 100%;
+        // Now just a container for the accordions
+        display: block;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 20px;
 
-        @include mobile-only {
-            grid-template-columns: 1fr;
-        }
+        // Comparación Visual (Timeline Paralelo)
+        .vcs-daily-accordions {
+            background: transparent;
 
-        .vcs-timeline-column {
-            padding-right: 20px;
-            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            ion-accordion {
+                background: transparent;
+                margin-bottom: 8px; /* Spacing between days */
+                border-radius: 8px;
+                overflow: hidden; /* For rounded corners */
 
-            @include mobile-only {
-                padding-right: 0;
-                border-right: none;
-                border-bottom: 2px dashed rgba(0, 0, 0, 0.05);
-                padding-bottom: 30px;
-            }
-        }
+                &.accordion-expanding,
+                &.accordion-expanded {
+                    background: #fff;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
-        .vcs-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-
-            .timeline-group {
-                display: grid;
-                grid-template-columns: 85px 1fr;
-                align-items: center;
-                gap: 15px;
-                position: relative;
-                min-height: 50px;
-
-                .timeline-time-stack {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    padding-right: 15px;
-                    position: relative;
-                    border-right: 2px solid rgba($azul-claro, 0.2);
-
-                    .time-item {
-                        display: flex;
-                        align-items: center;
-                        justify-content: flex-end;
-                        gap: 10px;
-                        position: relative;
-
-                        .time-labels {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-end;
-                            line-height: 1.1;
-
-                            .time-date {
-                                font-size: 0.7rem;
-                                font-weight: 700;
-                                color: $azul-oscuro;
-                            }
-
-                            .time-hour {
-                                font-size: 0.6rem;
-                                color: #666;
-                            }
-                        }
-
-                        .time-dot {
-                            width: 8px;
-                            height: 8px;
-                            border-radius: 50%;
-                            background: $azul-claro;
-                            margin-right: -19px;
-                            z-index: 2;
-                            border: 2px solid #fff;
-                            box-shadow: 0 0 0 1px rgba($azul-claro, 0.2);
-                            flex-shrink: 0;
-                        }
+                    ion-item[slot="header"] {
+                        --background: #fff;
+                        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
                     }
                 }
 
-                .timeline-content {
-                    padding: 12px 15px;
-                    background: rgba(0, 0, 0, 0.02);
-                    border-radius: 8px;
+                ion-item[slot="header"] {
+                    --background: rgba(255, 255, 255, 0.6);
+                    --padding-start: 10px;
+                    --padding-end: 10px;
+                    --min-height: 48px;
+                    border-radius: 8px; /* Rounded if collapsed */
+
+                    ion-label {
+                        margin: 0;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 2px;
+
+                        .accordion-date-title {
+                            font-size: 0.95rem;
+                            font-weight: 700;
+                            color: -oscuro;
+                            margin: 0;
+                        }
+
+                        .accordion-date-subtitle {
+                            font-size: 0.75rem;
+                            color: #666;
+                            margin: 0;
+                        }
+                    }
+
+                    ion-badge {
+                        font-size: 0.7rem;
+                        font-weight: 600;
+                        --padding-start: 8px;
+                        --padding-end: 8px;
+                    }
+                }
+
+                .comparison-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 50px 1fr; // Grid 3 columnas: Estudiante - Eje - Grupo
+                    gap: 0;
+                    width: 100%;
+                    padding: 8px 0;
+                    position: relative;
+                }
+
+                .comparison-row {
+                    display: contents; // Para que los hijos sean parte del grid principal
+
+                    &.coincident {
+                        // Highlight rows could go here
+                    }
+                }
+
+                .col-student,
+                .col-group {
+                    padding: 4px 8px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    min-height: 40px;
-
-                    .timeline-header {
-                        margin-bottom: 2px;
-
-                        .author {
-                            font-size: 0.85rem;
-                            font-weight: 800;
-                            color: $azul-oscuro;
-                            text-transform: uppercase;
-                        }
-                    }
-
-                    .timeline-msg {
-                        margin: 0;
-                        font-size: 0.85rem;
-                        color: #444;
-                        line-height: 1.4;
-                        font-style: italic;
-                    }
-                }
-            }
-        }
-
-        .vcs-comparative-panel {
-            padding-left: 20px;
-            background: rgba($azul-oscuro, 0.02);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-
-            @include mobile-only {
-                padding: 30px 0 0 0;
-                background: transparent;
-            }
-
-            .comparative-header {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-top: 10px;
-
-                ion-icon {
-                    font-size: 1.2rem;
-                    color: $azul-claro;
+                    min-height: 50px;
                 }
 
-                h4 {
-                    margin: 0;
-                    font-size: 0.9rem;
-                    font-weight: 700;
-                    color: $azul-oscuro;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
+                .col-student {
+                    align-items: flex-end;
+                    text-align: right;
                 }
-            }
 
-            .comparative-placeholder {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 40px 20px;
-                opacity: 0.6;
+                .col-group {
+                    align-items: flex-start;
+                    text-align: left;
+                }
 
-                .empty-state-comparative {
+                .col-axis {
+                    position: relative;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    gap: 15px;
-                    text-align: center;
+                    justify-content: center; /* Center axis node vertically */
+                    height: 100%;
 
-                    ion-icon {
-                        font-size: 2.5rem;
-                        color: rgba($azul-oscuro, 0.3);
+                    .axis-line {
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        left: 50%;
+                        width: 2px;
+                        background: rgba(-claro, 0.15);
+                        transform: translateX(-50%);
+                        z-index: 1;
                     }
 
-                    p {
+                    .axis-node {
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 50%;
+                        background: #fff;
+                        border: 2px solid -claro;
+                        z-index: 2;
+                        margin-bottom: 2px;
+                        position: relative; /* ensure on top of line */
+
+                        &.coincident-node {
+                            background: ;
+                            border-color: ;
+                            width: 14px;
+                            height: 14px;
+                            box-shadow: 0 0 0 3px rgba(, 0.2);
+                        }
+                    }
+
+                    .time-label {
+                        font-size: 0.65rem;
+                        color: #888;
+                        font-weight: 600;
+                        background: #fff;
+                        padding: 0 4px;
+                        z-index: 2;
+                        border-radius: 4px;
+                        margin-bottom: 2px;
+                        line-height: 1;
+                    }
+                }
+
+                // Tarjetas de Evento Compactas
+                .event-card {
+                    background: #fff;
+                    border: 1px solid rgba(0, 0, 0, 0.08);
+                    border-radius: 8px;
+                    padding: 6px 10px;
+                    width: 100%;
+                    max-width: 280px;
+                    transition: transform 0.2s;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+
+                    &:active {
+                        transform: scale(0.98);
+                    }
+
+                    &.student-card {
+                        border-left: 3px solid -claro;
+                    }
+
+                    &.group-card {
+                        border-right: 3px solid orange; // Color distintivo para grupo
+                        background: rgba(255, 165, 0, 0.03); // Slight orange tint
+                    }
+
+                    .card-header {
+                        margin-bottom: 2px;
+                        
+                        .author {
+                            font-size: 0.75rem;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                            color: -oscuro;
+                        }
+                    }
+
+                    .card-msg {
                         margin: 0;
-                        font-size: 0.85rem;
-                        color: #666;
-                        font-style: italic;
+                        font-size: 0.8rem;
+                        color: #555;
+                        line-height: 1.35;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
                     }
                 }
             }
         }
+
+        // Estilos Movil Específicos para Grid
+        @include mobile-only {
+            .vcs-daily-accordions {
+                ion-accordion .comparison-grid {
+                    grid-template-columns: 1fr 40px 1fr; // Eje más estrecho en móvil
+                    gap: 0;
+                }
+
+                ion-accordion .col-student,
+                ion-accordion .col-group {
+                    padding: 2px 4px; // tighter padding
+                }
+
+                ion-accordion .event-card {
+                    padding: 6px 8px;
+                    
+                    .card-header .author {
+                        font-size: 0.7rem;
+                    }
+                    .card-msg {
+                        font-size: 0.75rem;
+                    }
+                }
+             }
+         }
     }
 }

@@ -67,12 +67,16 @@ export interface Novedad {
     grupoNovedadId?: string;      // ID compartido si se registró como grupo completo
     esNovedadGrupal?: boolean;    // Marca si afecta a todo el grupo
 
+    // Novedad Relacional ("Se unió con")
+    relatedStudentId?: string;    // ID/Correo del estudiante con quien se unió
+    relatedStudentName?: string;  // Cache del nombre
+
     // Sincronización offline
     syncStatus?: 'pending' | 'synced' | 'conflict';
     localTimestamp?: number;
 }
 
-// SesionRevision eliminada - ya no se usa
+// ... (SesionRevision eliminada) ...
 
 /**
  * Historial con metadatos de novedades
@@ -119,6 +123,15 @@ export const TIPOS_NOVEDAD_DEFAULT: Omit<TipoNovedad, 'id' | 'fechaCreacion'>[] 
         descripcion: 'El estudiante no ha entregado lo acordado con el grupo',
         icono: 'warning-outline',
         color: '#9c27b0',
+        esRecurrente: true,
+        frecuenciaUso: 0,
+        activo: true
+    },
+    {
+        nombre: 'Se unió con',
+        descripcion: 'El estudiante se ha unido a otro compañero/grupo',
+        icono: 'git-merge-outline',
+        color: '#2196f3',
         esRecurrente: true,
         frecuenciaUso: 0,
         activo: true

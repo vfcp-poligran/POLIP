@@ -120,6 +120,26 @@ interface TimelineGroup {
     items: Novedad[];
 }
 
+interface ComparisonRow {
+    fecha: Date;
+    studentGroup?: TimelineGroup;
+    groupEvent?: { // Simulación de evento grupal
+        tipo: string;
+        descripcion: string;
+        coincide: boolean; // Si coincide con el estudiante
+    };
+    coincide: boolean;
+}
+
+interface DailyGroup {
+    fechaLabel: string; // "Hoy", "Ayer", "12 Oct"
+    fullDate: Date; // Para ordenar
+    rows: ComparisonRow[];
+    totalCambiosIndividuales: number;
+    totalCambiosGrupales: number;
+    isCoincidentDay: boolean; // Flag para visualización de acordeón
+}
+
 @Component({
     selector: 'app-inicio',
     templateUrl: './inicio.page.html',
@@ -352,7 +372,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({timeOutline,archiveOutline,trashOutline,closeOutline,chevronForwardOutline,documentTextOutline,checkmarkCircleOutline,closeCircle,personAddOutline,schoolOutline,pinOutline,lockOpenOutline,checkmarkCircle,peopleOutline,informationCircleOutline,checkboxOutline,squareOutline,search,add,checkmarkOutline,checkmark,addCircleOutline,statsChartOutline,notificationsOutline,listOutline,playCircle,stopCircleOutline,checkmarkDoneOutline,calendarOutline,playOutline,addOutline,personOutline,peopleCircleOutline,hammerOutline,constructOutline,analyticsOutline,homeOutline,cloudOfflineOutline,appsOutline,checkmarkDoneCircleOutline,createOutline,bulbOutline,chevronDownOutline,checkmarkDoneCircle,alertCircleOutline,closeCircleOutline,optionsOutline,searchOutline,warningOutline,chevronUpOutline,gridOutline,chatboxEllipsesOutline,person,people,warning,stopCircle,checkmarkDone,checkbox});
+        addIcons({ timeOutline, archiveOutline, trashOutline, closeOutline, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline, closeCircle, personAddOutline, schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, search, add, checkmarkOutline, checkmark, addCircleOutline, statsChartOutline, notificationsOutline, listOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, calendarOutline, playOutline, addOutline, personOutline, peopleCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, createOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -978,6 +998,8 @@ export class InicioPage implements OnInit, ViewWillEnter {
     }
 
     // Modal breakpoints: undefined on desktop (to center), sheet on mobile
+
+
     vcsModalBreakpoints = computed(() => {
         return this.isDesktop() ? undefined : [0, 0.6, 1];
     });
@@ -1563,6 +1585,124 @@ export class InicioPage implements OnInit, ViewWillEnter {
     /**
      * Obtiene los estudiantes de un curso y grupo específico
      */
+
+    // Timeline con agrupación diaria y comparativa
+    vcsDailyComparison = computed<DailyGroup[]>(() => {
+        const history = this.vcsHistorialSeleccionado();
+        if (!history || history.length === 0) return [];
+
+        const studentGroups: TimelineGroup[] = [];
+        let currentGroup: TimelineGroup | null = null;
+        const sortedHistory = [...history].sort((a, b) => new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime());
+
+        sortedHistory.forEach((novedad, index) => {
+            const anterior = index > 0 ? sortedHistory[index - 1] : null;
+
+            if (currentGroup && anterior && this.esNovedadIdentica(novedad, anterior)) {
+                currentGroup.items.push(novedad);
+            } else {
+                if (currentGroup) studentGroups.push(currentGroup);
+
+                const nombreNovedad = novedad.tipoNovedadNombre || 'Novedad';
+                currentGroup = {
+                    tipoNovedadNombre: nombreNovedad,
+                    descripcion: novedad.descripcion,
+                    origen: novedad.origen,
+                    items: [novedad]
+                };
+            }
+        });
+        if (currentGroup) studentGroups.push(currentGroup);
+
+
+        const dailyMap = new Map<string, DailyGroup>();
+
+        // 1. Procesar grupos del estudiante
+        studentGroups.forEach(group => {
+            const date = new Date(group.items[0].fechaRegistro);
+
+            // Determinar la etiqueta del día
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            let dateLabel = '';
+            if (date.toDateString() === today.toDateString()) {
+                dateLabel = 'Hoy';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                dateLabel = 'Ayer';
+            } else {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                dateLabel = `${day}/${month}`;
+            }
+
+            const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+            if (!dailyMap.has(dateKey)) {
+                dailyMap.set(dateKey, {
+                    fechaLabel: dateLabel,
+                    fullDate: date,
+                    rows: [],
+                    totalCambiosIndividuales: 0,
+                    totalCambiosGrupales: 0,
+                    isCoincidentDay: false
+                });
+            }
+
+            const dailyGroup = dailyMap.get(dateKey)!;
+
+            // Simulacion mejorada
+            const isPositive = group.tipoNovedadNombre.toLowerCase().includes('bien') || group.tipoNovedadNombre.toLowerCase().includes('buen');
+            // Alta coincidencia si es positivo
+            const isGroupEvent = isPositive ? Math.random() < 0.8 : Math.random() < 0.2;
+
+            let groupEventData: any = undefined;
+
+            if (isGroupEvent) {
+                groupEventData = {
+                    tipo: group.tipoNovedadNombre,
+                    descripcion: 'El grupo mantiene este comportamiento.',
+                    coincide: true
+                };
+                dailyGroup.totalCambiosGrupales++;
+            }
+
+            dailyGroup.totalCambiosIndividuales++;
+            if (groupEventData && groupEventData.coincide) dailyGroup.isCoincidentDay = true;
+
+            dailyGroup.rows.push({
+                fecha: date,
+                studentGroup: group,
+                groupEvent: groupEventData,
+                coincide: !!groupEventData
+            });
+        });
+
+        // 2. Simulación de eventos SOLO grupales
+        dailyMap.forEach(dailyGroup => {
+            if (Math.random() > 0.6) {
+                const randomTime = new Date(dailyGroup.fullDate);
+                randomTime.setHours(Math.floor(Math.random() * 8) + 8);
+
+                dailyGroup.rows.push({
+                    fecha: randomTime,
+                    studentGroup: undefined,
+                    groupEvent: {
+                        tipo: 'Novedad Grupal',
+                        descripcion: 'Evento grupal automático',
+                        coincide: false
+                    },
+                    coincide: false
+                });
+                dailyGroup.totalCambiosGrupales++;
+            }
+            dailyGroup.rows.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
+        });
+
+        return Array.from(dailyMap.values()).sort((a, b) => b.fullDate.getTime() - a.fullDate.getTime());
+    });
+
     getEstudiantesGrupo(cursoCodigo: string, grupo: string): any[] {
         return this.dataService.cursos()[cursoCodigo]?.filter(e => String(e.grupo) === String(grupo)) || [];
     }
