@@ -12,8 +12,8 @@ $touch-target: colors.$touch-target;
 
 // Contenedor principal
 .inicio-content {
-    --padding-bottom: calc(56px + env(safe-area-inset-bottom, 16px));
-    --padding-top: calc(60px + env(safe-area-inset-top, 0px)); // Space for fixed header
+    --padding-bottom: calc(60px + env(safe-area-inset-bottom, 20px)); // Más espacio para tabs
+    --padding-top: calc(64px + env(safe-area-inset-top, 24px)); // Asegurar espacio para header móvil estándar
 }
 
 // === HEADER ===
