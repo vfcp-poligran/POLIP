@@ -1148,7 +1148,11 @@ $touch-target: colors.$touch-target;
                     display: contents; // Para que los hijos sean parte del grid principal
 
                     &.coincident {
-                        // Highlight rows could go here
+
+                        // Resaltar filas coincidentes
+                        .event-card {
+                            box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
+                        }
                     }
                 }
 
