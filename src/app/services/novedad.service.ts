@@ -287,6 +287,16 @@ export class NovedadService {
         await this.saveToStorage();
     }
 
+    /**
+     * Actualiza una novedad existente con cambios parciales
+     */
+    async actualizarNovedad(novedadId: string, cambios: Partial<Novedad>): Promise<void> {
+        this._novedades.update(novedades =>
+            novedades.map(n => n.id === novedadId ? { ...n, ...cambios } : n)
+        );
+        await this.saveToStorage();
+    }
+
     // === CRUD TIPOS DE NOVEDAD ===
 
     /**

@@ -316,6 +316,8 @@ export class InicioPage implements OnInit, ViewWillEnter {
                     tipoColor: tipoNovedad?.color || '#999',
                     estudianteNombre: item.estudianteNombre || 'Estudiante',
                     estudianteCorreo: item.estudianteCorreo,
+                    curso: item.cursoId || '',
+                    grupo: item.grupo || '',
                     descripcion: item.descripcion,
                     origen: item.origen,
                     items: [item]
@@ -1018,7 +1020,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     // === MODAL DE BÚSQUEDA (MÓVIL/TABLET) ===
 
     toggleSearchModal(): void {
-        this.isSearchModalVisible.set(!this.isSearchModalVisible());
+        this.isSearchModalVisible.set(!this.isSearchModalVisible);
     }
 
     closeSearchModal(): void {
@@ -1027,13 +1029,18 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     // VCS Modal Methods
     abrirModalVcs(item: any) {
+        // Obtener código corto del curso
+        const codigoCorto = this.getCodigoCorto(item.cursoId || '');
+
         if (item.estudianteNombre) {
-            this.vcsGrupoTitulo.set(`${item.estudianteNombre}`);
-            // El item en la tabla grupal (modo estudiante) suele tener grupo y cursoId
-            this.vcsGrupoSubtitulo.set(`${item.cursoId} - Grupo ${item.grupo}`);
+            // Historial individual: título = nombre del integrante
+            this.vcsGrupoTitulo.set(item.estudianteNombre);
+            // Subtítulo = código corto + grupo
+            this.vcsGrupoSubtitulo.set(`${codigoCorto} - G${item.grupo}`);
         } else if (item.grupo) {
-            this.vcsGrupoTitulo.set(`Grupo ${item.grupo}`);
-            this.vcsGrupoSubtitulo.set(`${item.cursoId}`);
+            // Historial grupal: título = código corto + grupo
+            this.vcsGrupoTitulo.set(`${codigoCorto} - Grupo ${item.grupo}`);
+            this.vcsGrupoSubtitulo.set('');
         }
         this.vcsHistorialSeleccionado.set(item.novedades || []);
         this.isVcsModalVisible.set(true);
@@ -1235,6 +1242,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     }
 
     private modalCtrl = inject(ModalController); // Inject missing ModalController
+    private alertController = inject(AlertController); // Inject AlertController for editing novedades
 
     async abrirSelectorNovedades() {
         const module: any = await import('../../components/novedad-selector/novedad-selector.component');
@@ -1296,6 +1304,63 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
             this.limpiarRegistrados();
         }
+    }
+
+    /**
+     * Edita una novedad existente desde el historial.
+     * Abre un alert con campos pre-poblados para modificar la novedad.
+     */
+    async editarNovedadDesdeHistorial(novedad: Novedad) {
+        const tiposDisponibles = this.novedadService.tiposNovedad().filter(t => t.activo);
+
+        const alert = await this.alertController.create({
+            header: 'Editar Novedad',
+            subHeader: novedad.estudianteNombre,
+            inputs: [
+                {
+                    name: 'tipoNovedadId',
+                    type: 'radio',
+                    label: tiposDisponibles[0]?.nombre || 'Sin tipo',
+                    value: tiposDisponibles[0]?.id,
+                    checked: novedad.tipoNovedadId === tiposDisponibles[0]?.id
+                },
+                ...tiposDisponibles.slice(1).map(tipo => ({
+                    name: 'tipoNovedadId',
+                    type: 'radio' as const,
+                    label: tipo.nombre,
+                    value: tipo.id,
+                    checked: novedad.tipoNovedadId === tipo.id
+                })),
+                {
+                    name: 'descripcion',
+                    type: 'textarea' as const,
+                    placeholder: 'Descripción (opcional)',
+                    value: novedad.descripcion || ''
+                }
+            ],
+            buttons: [
+                { text: 'Cancelar', role: 'cancel' },
+                {
+                    text: 'Guardar',
+                    handler: async (data: { tipoNovedadId: string; descripcion: string }) => {
+                        if (data.tipoNovedadId) {
+                            const tipoSeleccionado = tiposDisponibles.find(t => t.id === data.tipoNovedadId);
+                            await this.novedadService.actualizarNovedad(novedad.id, {
+                                tipoNovedadId: data.tipoNovedadId,
+                                tipoNovedadNombre: tipoSeleccionado?.nombre || 'Novedad',
+                                descripcion: data.descripcion
+                            });
+                            this.toastController.create({
+                                message: 'Novedad actualizada',
+                                duration: 2000,
+                                color: 'success'
+                            }).then(t => t.present());
+                        }
+                    }
+                }
+            ]
+        });
+        await alert.present();
     }
 
     /**
@@ -1732,6 +1797,8 @@ export class InicioPage implements OnInit, ViewWillEnter {
                     tipoColor: tipoNovedad?.color || '#999',
                     estudianteNombre: novedad.estudianteNombre || 'Estudiante',
                     estudianteCorreo: novedad.estudianteCorreo,
+                    curso: novedad.cursoId || '',
+                    grupo: novedad.grupo || '',
                     descripcion: novedad.descripcion,
                     origen: novedad.origen,
                     items: [novedad]

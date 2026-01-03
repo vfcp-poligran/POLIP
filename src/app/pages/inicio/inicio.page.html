@@ -800,11 +800,23 @@
                                                         class="tipo-icon"></ion-icon>
                                                     <span class="tipo-nombre">{{ row.studentGroup.tipoNovedadNombre
                                                         }}</span>
+                                                    <div class="card-actions">
+                                                        <ion-icon name="create-outline" class="action-icon edit-icon"
+                                                            (click)="editarNovedadDesdeHistorial(row.studentGroup.items[0])"
+                                                            title="Editar novedad"></ion-icon>
+                                                        <ion-icon name="add-circle-outline" class="action-icon add-icon"
+                                                            (click)="abrirRegistroDesdeHistorial()"
+                                                            title="Agregar novedad relacionada"></ion-icon>
+                                                    </div>
                                                 </div>
                                                 <div class="estudiante-info">
                                                     <ion-icon name="person-outline" class="estudiante-icon"></ion-icon>
-                                                    <span class="estudiante-nombre">{{ row.studentGroup.estudianteNombre
-                                                        }}</span>
+                                                    <div class="estudiante-detalles">
+                                                        <span class="estudiante-nombre">{{
+                                                            row.studentGroup.estudianteNombre }}</span>
+                                                        <span class="estudiante-curso-grupo">{{ row.studentGroup.curso
+                                                            }} - G{{ row.studentGroup.grupo }}</span>
+                                                    </div>
                                                 </div>
                                                 @if (row.studentGroup.descripcion) {
                                                 <p class="card-msg">{{ row.studentGroup.descripcion }}</p>
@@ -815,10 +827,14 @@
 
                                         <!-- Axis Column -->
                                         <div class="col-axis">
-                                            <div class="time-label">{{ row.fecha | date:'HH:mm' }}</div>
+                                            <div class="time-info">
+                                                <span class="time-label">{{ row.fecha | date:'HH:mm' }}</span>
+                                                <span class="date-label">{{ row.fecha | date:'dd/MM' }}</span>
+                                            </div>
                                             <div class="axis-node" [class.coincident-node]="row.coincide"
                                                 [style.background]="row.studentGroup?.tipoColor || '#fff'"
-                                                [style.border-color]="row.studentGroup?.tipoColor || '#ddd'"></div>
+                                                [style.border-color]="row.studentGroup?.tipoColor || '#ddd'"
+                                                [title]="(row.fecha | date:'dd/MM/yyyy HH:mm:ss')"></div>
                                             <div class="axis-line"></div>
                                         </div>
 
