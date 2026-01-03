@@ -839,6 +839,36 @@
                                                     </span>
                                                     }
                                                 </div>
+                                                <!-- Historial de cambios VCS (expandible) -->
+                                                @if ((row.studentGroup.items[0]?.historialCambios?.length ?? 0) > 0) {
+                                                <details class="historial-cambios-container">
+                                                    <summary class="historial-summary">
+                                                        <ion-icon name="git-branch-outline"></ion-icon>
+                                                        {{ row.studentGroup.items[0]?.historialCambios?.length ?? 0 }}
+                                                        cambio(s)
+                                                    </summary>
+                                                    <div class="historial-lista">
+                                                        @for (cambio of (row.studentGroup.items[0]?.historialCambios ??
+                                                        []); track cambio.fecha) {
+                                                        <div class="cambio-item">
+                                                            <span class="cambio-fecha">{{ cambio.fecha | date:'dd/MM
+                                                                HH:mm' }}</span>
+                                                            <span class="cambio-campo">{{ cambio.campoModificado
+                                                                }}</span>
+                                                            <span class="cambio-valores">
+                                                                <span class="valor-anterior">{{ cambio.valorAnterior ||
+                                                                    '(vacío)' }}</span>
+                                                                <ion-icon name="arrow-forward-outline"></ion-icon>
+                                                                <span class="valor-nuevo">{{ cambio.valorNuevo ||
+                                                                    '(vacío)' }}</span>
+                                                            </span>
+                                                            <span class="cambio-autor">por {{ cambio.modificadoPor
+                                                                }}</span>
+                                                        </div>
+                                                        }
+                                                    </div>
+                                                </details>
+                                                }
                                             </div>
                                             }
                                         </div>

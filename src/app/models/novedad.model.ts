@@ -74,6 +74,20 @@ export interface Novedad {
     // Sincronización offline
     syncStatus?: 'pending' | 'synced' | 'conflict';
     localTimestamp?: number;
+
+    // Historial de cambios VCS
+    historialCambios?: CambioNovedad[];
+}
+
+/**
+ * Registro de un cambio individual en una novedad (VCS)
+ */
+export interface CambioNovedad {
+    fecha: Date;
+    campoModificado: string;       // Ej: "tipoNovedadId", "descripcion"
+    valorAnterior: string;         // Valor antes del cambio
+    valorNuevo: string;            // Valor después del cambio
+    modificadoPor: string;         // Quién hizo el cambio
 }
 
 // SesionRevision eliminada - ya no se usa

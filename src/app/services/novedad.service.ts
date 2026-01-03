@@ -6,6 +6,7 @@ import {
     OrigenMensaje,
     SyncQueueItem,
     NovedadStats,
+    CambioNovedad,
     TIPOS_NOVEDAD_DEFAULT
 } from '../models/novedad.model';
 import { UnifiedStorageService } from './unified-storage.service';
@@ -290,15 +291,41 @@ export class NovedadService {
     }
 
     /**
-     * Actualiza una novedad existente con cambios parciales
+     * Actualiza una novedad existente con cambios parciales.
+     * Registra cada cambio en el historial VCS para trazabilidad.
      */
-    async actualizarNovedad(novedadId: string, cambios: Partial<Novedad>): Promise<void> {
+    async actualizarNovedad(novedadId: string, cambios: Partial<Novedad>, modificadoPor: string = 'instructor'): Promise<void> {
         this._novedades.update(novedades =>
-            novedades.map(n => n.id === novedadId ? {
-                ...n,
-                ...cambios,
-                fechaActualizacion: new Date() // Registrar fecha de actualización
-            } : n)
+            novedades.map(n => {
+                if (n.id !== novedadId) return n;
+
+                // Generar historial de cambios
+                const nuevosCambios: any[] = [];
+                const historialExistente = n.historialCambios || [];
+
+                // Detectar qué campos cambiaron
+                Object.keys(cambios).forEach(campo => {
+                    const valorAnterior = (n as any)[campo];
+                    const valorNuevo = (cambios as any)[campo];
+
+                    if (valorAnterior !== valorNuevo && campo !== 'historialCambios' && campo !== 'fechaActualizacion') {
+                        nuevosCambios.push({
+                            fecha: new Date(),
+                            campoModificado: campo,
+                            valorAnterior: String(valorAnterior || ''),
+                            valorNuevo: String(valorNuevo || ''),
+                            modificadoPor
+                        });
+                    }
+                });
+
+                return {
+                    ...n,
+                    ...cambios,
+                    fechaActualizacion: new Date(),
+                    historialCambios: [...historialExistente, ...nuevosCambios]
+                };
+            })
         );
         await this.saveToStorage();
     }

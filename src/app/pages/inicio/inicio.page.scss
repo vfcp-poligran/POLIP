@@ -1340,6 +1340,98 @@ $touch-target: colors.$touch-target;
                             color: var(--ion-color-warning);
                         }
                     }
+
+                    // Historial de cambios VCS expandible
+                    .historial-cambios-container {
+                        margin-top: 8px;
+                        padding: 6px 8px;
+                        background: rgba(var(--ion-color-primary-rgb), 0.05);
+                        border-radius: 6px;
+                        border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+
+                        .historial-summary {
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            font-size: 0.7rem;
+                            color: var(--ion-color-primary);
+                            cursor: pointer;
+                            font-weight: 600;
+
+                            ion-icon {
+                                font-size: 0.9rem;
+                            }
+
+                            &::-webkit-details-marker {
+                                display: none;
+                            }
+                        }
+
+                        .historial-lista {
+                            margin-top: 8px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 6px;
+
+                            .cambio-item {
+                                display: grid;
+                                grid-template-columns: auto 1fr auto;
+                                gap: 4px 8px;
+                                padding: 6px 8px;
+                                background: rgba(0, 0, 0, 0.02);
+                                border-radius: 4px;
+                                font-size: 0.65rem;
+                                border-left: 3px solid var(--ion-color-primary);
+
+                                .cambio-fecha {
+                                    color: #666;
+                                    grid-row: 1;
+                                    font-family: 'Courier New', monospace;
+                                }
+
+                                .cambio-campo {
+                                    color: var(--ion-color-primary);
+                                    font-weight: 600;
+                                    grid-row: 1;
+                                }
+
+                                .cambio-valores {
+                                    grid-column: 1 / -1;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 4px;
+                                    flex-wrap: wrap;
+
+                                    .valor-anterior {
+                                        background: rgba(var(--ion-color-danger-rgb), 0.1);
+                                        color: var(--ion-color-danger);
+                                        padding: 2px 6px;
+                                        border-radius: 3px;
+                                        text-decoration: line-through;
+                                    }
+
+                                    ion-icon {
+                                        font-size: 0.8rem;
+                                        color: #888;
+                                    }
+
+                                    .valor-nuevo {
+                                        background: rgba(var(--ion-color-success-rgb), 0.1);
+                                        color: var(--ion-color-success);
+                                        padding: 2px 6px;
+                                        border-radius: 3px;
+                                    }
+                                }
+
+                                .cambio-autor {
+                                    color: #888;
+                                    font-style: italic;
+                                    grid-row: 1;
+                                    text-align: right;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 .col-student,
