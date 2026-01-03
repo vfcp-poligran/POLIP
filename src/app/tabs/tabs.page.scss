@@ -112,6 +112,11 @@ div.main-content-area {
     display: none;
   }
 
+  // FORCE DISPLAY: Clean layout enforcement
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+
   ion-toolbar {
     --background: var(--azul-oscuro, #0f385a);
     --color: white;

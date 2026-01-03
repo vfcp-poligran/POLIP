@@ -31,9 +31,9 @@ import {
   IonAccordion,
   IonMenu,
   // IonMenuButton REMOVED
-  IonHeader,
-  IonToolbar,
-  IonTitle
+  // IonHeader REMOVED
+  // IonToolbar REMOVED
+  // IonTitle REMOVED
   // IonItemDivider REMOVED
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -125,10 +125,7 @@ interface EstudianteConNotas {
     CapitalizePipe,
     IonAccordionGroup,
     IonAccordion,
-    IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle]
+    IonMenu]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
