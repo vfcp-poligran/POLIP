@@ -1430,6 +1430,7 @@ $touch-target: colors.$touch-target;
                         line-height: 1.35;
                         display: -webkit-box;
                         -webkit-line-clamp: 3;
+                        line-clamp: 3; // Propiedad estándar para compatibilidad
                         -webkit-box-orient: vertical;
                         overflow: hidden;
                     }
