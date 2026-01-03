@@ -619,283 +619,283 @@
                                 [disabled]="!tipoNovedadSeleccionado()" (click)="registrarNovedadConfirmada()">
                                 <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
                                 Confirmar Registro
-                            </ion-button>
 
-                            <!-- MODAL DE BÚSQUEDA -->
-                            <ion-modal [isOpen]="isSearchModalVisible()" (didDismiss)="cerrarSearchModal()"
-                                class="search-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
-                                <ng-template>
-                                    <ion-header>
-                                        <ion-toolbar color="primary">
-                                            <ion-title>Buscar Estudiante</ion-title>
-                                            <ion-buttons slot="end">
-                                                <ion-button (click)="cerrarSearchModal()">
-                                                    <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                                                </ion-button>
-                                            </ion-buttons>
-                                        </ion-toolbar>
-                                        <ion-toolbar color="primary">
-                                            <ion-searchbar placeholder="Nombre o correo..." [value]="busquedaTermino()"
-                                                (ionInput)="onBusquedaChange($event)" [debounce]="300"
-                                                animated></ion-searchbar>
-                                        </ion-toolbar>
-                                    </ion-header>
-                                    <ion-content class="ion-padding">
-                                        <!-- Resultados de búsqueda -->
-                                        @if (busquedaTermino().length > 0) {
-                                        @if (resultadosBusqueda().length > 0) {
-                                        <ion-list>
-                                            @for (est of resultadosBusqueda(); track est.correo) {
-                                            <ion-item button (click)="seleccionarEstudiante(est)">
-                                                <ion-avatar slot="start">
-                                                    <img [src]="est.foto || 'assets/default-avatar.png'" alt="avatar" />
-                                                </ion-avatar>
+                            </ion-button>
+                        </div>
+
+                        <!-- MODAL DE BÚSQUEDA -->
+                        <ion-modal [isOpen]="isSearchModalVisible()" (didDismiss)="cerrarSearchModal()"
+                            class="search-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+                            <ng-template>
+                                <ion-header>
+                                    <ion-toolbar color="primary">
+                                        <ion-title>Buscar Estudiante</ion-title>
+                                        <ion-buttons slot="end">
+                                            <ion-button (click)="cerrarSearchModal()">
+                                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                            </ion-button>
+                                        </ion-buttons>
+                                    </ion-toolbar>
+                                    <ion-toolbar color="primary">
+                                        <ion-searchbar placeholder="Nombre o correo..." [value]="busquedaTermino()"
+                                            (ionInput)="onBusquedaChange($event)" [debounce]="300"
+                                            animated></ion-searchbar>
+                                    </ion-toolbar>
+                                </ion-header>
+                                <ion-content class="ion-padding">
+                                    <!-- Resultados de búsqueda -->
+                                    @if (busquedaTermino().length > 0) {
+                                    @if (resultadosBusqueda().length > 0) {
+                                    <ion-list>
+                                        @for (est of resultadosBusqueda(); track est.correo) {
+                                        <ion-item button (click)="seleccionarEstudiante(est)">
+                                            <ion-avatar slot="start">
+                                                <img [src]="est.foto || 'assets/default-avatar.png'" alt="avatar" />
+                                            </ion-avatar>
+                                            <ion-label>
+                                                <h2>{{ est.nombre }}</h2>
+                                                <p>{{ est.correo }}</p>
+                                                <p class="small-text">{{ est.curso }}</p>
+                                            </ion-label>
+                                            @if (isEstudianteSeleccionado(est.correo)) {
+                                            <ion-icon name="checkmark-circle" color="primary" slot="end"></ion-icon>
+                                            }
+                                        </ion-item>
+                                        }
+                                    </ion-list>
+                                    } @else {
+                                    <div class="empty-state">
+                                        <ion-icon name="search-outline"></ion-icon>
+                                        <p>No se encontraron estudiantes</p>
+                                    </div>
+                                    }
+                                    } @else {
+                                    <div class="empty-state">
+                                        <ion-icon name="search-outline"></ion-icon>
+                                        <p>Busca por nombre o correo</p>
+                                    </div>
+                                    }
+                                </ion-content>
+                                <ion-footer>
+                                    <ion-toolbar>
+                                        <ion-buttons slot="end">
+                                            @if (estudiantesSeleccionados().length > 0) {
+                                            <ion-button color="primary" (click)="registrarEnLista()">
+                                                Registrar ({{ estudiantesSeleccionados().length }})
+                                            </ion-button>
+                                            }
+                                        </ion-buttons>
+                                    </ion-toolbar>
+                                </ion-footer>
+                            </ng-template>
+                        </ion-modal>
+
+
+
+
+                        <!-- MODAL NOVEDADES VCS (Historial de Cambios) -->
+                        <ion-modal [isOpen]="isVcsModalVisible()" (didDismiss)="cerrarModalVcs()" class="vcs-modal"
+                            [initialBreakpoint]="vcsModalInitialBreakpoint()" [breakpoints]="vcsModalBreakpoints()">
+                            <ng-template>
+                                <ion-header>
+                                    <ion-toolbar>
+                                        <ion-buttons slot="start">
+                                            <ion-button (click)="abrirRegistroDesdeHistorial()" color="primary">
+                                                <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+                                            </ion-button>
+                                        </ion-buttons>
+                                        <ion-title>
+                                            <div class="vcs-title-container">
+                                                <div class="vcs-main-title">Historial {{ vcsGrupoTitulo() }}</div>
+                                                <div class="vcs-subtitle">{{ vcsGrupoSubtitulo() }}</div>
+                                            </div>
+                                        </ion-title>
+                                        <ion-buttons slot="end">
+                                            <ion-button (click)="cerrarModalVcs()">
+                                                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                                            </ion-button>
+                                        </ion-buttons>
+                                    </ion-toolbar>
+                                </ion-header>
+                                <ion-content class="ion-padding">
+                                    <ion-accordion-group class="vcs-daily-accordions" [value]="['0']" [multiple]="true">
+                                        @for (day of vcsDailyComparison(); track day.fullDate; let i = $index) {
+                                        <ion-accordion [value]="i.toString()">
+                                            <ion-item slot="header" color="light" lines="none">
                                                 <ion-label>
-                                                    <h2>{{ est.nombre }}</h2>
-                                                    <p>{{ est.correo }}</p>
-                                                    <p class="small-text">{{ est.curso }}</p>
+                                                    <h3 class="accordion-date-title">{{ day.fechaLabel }}</h3>
+                                                    <p class="accordion-date-subtitle">{{
+                                                        day.totalCambiosIndividuales }} cambios indv.
+                                                        · {{ day.totalCambiosGrupales }} eventos grupales</p>
                                                 </ion-label>
-                                                @if (isEstudianteSeleccionado(est.correo)) {
-                                                <ion-icon name="checkmark-circle" color="primary" slot="end"></ion-icon>
+                                                @if (day.isCoincidentDay) {
+                                                <ion-badge slot="end" color="success"
+                                                    mode="ios">Coincidencia</ion-badge>
                                                 }
                                             </ion-item>
-                                            }
-                                        </ion-list>
-                                        } @else {
-                                        <div class="empty-state">
-                                            <ion-icon name="search-outline"></ion-icon>
-                                            <p>No se encontraron estudiantes</p>
-                                        </div>
-                                        }
-                                        } @else {
-                                        <div class="empty-state">
-                                            <ion-icon name="search-outline"></ion-icon>
-                                            <p>Busca por nombre o correo</p>
-                                        </div>
-                                        }
-                                    </ion-content>
-                                    <ion-footer>
-                                        <ion-toolbar>
-                                            <ion-buttons slot="end">
-                                                @if (estudiantesSeleccionados().length > 0) {
-                                                <ion-button color="primary" (click)="registrarEnLista()">
-                                                    Registrar ({{ estudiantesSeleccionados().length }})
-                                                </ion-button>
-                                                }
-                                            </ion-buttons>
-                                        </ion-toolbar>
-                                    </ion-footer>
-                                </ng-template>
-                            </ion-modal>
+                                            <div class="ion-no-padding" slot="content">
+                                                <div class="comparison-grid">
+                                                    @for (row of day.rows; track row.fecha) {
+                                                    <!-- Row Wrapper -->
+                                                    <div class="comparison-row" [class.coincident]="row.coincide">
 
-
-
-
-                            <!-- MODAL NOVEDADES VCS (Historial de Cambios) -->
-                            <ion-modal [isOpen]="isVcsModalVisible()" (didDismiss)="cerrarModalVcs()" class="vcs-modal"
-                                [initialBreakpoint]="vcsModalInitialBreakpoint()" [breakpoints]="vcsModalBreakpoints()">
-                                <ng-template>
-                                    <ion-header>
-                                        <ion-toolbar>
-                                            <ion-buttons slot="start">
-                                                <ion-button (click)="abrirRegistroDesdeHistorial()" color="primary">
-                                                    <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
-                                                </ion-button>
-                                            </ion-buttons>
-                                            <ion-title>
-                                                <div class="vcs-title-container">
-                                                    <div class="vcs-main-title">Historial {{ vcsGrupoTitulo() }}</div>
-                                                    <div class="vcs-subtitle">{{ vcsGrupoSubtitulo() }}</div>
-                                                </div>
-                                            </ion-title>
-                                            <ion-buttons slot="end">
-                                                <ion-button (click)="cerrarModalVcs()">
-                                                    <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-                                                </ion-button>
-                                            </ion-buttons>
-                                        </ion-toolbar>
-                                    </ion-header>
-                                    <ion-content class="ion-padding">
-                                        <ion-accordion-group class="vcs-daily-accordions" [value]="['0']"
-                                            [multiple]="true">
-                                            @for (day of vcsDailyComparison(); track day.fullDate; let i = $index) {
-                                            <ion-accordion [value]="i.toString()">
-                                                <ion-item slot="header" color="light" lines="none">
-                                                    <ion-label>
-                                                        <h3 class="accordion-date-title">{{ day.fechaLabel }}</h3>
-                                                        <p class="accordion-date-subtitle">{{
-                                                            day.totalCambiosIndividuales }} cambios indv.
-                                                            · {{ day.totalCambiosGrupales }} eventos grupales</p>
-                                                    </ion-label>
-                                                    @if (day.isCoincidentDay) {
-                                                    <ion-badge slot="end" color="success"
-                                                        mode="ios">Coincidencia</ion-badge>
-                                                    }
-                                                </ion-item>
-                                                <div class="ion-no-padding" slot="content">
-                                                    <div class="comparison-grid">
-                                                        @for (row of day.rows; track row.fecha) {
-                                                        <!-- Row Wrapper -->
-                                                        <div class="comparison-row" [class.coincident]="row.coincide">
-
-                                                            <!-- Student Column -->
-                                                            <div class="col-student">
-                                                                @if (row.studentGroup) {
-                                                                <div class="event-card student-card"
-                                                                    [style.border-left]="'4px solid ' + row.studentGroup.tipoColor"
-                                                                    [class.grupal-card]="row.studentGroup.items[0]?.esNovedadGrupal">
-                                                                    <div class="card-header">
-                                                                        <ion-icon [name]="row.studentGroup.tipoIcono"
-                                                                            [style.color]="row.studentGroup.tipoColor"
-                                                                            class="tipo-icon"></ion-icon>
-                                                                        <span class="tipo-nombre">{{
-                                                                            row.studentGroup.tipoNovedadNombre
-                                                                            }}</span>
-                                                                        @if (row.studentGroup.items[0]?.esNovedadGrupal)
-                                                                        {
-                                                                        <ion-badge color="tertiary"
-                                                                            class="grupal-badge">Grupal</ion-badge>
-                                                                        }
-                                                                        <div class="card-actions">
-                                                                            <ion-icon name="create-outline"
-                                                                                class="action-icon edit-icon"
-                                                                                (click)="editarNovedadDesdeHistorial(row.studentGroup.items[0])"
-                                                                                title="Editar novedad"></ion-icon>
-                                                                            <ion-icon name="add-circle-outline"
-                                                                                class="action-icon add-icon"
-                                                                                (click)="abrirRegistroDesdeHistorial()"
-                                                                                title="Agregar novedad relacionada"></ion-icon>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="estudiante-info">
-                                                                        <ion-icon name="person-outline"
-                                                                            class="estudiante-icon"></ion-icon>
-                                                                        <div class="estudiante-detalles">
-                                                                            <span class="estudiante-nombre">{{
-                                                                                row.studentGroup.estudianteNombre
-                                                                                }}</span>
-                                                                            <span class="estudiante-curso-grupo">{{
-                                                                                row.studentGroup.curso
-                                                                                }} - G{{ row.studentGroup.grupo
-                                                                                }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    @if (row.studentGroup.descripcion) {
-                                                                    <p class="card-msg">{{ row.studentGroup.descripcion
-                                                                        }}</p>
+                                                        <!-- Student Column -->
+                                                        <div class="col-student">
+                                                            @if (row.studentGroup) {
+                                                            <div class="event-card student-card"
+                                                                [style.border-left]="'4px solid ' + row.studentGroup.tipoColor"
+                                                                [class.grupal-card]="row.studentGroup.items[0]?.esNovedadGrupal">
+                                                                <div class="card-header">
+                                                                    <ion-icon [name]="row.studentGroup.tipoIcono"
+                                                                        [style.color]="row.studentGroup.tipoColor"
+                                                                        class="tipo-icon"></ion-icon>
+                                                                    <span class="tipo-nombre">{{
+                                                                        row.studentGroup.tipoNovedadNombre
+                                                                        }}</span>
+                                                                    @if (row.studentGroup.items[0]?.esNovedadGrupal)
+                                                                    {
+                                                                    <ion-badge color="tertiary"
+                                                                        class="grupal-badge">Grupal</ion-badge>
                                                                     }
-                                                                    <!-- Footer VCS: Quién registró y cuándo -->
-                                                                    <div class="card-footer-vcs">
-                                                                        <span class="registrado-por">
-                                                                            <ion-icon
-                                                                                name="person-circle-outline"></ion-icon>
-                                                                            {{ row.studentGroup.items[0]?.registradoPor
-                                                                            || 'instructor' }}
-                                                                        </span>
-                                                                        @if
-                                                                        (row.studentGroup.items[0]?.fechaActualizacion)
-                                                                        {
-                                                                        <span class="fecha-actualizacion">
-                                                                            <ion-icon name="refresh-outline"></ion-icon>
-                                                                            {{
-                                                                            row.studentGroup.items[0].fechaActualizacion
-                                                                            | date:'dd/MM
-                                                                            HH:mm' }}
-                                                                        </span>
-                                                                        }
+                                                                    <div class="card-actions">
+                                                                        <ion-icon name="create-outline"
+                                                                            class="action-icon edit-icon"
+                                                                            (click)="editarNovedadDesdeHistorial(row.studentGroup.items[0])"
+                                                                            title="Editar novedad"></ion-icon>
+                                                                        <ion-icon name="add-circle-outline"
+                                                                            class="action-icon add-icon"
+                                                                            (click)="abrirRegistroDesdeHistorial()"
+                                                                            title="Agregar novedad relacionada"></ion-icon>
                                                                     </div>
-                                                                    <!-- Historial de cambios VCS (expandible) -->
+                                                                </div>
+                                                                <div class="estudiante-info">
+                                                                    <ion-icon name="person-outline"
+                                                                        class="estudiante-icon"></ion-icon>
+                                                                    <div class="estudiante-detalles">
+                                                                        <span class="estudiante-nombre">{{
+                                                                            row.studentGroup.estudianteNombre
+                                                                            }}</span>
+                                                                        <span class="estudiante-curso-grupo">{{
+                                                                            row.studentGroup.curso
+                                                                            }} - G{{ row.studentGroup.grupo
+                                                                            }}</span>
+                                                                    </div>
+                                                                </div>
+                                                                @if (row.studentGroup.descripcion) {
+                                                                <p class="card-msg">{{ row.studentGroup.descripcion
+                                                                    }}</p>
+                                                                }
+                                                                <!-- Footer VCS: Quién registró y cuándo -->
+                                                                <div class="card-footer-vcs">
+                                                                    <span class="registrado-por">
+                                                                        <ion-icon
+                                                                            name="person-circle-outline"></ion-icon>
+                                                                        {{ row.studentGroup.items[0]?.registradoPor
+                                                                        || 'instructor' }}
+                                                                    </span>
                                                                     @if
-                                                                    ((row.studentGroup.items[0]?.historialCambios?.length
-                                                                    ?? 0) > 0) {
-                                                                    <details class="historial-cambios-container">
-                                                                        <summary class="historial-summary">
-                                                                            <ion-icon
-                                                                                name="git-branch-outline"></ion-icon>
-                                                                            {{
-                                                                            row.studentGroup.items[0]?.historialCambios?.length
-                                                                            ?? 0 }}
-                                                                            cambio(s)
-                                                                        </summary>
-                                                                        <div class="historial-lista">
-                                                                            @for (cambio of
-                                                                            (row.studentGroup.items[0]?.historialCambios
-                                                                            ??
-                                                                            []); track cambio.fecha) {
-                                                                            <div class="cambio-item">
-                                                                                <span class="cambio-fecha">{{
-                                                                                    cambio.fecha | date:'dd/MM
-                                                                                    HH:mm' }}</span>
-                                                                                <span class="cambio-campo">{{
-                                                                                    cambio.campoModificado
-                                                                                    }}</span>
-                                                                                <span class="cambio-valores">
-                                                                                    <span class="valor-anterior">{{
-                                                                                        cambio.valorAnterior ||
-                                                                                        '(vacío)' }}</span>
-                                                                                    <ion-icon
-                                                                                        name="arrow-forward-outline"></ion-icon>
-                                                                                    <span class="valor-nuevo">{{
-                                                                                        cambio.valorNuevo ||
-                                                                                        '(vacío)' }}</span>
-                                                                                </span>
-                                                                                <span class="cambio-autor">por {{
-                                                                                    cambio.modificadoPor
-                                                                                    }}</span>
-                                                                            </div>
-                                                                            }
-                                                                        </div>
-                                                                    </details>
+                                                                    (row.studentGroup.items[0]?.fechaActualizacion)
+                                                                    {
+                                                                    <span class="fecha-actualizacion">
+                                                                        <ion-icon name="refresh-outline"></ion-icon>
+                                                                        {{
+                                                                        row.studentGroup.items[0].fechaActualizacion
+                                                                        | date:'dd/MM
+                                                                        HH:mm' }}
+                                                                    </span>
                                                                     }
                                                                 </div>
-                                                                }
-                                                            </div>
-
-                                                            <!-- Axis Column -->
-                                                            <div class="col-axis">
-                                                                <div class="time-info">
-                                                                    <span class="time-label">{{ row.fecha | date:'HH:mm'
-                                                                        }}</span>
-                                                                    <span class="date-label">{{ row.fecha | date:'dd/MM'
-                                                                        }}</span>
-                                                                </div>
-                                                                <div class="axis-node"
-                                                                    [class.coincident-node]="row.coincide"
-                                                                    [style.background]="row.studentGroup?.tipoColor || '#fff'"
-                                                                    [style.border-color]="row.studentGroup?.tipoColor || '#ddd'"
-                                                                    [title]="(row.fecha | date:'dd/MM/yyyy HH:mm:ss')">
-                                                                </div>
-                                                                <div class="axis-line"></div>
-                                                            </div>
-
-                                                            <!-- Group Column -->
-                                                            <div class="col-group">
-                                                                @if (row.groupEvent) {
-                                                                <div class="event-card group-card">
-                                                                    <div class="card-header">
-                                                                        <span class="author">{{ row.groupEvent.tipo
-                                                                            }}</span>
+                                                                <!-- Historial de cambios VCS (expandible) -->
+                                                                @if
+                                                                ((row.studentGroup.items[0]?.historialCambios?.length
+                                                                ?? 0) > 0) {
+                                                                <details class="historial-cambios-container">
+                                                                    <summary class="historial-summary">
+                                                                        <ion-icon name="git-branch-outline"></ion-icon>
+                                                                        {{
+                                                                        row.studentGroup.items[0]?.historialCambios?.length
+                                                                        ?? 0 }}
+                                                                        cambio(s)
+                                                                    </summary>
+                                                                    <div class="historial-lista">
+                                                                        @for (cambio of
+                                                                        (row.studentGroup.items[0]?.historialCambios
+                                                                        ??
+                                                                        []); track cambio.fecha) {
+                                                                        <div class="cambio-item">
+                                                                            <span class="cambio-fecha">{{
+                                                                                cambio.fecha | date:'dd/MM
+                                                                                HH:mm' }}</span>
+                                                                            <span class="cambio-campo">{{
+                                                                                cambio.campoModificado
+                                                                                }}</span>
+                                                                            <span class="cambio-valores">
+                                                                                <span class="valor-anterior">{{
+                                                                                    cambio.valorAnterior ||
+                                                                                    '(vacío)' }}</span>
+                                                                                <ion-icon
+                                                                                    name="arrow-forward-outline"></ion-icon>
+                                                                                <span class="valor-nuevo">{{
+                                                                                    cambio.valorNuevo ||
+                                                                                    '(vacío)' }}</span>
+                                                                            </span>
+                                                                            <span class="cambio-autor">por {{
+                                                                                cambio.modificadoPor
+                                                                                }}</span>
+                                                                        </div>
+                                                                        }
                                                                     </div>
-                                                                    <p class="card-msg">{{ row.groupEvent.descripcion }}
-                                                                    </p>
-                                                                </div>
+                                                                </details>
                                                                 }
                                                             </div>
+                                                            }
                                                         </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </ion-accordion>
-                                            } @empty {
-                                            <div class="empty-state">
-                                                <ion-icon name="document-text-outline"></ion-icon>
-                                                <p>No hay historial disponible.</p>
-                                            </div>
-                                            }
-                                        </ion-accordion-group>
-                                    </ion-content>
-                                </ng-template>
-                            </ion-modal>
 
-                        </div><!-- /page-container -->
+                                                        <!-- Axis Column -->
+                                                        <div class="col-axis">
+                                                            <div class="time-info">
+                                                                <span class="time-label">{{ row.fecha | date:'HH:mm'
+                                                                    }}</span>
+                                                                <span class="date-label">{{ row.fecha | date:'dd/MM'
+                                                                    }}</span>
+                                                            </div>
+                                                            <div class="axis-node"
+                                                                [class.coincident-node]="row.coincide"
+                                                                [style.background]="row.studentGroup?.tipoColor || '#fff'"
+                                                                [style.border-color]="row.studentGroup?.tipoColor || '#ddd'"
+                                                                [title]="(row.fecha | date:'dd/MM/yyyy HH:mm:ss')">
+                                                            </div>
+                                                            <div class="axis-line"></div>
+                                                        </div>
+
+                                                        <!-- Group Column -->
+                                                        <div class="col-group">
+                                                            @if (row.groupEvent) {
+                                                            <div class="event-card group-card">
+                                                                <div class="card-header">
+                                                                    <span class="author">{{ row.groupEvent.tipo
+                                                                        }}</span>
+                                                                </div>
+                                                                <p class="card-msg">{{ row.groupEvent.descripcion }}
+                                                                </p>
+                                                            </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </ion-accordion>
+                                        } @empty {
+                                        <div class="empty-state">
+                                            <ion-icon name="document-text-outline"></ion-icon>
+                                            <p>No hay historial disponible.</p>
+                                        </div>
+                                        }
+                                    </ion-accordion-group>
+                                </ion-content>
+                            </ng-template>
+                        </ion-modal>
+
+                    </div><!-- /page-container -->
                 </ion-content>
