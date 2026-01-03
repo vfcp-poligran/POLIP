@@ -1,0 +1,106 @@
+<ion-header>
+    <ion-toolbar color="light">
+        <ion-title>Registrar Novedad</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="abrirGestionTipos()" color="primary">
+                <ion-icon slot="icon-only" name="options-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar color="light">
+        <ion-searchbar mode="ios" [debounce]="250" [value]="searchTerm()"
+            (ionInput)="searchTerm.set($any($event).target.value)"
+            placeholder="Buscar tipo de novedad..."></ion-searchbar>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" color="light">
+
+    @if (estudiantes.length > 0) {
+    <div class="estudiantes-context-bar">
+        <ion-note>Aplicando a <strong>{{ estudiantes.length }}</strong> estudiante(s)</ion-note>
+        <div class="avatars-preview">
+            @for (est of estudiantes.slice(0, 5); track est.correo) {
+            <div class="mini-avatar" [title]="est.nombre">
+                {{ est.nombre.charAt(0) }}
+            </div>
+            }
+            @if (estudiantes.length > 5) {
+            <div class="mini-avatar more">+{{ estudiantes.length - 5 }}</div>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- SECCIÓN "SE UNIÓ CON" (Condicional) -->
+    @if (showRelatedStudentSelector()) {
+    <div class="related-student-section animate__animated animate__fadeInDown">
+        <ion-label color="primary">¿Con quién se unió?</ion-label>
+
+        @if (relatedStudentSelected()) {
+        <div class="selected-related-chip">
+            <ion-icon name="person"></ion-icon>
+            <span>{{ relatedStudentSelected().nombre }}</span>
+            <ion-icon name="close-circle" (click)="relatedStudentSelected.set(null)"></ion-icon>
+        </div>
+        } @else {
+        <ion-searchbar mode="ios" class="related-searchbar" placeholder="Buscar compañero..."
+            [value]="relatedStudentSearch()" (ionInput)="relatedStudentSearch.set($any($event).target.value)">
+        </ion-searchbar>
+
+        @if (relatedStudentSearch().length > 0) {
+        <ion-list class="related-results-list">
+            @for (student of filteredRelatedStudents(); track student.correo) {
+            <ion-item button (click)="selectRelatedStudent(student)" lines="none">
+                <ion-label>{{ student.nombre }}</ion-label>
+            </ion-item>
+            }
+        </ion-list>
+        }
+        }
+    </div>
+    }
+
+    <div class="types-grid">
+        @for (tipo of filteredTipos(); track tipo.id) {
+        <div class="type-card" [class.selected]="isSelected(tipo.id)" [style.--type-color]="tipo.color"
+            (click)="toggleSelection(tipo)">
+
+            <div class="card-content">
+                <div class="icon-wrapper">
+                    <ion-icon [name]="tipo.icono"></ion-icon>
+                </div>
+                <div class="text-wrapper">
+                    <span class="name">{{ tipo.nombre }}</span>
+                    @if (tipo.descripcion) {
+                    <span class="description">{{ tipo.descripcion }}</span>
+                    }
+                </div>
+            </div>
+
+            <div class="selection-indicator">
+                <ion-icon name="checkmark-circle"></ion-icon>
+            </div>
+        </div>
+        } @empty {
+        <div class="empty-state">
+            <p>No se encontraron tipos de novedad.</p>
+        </div>
+        }
+    </div>
+
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar color="light">
+        <ion-buttons slot="start">
+            <ion-button color="medium" (click)="cancelar()">Cancelar</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button color="primary" (click)="confirmar()" [strong]="true"
+                [disabled]="selectedTipos().size === 0 || (showRelatedStudentSelector() && !relatedStudentSelected())">
+                Aplicar ({{ selectedTipos().size }})
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

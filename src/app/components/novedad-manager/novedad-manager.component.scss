@@ -1,0 +1,182 @@
+.editor-container {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    .editor-title {
+        margin: 0 0 16px 0;
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .form-list {
+        margin-bottom: 20px;
+    }
+
+    .input-item {
+        --padding-start: 0;
+        --inner-padding-end: 0;
+        margin-bottom: 12px;
+        --border-color: #f0f0f0;
+
+        ion-label {
+            font-size: 0.85rem !important;
+            color: #666 !important;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        ion-input,
+        ion-textarea {
+            background: #f9f9f9;
+            border-radius: 8px;
+            --padding-start: 12px;
+            margin-top: 8px;
+        }
+    }
+
+    .color-picker-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #f9f9f9;
+        padding: 8px;
+        border-radius: 8px;
+        margin-top: 8px;
+
+        .native-color-input {
+            border: none;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+
+        .color-hex {
+            font-family: monospace;
+            color: #666;
+        }
+    }
+
+    .icon-picker-section {
+        margin-top: 16px;
+
+        ion-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .icon-option {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            color: #666;
+
+            ion-icon {
+                font-size: 20px;
+            }
+
+            &.selected {
+                background: white;
+                border-color: var(--ion-color-primary);
+                color: var(--ion-color-primary);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+        }
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+    }
+}
+
+.list-container {
+    .actions-header {
+        margin-bottom: 20px;
+
+        .create-btn {
+            --border-radius: 12px;
+            font-weight: 600;
+        }
+    }
+
+    .types-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .type-item {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+
+        .type-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+
+            ion-icon {
+                font-size: 22px;
+            }
+        }
+
+        .type-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            .name {
+                font-weight: 600;
+                color: #333;
+                font-size: 0.95rem;
+            }
+
+            .desc {
+                font-size: 0.8rem;
+                color: #888;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 200px;
+            }
+        }
+
+        .type-actions {
+            display: flex;
+            align-items: center;
+        }
+    }
+}

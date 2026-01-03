@@ -128,6 +128,12 @@
                                         (click)="$event.stopPropagation()"></ion-checkbox>
                                     <div class="member-info">
                                         <span class="name">{{ est.nombre }}</span>
+                                        @if (getStudentInsight(est.correo); as insight) {
+                                        <ion-icon [name]="insight.icono" [style.color]="insight.color"
+                                            [title]="insight.tooltip"
+                                            style="margin-left: 8px; font-size: 1.1em; vertical-align: middle;">
+                                        </ion-icon>
+                                        }
                                     </div>
                                 </div>
                                 }
@@ -786,9 +792,19 @@
                                         <!-- Student Column -->
                                         <div class="col-student">
                                             @if (row.studentGroup) {
-                                            <div class="event-card student-card">
+                                            <div class="event-card student-card"
+                                                [style.border-left]="'4px solid ' + row.studentGroup.tipoColor">
                                                 <div class="card-header">
-                                                    <span class="author">{{ row.studentGroup.tipoNovedadNombre }}</span>
+                                                    <ion-icon [name]="row.studentGroup.tipoIcono"
+                                                        [style.color]="row.studentGroup.tipoColor"
+                                                        class="tipo-icon"></ion-icon>
+                                                    <span class="tipo-nombre">{{ row.studentGroup.tipoNovedadNombre
+                                                        }}</span>
+                                                </div>
+                                                <div class="estudiante-info">
+                                                    <ion-icon name="person-outline" class="estudiante-icon"></ion-icon>
+                                                    <span class="estudiante-nombre">{{ row.studentGroup.estudianteNombre
+                                                        }}</span>
                                                 </div>
                                                 @if (row.studentGroup.descripcion) {
                                                 <p class="card-msg">{{ row.studentGroup.descripcion }}</p>
@@ -800,7 +816,9 @@
                                         <!-- Axis Column -->
                                         <div class="col-axis">
                                             <div class="time-label">{{ row.fecha | date:'HH:mm' }}</div>
-                                            <div class="axis-node" [class.coincident-node]="row.coincide"></div>
+                                            <div class="axis-node" [class.coincident-node]="row.coincide"
+                                                [style.background]="row.studentGroup?.tipoColor || '#fff'"
+                                                [style.border-color]="row.studentGroup?.tipoColor || '#ddd'"></div>
                                             <div class="axis-line"></div>
                                         </div>
 

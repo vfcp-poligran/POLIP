@@ -1,7 +1,7 @@
 > ng.cmd run app:build
 [33m❯[39m Building...
 [32m✔[39m Building...
-Application bundle generation failed. [8.092 seconds] - 2026-01-03T02:41:39.187Z
+Application bundle generation failed. [10.073 seconds] - 2026-01-03T02:43:59.157Z
 
 ▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
 
@@ -10,12 +10,12 @@ Application bundle generation failed. [8.092 seconds] - 2026-01-03T02:41:39.187Z
           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] Expected expression.
+X [ERROR] $color: -claro is not a color.
      ╷
-1201 │                             background: ;
-     │                                         ^
+1189 │                         background: rgba(-claro, 0.15);
+     │                                     ^^^^^^^^^^^^^^^^^^
      ╵
-  src\app\pages\inicio\inicio.page.scss 1201:41  root stylesheet [plugin angular-sass]
+  src\app\pages\inicio\inicio.page.scss 1189:37  root stylesheet [plugin angular-sass]
 
 
 [ERROR] An error occurred while running subprocess ng.

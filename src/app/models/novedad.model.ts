@@ -76,7 +76,7 @@ export interface Novedad {
     localTimestamp?: number;
 }
 
-// ... (SesionRevision eliminada) ...
+// SesionRevision eliminada - ya no se usa
 
 /**
  * Historial con metadatos de novedades
