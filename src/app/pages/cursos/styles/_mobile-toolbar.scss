@@ -3,11 +3,12 @@
 // ============================================
 
 .mobile-toolbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000; // Above all content
+    // Removed explicit position: fixed to let Ionic handle content offset automatically
+    // position: fixed; 
+    // top: 0;
+    // left: 0;
+    // right: 0;
+    z-index: 1000; // Keep z-index just in case
 
     ion-toolbar {
         --background: var(--ion-color-primary);

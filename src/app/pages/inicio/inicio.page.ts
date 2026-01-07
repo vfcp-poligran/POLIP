@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -15,9 +16,6 @@ import {
     IonCol,
     IonTextarea,
     IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
     IonModal,
     IonHeader,
     IonToolbar,
@@ -27,6 +25,7 @@ import {
     IonSpinner,
     ActionSheetController,
     ToastController,
+    ModalController,
     MenuController,
     AlertController,
     ViewWillEnter,
@@ -34,7 +33,10 @@ import {
     IonFabButton,
     IonItem,
     IonAccordion,
-    IonAccordionGroup
+    IonAccordionGroup,
+    IonList,
+    IonAvatar,
+    IonFooter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -79,7 +81,7 @@ import {
     chatboxEllipsesOutline, bulbOutline,
     personAddOutline, hammerOutline, constructOutline,
     analyticsOutline, calendarOutline, pinOutline, lockOpenOutline, peopleCircleOutline, checkboxOutline, squareOutline, playOutline, stopCircleOutline,
-    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline
+    closeCircle, person, people, warning, stopCircle, playCircle, checkmarkDone, checkbox, search, archiveOutline, personCircleOutline, refreshOutline, gitBranchOutline, arrowForwardOutline
 } from 'ionicons/icons';
 
 import { DataService } from '../../services/data.service';
@@ -115,9 +117,35 @@ interface EstudianteSeleccionado {
 
 interface TimelineGroup {
     tipoNovedadNombre: string;
+    tipoIcono: string; // Icono del tipo de novedad
+    tipoColor: string; // Color del tipo de novedad
+    estudianteNombre: string; // Nombre del estudiante afectado
+    estudianteCorreo: string; // Correo del estudiante
+    curso: string; // Código del curso
+    grupo: string; // Número de grupo
     descripcion?: string;
     origen: OrigenMensaje;
     items: Novedad[];
+}
+
+interface ComparisonRow {
+    fecha: Date;
+    studentGroup?: TimelineGroup;
+    groupEvent?: { // Simulación de evento grupal
+        tipo: string;
+        descripcion: string;
+        coincide: boolean; // Si coincide con el estudiante
+    };
+    coincide: boolean;
+}
+
+interface DailyGroup {
+    fechaLabel: string; // "Hoy", "Ayer", "12 Oct"
+    fullDate: Date; // Para ordenar
+    rows: ComparisonRow[];
+    totalCambiosIndividuales: number;
+    totalCambiosGrupales: number;
+    isCoincidentDay: boolean; // Flag para visualización de acordeón
 }
 
 @Component({
@@ -147,13 +175,13 @@ interface TimelineGroup {
         IonButtons,
         IonModal,
         IonCard,
-        IonCardHeader,
-        IonCardTitle,
-        IonCardSubtitle,
         IonSkeletonText,
         IonItem,
         IonAccordion,
-        IonAccordionGroup
+        IonAccordionGroup,
+        IonList,
+        IonAvatar,
+        IonFooter
     ]
 })
 export class InicioPage implements OnInit, ViewWillEnter {
@@ -163,6 +191,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     private toastController = inject(ToastController);
     private menuCtrl = inject(MenuController);
     private alertCtrl = inject(AlertController);
+    private route = inject(ActivatedRoute);
 
     // === SIGNALS ===
     cursosResumen = signal<CursoResumen[]>([]);
@@ -280,8 +309,17 @@ export class InicioPage implements OnInit, ViewWillEnter {
                 item.descripcion !== currentGroup.items[0].descripcion ||
                 item.origen !== currentGroup.items[0].origen) {
 
+
+                const tipoNovedad = this.novedadService.tiposNovedad().find(t => t.id === item.tipoNovedadId);
+
                 currentGroup = {
                     tipoNovedadNombre: item.tipoNovedadNombre || 'Novedad',
+                    tipoIcono: tipoNovedad?.icono || 'alert-circle-outline',
+                    tipoColor: tipoNovedad?.color || '#999',
+                    estudianteNombre: item.estudianteNombre || 'Estudiante',
+                    estudianteCorreo: item.estudianteCorreo,
+                    curso: item.cursoId || '',
+                    grupo: item.grupo || '',
                     descripcion: item.descripcion,
                     origen: item.origen,
                     items: [item]
@@ -352,7 +390,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
     ESTADO_CONFIG = ESTADO_CONFIG;
 
     constructor() {
-        addIcons({timeOutline,archiveOutline,trashOutline,closeOutline,chevronForwardOutline,documentTextOutline,checkmarkCircleOutline,closeCircle,personAddOutline,schoolOutline,pinOutline,lockOpenOutline,checkmarkCircle,peopleOutline,informationCircleOutline,checkboxOutline,squareOutline,search,add,checkmarkOutline,checkmark,addCircleOutline,statsChartOutline,notificationsOutline,listOutline,playCircle,stopCircleOutline,checkmarkDoneOutline,calendarOutline,playOutline,addOutline,personOutline,peopleCircleOutline,hammerOutline,constructOutline,analyticsOutline,homeOutline,cloudOfflineOutline,appsOutline,checkmarkDoneCircleOutline,createOutline,bulbOutline,chevronDownOutline,checkmarkDoneCircle,alertCircleOutline,closeCircleOutline,optionsOutline,searchOutline,warningOutline,chevronUpOutline,gridOutline,chatboxEllipsesOutline,person,people,warning,stopCircle,checkmarkDone,checkbox});
+        addIcons({ schoolOutline, pinOutline, lockOpenOutline, checkmarkCircle, peopleOutline, informationCircleOutline, checkboxOutline, squareOutline, checkmarkCircleOutline, trashOutline, closeOutline, documentTextOutline, closeCircle, personAddOutline, timeOutline, archiveOutline, chevronForwardOutline, search, add, checkmarkOutline, checkmark, addCircleOutline, createOutline, personOutline, personCircleOutline, refreshOutline, gitBranchOutline, arrowForwardOutline, statsChartOutline, notificationsOutline, listOutline, playCircle, stopCircleOutline, checkmarkDoneOutline, calendarOutline, playOutline, addOutline, peopleCircleOutline, hammerOutline, constructOutline, analyticsOutline, homeOutline, cloudOfflineOutline, appsOutline, checkmarkDoneCircleOutline, bulbOutline, chevronDownOutline, checkmarkDoneCircle, alertCircleOutline, closeCircleOutline, optionsOutline, searchOutline, warningOutline, chevronUpOutline, gridOutline, chatboxEllipsesOutline, person, people, warning, stopCircle, checkmarkDone, checkbox });
 
         // Listener de resize
         window.addEventListener('resize', () => {
@@ -366,6 +404,17 @@ export class InicioPage implements OnInit, ViewWillEnter {
 
     ionViewWillEnter(): void {
         this.cargarCursos();
+
+        // Verificar si hay término de búsqueda global
+        const terminoGlobal = this.route.snapshot.queryParams['buscar'];
+        if (terminoGlobal) {
+            this.isSearchModalVisible.set(true);
+            // Pequeño delay para asegurar que el modal se monte
+            setTimeout(() => {
+                this.busquedaTermino.set(terminoGlobal);
+                this.onBusquedaChange({ detail: { value: terminoGlobal } });
+            }, 300);
+        }
     }
 
     // === CARGA DE DATOS ===
@@ -408,6 +457,38 @@ export class InicioPage implements OnInit, ViewWillEnter {
     onAccordionChange(event: any): void {
         const value = event.detail.value;
         this.cursoExpandido.set(value || null);
+    }
+
+    // === UTILIDADES ===
+
+    /**
+     * Obtiene un insight visual (icono/color) si el estudiante tiene una novedad activa relevante
+     */
+    getStudentInsight(correo: string): { icono: string, color: string, tooltip: string } | null {
+        // Buscar en novedades activas
+        const activas = this.novedadService.novedadesActivas()
+            .filter(n => n.estudianteCorreo === correo);
+
+        if (activas.length === 0) return null;
+
+        // Prioridad de visualización
+        const tiposPrioritarios = ['Trabaja Solo', 'Ausente', 'Se unió con', 'Incumplimiento de aportes'];
+
+        // Buscar si tiene alguna prioritaria
+        const relevante = activas.find(n => tiposPrioritarios.includes(n.tipoNovedadNombre || ''));
+
+        if (relevante) {
+            const tipoRef = this.novedadService.tiposNovedad().find(t => t.id === relevante.tipoNovedadId);
+            if (tipoRef) {
+                return {
+                    icono: tipoRef.icono,
+                    color: tipoRef.color,
+                    tooltip: `${relevante.tipoNovedadNombre} (${new Date(relevante.fechaRegistro).toLocaleDateString()})`
+                };
+            }
+        }
+
+        return null;
     }
 
     // === BÚSQUEDA Y SELECCIÓN ===
@@ -617,6 +698,20 @@ export class InicioPage implements OnInit, ViewWillEnter {
         this.busquedaTermino.set('');
         this.resultadosBusqueda.set([]);
         this.sugerenciasCursos.set([]);
+    }
+
+    /**
+     * Toggle del modal de búsqueda (FAB)
+     */
+    toggleSearchModal(): void {
+        this.isSearchModalVisible.update(v => !v);
+    }
+
+    /**
+     * Cierra el modal de búsqueda
+     */
+    cerrarSearchModal(): void {
+        this.isSearchModalVisible.set(false);
     }
 
     /**
@@ -949,25 +1044,21 @@ export class InicioPage implements OnInit, ViewWillEnter {
         this.limpiarFormulario();
     }
 
-    // === MODAL DE BÚSQUEDA (MÓVIL/TABLET) ===
-
-    toggleSearchModal(): void {
-        this.isSearchModalVisible.set(!this.isSearchModalVisible());
-    }
-
-    closeSearchModal(): void {
-        this.isSearchModalVisible.set(false);
-    }
 
     // VCS Modal Methods
     abrirModalVcs(item: any) {
+        // Obtener código corto del curso
+        const codigoCorto = this.getCodigoCorto(item.cursoId || '');
+
         if (item.estudianteNombre) {
-            this.vcsGrupoTitulo.set(`${item.estudianteNombre}`);
-            // El item en la tabla grupal (modo estudiante) suele tener grupo y cursoId
-            this.vcsGrupoSubtitulo.set(`${item.cursoId} - Grupo ${item.grupo}`);
+            // Historial individual: título = nombre del integrante
+            this.vcsGrupoTitulo.set(item.estudianteNombre);
+            // Subtítulo = código corto + grupo
+            this.vcsGrupoSubtitulo.set(`${codigoCorto} - G${item.grupo}`);
         } else if (item.grupo) {
-            this.vcsGrupoTitulo.set(`Grupo ${item.grupo}`);
-            this.vcsGrupoSubtitulo.set(`${item.cursoId}`);
+            // Historial grupal: título = código corto + grupo
+            this.vcsGrupoTitulo.set(`${codigoCorto} - Grupo ${item.grupo}`);
+            this.vcsGrupoSubtitulo.set('');
         }
         this.vcsHistorialSeleccionado.set(item.novedades || []);
         this.isVcsModalVisible.set(true);
@@ -978,6 +1069,8 @@ export class InicioPage implements OnInit, ViewWillEnter {
     }
 
     // Modal breakpoints: undefined on desktop (to center), sheet on mobile
+
+
     vcsModalBreakpoints = computed(() => {
         return this.isDesktop() ? undefined : [0, 0.6, 1];
     });
@@ -1166,7 +1259,137 @@ export class InicioPage implements OnInit, ViewWillEnter {
         this.agregarGrupoCompleto(grupo);
     }
 
-    // === UTILIDADES ===
+    private modalCtrl = inject(ModalController); // Inject missing ModalController
+    private alertController = inject(AlertController); // Inject AlertController for editing novedades
+
+    async abrirSelectorNovedades() {
+        const module: any = await import('../../components/novedad-selector/novedad-selector.component');
+        const modal = await this.modalCtrl.create({
+            component: module.NovedadSelectorComponent,
+            componentProps: {
+                estudiantes: this.estudiantesRegistrados(),
+                allStudents: this.getTodosEstudiantesCursoActual()
+            },
+            breakpoints: [0, 0.8, 1],
+            initialBreakpoint: 0.8
+        });
+
+        await modal.present();
+
+        const { data, role } = await modal.onWillDismiss();
+
+        if (role === 'confirm' && data && data.selectedTypes) {
+            const tipos: TipoNovedad[] = data.selectedTypes;
+            const relatedStudent = data.relatedStudent;
+
+            const novedadesParaRegistrar: Omit<Novedad, 'id' | 'fechaRegistro' | 'syncStatus'>[] = [];
+            const estudiantes = this.estudiantesRegistrados();
+
+            estudiantes.forEach(est => {
+                tipos.forEach(tipo => {
+                    // Ensure all required fields are present to satisfy Omit<Novedad...> type
+                    const nuevaNovedad: any = {
+                        estudianteCorreo: est.correo,
+                        estudianteNombre: est.nombre,
+                        cursoId: est.curso,
+                        grupo: est.grupo,
+                        tipoNovedadId: tipo.id,
+                        tipoNovedadNombre: tipo.nombre,
+                        origen: this.origenSeleccionado(),
+                        estado: 'confirmado',
+                        descripcion: tipo.descripcion,
+                        // fechaRegistro is added by service
+                    };
+
+                    if (tipo.nombre === 'Se unió con' && relatedStudent) {
+                        nuevaNovedad.relatedStudentId = relatedStudent.correo;
+                        nuevaNovedad.relatedStudentName = relatedStudent.nombre;
+                        nuevaNovedad.descripcion = `Se unió con ${relatedStudent.nombre}`;
+                    }
+
+                    novedadesParaRegistrar.push(nuevaNovedad);
+                });
+            });
+
+            this.novedadService.registrarNovedadesBatch(novedadesParaRegistrar);
+
+            this.toastController.create({
+                message: `Se registraron ${novedadesParaRegistrar.length} novedades exitosamente`,
+                duration: 2000,
+                color: 'success',
+                icon: 'checkmark-circle'
+            }).then(t => t.present());
+
+            this.limpiarRegistrados();
+        }
+    }
+
+    /**
+     * Edita una novedad existente desde el historial.
+     * Abre un alert con campos pre-poblados para modificar la novedad.
+     */
+    async editarNovedadDesdeHistorial(novedad: Novedad) {
+        const tiposDisponibles = this.novedadService.tiposNovedad().filter(t => t.activo);
+
+        const alert = await this.alertController.create({
+            header: 'Editar Novedad',
+            subHeader: novedad.estudianteNombre,
+            inputs: [
+                {
+                    name: 'tipoNovedadId',
+                    type: 'radio',
+                    label: tiposDisponibles[0]?.nombre || 'Sin tipo',
+                    value: tiposDisponibles[0]?.id,
+                    checked: novedad.tipoNovedadId === tiposDisponibles[0]?.id
+                },
+                ...tiposDisponibles.slice(1).map(tipo => ({
+                    name: 'tipoNovedadId',
+                    type: 'radio' as const,
+                    label: tipo.nombre,
+                    value: tipo.id,
+                    checked: novedad.tipoNovedadId === tipo.id
+                })),
+                {
+                    name: 'descripcion',
+                    type: 'textarea' as const,
+                    placeholder: 'Descripción (opcional)',
+                    value: novedad.descripcion || ''
+                }
+            ],
+            buttons: [
+                { text: 'Cancelar', role: 'cancel' },
+                {
+                    text: 'Guardar',
+                    handler: async (data: { tipoNovedadId: string; descripcion: string }) => {
+                        if (data.tipoNovedadId) {
+                            const tipoSeleccionado = tiposDisponibles.find(t => t.id === data.tipoNovedadId);
+                            await this.novedadService.actualizarNovedad(novedad.id, {
+                                tipoNovedadId: data.tipoNovedadId,
+                                tipoNovedadNombre: tipoSeleccionado?.nombre || 'Novedad',
+                                descripcion: data.descripcion
+                            });
+                            this.toastController.create({
+                                message: 'Novedad actualizada',
+                                duration: 2000,
+                                color: 'success'
+                            }).then(t => t.present());
+                        }
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    /**
+     * Obtiene todos los estudiantes del curso actualmente seleccionado
+     * (Usado para pasar al selector para "Se unió con")
+     */
+    getTodosEstudiantesCursoActual(): any[] {
+        const codigoCurso = this.cursoSeleccionado();
+        if (!codigoCurso) return [];
+        return this.dataService.cursos()[codigoCurso] || [];
+    }
 
     /**
      * Extract course code with indicator and block
@@ -1373,7 +1596,7 @@ export class InicioPage implements OnInit, ViewWillEnter {
         });
 
         this.estudiantesSeleccionados.set([]);
-        this.closeSearchModal();
+        this.cerrarSearchModal();
 
         this.toastController.create({
             message: `${seleccionados.length} estudiantes agregados al buffer`,
@@ -1563,7 +1786,122 @@ export class InicioPage implements OnInit, ViewWillEnter {
     /**
      * Obtiene los estudiantes de un curso y grupo específico
      */
+
+    // Timeline con agrupación diaria y comparativa
+    vcsDailyComparison = computed<DailyGroup[]>(() => {
+        const history = this.vcsHistorialSeleccionado();
+        if (!history || history.length === 0) return [];
+
+        const studentGroups: TimelineGroup[] = [];
+        let currentGroup: TimelineGroup | null = null;
+        const sortedHistory = [...history].sort((a, b) => new Date(b.fechaRegistro).getTime() - new Date(a.fechaRegistro).getTime());
+
+        sortedHistory.forEach((novedad, index) => {
+            const anterior = index > 0 ? sortedHistory[index - 1] : null;
+
+            if (currentGroup && anterior && this.esNovedadIdentica(novedad, anterior)) {
+                currentGroup.items.push(novedad);
+            } else {
+                if (currentGroup) studentGroups.push(currentGroup);
+
+                const nombreNovedad = novedad.tipoNovedadNombre || 'Novedad';
+
+                // Obtener tipo de novedad completo para icono y color
+                const tipoNovedad = this.novedadService.tiposNovedad().find(t => t.id === novedad.tipoNovedadId);
+
+                currentGroup = {
+                    tipoNovedadNombre: nombreNovedad,
+                    tipoIcono: tipoNovedad?.icono || 'alert-circle-outline',
+                    tipoColor: tipoNovedad?.color || '#999',
+                    estudianteNombre: novedad.estudianteNombre || 'Estudiante',
+                    estudianteCorreo: novedad.estudianteCorreo,
+                    curso: novedad.cursoId || '',
+                    grupo: novedad.grupo || '',
+                    descripcion: novedad.descripcion,
+                    origen: novedad.origen,
+                    items: [novedad]
+                };
+            }
+        });
+        if (currentGroup) studentGroups.push(currentGroup);
+
+
+        const dailyMap = new Map<string, DailyGroup>();
+
+        // 1. Procesar grupos del estudiante
+        studentGroups.forEach(group => {
+            const date = new Date(group.items[0].fechaRegistro);
+
+            // Determinar la etiqueta del día
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            let dateLabel = '';
+            if (date.toDateString() === today.toDateString()) {
+                dateLabel = 'Hoy';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                dateLabel = 'Ayer';
+            } else {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                dateLabel = `${day}/${month}`;
+            }
+
+            const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+            if (!dailyMap.has(dateKey)) {
+                dailyMap.set(dateKey, {
+                    fechaLabel: dateLabel,
+                    fullDate: date,
+                    rows: [],
+                    totalCambiosIndividuales: 0,
+                    totalCambiosGrupales: 0,
+                    isCoincidentDay: false
+                });
+            }
+
+            const dailyGroup = dailyMap.get(dateKey)!;
+
+            // Simulacion mejorada
+            const isPositive = group.tipoNovedadNombre.toLowerCase().includes('bien') || group.tipoNovedadNombre.toLowerCase().includes('buen');
+            // Alta coincidencia si es positivo
+            const isGroupEvent = isPositive ? Math.random() < 0.8 : Math.random() < 0.2;
+
+            let groupEventData: any = undefined;
+
+            if (isGroupEvent) {
+                groupEventData = {
+                    tipo: group.tipoNovedadNombre,
+                    descripcion: 'El grupo mantiene este comportamiento.',
+                    coincide: true
+                };
+                dailyGroup.totalCambiosGrupales++;
+            }
+
+            dailyGroup.totalCambiosIndividuales++;
+            if (groupEventData && groupEventData.coincide) dailyGroup.isCoincidentDay = true;
+
+            dailyGroup.rows.push({
+                fecha: date,
+                studentGroup: group,
+                groupEvent: groupEventData,
+                coincide: !!groupEventData
+            });
+        });
+
+        // Ordenar filas por fecha (más reciente primero)
+        dailyMap.forEach(dailyGroup => {
+            dailyGroup.rows.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
+        });
+
+        return Array.from(dailyMap.values()).sort((a, b) => b.fullDate.getTime() - a.fullDate.getTime());
+    });
+
+
+
     getEstudiantesGrupo(cursoCodigo: string, grupo: string): any[] {
         return this.dataService.cursos()[cursoCodigo]?.filter(e => String(e.grupo) === String(grupo)) || [];
     }
+
 }

@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone, effect, signal, computed } from '@angular/core';
+import { Component, EnvironmentInjector, inject, ViewChild, ElementRef, OnDestroy, ChangeDetectorRef, NgZone, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import {
@@ -137,7 +137,7 @@ export interface NavigationItem {
     ])
   ]
 })
-export class TabsPage implements OnDestroy, AfterViewInit {
+export class TabsPage implements OnDestroy {
   public environmentInjector = inject(EnvironmentInjector);
 
   // Configuración centralizada del menú
@@ -146,7 +146,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
     { path: '/tabs/cursos', icon: 'library', iconOutline: 'library-outline', label: 'Cursos' },
     { path: '/tabs/rubricas', icon: 'speedometer', iconOutline: 'speedometer-outline', label: 'Rúbricas' },
     { path: '/tabs/calificaciones', icon: 'ribbon', iconOutline: 'ribbon-outline', label: 'Calificaciones', shortLabel: 'Notas' },
-    { path: '/tabs/sistema', icon: 'settings', iconOutline: 'settings-outline', label: 'Ajustes', shortLabel: 'Config' }
+    { path: '/tabs/sistema', icon: 'settings', iconOutline: 'settings-outline', label: 'Ajustes', shortLabel: 'Ajustes' }
   ];
 
   public router = inject(Router);
@@ -306,9 +306,7 @@ export class TabsPage implements OnDestroy, AfterViewInit {
 
   }
 
-  ngAfterViewInit(): void {
-    // ViewportService maneja el resize automáticamente
-  }
+
 
   ngOnDestroy(): void {
     // Limpiar todas las subscripciones para prevenir memory leaks

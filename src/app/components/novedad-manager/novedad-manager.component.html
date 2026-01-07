@@ -1,0 +1,98 @@
+<ion-header>
+    <ion-toolbar color="light">
+        <ion-title>Gestionar Tipos</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="cancelar()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" color="light">
+
+    @if (isEditing()) {
+    <!-- FORMULARIO DE EDICIÓN/CREACIÓN -->
+    <div class="editor-container animate__animated animate__fadeIn">
+        <h3 class="editor-title">{{ editingId() ? 'Editar Novedad' : 'Nueva Novedad' }}</h3>
+
+        <ion-list lines="none" class="form-list">
+            <ion-item class="input-item">
+                <ion-label position="stacked">Nombre</ion-label>
+                <ion-input [value]="formNombre()" (ionInput)="formNombre.set($any($event).target.value)"
+                    placeholder="Ej: Llegada tardía"></ion-input>
+            </ion-item>
+
+            <ion-item class="input-item">
+                <ion-label position="stacked">Descripción (Opcional)</ion-label>
+                <ion-textarea [value]="formDescripcion()" (ionInput)="formDescripcion.set($any($event).target.value)"
+                    rows="2"></ion-textarea>
+            </ion-item>
+
+            <ion-item class="input-item">
+                <ion-label position="stacked">Color</ion-label>
+                <div class="color-picker-row">
+                    <input type="color" [value]="formColor()" (input)="formColor.set($any($event).target.value)"
+                        class="native-color-input">
+                    <span class="color-hex">{{ formColor() }}</span>
+                </div>
+            </ion-item>
+
+            <!-- Icon Picker Simplificado -->
+            <div class="icon-picker-section">
+                <ion-label>Icono</ion-label>
+                <div class="icons-grid">
+                    @for (icon of availableIcons; track icon) {
+                    <div class="icon-option" [class.selected]="formIcono() === icon" (click)="formIcono.set(icon)">
+                        <ion-icon [name]="icon"></ion-icon>
+                    </div>
+                    }
+                </div>
+            </div>
+
+        </ion-list>
+
+        <div class="form-actions">
+            <ion-button fill="outline" color="medium" (click)="isEditing.set(false)">Cancelar</ion-button>
+            <ion-button color="primary" (click)="guardar()" [disabled]="!formNombre()">
+                <ion-icon slot="start" name="save-outline"></ion-icon>
+                Guardar
+            </ion-button>
+        </div>
+    </div>
+    } @else {
+    <!-- LISTADO DE TIPOS EXISTENTES -->
+    <div class="list-container animate__animated animate__fadeIn">
+        <div class="actions-header">
+            <ion-button expand="block" (click)="iniciarCreacion()" class="create-btn">
+                <ion-icon slot="start" name="add"></ion-icon>
+                Crear Nuevo Tipo
+            </ion-button>
+        </div>
+
+        <div class="types-list">
+            @for (tipo of novedadService.tiposNovedad(); track tipo.id) {
+            <div class="type-item">
+                <div class="type-icon" [style.background]="tipo.color + '20'"> <!-- 20 = 12% opacity hex aprox -->
+                    <ion-icon [name]="tipo.icono" [style.color]="tipo.color"></ion-icon>
+                </div>
+                <div class="type-info">
+                    <span class="name">{{ tipo.nombre }}</span>
+                    <span class="desc">{{ tipo.descripcion || 'Sin descripción' }}</span>
+                </div>
+                <div class="type-actions">
+                    <ion-button fill="clear" size="small" color="dark" (click)="editarTipo(tipo)">
+                        <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+                    </ion-button>
+                    <!-- TODO: Delete not fully implemented safely yet -->
+                    <!-- <ion-button fill="clear" size="small" color="danger" (click)="eliminarTipo(tipo)">
+                            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                        </ion-button> -->
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+</ion-content>

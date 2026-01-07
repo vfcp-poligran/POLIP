@@ -6,6 +6,7 @@ import {
     OrigenMensaje,
     SyncQueueItem,
     NovedadStats,
+    CambioNovedad,
     TIPOS_NOVEDAD_DEFAULT
 } from '../models/novedad.model';
 import { UnifiedStorageService } from './unified-storage.service';
@@ -183,6 +184,7 @@ export class NovedadService {
             ...data,
             id: novedadId,
             fechaRegistro: new Date(),
+            registradoPor: data.registradoPor || 'instructor', // Añadir registro de quién creó
             syncStatus: this._isOnline() ? 'synced' : 'pending',
             localTimestamp: Date.now()
         };
@@ -212,6 +214,7 @@ export class NovedadService {
                 ...data,
                 id,
                 fechaRegistro: new Date(),
+                registradoPor: data.registradoPor || 'instructor', // Añadir registro de quién creó
                 syncStatus: this._isOnline() ? 'synced' : 'pending',
                 localTimestamp: timestamp
             };
@@ -284,6 +287,46 @@ export class NovedadService {
             this.addToSyncQueue('delete', 'novedad', novedad);
         }
 
+        await this.saveToStorage();
+    }
+
+    /**
+     * Actualiza una novedad existente con cambios parciales.
+     * Registra cada cambio en el historial VCS para trazabilidad.
+     */
+    async actualizarNovedad(novedadId: string, cambios: Partial<Novedad>, modificadoPor: string = 'instructor'): Promise<void> {
+        this._novedades.update(novedades =>
+            novedades.map(n => {
+                if (n.id !== novedadId) return n;
+
+                // Generar historial de cambios
+                const nuevosCambios: any[] = [];
+                const historialExistente = n.historialCambios || [];
+
+                // Detectar qué campos cambiaron
+                Object.keys(cambios).forEach(campo => {
+                    const valorAnterior = (n as any)[campo];
+                    const valorNuevo = (cambios as any)[campo];
+
+                    if (valorAnterior !== valorNuevo && campo !== 'historialCambios' && campo !== 'fechaActualizacion') {
+                        nuevosCambios.push({
+                            fecha: new Date(),
+                            campoModificado: campo,
+                            valorAnterior: String(valorAnterior || ''),
+                            valorNuevo: String(valorNuevo || ''),
+                            modificadoPor
+                        });
+                    }
+                });
+
+                return {
+                    ...n,
+                    ...cambios,
+                    fechaActualizacion: new Date(),
+                    historialCambios: [...historialExistente, ...nuevosCambios]
+                };
+            })
+        );
         await this.saveToStorage();
     }
 

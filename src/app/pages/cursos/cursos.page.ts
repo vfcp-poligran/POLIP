@@ -29,11 +29,11 @@ import {
   ViewWillEnter,
   IonAccordionGroup,
   IonAccordion,
-  IonMenu,
+  // IonMenu REMOVED - not used in template
   // IonMenuButton REMOVED
-  IonHeader,
-  IonToolbar,
-  IonTitle
+  // IonHeader REMOVED
+  // IonToolbar REMOVED
+  // IonTitle REMOVED
   // IonItemDivider REMOVED
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -80,6 +80,7 @@ import { BUTTON_CONFIG } from '@app/constants/button-config';
 import { CapitalizePipe } from '@app/pipes/capitalize.pipe';
 import { PreferencesService } from '@app/services/preferences.service';
 import { MenuController } from '@ionic/angular';
+import { parsearNombreCurso } from '../../utils/curso-parser.util';
 
 
 interface EstudianteConNotas {
@@ -123,11 +124,7 @@ interface EstudianteConNotas {
     IonSegmentButton,
     CapitalizePipe,
     IonAccordionGroup,
-    IonAccordion,
-    IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle]
+    IonAccordion]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
@@ -149,7 +146,8 @@ export class CursosPage implements ViewWillEnter {
   private cursoSeleccionadoClave = signal<string | null>(null);
 
   // Preferencias de visibilidad del tab Características
-  mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
+  // mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
+  mostrarTabCaracteristicas = signal(true); // Siempre visible (Opción suprimida)
   modoEdicion = signal<boolean>(false);
   subtabActivo = signal<string>('detalle');
   grupoActivo = signal<string>('todos');
@@ -1312,56 +1310,94 @@ export class CursosPage implements ViewWillEnter {
         let grupoSolo = '';
 
         if (primeraSeccion) {
-          const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
-          if (fullMatch) {
-            bloqueTexto = fullMatch[1].trim();
-            modalidadTexto = fullMatch[2].trim();
-            nombreCompleto = fullMatch[3].trim();
-            const letraGrupo = fullMatch[4].trim();
-            grupoSolo = fullMatch[5].trim();
-            if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
-              this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
+          try {
+            // Usar la utilidad centralizada para parsing robusto
+            const parsed = parsearNombreCurso(primeraSeccion);
+
+            // Actualizar formulario de cohorte
+            this.cohorteForm.bloque = parsed.bloque;
+            if (['A', 'B', 'C'].includes(parsed.ingreso)) {
+              this.cohorteForm.ingreso = parsed.ingreso as any;
             }
-          } else {
-            bloqueTexto = (primeraSeccion.match(/^([A-Z]+)\s+BLOQUE/i)?.[1] || '').trim();
-            modalidadTexto = (primeraSeccion.match(/BLOQUE-([^\/]+)\//i)?.[1] || 'VIRTUAL').trim();
-            nombreCompleto = (primeraSeccion.match(/\/([^-]+)-/)?.[1] || '').trim();
-            const grupoMatch = primeraSeccion.match(/\[GRUPO\s+([A-Z])(\d+)\]/i);
-            if (grupoMatch) {
-              const letraGrupo = grupoMatch[1].toUpperCase();
-              grupoSolo = grupoMatch[2];
-              if (['A', 'B', 'C', 'E'].includes(letraGrupo)) {
-                this.cohorteForm.ingreso = letraGrupo as any;
+            this.onIngresoChange();
+
+            // Configurar curso detectado
+            cursoDetectado = {
+              nombre: parsed.nombre,
+              siglas: parsed.codigoBase, // Usamos el código base (ej: EPM) como siglas
+              grupo: parsed.grupo,      // Ej: B01
+              codigo: parsed.codigo,    // Ej: EPM-B01
+              bloque: parsed.bloque,
+              ingreso: parsed.ingreso,
+              modalidad: parsed.modalidad,
+              modalidadCodigo: this.getModalityInitials(parsed.modalidad)
+            };
+
+            Logger.log(`[CursosPage] ✅ Parsing exitoso con utilidad:`, cursoDetectado);
+
+          } catch (error) {
+            Logger.warn(`[CursosPage] ⚠️ Error parseando con utilidad, usando fallback:`, error);
+
+            // Fallback: lógica antigua simplificada para casos extremos
+            const fullMatch = primeraSeccion.match(/^([A-Z]+)\s+BLOQUE-([^\/]+)\/([^-]+)-\[GRUPO\s+([A-Z])(\d+)\]/i);
+            if (fullMatch) {
+              bloqueTexto = fullMatch[1].trim();
+              modalidadTexto = fullMatch[2].trim();
+              nombreCompleto = fullMatch[3].trim();
+              const letraGrupo = fullMatch[4].trim();
+              grupoSolo = fullMatch[5].trim();
+              if (['A', 'B', 'C', 'E'].includes(letraGrupo.toUpperCase())) {
+                this.cohorteForm.ingreso = letraGrupo.toUpperCase() as any;
               }
+              enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+              cursoDetectado = {
+                nombre: this.normalizarCaracteresEspeciales(nombreCompleto),
+                siglas: enfasisSiglas,
+                grupo: grupoSolo,
+                codigo: '',
+                bloque: this.cohorteForm.bloque || bloqueTexto,
+                ingreso: this.cohorteForm.ingreso || '',
+                modalidad: modalidadTexto,
+                modalidadCodigo: this.getModalityInitials(modalidadTexto)
+              };
             }
           }
-          enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
         } else {
-          nombreCompleto = fileName.replace('.csv', '');
-          enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+          // Lógica para cuando no hay 'Secciones' (fallback a nombre de archivo)
+          nombreCompleto = fileName.replace('.csv', '').replace('.CSV', '');
+
+          // INTENTO 1: Detectar formato CODIGO_GRUPO (ej: EPM_B01)
+          const matchCodigo = nombreCompleto.match(/^([A-Z0-9]+)[_-]([A-Z]?\d+)$/i);
+
+          if (matchCodigo) {
+            // Es un código directo, usar tal cual
+            nombreCompleto = matchCodigo[1].toUpperCase(); // EPM
+            grupoSolo = matchCodigo[2].toUpperCase(); // B01
+            enfasisSiglas = nombreCompleto; // Las siglas SON el código (EPM)
+
+            // Ajustar ingreso según la letra del grupo si existe
+            const letraGrupo = grupoSolo.match(/[A-Z]/)?.[0];
+            if (letraGrupo && ['A', 'B', 'C', 'E'].includes(letraGrupo)) {
+              this.cohorteForm.ingreso = letraGrupo as any;
+            }
+          } else {
+            // Formato libre: generar acrónimo
+            enfasisSiglas = this.generarAcronimoCurso(nombreCompleto);
+          }
+
+          const nombreCursoNormalizado = this.normalizarCaracteresEspeciales(nombreCompleto);
+
+          cursoDetectado = {
+            nombre: nombreCursoNormalizado,
+            siglas: enfasisSiglas,
+            grupo: grupoSolo,
+            codigo: '',
+            bloque: this.cohorteForm.bloque || 'PRIMERO',
+            ingreso: this.cohorteForm.ingreso || '',
+            modalidad: 'VIRTUAL',
+            modalidadCodigo: 'V'
+          };
         }
-
-        if (bloqueTexto) {
-          const bt = bloqueTexto.toUpperCase();
-          if (bt.includes('PRIMER')) this.cohorteForm.bloque = 'PRIMERO';
-          else if (bt.includes('SEGUNDO')) this.cohorteForm.bloque = 'SEGUNDO';
-          else if (bt.includes('TRANSVERSAL')) this.cohorteForm.bloque = 'TRANSVERSAL';
-        }
-        this.onIngresoChange();
-
-        // Normalizar el nombre del curso para corregir posibles caracteres corruptos
-        const nombreCursoNormalizado = this.normalizarCaracteresEspeciales(nombreCompleto);
-
-        cursoDetectado = {
-          nombre: nombreCursoNormalizado,
-          siglas: enfasisSiglas,
-          grupo: grupoSolo,
-          codigo: '',
-          bloque: this.cohorteForm.bloque || bloqueTexto,
-          ingreso: this.cohorteForm.ingreso || '',
-          modalidad: modalidadTexto,
-          modalidadCodigo: this.getModalityInitials(modalidadTexto)
-        };
       }
 
       this.estudiantesCargados = estudiantes;
@@ -2283,10 +2319,15 @@ export class CursosPage implements ViewWillEnter {
   public generarAcronimoCurso(nombreCompleto: string): string {
     // Normalizar texto: quitar tildes y convertir a mayúsculas
     const normalizarTexto = (texto: string): string => {
-      return texto
+      // 1. Descomponer caracteres (NFD) y eliminar diacríticos
+      let res = texto
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toUpperCase();
+
+      // 2. Eliminar cualquier caracter que no sea letra o número (para limpieza final de palabra)
+      res = res.replace(/[^A-Z0-9]/g, '');
+      return res;
     };
 
     // Lista de preposiciones a excluir
@@ -2295,12 +2336,18 @@ export class CursosPage implements ViewWillEnter {
       'A', 'CON', 'PARA', 'POR', 'Y', 'AL'
     ]);
 
-    const palabras = nombreCompleto.split(/\s+/);
+    // Dividir por espacios, guiones o guiones bajos
+    // Limpiar paréntesis antes de dividir
+    const nombreLimpio = nombreCompleto.replace(/[\(\)\[\]]/g, ' ');
+    const palabras = nombreLimpio.split(/[\s_\-]+/);
     const letrasSignificativas: string[] = [];
 
     palabras.forEach((palabra, index) => {
-      // Normalizar la palabra
+      // Normalizar la palabra (esto eliminará '(' si quedó pegado, aunque el split debería manejarlo)
       const palabraNormalizada = normalizarTexto(palabra);
+
+      // Si quedó vacía tras limpieza, saltar
+      if (!palabraNormalizada) return;
 
       // CASO ESPECIAL: Primera palabra es "ÉNFASIS" → tomar "E"
       if (index === 0 && palabraNormalizada === 'ENFASIS') {
@@ -2320,7 +2367,8 @@ export class CursosPage implements ViewWillEnter {
       }
 
       // Saltar palabras muy cortas (1-2 letras) que no sean números
-      if (palabra.length <= 2) {
+      // Excepción: Si es la PRIMERA palabra del nombre (Ej: "UX Design" -> U)
+      if (palabraNormalizada.length <= 2 && index > 0) {
         return;
       }
 

@@ -11,15 +11,19 @@ $gris-claro: colors.$gris-claro;
 $touch-target: colors.$touch-target;
 
 // Contenedor principal
+// Contenedor principal
 .inicio-content {
-    --padding-bottom: calc(56px + env(safe-area-inset-bottom, 16px));
+    --padding-bottom: calc(60px + env(safe-area-inset-bottom, 20px)); // Más espacio para tabs
+    // Removido safe-area-inset-top ya que el header global lo maneja
+    --padding-top: 10px;
 }
 
 // === HEADER ===
 .page-header {
     background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
     padding: 10px 12px;
-    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    // Removido safe-area-inset-top redundante
+    padding-top: 10px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -89,10 +93,166 @@ $touch-target: colors.$touch-target;
     }
 }
 
+// === TOP NAVIGATION (RIBBON & GROUPS) ===
+.top-navigation-area {
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 2px;
+    padding-bottom: 8px;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+
+    @include respond-to-max('md') {
+        border-radius: 0;
+    }
+}
+
+.courses-ribbon-container {
+    padding: 12px 16px 4px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; // Firefox
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    // Chrome/Safari
+
+    .courses-ribbon-scroll {
+        display: flex;
+        gap: 12px;
+        padding-bottom: 4px; // Space for shadow/focus
+    }
+
+    .course-ribbon-item {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8f9fa;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 50px;
+        padding: 6px 16px 6px 6px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 40px;
+        user-select: none;
+
+        .ribbon-color-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ribbon-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .ribbon-check {
+            font-size: 1.1rem;
+            color: $verde-exito; // Will be overriden by primary if needed, but checkmark is usually success or primary
+            margin-left: -4px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+            width: 0;
+        }
+
+        &:hover {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        &.selected {
+            background: #fff;
+            border-color: var(--item-color);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding-right: 12px;
+
+            .ribbon-label {
+                color: $azul-oscuro;
+            }
+
+            .ribbon-check {
+                opacity: 1;
+                transform: scale(1);
+                width: 18px;
+                margin-left: 4px;
+                color: var(--item-color);
+            }
+        }
+    }
+}
+
+.groups-ribbon-container {
+    padding: 8px 16px;
+    margin-top: 4px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.03);
+
+    .groups-scroll {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        flex-wrap: nowrap;
+    }
+
+    .group-ribbon-item {
+        flex: 0 0 auto;
+        min-width: 48px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        padding: 0 12px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #666;
+        transition: all 0.2s ease;
+
+        &.selected {
+            background: rgba($azul-claro, 0.1); // Fallback
+            background: color-mix(in srgb, var(--group-color) 10%, white);
+            border-color: var(--group-color);
+            color: var(--group-color);
+
+            .group-check {
+                font-size: 1rem;
+                color: var(--group-color);
+            }
+        }
+    }
+
+    .group-hint {
+        margin-top: 6px;
+        text-align: center;
+        color: #999;
+        font-size: 0.75rem;
+    }
+}
+
 // === CONTENIDO PRINCIPAL GRID (3 COLUMNS) ===
 .main-content-grid {
     padding: 12px;
-    max-width: 1400px;
+    max-width: 1600px; // Aumentado para acomodar 3 columnas mejor
     margin: 0 auto;
 
     ion-grid {
@@ -145,7 +305,7 @@ $touch-target: colors.$touch-target;
         padding: 8px;
 
         @media (min-width: 992px) {
-            height: calc(100vh - 140px);
+            height: calc(100vh - 220px); // Ajustado por el ribbon header
             overflow-y: auto;
             padding: 0 16px;
 
@@ -159,41 +319,41 @@ $touch-target: colors.$touch-target;
             }
         }
 
-        // HISTORIAL: Tercera columna (derecha en desktop, última en móvil)
-        &.column-placeholder {
+        // COL 1: Available Members (Formerly Courses Col)
+        &.column-members {
             @media (min-width: 992px) {
-                order: 3; // Tercera columna en desktop
-                border-left: 1px solid rgba(0, 0, 0, 0.05);
-                padding-right: 0;
-            }
-
-            @media (max-width: 991px) {
-                order: 3; // Última en móvil
-                margin-top: 24px;
-            }
-        }
-
-        // NOVEDAD: Segunda columna (centro en todos los viewports)
-        &.column-registration {
-            @media (min-width: 992px) {
-                order: 2; // Segunda columna en desktop
-            }
-
-            @media (max-width: 991px) {
-                order: 2; // Segunda en móvil
-            }
-        }
-
-        // CURSOS: Primera columna (izquierda en desktop, primera en móvil)
-        &.column-courses {
-            @media (min-width: 992px) {
-                order: 1; // Primera columna en desktop
+                order: 1;
                 border-right: 1px solid rgba(0, 0, 0, 0.05);
                 padding-left: 0;
             }
 
             @media (max-width: 991px) {
-                order: 1; // Primera en móvil
+                order: 1;
+            }
+        }
+
+        // COL 2: Novedad Registration (Center)
+        &.column-registration {
+            @media (min-width: 992px) {
+                order: 2;
+                border-right: 1px solid rgba(0, 0, 0, 0.05); // Frontera extra si se quiere
+            }
+
+            @media (max-width: 991px) {
+                order: 2;
+            }
+        }
+
+        // COL 3: Historial (Right)
+        &.column-placeholder {
+            @media (min-width: 992px) {
+                order: 3;
+                padding-right: 0;
+            }
+
+            @media (max-width: 991px) {
+                order: 3;
+                margin-top: 24px;
             }
         }
     }
@@ -1023,17 +1183,25 @@ $touch-target: colors.$touch-target;
     }
 }
 
-// === VCS MODAL & TIMELINE (REFINADO) ===
+// === VCS MODAL & TIMELINE (PARALLEL) ===
 .vcs-modal {
-    --height: 85%;
-    --width: 90%;
-    --max-width: 600px;
+    --height: 90%;
+    --width: 95%;
+    --max-width: 800px; // Wider for parallel view
     --border-radius: 16px;
+
+    @include mobile-only {
+        --max-width: 100%;
+        --height: 95%;
+        --width: 100%;
+        --border-radius: 16px 16px 0 0;
+    }
 
     ion-header {
         ion-toolbar {
-            --background: #{$azul-oscuro};
+            --background: #{-oscuro};
             --color: #fff;
+            --min-height: 50px;
         }
     }
 
@@ -1062,179 +1230,592 @@ $touch-target: colors.$touch-target;
     }
 
     .vcs-modal-split-layout {
-        display: grid;
-        grid-template-columns: 1fr 280px; // Timeline flexible, Panel fijo
-        gap: 0;
-        min-height: 100%;
+        // Now just a container for the accordions
+        display: block;
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 20px;
 
-        @include mobile {
-            grid-template-columns: 1fr;
-        }
+        // Comparación Visual (Timeline Paralelo)
+        .vcs-daily-accordions {
+            background: transparent;
 
-        .vcs-timeline-column {
-            padding-right: 20px;
-            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            ion-accordion {
+                background: transparent;
+                margin-bottom: 8px;
+                /* Spacing between days */
+                border-radius: 8px;
+                overflow: hidden;
+                /* For rounded corners */
 
-            @include mobile {
-                padding-right: 0;
-                border-right: none;
-                border-bottom: 2px dashed rgba(0, 0, 0, 0.05);
-                padding-bottom: 30px;
-            }
-        }
+                &.accordion-expanding,
+                &.accordion-expanded {
+                    background: #fff;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
-        .vcs-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+                    ion-item[slot="header"] {
+                        --background: #fff;
+                        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                    }
+                }
 
-            .timeline-group {
-                display: grid;
-                grid-template-columns: 85px 1fr;
-                align-items: center;
-                gap: 15px;
-                position: relative;
-                min-height: 50px;
+                ion-item[slot="header"] {
+                    --background: rgba(255, 255, 255, 0.6);
+                    --padding-start: 10px;
+                    --padding-end: 10px;
+                    --min-height: 48px;
+                    border-radius: 8px;
+                    /* Rounded if collapsed */
 
-                .timeline-time-stack {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    padding-right: 15px;
-                    position: relative;
-                    border-right: 2px solid rgba($azul-claro, 0.2);
-
-                    .time-item {
+                    ion-label {
+                        margin: 0;
                         display: flex;
-                        align-items: center;
-                        justify-content: flex-end;
-                        gap: 10px;
-                        position: relative;
+                        flex-direction: column;
+                        gap: 2px;
 
-                        .time-labels {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-end;
-                            line-height: 1.1;
-
-                            .time-date {
-                                font-size: 0.7rem;
-                                font-weight: 700;
-                                color: $azul-oscuro;
-                            }
-
-                            .time-hour {
-                                font-size: 0.6rem;
-                                color: #666;
-                            }
+                        .accordion-date-title {
+                            font-size: 0.95rem;
+                            font-weight: 700;
+                            color: -oscuro;
+                            margin: 0;
                         }
 
-                        .time-dot {
-                            width: 8px;
-                            height: 8px;
-                            border-radius: 50%;
-                            background: $azul-claro;
-                            margin-right: -19px;
-                            z-index: 2;
-                            border: 2px solid #fff;
-                            box-shadow: 0 0 0 1px rgba($azul-claro, 0.2);
-                            flex-shrink: 0;
+                        .accordion-date-subtitle {
+                            font-size: 0.75rem;
+                            color: #666;
+                            margin: 0;
+                        }
+                    }
+
+                    ion-badge {
+                        font-size: 0.7rem;
+                        font-weight: 600;
+                        --padding-start: 8px;
+                        --padding-end: 8px;
+                    }
+                }
+
+                .comparison-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 50px 1fr; // Grid 3 columnas: Estudiante - Eje - Grupo
+                    gap: 0;
+                    width: 100%;
+                    padding: 8px 0;
+                    position: relative;
+                }
+
+                .comparison-row {
+                    display: contents; // Para que los hijos sean parte del grid principal
+
+                    &.coincident {
+
+                        // Resaltar filas coincidentes
+                        .event-card {
+                            box-shadow: 0 0 0 2px rgba(var(--ion-color-warning-rgb), 0.3);
                         }
                     }
                 }
 
-                .timeline-content {
-                    padding: 12px 15px;
-                    background: rgba(0, 0, 0, 0.02);
-                    border-radius: 8px;
+                .event-card {
+                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 255, 0.95) 100%);
+                    border-radius: 10px;
+                    padding: 12px 14px;
+                    box-shadow:
+                        0 4px 12px rgba(0, 0, 0, 0.15),
+                        0 2px 4px rgba(0, 0, 0, 0.08);
+                    max-width: 220px;
+                    border-left: 5px solid transparent; // Will be overridden by inline style
+                    position: relative;
+                    transition: all 0.2s ease;
+
+                    // Efecto de brillo sutil en hover
+                    &:hover {
+                        transform: translateY(-2px);
+                        box-shadow:
+                            0 6px 16px rgba(0, 0, 0, 0.18),
+                            0 3px 6px rgba(0, 0, 0, 0.1);
+                    }
+
+                    // Línea decorativa superior con el color del tipo
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 10px;
+                        right: 10px;
+                        height: 3px;
+                        background: inherit;
+                        border-radius: 0 0 4px 4px;
+                    }
+
+                    .card-header {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        margin-bottom: 10px;
+                        padding-bottom: 8px;
+                        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+                        .tipo-icon {
+                            font-size: 1.4rem;
+                            flex-shrink: 0;
+                            padding: 4px;
+                            border-radius: 6px;
+                            background: rgba(var(--ion-color-primary-rgb), 0.1);
+                        }
+
+                        .tipo-nombre {
+                            font-weight: 700;
+                            font-size: 0.9rem;
+                            color: #222;
+                            flex: 1;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+
+                        .card-actions {
+                            display: flex;
+                            gap: 6px;
+                            margin-left: auto;
+
+                            .action-icon {
+                                font-size: 1.1rem;
+                                color: #888;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                padding: 5px;
+                                border-radius: 6px;
+                                background: rgba(0, 0, 0, 0.04);
+
+                                &:hover {
+                                    color: var(--ion-color-primary);
+                                    background: rgba(var(--ion-color-primary-rgb), 0.15);
+                                }
+
+                                &.edit-icon:hover {
+                                    color: var(--ion-color-warning);
+                                    background: rgba(var(--ion-color-warning-rgb), 0.15);
+                                }
+
+                                &.add-icon:hover {
+                                    color: var(--ion-color-success);
+                                    background: rgba(var(--ion-color-success-rgb), 0.15);
+                                }
+                            }
+                        }
+                    }
+
+                    .estudiante-info {
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 8px;
+                        margin-bottom: 8px;
+                        padding: 8px 10px;
+                        background: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.06) 100%);
+                        border-radius: 6px;
+                        border: 1px solid rgba(0, 0, 0, 0.04);
+
+                        .estudiante-icon {
+                            font-size: 1.1rem;
+                            color: #555;
+                            margin-top: 2px;
+                            flex-shrink: 0;
+                        }
+
+                        .estudiante-detalles {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 2px;
+                            flex: 1;
+
+                            .estudiante-nombre {
+                                font-size: 0.9rem;
+                                color: #222;
+                                font-weight: 600;
+                                line-height: 1.2;
+                            }
+
+                            .estudiante-curso-grupo {
+                                font-size: 0.75rem;
+                                color: #666;
+                                font-weight: 600;
+                                font-family: 'Courier New', monospace;
+                                background: rgba(0, 0, 0, 0.06);
+                                padding: 2px 6px;
+                                border-radius: 4px;
+                                display: inline-block;
+                                width: fit-content;
+                            }
+                        }
+                    }
+
+                    .card-msg {
+                        font-size: 0.8rem;
+                        color: #444;
+                        margin: 0;
+                        line-height: 1.4;
+                        padding: 6px 8px;
+                        background: rgba(0, 0, 0, 0.02);
+                        border-radius: 4px;
+                        font-style: italic;
+                    }
+
+                    // Badge para novedades grupales
+                    .grupal-badge {
+                        font-size: 0.6rem;
+                        --padding-start: 6px;
+                        --padding-end: 6px;
+                        margin-left: 4px;
+                    }
+
+                    // Estilo adicional para tarjetas grupales
+                    &.grupal-card {
+                        border-top: 3px solid var(--ion-color-tertiary);
+                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(230, 240, 255, 0.95) 100%);
+                    }
+
+                    // Footer VCS con información de auditoría
+                    .card-footer-vcs {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-top: 8px;
+                        padding-top: 8px;
+                        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+                        font-size: 0.65rem;
+                        color: #888;
+
+                        .registrado-por,
+                        .fecha-actualizacion {
+                            display: flex;
+                            align-items: center;
+                            gap: 3px;
+
+                            ion-icon {
+                                font-size: 0.8rem;
+                            }
+                        }
+
+                        .fecha-actualizacion {
+                            color: var(--ion-color-warning);
+                        }
+                    }
+
+                    // Historial de cambios VCS expandible
+                    .historial-cambios-container {
+                        margin-top: 8px;
+                        padding: 6px 8px;
+                        background: rgba(var(--ion-color-primary-rgb), 0.05);
+                        border-radius: 6px;
+                        border: 1px solid rgba(var(--ion-color-primary-rgb), 0.1);
+
+                        .historial-summary {
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            font-size: 0.7rem;
+                            color: var(--ion-color-primary);
+                            cursor: pointer;
+                            font-weight: 600;
+
+                            ion-icon {
+                                font-size: 0.9rem;
+                            }
+
+                            &::-webkit-details-marker {
+                                display: none;
+                            }
+                        }
+
+                        .historial-lista {
+                            margin-top: 8px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 6px;
+
+                            .cambio-item {
+                                display: grid;
+                                grid-template-columns: auto 1fr auto;
+                                gap: 4px 8px;
+                                padding: 6px 8px;
+                                background: rgba(0, 0, 0, 0.02);
+                                border-radius: 4px;
+                                font-size: 0.65rem;
+                                border-left: 3px solid var(--ion-color-primary);
+
+                                .cambio-fecha {
+                                    color: #666;
+                                    grid-row: 1;
+                                    font-family: 'Courier New', monospace;
+                                }
+
+                                .cambio-campo {
+                                    color: var(--ion-color-primary);
+                                    font-weight: 600;
+                                    grid-row: 1;
+                                }
+
+                                .cambio-valores {
+                                    grid-column: 1 / -1;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 4px;
+                                    flex-wrap: wrap;
+
+                                    .valor-anterior {
+                                        background: rgba(var(--ion-color-danger-rgb), 0.1);
+                                        color: var(--ion-color-danger);
+                                        padding: 2px 6px;
+                                        border-radius: 3px;
+                                        text-decoration: line-through;
+                                    }
+
+                                    ion-icon {
+                                        font-size: 0.8rem;
+                                        color: #888;
+                                    }
+
+                                    .valor-nuevo {
+                                        background: rgba(var(--ion-color-success-rgb), 0.1);
+                                        color: var(--ion-color-success);
+                                        padding: 2px 6px;
+                                        border-radius: 3px;
+                                    }
+                                }
+
+                                .cambio-autor {
+                                    color: #888;
+                                    font-style: italic;
+                                    grid-row: 1;
+                                    text-align: right;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .col-student,
+                .col-group {
+                    padding: 4px 8px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    min-height: 40px;
+                    min-height: 50px;
+                }
 
-                    .timeline-header {
+                .col-student {
+                    align-items: flex-end;
+                    text-align: right;
+                }
+
+                .col-group {
+                    align-items: flex-start;
+                    text-align: left;
+                }
+
+                .col-axis {
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    /* Center axis node vertically */
+                    height: 100%;
+
+                    .axis-line {
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        left: 50%;
+                        width: 2px;
+                        background: rgba(0, 0, 0, 0.1);
+                        transform: translateX(-50%);
+                        z-index: 1;
+                    }
+
+                    .axis-node {
+                        width: 14px;
+                        height: 14px;
+                        border-radius: 50%;
+                        background: #fff;
+                        border: 3px solid #ddd;
+                        z-index: 2;
                         margin-bottom: 2px;
+                        position: relative;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+                        transition: all 0.2s ease;
 
-                        .author {
-                            font-size: 0.85rem;
-                            font-weight: 800;
-                            color: $azul-oscuro;
-                            text-transform: uppercase;
+                        &.coincident-node {
+                            width: 18px;
+                            height: 18px;
+                            box-shadow: 0 0 0 4px rgba(var(--ion-color-danger-rgb), 0.2),
+                                0 2px 6px rgba(0, 0, 0, 0.2);
                         }
                     }
 
-                    .timeline-msg {
+                    .time-info {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 2px;
+                        background: #fff;
+                        padding: 4px 6px;
+                        z-index: 2;
+                        border-radius: 6px;
+                        margin-bottom: 4px;
+                        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+                        .time-label {
+                            font-size: 0.75rem;
+                            color: #333;
+                            font-weight: 700;
+                            line-height: 1;
+                        }
+
+                        .date-label {
+                            font-size: 0.6rem;
+                            color: #888;
+                            font-weight: 500;
+                            line-height: 1;
+                        }
+                    }
+                }
+
+                // Tarjetas de Evento Compactas
+                .event-card {
+                    background: #fff;
+                    border: 1px solid rgba(0, 0, 0, 0.08);
+                    border-radius: 8px;
+                    padding: 6px 10px;
+                    width: 100%;
+                    max-width: 280px;
+                    transition: transform 0.2s;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+                    &:active {
+                        transform: scale(0.98);
+                    }
+
+                    &.student-card {
+                        border-left: 3px solid -claro;
+                    }
+
+                    &.group-card {
+                        border-right: 3px solid orange; // Color distintivo para grupo
+                        background: rgba(255, 165, 0, 0.03); // Slight orange tint
+                    }
+
+                    .card-header {
+                        margin-bottom: 2px;
+
+                        .author {
+                            font-size: 0.75rem;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                            color: -oscuro;
+                        }
+                    }
+
+                    .card-msg {
                         margin: 0;
-                        font-size: 0.85rem;
-                        color: #444;
-                        line-height: 1.4;
-                        font-style: italic;
+                        font-size: 0.8rem;
+                        color: #555;
+                        line-height: 1.35;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        line-clamp: 3; // Propiedad estándar para compatibilidad
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
                     }
                 }
             }
         }
 
-        .vcs-comparative-panel {
-            padding-left: 20px;
-            background: rgba($azul-oscuro, 0.02);
+        // Estilos Movil Específicos para Grid
+        @include mobile-only {
+            .vcs-daily-accordions {
+                ion-accordion .comparison-grid {
+                    grid-template-columns: 1fr 40px 1fr; // Eje más estrecho en móvil
+                    gap: 0;
+                }
+
+                ion-accordion .col-student,
+                ion-accordion .col-group {
+                    padding: 2px 4px; // tighter padding
+                }
+
+                ion-accordion .event-card {
+                    padding: 6px 8px;
+
+                    .card-header .author {
+                        font-size: 0.7rem;
+                    }
+
+                    .card-msg {
+                        font-size: 0.75rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// === GLOBAL EMPTY STATE ===
+.global-empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; // Occupy most of the screen vertically
+    text-align: center;
+    padding: 24px;
+    animation: fadeIn 0.5s ease-out;
+
+    .empty-state-content {
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+
+        .icon-bubble {
+            width: 120px;
+            height: 120px;
+            background: rgba($azul-claro, 0.1);
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
 
-            @include mobile {
-                padding: 30px 0 0 0;
-                background: transparent;
+            ion-icon {
+                font-size: 64px;
+                color: $azul-claro;
             }
+        }
 
-            .comparative-header {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-top: 10px;
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $azul-oscuro;
+            margin: 0;
+        }
 
-                ion-icon {
-                    font-size: 1.2rem;
-                    color: $azul-claro;
-                }
+        p {
+            font-size: 1rem;
+            color: $gris-claro;
+            margin: 0;
+            line-height: 1.5;
 
-                h4 {
-                    margin: 0;
-                    font-size: 0.9rem;
-                    font-weight: 700;
-                    color: $azul-oscuro;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
+            &.subtext {
+                font-size: 0.9rem;
+                color: color.adjust($gris-claro, $lightness: -10%);
             }
+        }
 
-            .comparative-placeholder {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 40px 20px;
-                opacity: 0.6;
-
-                .empty-state-comparative {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 15px;
-                    text-align: center;
-
-                    ion-icon {
-                        font-size: 2.5rem;
-                        color: rgba($azul-oscuro, 0.3);
-                    }
-
-                    p {
-                        margin: 0;
-                        font-size: 0.85rem;
-                        color: #666;
-                        font-style: italic;
-                    }
-                }
-            }
+        ion-button {
+            margin-top: 16px;
+            --padding-start: 32px;
+            --padding-end: 32px;
         }
     }
 }

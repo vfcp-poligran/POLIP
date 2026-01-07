@@ -67,9 +67,27 @@ export interface Novedad {
     grupoNovedadId?: string;      // ID compartido si se registró como grupo completo
     esNovedadGrupal?: boolean;    // Marca si afecta a todo el grupo
 
+    // Novedad Relacional ("Se unió con")
+    relatedStudentId?: string;    // ID/Correo del estudiante con quien se unió
+    relatedStudentName?: string;  // Cache del nombre
+
     // Sincronización offline
     syncStatus?: 'pending' | 'synced' | 'conflict';
     localTimestamp?: number;
+
+    // Historial de cambios VCS
+    historialCambios?: CambioNovedad[];
+}
+
+/**
+ * Registro de un cambio individual en una novedad (VCS)
+ */
+export interface CambioNovedad {
+    fecha: Date;
+    campoModificado: string;       // Ej: "tipoNovedadId", "descripcion"
+    valorAnterior: string;         // Valor antes del cambio
+    valorNuevo: string;            // Valor después del cambio
+    modificadoPor: string;         // Quién hizo el cambio
 }
 
 // SesionRevision eliminada - ya no se usa
@@ -119,6 +137,15 @@ export const TIPOS_NOVEDAD_DEFAULT: Omit<TipoNovedad, 'id' | 'fechaCreacion'>[] 
         descripcion: 'El estudiante no ha entregado lo acordado con el grupo',
         icono: 'warning-outline',
         color: '#9c27b0',
+        esRecurrente: true,
+        frecuenciaUso: 0,
+        activo: true
+    },
+    {
+        nombre: 'Se unió con',
+        descripcion: 'El estudiante se ha unido a otro compañero/grupo',
+        icono: 'git-merge-outline',
+        color: '#2196f3',
         esRecurrente: true,
         frecuenciaUso: 0,
         activo: true

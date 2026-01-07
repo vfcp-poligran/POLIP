@@ -59,6 +59,7 @@ yarn-error.log
 .sass-cache/
 /.nx
 /.nx/cache
+/.jest-cache
 /connect.lock
 /coverage
 /libpeerconnection.log

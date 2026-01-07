@@ -122,6 +122,8 @@ export interface CursoParseado {
      * Formato: codigoBase-ingreso+numero (ej: "EPM-B01")
      */
     codigo: string;
+    /** Código del grupo (ej: "B01") */
+    grupo: string;
 }
 
 /**
@@ -411,7 +413,8 @@ export function parsearNombreCurso(seccionesText: string): CursoParseado {
         anio,
         codigoBloqueModalidad,
         ingreso,
-        codigo
+        codigo,
+        grupo: codigoGrupo
     };
 }
 

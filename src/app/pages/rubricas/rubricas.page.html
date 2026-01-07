@@ -1,6 +1,7 @@
 <ion-content [fullscreen]="false">
   <!-- FAB flotante para crear rúbrica (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-crear-rubrica fab-crear-premium">
+  <ion-fab slot="fixed" vertical="top" horizontal="end"
+    style="top: calc(8px + env(safe-area-inset-top)); z-index: 1100;" class="fab-crear-rubrica fab-crear-premium">
     @if (!modoEdicion && !modoCreacion && !modoSeleccionCrear) {
     <ion-fab-button color="success" (click)="mostrarOpcionesCrearMobile()" aria-label="Crear nueva rúbrica">
       <ion-icon name="add"></ion-icon>
@@ -9,12 +10,13 @@
   </ion-fab>
 
   <!-- FAB list para acciones de guardar/cancelar (móvil/tablet) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="fab-actions-rubrica">
+  <ion-fab slot="fixed" vertical="top" horizontal="end"
+    style="top: calc(8px + env(safe-area-inset-top)); z-index: 1110;" class="fab-actions-rubrica">
     @if (modoEdicion || modoCreacion || modoSeleccionCrear) {
     <ion-fab-button color="primary" aria-label="Acciones de rúbrica">
       <ion-icon name="ellipsis-vertical"></ion-icon>
     </ion-fab-button>
-    <ion-fab-list side="top">
+    <ion-fab-list side="bottom">
       <ion-fab-button color="success" (click)="guardarRubricaEditada()" aria-label="Guardar">
         <ion-icon name="save"></ion-icon>
       </ion-fab-button>

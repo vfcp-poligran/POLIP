@@ -101,7 +101,10 @@ div.main-content-area {
    IMPORTANTE: position: relative para stacking natural en flex
    ======================================== */
 .mobile-header {
-  position: relative; // NO fixed - se apila naturalmente
+  // FORCE DISPLAY: Clean layout enforcement - DEBE IR PRIMERO
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
   flex-shrink: 0;
   z-index: 100;
   width: 100%;
@@ -115,23 +118,27 @@ div.main-content-area {
   ion-toolbar {
     --background: var(--azul-oscuro, #0f385a);
     --color: white;
-    --min-height: 48px;
+    --min-height: 44px; // Optimized for mobile
     --padding-start: 8px;
     --padding-end: 8px;
     --padding-top: env(safe-area-inset-top); // Manejar notch
+    padding-top: env(safe-area-inset-top); // Ensure native padding applies
   }
 
   .mobile-app-title {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
+    justify-content: flex-start; // Alineación izquierda estándar
+    gap: 12px;
     font-size: 0.95rem;
     font-weight: 600;
+    padding-inline-start: 8px;
 
     .header-logo-avatar {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
+      --border-radius: 50%; // Circular
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .app-title-stack {
@@ -139,26 +146,22 @@ div.main-content-area {
       flex-direction: column;
       align-items: flex-start;
       line-height: 1;
-      gap: 1px;
+      gap: 2px;
+      color: #ffffff;
 
       .title-main {
-        font-size: 0.95rem;
-        font-weight: 700;
+        font-size: 1rem;
+        font-weight: 800; // Más peso como en la imagen
         letter-spacing: 0.5px;
-        line-height: 1.1;
+        text-transform: uppercase;
       }
 
       .title-sub {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
         font-weight: 500;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.5px;
         opacity: 0.9;
-        line-height: 1.1;
       }
-    }
-
-    span {
-      letter-spacing: 0.3px;
     }
   }
 
