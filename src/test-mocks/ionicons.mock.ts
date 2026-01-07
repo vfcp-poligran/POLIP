@@ -1,0 +1,47 @@
+// Mock for ionicons/icons
+export const addOutline = 'add-outline';
+export const arrowBackOutline = 'arrow-back-outline';
+export const arrowForwardOutline = 'arrow-forward-outline';
+export const bookOutline = 'book-outline';
+export const calendarOutline = 'calendar-outline';
+export const checkmarkOutline = 'checkmark-outline';
+export const checkmarkCircleOutline = 'checkmark-circle-outline';
+export const chevronBackOutline = 'chevron-back-outline';
+export const chevronDownOutline = 'chevron-down-outline';
+export const chevronForwardOutline = 'chevron-forward-outline';
+export const chevronUpOutline = 'chevron-up-outline';
+export const closeOutline = 'close-outline';
+export const closeCircleOutline = 'close-circle-outline';
+export const cloudUploadOutline = 'cloud-upload-outline';
+export const cogOutline = 'cog-outline';
+export const createOutline = 'create-outline';
+export const documentOutline = 'document-outline';
+export const downloadOutline = 'download-outline';
+export const ellipsisVerticalOutline = 'ellipsis-vertical-outline';
+export const eyeOutline = 'eye-outline';
+export const eyeOffOutline = 'eye-off-outline';
+export const filterOutline = 'filter-outline';
+export const homeOutline = 'home-outline';
+export const informationCircleOutline = 'information-circle-outline';
+export const listOutline = 'list-outline';
+export const logoGithub = 'logo-github';
+export const menuOutline = 'menu-outline';
+export const moonOutline = 'moon-outline';
+export const pencilOutline = 'pencil-outline';
+export const personOutline = 'person-outline';
+export const peopleOutline = 'people-outline';
+export const refreshOutline = 'refresh-outline';
+export const removeOutline = 'remove-outline';
+export const saveOutline = 'save-outline';
+export const searchOutline = 'search-outline';
+export const settingsOutline = 'settings-outline';
+export const shareOutline = 'share-outline';
+export const starOutline = 'star-outline';
+export const sunnyOutline = 'sunny-outline';
+export const syncOutline = 'sync-outline';
+export const timeOutline = 'time-outline';
+export const trashOutline = 'trash-outline';
+export const warningOutline = 'warning-outline';
+
+// Default export for any icon not listed
+export default {};

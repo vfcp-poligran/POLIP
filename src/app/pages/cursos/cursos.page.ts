@@ -29,7 +29,7 @@ import {
   ViewWillEnter,
   IonAccordionGroup,
   IonAccordion,
-  IonMenu,
+  // IonMenu REMOVED - not used in template
   // IonMenuButton REMOVED
   // IonHeader REMOVED
   // IonToolbar REMOVED
@@ -124,8 +124,7 @@ interface EstudianteConNotas {
     IonSegmentButton,
     CapitalizePipe,
     IonAccordionGroup,
-    IonAccordion,
-    IonMenu]
+    IonAccordion]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);

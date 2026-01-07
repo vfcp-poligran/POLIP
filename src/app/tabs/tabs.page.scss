@@ -101,7 +101,10 @@ div.main-content-area {
    IMPORTANTE: position: relative para stacking natural en flex
    ======================================== */
 .mobile-header {
-  position: relative; // NO fixed - se apila naturalmente
+  // FORCE DISPLAY: Clean layout enforcement - DEBE IR PRIMERO
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
   flex-shrink: 0;
   z-index: 100;
   width: 100%;
@@ -111,11 +114,6 @@ div.main-content-area {
   @include bp.desktop-only {
     display: none;
   }
-
-  // FORCE DISPLAY: Clean layout enforcement
-  position: relative;
-  display: block;
-  flex: 0 0 auto;
 
   ion-toolbar {
     --background: var(--azul-oscuro, #0f385a);

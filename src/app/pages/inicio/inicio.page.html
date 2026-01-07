@@ -3,9 +3,8 @@
 <ion-content id="main-content" class="inicio-content" [fullscreen]="true">
     <div class="page-container">
 
-        <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
+        <!-- TOP: COURSE RIBBON & GROUPS - Solo se muestra si hay cursos -->
         @if (cursosResumen().length > 0 || isLoading()) {
-        <!-- TOP: COURSE RIBBON & GROUPS -->
         <div class="top-navigation-area">
             <!-- 1. CINTA DE CURSOS (Horizontal Swipe) -->
             <div class="courses-ribbon-container">
@@ -54,8 +53,9 @@
             </div>
             }
         </div>
+        }
 
-        <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS -->
+        <!-- CONTENIDO PRINCIPAL: GRID DE 3 COLUMNAS - Siempre visible -->
         <div class="main-content-grid">
             <ion-grid>
                 <ion-row class="main-layout-row">
@@ -102,13 +102,21 @@
                             <ion-icon name="people-outline"></ion-icon>
                             <p>Selecciona un grupo para ver estudiantes</p>
                         </div>
-                        } @else {
+                        } @else if (cursosResumen().length > 0) {
                         <div class="empty-state-side">
                             <div class="illustration-container">
                                 <ion-icon name="school-outline" color="primary"></ion-icon>
                             </div>
                             <h3>Bienvenido</h3>
                             <p>Selecciona un curso de la cinta superior para comenzar.</p>
+                        </div>
+                        } @else {
+                        <div class="empty-state-side">
+                            <div class="illustration-container">
+                                <ion-icon name="school-outline" color="medium"></ion-icon>
+                            </div>
+                            <h3>Sin cursos</h3>
+                            <p>Ve a la sección <strong>Cursos</strong> para crear tu primer grupo.</p>
                         </div>
                         }
                     </ion-col>
@@ -500,23 +508,6 @@
                 style="position: absolute; top: -5px; right: -5px; border-radius: 50%;">{{
                 estudiantesSeleccionados().length }}</ion-badge>
         </ion-fab>
-        } @else {
-        <!-- EMPTY STATE GLOBAL -->
-        <div class="global-empty-state">
-            <div class="empty-state-content">
-                <div class="icon-bubble">
-                    <ion-icon name="school-outline"></ion-icon>
-                </div>
-                <h2>¡Bienvenido a Poli Project!</h2>
-                <p>No tienes cursos registrados actualmente.</p>
-                <p class="subtext">Ve a la sección <strong>Cursos</strong> para crear tu primer grupo.</p>
-                <ion-button routerLink="/tabs/cursos" shape="round">
-                    Ir a Cursos
-                    <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
-                </ion-button>
-            </div>
-        </div>
-        }
 
         <!-- MODAL DE REGISTRO DE NOVEDAD --> <ion-modal [isOpen]="isModalRegistroVisible()"
             (didDismiss)="cerrarModalRegistro()" class="registration-modal" @modalAnimation>

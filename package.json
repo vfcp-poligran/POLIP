@@ -89,5 +89,8 @@
     "jest-preset-angular": "^14.6.2",
     "nx": "22.3.3",
     "typescript": "~5.8.0"
+  },
+  "overrides": {
+    "@modelcontextprotocol/sdk": "^1.25.2"
   }
 }
