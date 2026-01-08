@@ -24,7 +24,6 @@
 // HEADER NORMALIZADO (Overrides shared/styles/page-header if needed)
 .page-title-header {
   @include shared-header.header-base;
-  // Background heredado del mixin (Azul Oscuro)
 }
 
 // ============================================

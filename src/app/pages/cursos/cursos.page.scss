@@ -31,6 +31,17 @@
 // MOBILE COURSE RIBBON (Horizontal)
 // ============================================
 
+// FORCE HEADER STYLES
+.page-title-header {
+  @include shared-header.header-base;
+  background: #0F385A !important; // Force Dark Blue
+  color: white !important; // Force White Text
+
+  h2 {
+    color: white !important;
+  }
+}
+
 .courses-ribbon-container {
   width: 100%;
   background: var(--ion-color-light); // Contrast background

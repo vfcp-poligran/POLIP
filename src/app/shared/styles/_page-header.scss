@@ -31,9 +31,8 @@
     margin-bottom: var(--page-header-margin-bottom, 8px);
 
     // Visual styling
-    background: linear-gradient(135deg,
-            var(--ion-color-primary) 0%,
-            var(--ion-color-primary-shade) 100%);
+    // Visual styling
+    background: var(--azul-oscuro, #0F385A); // Explicitly Dark Blue as requested
     border-radius: var(--page-header-border-radius, 6px);
     box-shadow: var(--page-header-box-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
 

@@ -19,6 +19,7 @@
 }
 
 // Mixin for consistent page headers
+// Delegating to standard properties, ensuring --azul-oscuro is used where applied
 @mixin header-base {
     display: flex;
     align-items: center;
