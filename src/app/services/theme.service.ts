@@ -35,7 +35,7 @@ export class ThemeService {
      * Current theme setting
      * Reactive signal that updates when theme changes
      */
-    currentTheme = signal<Theme>('auto');
+    currentTheme = signal<Theme>('light'); // Forzado a Light por defecto para consistencia móvil
 
     /**
      * Effective theme being displayed

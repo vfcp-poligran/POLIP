@@ -68,6 +68,9 @@ export class ViewportService {
         this.width() < this.BREAKPOINTS.LG
     );
 
+    /** Controla la visibilidad del header global en TabsPage */
+    readonly showGlobalHeader = signal<boolean>(true);
+
     /**
      * Signal: ¿Es desktop? (>= 992px)
      */
@@ -98,6 +101,21 @@ export class ViewportService {
      */
     readonly isMobileLandscape = computed(() =>
         this.isMobile() && this.isLandscape() && this.height() < 500
+    );
+
+    /**
+     * Signal: ¿Es tablet en landscape?
+     */
+    readonly isTabletLandscape = computed(() =>
+        this.isTablet() && this.isLandscape()
+    );
+
+    /**
+     * Signal: ¿Debe mostrarse layout dividido (Split Pane)?
+     * Incluye Desktop y Tablet Landscape.
+     */
+    readonly isSplitPane = computed(() =>
+        this.isDesktop() || this.isTabletLandscape()
     );
 
     constructor() {

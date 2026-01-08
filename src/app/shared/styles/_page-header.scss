@@ -23,7 +23,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: calc(100% - 3rem); // Compensate for page-container padding
+    width: 100%; // Flow naturally within container
     box-sizing: border-box;
 
     // Spacing
@@ -37,35 +37,10 @@
     border-radius: var(--page-header-border-radius, 6px);
     box-shadow: var(--page-header-box-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
 
-    // Positioning - Fixed at top
-    position: fixed;
-    top: 1.5rem;
-    left: 1.5rem;
-    z-index: 100;
+    // Positioning - Natural flow
+    position: relative;
+    z-index: 10;
 
-    // Desktop: position below navigation bar (64px + spacing)
-    @media (min-width: 992px) {
-        top: calc(64px + 0.75rem); // Desktop nav bar height + minimal spacing
-    }
-
-    // Responsive width adjustments
-    @media (min-width: 768px) and (max-width: 991px) {
-        width: calc(100% - 2rem);
-        top: 1rem;
-        left: 1rem;
-    }
-
-    @media (max-width: 767px) {
-        width: calc(100% - 1.5rem);
-        top: 0.75rem;
-        left: 0.75rem;
-    }
-
-    @media (max-height: 500px) and (orientation: landscape) {
-        width: calc(100% - 1rem);
-        top: 0.5rem;
-        left: 0.5rem;
-    }
 
     // Title wrapper
     .title-wrapper {

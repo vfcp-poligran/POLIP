@@ -498,6 +498,51 @@ export class DataService implements OnDestroy {
     await this.courseService.actualizarEstudiantesCurso(codigoCurso, estudiantes);
   }
 
+  /**
+   * Actualiza los datos de un curso (estudiantes y calificaciones)
+   */
+  async saveCurso(codigoCurso: string, estudiantes: any[], calificaciones: any | null): Promise<void> {
+    await this.ensureInitialized();
+
+    // 1. Guardar estudiantes
+    if (estudiantes) {
+      await this.courseService.actualizarEstudiantesCurso(codigoCurso, estudiantes);
+    }
+
+    // 2. Guardar archivo de calificaciones si se proporciona
+    if (calificaciones) {
+      // Reconstruir estructura de archivo
+      const archivoData = {
+        nombre: `calificaciones_${codigoCurso}.csv`, // Nombre genérico si no se tiene el original
+        fechaCarga: new Date().toISOString(),
+        contenidoOriginal: '', // No tenemos el original, esto es una limitación aceptable por ahora
+        calificaciones: calificaciones
+      };
+
+      // Actualizar en el estado
+      const uiState = this.stateService.getUIStateValue();
+      const courseState = uiState.courseStates?.[codigoCurso];
+
+      if (courseState) {
+        const nuevoCourseState = {
+          ...courseState,
+          archivoCalificaciones: archivoData
+        };
+
+        const nuevoUIState = {
+          ...uiState,
+          courseStates: {
+            ...uiState.courseStates,
+            [codigoCurso]: nuevoCourseState
+          }
+        };
+
+        this.stateService.updateUIStateState(nuevoUIState);
+        await this.saveUIState();
+      }
+    }
+  }
+
 
 
 

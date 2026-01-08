@@ -1,3 +1,12 @@
+<!-- Collapsible Header for Mobile -->
+@if (isMobile()) {
+<ion-header collapse="condense">
+  <ion-toolbar>
+    <ion-title size="large">Rúbricas</ion-title>
+  </ion-toolbar>
+</ion-header>
+}
+
 <ion-content [fullscreen]="false">
   <!-- FAB flotante para crear rúbrica (móvil/tablet) -->
   <ion-fab slot="fixed" vertical="top" horizontal="end"
@@ -174,6 +183,47 @@
           @if (rubricas.length > 0) {
           <!-- Colección de rúbricas en tarjetas -->
           <div class="rubrica-card-collection" [class.contraido]="tieneContenidoActivo">
+            <!-- VISTA MÓVIL: Lista Deslizable -->
+            @if (isMobile()) {
+            <ion-list class="rubrica-mobile-list input-list ion-no-padding">
+              @for (rubrica of rubricasOrdenadas; track rubrica.id) {
+              <ion-item-sliding class="rubrica-item-sliding">
+                <ion-item button (click)="seleccionarRubrica(rubrica)" detail="true" lines="full"
+                  [class.item-seleccionado]="rubricaSeleccionada?.id === rubrica.id">
+                  <ion-label>
+                    <div class="rubrica-list-header">
+                      <h2 class="ion-text-wrap">{{ rubrica.nombre }}</h2>
+                      @if (rubrica.activa) {
+                      <ion-icon name="checkmark-circle" color="success" class="status-icon"></ion-icon>
+                      }
+                    </div>
+                    <div class="rubrica-list-meta">
+                      <ion-badge [color]="rubrica.tipoRubrica === 'PG' ? 'primary' : 'secondary'" mode="ios">
+                        {{ rubrica.tipoRubrica === 'PG' ? 'Grupal' : 'Indiv.' }}
+                      </ion-badge>
+                      @if (rubrica.tipoEntrega) {
+                      <ion-badge color="tertiary" mode="ios">{{ rubrica.tipoEntrega }}</ion-badge>
+                      }
+                      <span class="rubrica-code">{{ obtenerCodigoBase(rubrica) }}</span>
+                    </div>
+                  </ion-label>
+                </ion-item>
+
+                <ion-item-options side="end">
+                  <ion-item-option color="primary" (click)="editarRubrica(rubrica)">
+                    <ion-icon slot="icon-only" name="create"></ion-icon>
+                  </ion-item-option>
+                  <ion-item-option color="danger" (click)="confirmarEliminarRubrica(rubrica)">
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                  </ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
+              }
+            </ion-list>
+            }
+
+            <!-- VISTA TABLET/DESKTOP: Grid de Tarjetas -->
+            @if (!isMobile()) {
             <ion-grid class="rubrica-card-grid">
               <ion-row>
                 @for (rubrica of rubricasOrdenadas; track rubrica.id) {
@@ -203,13 +253,6 @@
                     </ion-card-header>
                     <ion-card-content>
                       <div class="rubrica-actions">
-                        @if (rubrica.version && rubrica.version >= 1) {
-                        <ion-button size="small" fill="clear" color="tertiary"
-                          (click)="verHistorialVersiones(rubrica, $event); $event.stopPropagation()"
-                          title="Ver historial">
-                          <ion-icon slot="icon-only" name="git-branch"></ion-icon>
-                        </ion-button>
-                        }
                         <ion-button size="small" fill="clear" color="secondary"
                           (click)="mostrarOpcionesExportacion(rubrica); $event.stopPropagation()"
                           title="Exportar rúbrica">
@@ -222,6 +265,7 @@
                 }
               </ion-row>
             </ion-grid>
+            }
           </div>
 
           <!-- Panel de Detalle de Rúbrica con Tabs - Ocupa espacio restante -->

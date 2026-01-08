@@ -1,6 +1,6 @@
 <div class="shell-container" id="main-content">
   <!-- Header móvil con logo y botones de acción -->
-  @if (!isDesktop) {
+  @if (!isDesktop && viewport.showGlobalHeader()) {
   <ion-header class="mobile-header">
     <ion-toolbar color="primary">
       <ion-buttons slot="start">
@@ -71,17 +71,19 @@
   </div>
   }
 
-  <div class="main-content-area" [class.has-bottom-tabs]="!isDesktop" [class.search-open]="isSearchOpen"
-    class="full-width">
-    <ion-router-outlet></ion-router-outlet>
-  </div>
+  <main class="main-content-area" [class.has-bottom-tabs]="!isDesktop" [class.search-open]="isSearchOpen">
+    <ion-tabs>
+      <ion-router-outlet></ion-router-outlet>
 
-  @if (!isDesktop) {
-  <ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
-    <ion-tab-button *ngFor="let item of navigationItems" [routerLink]="[item.path]" routerLinkActive="tab-selected">
-      <ion-icon [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
-      <ion-label>{{ item.shortLabel || item.label }}</ion-label>
-    </ion-tab-button>
-  </ion-tab-bar>
-  }
+      @if (!isDesktop) {
+      <ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
+        <ion-tab-button *ngFor="let item of navigationItems" [tab]="item.path.split('/').pop()"
+          [routerLink]="[item.path]" routerLinkActive="tab-selected">
+          <ion-icon [name]="currentUrl.includes(item.path) ? item.icon : item.iconOutline"></ion-icon>
+          <ion-label>{{ item.shortLabel || item.label }}</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+      }
+    </ion-tabs>
+  </main>
 </div>

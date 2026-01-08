@@ -31,7 +31,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         </div>
 
         <!-- Versión -->
-        <p class="version">v3.1.0</p>
+        <p class="version">v4.0</p>
       </div>
     </div>
   `,

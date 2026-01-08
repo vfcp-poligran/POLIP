@@ -1,6 +1,6 @@
 <!-- Menu para tipos eliminado (sera un select o chips en el modal) -->
 
-<ion-content id="main-content" class="inicio-content" [fullscreen]="true">
+<ion-content id="main-content" class="inicio-content">
     <div class="page-container">
 
         <!-- TOP: COURSE RIBBON & GROUPS - Solo se muestra si hay cursos -->
@@ -104,17 +104,11 @@
                         </div>
                         } @else if (cursosResumen().length > 0) {
                         <div class="empty-state-side">
-                            <div class="illustration-container">
-                                <ion-icon name="school-outline" color="primary"></ion-icon>
-                            </div>
                             <h3>Bienvenido</h3>
                             <p>Selecciona un curso de la cinta superior para comenzar.</p>
                         </div>
                         } @else {
                         <div class="empty-state-side">
-                            <div class="illustration-container">
-                                <ion-icon name="school-outline" color="medium"></ion-icon>
-                            </div>
                             <h3>Sin cursos</h3>
                             <p>Ve a la sección <strong>Cursos</strong> para crear tu primer grupo.</p>
                         </div>

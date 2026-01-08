@@ -14,14 +14,15 @@
  */
 .page-container {
     width: 100%;
+    min-height: calc(100% - 1px); // Prevent sub-pixel scroll overflow
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
     overflow-x: hidden;
 
-    // Desktop (≥992px): 1.5rem (~24px)
-    // Padding-top: nav-bar (64px) + spacing (1.5rem)
-    // Note: Pages with headers will add their own spacing
+    // Padding-top: standard spacing (main-content-area handles header offset)
     padding: 1.5rem;
-    padding-top: calc(64px + 1.5rem); // Total: ~88px
+    padding-top: 1.5rem;
 
     // Tablet (768-991px): 1rem (~16px)
     @media (min-width: 768px) and (max-width: 991px) {

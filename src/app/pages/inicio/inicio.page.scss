@@ -21,12 +21,23 @@ $touch-target: colors.$touch-target;
 // === HEADER ===
 .page-header {
     background: linear-gradient(135deg, $azul-oscuro 0%, color.adjust($azul-oscuro, $lightness: -5%) 100%);
-    padding: 10px 12px;
-    // Removido safe-area-inset-top redundante
-    padding-top: 10px;
     position: sticky;
     top: 0;
     z-index: 100;
+
+    @include mobile-landscape {
+        padding: 8px 16px;
+
+        .search-tipos-row {
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tipos-filtro-chips {
+            display: none; // Hide chips in landscape to save critical space
+        }
+    }
 
     .search-tipos-row {
         display: flex;
@@ -101,6 +112,12 @@ $touch-target: colors.$touch-target;
     padding-bottom: 8px;
     border-radius: 0 0 16px 16px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+
+    @include mobile-landscape {
+        border-radius: 0;
+        margin-top: 5px; // Extra separation from header
+        padding-bottom: 4px;
+    }
 
     @include respond-to-max('md') {
         border-radius: 0;
@@ -1089,10 +1106,18 @@ $touch-target: colors.$touch-target;
 
 // === ESTILOS FALTANTES CARDS MOVIL (Agregados para corrección) ===
 .mobile-student-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    // Default 1 column
+    grid-template-columns: 1fr;
     gap: 12px;
     padding-bottom: 80px; // Espacio para el FAB
+
+    // Tablet Portrait / Mobile Landscape: 2 Columns
+    @media (min-width: 576px) {
+        // SM breakpoint
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
 
     .student-card-mobile {
         margin: 0;

@@ -16,6 +16,7 @@
     "lint": "ng lint",
     "android:sync": "npx cap sync android",
     "android:run": "npx cap run android",
+    "android:live": "ionic cap run android -l --external",
     "android:open": "npx cap open android",
     "ios:sync": "npx cap sync ios",
     "ios:run": "npx cap run ios",

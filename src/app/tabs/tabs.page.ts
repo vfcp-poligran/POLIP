@@ -10,6 +10,7 @@ import {
   IonRouterLink,
   IonTabBar,
   IonTabButton,
+  IonTabs,
   IonHeader,
   IonToolbar,
   IonAvatar,
@@ -85,6 +86,7 @@ import { FullscreenService } from '../services/fullscreen.service';
 import { SeguimientoService, SeguimientoGrupo, ComentarioGrupo, EvaluacionRubrica, CriterioEvaluado, IntegranteInfo, EstadoEstudiante } from '../services/seguimiento.service';
 import { NovedadService } from '../services/novedad.service';
 import { ViewportService } from '../core/services/viewport.service';
+import { KeyboardShortcutsService } from '../core/services/keyboard-shortcuts.service';
 
 export interface NavigationItem {
   path: string;
@@ -110,6 +112,7 @@ export interface NavigationItem {
     IonRouterLink,
     IonTabBar,
     IonTabButton,
+    IonTabs,
     IonHeader,
     IonToolbar,
     IonAvatar,
@@ -157,6 +160,7 @@ export class TabsPage implements OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   // Viewport service centralizado
   public viewport = inject(ViewportService);
+  private shortcuts = inject(KeyboardShortcutsService);
 
   // Alias para compatibilidad con templates existentes
   get isDesktop(): boolean {
@@ -303,7 +307,29 @@ export class TabsPage implements OnDestroy {
       }
     });
 
+    // Registrar atajos de teclado globales
+    this.registerKeyboardShortcuts();
+  }
 
+  /**
+   * Registra atajos de teclado globales para navegación y búsqueda
+   */
+  private registerKeyboardShortcuts(): void {
+    // Atajos de navegación: Ctrl+1-5
+    this.shortcuts.register('ctrl+1', () => this.router.navigate(['/tabs/inicio']));
+    this.shortcuts.register('ctrl+2', () => this.router.navigate(['/tabs/cursos']));
+    this.shortcuts.register('ctrl+3', () => this.router.navigate(['/tabs/rubricas']));
+    this.shortcuts.register('ctrl+4', () => this.router.navigate(['/tabs/calificaciones']));
+    this.shortcuts.register('ctrl+5', () => this.router.navigate(['/tabs/sistema']));
+
+    // Atajo de búsqueda global: Ctrl+F
+    this.shortcuts.register('ctrl+f', () => {
+      if (!this.viewport.isDesktop()) {
+        this.toggleSearch();
+      }
+    });
+
+    Logger.log('[TabsPage] Keyboard shortcuts registered');
   }
 
 

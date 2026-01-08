@@ -1,0 +1,143 @@
+// ============================================
+// SECCIONES DE IMPORTACIÓN DE ARCHIVOS
+// ============================================
+
+.import-side {
+  margin-top: 16px;
+
+  .section-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ion-color-medium-shade);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .import-cloud-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .import-cloud-item {
+    position: relative;
+    background: var(--ion-color-light);
+    border: 2px dashed var(--ion-color-medium);
+    border-radius: 12px;
+    padding: 20px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    &:hover {
+      background: var(--ion-color-primary-tint);
+      border-color: var(--ion-color-primary);
+      border-style: solid;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    .cloud-icon-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      ion-icon {
+        font-size: 2.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .cloud-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--ion-color-medium-shade);
+        white-space: nowrap;
+      }
+    }
+
+    .import-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      opacity: 0.7;
+
+      ion-icon {
+        font-size: 1.5rem;
+        color: var(--ion-color-medium);
+      }
+
+      span {
+        font-size: 0.75rem;
+        color: var(--ion-color-medium-shade);
+        text-align: center;
+      }
+    }
+
+    ion-chip {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 90%;
+
+      ion-label {
+        font-size: 0.7rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 120px;
+      }
+
+      ion-icon {
+        cursor: pointer;
+        &:hover {
+          color: var(--ion-color-danger);
+        }
+      }
+    }
+  }
+
+  .row-import {
+    margin-top: 12px;
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+}
+
+// Responsive adjustments
+@include bp.mobile-only {
+  .import-side {
+    .import-cloud-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .import-cloud-item {
+      min-height: 100px;
+      padding: 16px 10px;
+    }
+  }
+}
+
+@include bp.tablet-portrait {
+  .import-side {
+    .import-cloud-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}

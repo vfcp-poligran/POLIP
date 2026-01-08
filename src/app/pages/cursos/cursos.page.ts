@@ -2,9 +2,14 @@ import { Component, ViewChild, ElementRef, inject, ChangeDetectorRef, computed, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
+import { ViewportService } from '@app/core/services/viewport.service';
+import { KeyboardShortcutsService } from '@app/core/services/keyboard-shortcuts.service';
 import { FilePickerService } from '@app/services/file-picker.service';
 import { Capacitor } from '@capacitor/core';
 import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
   IonContent,
   IonIcon,
   IonButton,
@@ -25,10 +30,14 @@ import {
   IonNote,
   IonFab,
   IonFabButton,
+  IonFabList,
   AlertController,
   ViewWillEnter,
   IonAccordionGroup,
   IonAccordion,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
   // IonMenu REMOVED - not used in template
   // IonMenuButton REMOVED
   // IonHeader REMOVED
@@ -71,9 +80,11 @@ import {
   people,
   person,
   documentText,
-  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu, peopleCircle, calculatorOutline
+  school, documentsOutline, calendarOutline, library, informationCircle, informationCircleOutline, time, timeOutline, colorPaletteOutline, colorPalette, checkmark, chevronDown, chevronDownOutline, chevronUp, chevronUpOutline, ellipsisVertical, gridOutline, grid, appsOutline, folderOpenOutline, alertCircle, desktop, desktopOutline, libraryOutline, trash, pricetag, create, menu, peopleCircle, calculatorOutline,
+  apps
 } from 'ionicons/icons';
 import { DataService } from '../../services/data.service';
+import { RubricService } from '../../services/rubric.service';
 import { ToastService } from '../../services/toast.service';
 import { COLORES_CURSOS, generarColorAleatorio } from '../../models/curso.model';
 import { BUTTON_CONFIG } from '@app/constants/button-config';
@@ -104,6 +115,9 @@ interface EstudianteConNotas {
   imports: [
     CommonModule,
     FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
     IonContent,
     IonIcon,
     IonButton,
@@ -115,6 +129,7 @@ interface EstudianteConNotas {
     IonCol,
     IonFab,
     IonFabButton,
+    IonFabList,
     IonList,
     IonItem,
     IonBadge,
@@ -124,15 +139,20 @@ interface EstudianteConNotas {
     IonSegmentButton,
     CapitalizePipe,
     IonAccordionGroup,
-    IonAccordion]
+    IonAccordion,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption]
 })
 export class CursosPage implements ViewWillEnter {
   private dataService = inject(DataService);
+  private rubricService = inject(RubricService);
   private toastService = inject(ToastService);
   private alertController = inject(AlertController);
   private preferencesService = inject(PreferencesService);
   private menuController = inject(MenuController);
   private filePickerService = inject(FilePickerService);
+  private shortcuts = inject(KeyboardShortcutsService);
 
   // Referencias a inputs de archivo para activación programática
   @ViewChild('importEstudiantesInput') importEstudiantesInput!: ElementRef<HTMLInputElement>;
@@ -145,9 +165,20 @@ export class CursosPage implements ViewWillEnter {
   cursoSeleccionado = signal<string | null>(null);
   private cursoSeleccionadoClave = signal<string | null>(null);
 
+  // Viewport Service Injection
+  viewport = inject(ViewportService);
+
+  // Viewport Signals (Proxied for template access)
+  isMobile = this.viewport.isMobile;
+  isTablet = this.viewport.isTablet;
+  isDesktop = this.viewport.isDesktop;
+  isLandscape = this.viewport.isLandscape;
+  isSplitPane = this.viewport.isSplitPane;
+
   // Preferencias de visibilidad del tab Características
-  // mostrarTabCaracteristicas = this.preferencesService.mostrarTabCaracteristicas;
-  mostrarTabCaracteristicas = signal(true); // Siempre visible (Opción suprimida)
+  mostrarTabCaracteristicas = signal(true);
+
+  // Signal para controlar modo edición
   modoEdicion = signal<boolean>(false);
   subtabActivo = signal<string>('detalle');
   grupoActivo = signal<string>('todos');
@@ -175,10 +206,7 @@ export class CursosPage implements ViewWillEnter {
   }
   busquedaTermino = signal<string>(''); // Término de búsqueda
 
-  // Responsive signals
-  isDesktop = signal<boolean>(window.innerWidth >= 992);
-  isTablet = signal<boolean>(window.innerWidth >= 768 && window.innerWidth < 992);
-  isMobile = signal<boolean>(window.innerWidth < 768);
+  // Responsive signals (REMOVED: Using ViewportService)
 
   rubricasAsociadas: any[] = [];
 
@@ -595,15 +623,7 @@ export class CursosPage implements ViewWillEnter {
       }
     });
 
-    addIcons({ createOutline, trash, menu, add, addCircle, informationCircle, people, cloudUpload, closeCircle, documentTextOutline, calculatorOutline, checkmark, peopleCircle, library, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, checkmarkCircle, colorPalette, cloudUploadOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
-
-    // Listener for responsive changes
-    window.addEventListener('resize', () => {
-      const width = window.innerWidth;
-      this.isDesktop.set(width >= 992);
-      this.isTablet.set(width >= 768 && width < 992);
-      this.isMobile.set(width < 768);
-    });
+    addIcons({ checkmarkCircle, addCircle, createOutline, informationCircle, people, cloudUpload, closeCircle, documentTextOutline, calculatorOutline, checkmark, peopleCircle, library, apps, add, trash, menu, school, codeSlash, pricetag, calendar, desktop, calendarOutline, pricetagOutline, desktopOutline, time, addCircleOutline, informationCircleOutline, peopleOutline, statsChartOutline, gridOutline, libraryOutline, ellipsisVertical, colorPalette, cloudUploadOutline, folderOpenOutline, grid, alertCircle, saveOutline, closeOutline, closeCircleOutline, trashOutline, appsOutline, listOutline, close, colorPaletteOutline, person, ellipseOutline, timeOutline, documentText, ribbonOutline, schoolOutline, save, documentsOutline, eyeOutline, downloadOutline, star, checkmarkCircleOutline, documentOutline, refreshOutline, chevronDownOutline, chevronUpOutline, chevronUp, chevronDown, create });
   }
 
   private cd = inject(ChangeDetectorRef);
@@ -660,12 +680,20 @@ export class CursosPage implements ViewWillEnter {
    * Lifecycle hook de Ionic - se ejecuta cada vez que la vista va a aparecer
    * Esto EVITA recrear el componente completo
    */
-  ionViewWillEnter() {
-    console.log('='.repeat(80));
-    console.log('[CursosPage] 🔄 ionViewWillEnter - INICIANDO...');
-    console.log('='.repeat(80));
-    Logger.log('[CursosPage] 🔄 ionViewWillEnter - Iniciando carga de cursos...');
-    this.cargarCursos();
+  async ionViewWillEnter() {
+    Logger.log('[CursosPage] ionViewWillEnter');
+    // Ocultar header global en móvil para usar header colapsable local
+    if (this.isMobile()) {
+      this.viewport.showGlobalHeader.set(false);
+    }
+    // Cargar datos de cursos si no están disponibles
+    if (!this.cursosDisponibles() || this.cursosDisponibles().length === 0) {
+      Logger.log('[CursosPage] Cargando cursos desde DataService');
+      await this.dataService.loadCursos();
+      await this.cargarCursos();
+    }
+    this.cursoSeleccionado.set(null);
+
     const seleccion = this.cursoSeleccionado();
     if (seleccion) {
       this.cursoSeleccionadoClave.set(this.resolverClaveCurso(seleccion));
@@ -678,6 +706,49 @@ export class CursosPage implements ViewWillEnter {
     console.log('[CursosPage] 🔄 ionViewWillEnter - FINALIZADO');
     console.log('='.repeat(80));
     Logger.log('[CursosPage] 🔄 ionViewWillEnter - Finalizado');
+
+    // Registrar atajos de teclado
+    this.registerKeyboardShortcuts();
+  }
+
+  /**
+   * Registra atajos de teclado específicos de la página
+   */
+  private registerKeyboardShortcuts(): void {
+    // Ctrl+S: Guardar cambios
+    this.shortcuts.register('ctrl+s', () => {
+      if (this.modoEdicion()) {
+        this.guardarCurso();
+      }
+    });
+
+    // Ctrl+N: Crear nuevo curso
+    this.shortcuts.register('ctrl+n', () => {
+      if (!this.modoEdicion()) {
+        this.iniciarCreacionCurso();
+      }
+    });
+
+    // Ctrl+E: Editar curso seleccionado
+    this.shortcuts.register('ctrl+e', () => {
+      if (this.cursoSeleccionado() && !this.modoEdicion()) {
+        this.editarCursoSeleccionado();
+      }
+    });
+
+    // Esc: Cancelar edición/creación
+    this.shortcuts.register('escape', () => {
+      if (this.modoEdicion()) {
+        this.cancelarEdicion();
+      }
+    });
+
+    Logger.log('[CursosPage] Keyboard shortcuts registered');
+  }
+
+  ionViewWillLeave() {
+    // Restaurar header global al salir
+    this.viewport.showGlobalHeader.set(true);
   }
 
   /**
@@ -696,6 +767,78 @@ export class CursosPage implements ViewWillEnter {
     // Crear un evento dummy para el método existente
     const dummyEvent = new Event('click');
     await this.eliminarCurso(curso, dummyEvent);
+  }
+
+  /**
+   * Confirmar eliminación de estudiante individual
+   */
+  async confirmarEliminacionEstudiante(estudiante: any) {
+    if (!estudiante) return;
+
+    const alert = await this.alertController.create({
+      header: 'Eliminar Estudiante',
+      message: `¿Estás seguro de eliminar a <strong>${estudiante.nombres} ${estudiante.apellidos}</strong> del curso?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.eliminarEstudiante(estudiante);
+          }
+        }
+      ],
+      cssClass: 'premium-alert premium-alert--danger'
+    });
+
+    await alert.present();
+  }
+
+  private eliminarEstudiante(estudiante: any) {
+    const cursoCodigo = this.cursoSeleccionadoClave(); // Usar la clave real (con año)
+    if (!cursoCodigo) {
+      this.toastService.error('Error: No se puede identificar el curso');
+      return;
+    }
+
+    try {
+      // Obtener estudiantes actuales usando CLAVE REAL
+      const estudiantesActuales = this.dataService.getCurso(cursoCodigo);
+
+      if (!estudiantesActuales) {
+        this.toastService.error('Error: No se encontraron datos del curso');
+        return;
+      }
+
+      // Filtrar el estudiante eliminado
+      const nuevosEstudiantes = estudiantesActuales.filter((e: any) =>
+        e.correo !== estudiante.correo // Asumiendo correo único
+      );
+
+      // Actualizar en DataService (usando updateCursoState para persistencia)
+      // NOTA: DataService.saveCurso espera (nombreCurso, estudiantes, calificaciones)
+      // Pero DataService.updateCursoState podría ser mejor si existiera para solo estudiantes.
+      // Usaremos saveCurso re-guardando lo existente pero sin el estudiante.
+
+      // Necesitamos también las calificaciones actuales para no perderlas
+      const archivoCalificaciones = this.dataService.obtenerArchivoCalificaciones(cursoCodigo);
+      const calificacionesActuales = archivoCalificaciones?.calificaciones || null;
+
+      // Guardar
+      this.dataService.saveCurso(cursoCodigo, nuevosEstudiantes, calificacionesActuales);
+
+      this.toastService.success('Estudiante eliminado correctamente');
+
+      // Forzar actualización de UI si es necesario (generalmente signals lo manejan)
+      this.cargarCursos(); // Recargar computed signals
+    } catch (error) {
+      Logger.error('Error al eliminar estudiante:', error);
+      this.toastService.error('Error al eliminar estudiante');
+    }
   }
 
   /**
@@ -861,6 +1004,19 @@ export class CursosPage implements ViewWillEnter {
       this.cursoSeleccionado.set(null);
       this.cursoSeleccionadoClave.set(null);
       this.limpiarFormulario();
+
+      // Inicializar objeto seguro para evitar errores de binding en la vista (ngModel)
+      this.cursoParseado = {
+        nombre: '', // Obligatorio para el input
+        codigo: '',
+        siglas: '',
+        bloque: '',
+        anio: new Date().getFullYear().toString(),
+        modalidad: '',
+        ingreso: '',
+        grupo: ''
+      } as any;
+
       // Generar color aleatorio diferente a los cursos existentes
       const coloresUsados = this.obtenerColoresUsados();
       this.colorCursoSeleccionado = generarColorAleatorio(coloresUsados);
@@ -920,7 +1076,14 @@ export class CursosPage implements ViewWillEnter {
   async cancelarCreacionCurso() {
     this.modoEdicion.set(false);
     this.colorCursoSeleccionado = null;
-    this.limpiarFormulario();
+
+    // Si hay un curso seleccionado, deseleccionarlo completamente para volver al estado 'Idle'
+    if (this.cursoSeleccionado()) {
+      this.deseleccionarCurso();
+    } else {
+      this.limpiarFormulario();
+    }
+
     // Limpiar estado en UIState
     this.dataService.updateUIState({ cursosModoEdicion: false });
     Logger.log('🔘 [CursosPage] Creación de curso cancelada');
@@ -1076,6 +1239,41 @@ export class CursosPage implements ViewWillEnter {
     };
 
     this.cd.detectChanges();
+
+    // Recargar rúbricas asociadas explícitamente al editar
+    this.cargarRubricasAsociadas(claveCurso);
+  }
+
+  async desvincularRubricaDeCurso(rubrica: any, event?: Event) {
+    event?.stopPropagation();
+
+    const alert = await this.alertController.create({
+      header: 'Desvincular Rúbrica',
+      message: `¿Estás seguro de quitar la rúbrica <strong>${rubrica.nombre}</strong> de este curso?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Desvincular',
+          role: 'destructive',
+          handler: async () => {
+            const claveCurso = this.cursoSeleccionadoClave();
+            if (!claveCurso || !rubrica.cursosCodigos) return;
+
+            // Filtrar el curso actual
+            rubrica.cursosCodigos = rubrica.cursosCodigos.filter((c: string) => c !== claveCurso);
+
+            // Guardar cambios usando RubricService
+            await this.rubricService.guardarRubrica(rubrica);
+            this.cargarRubricasAsociadas(claveCurso);
+            await this.mostrarToastExito('Rúbrica desvinculada del curso');
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   /**
@@ -1917,6 +2115,19 @@ export class CursosPage implements ViewWillEnter {
         });
       }
 
+      // Si hay rúbrica cargada, guardarla asociándola al curso
+      if (this.rubricaCargada) {
+        if (!this.rubricaCargada.cursosCodigos) {
+          this.rubricaCargada.cursosCodigos = [];
+        }
+        // Asegurar que el curso está vinculado
+        if (!this.rubricaCargada.cursosCodigos.includes(codigoCurso)) {
+          this.rubricaCargada.cursosCodigos.push(codigoCurso);
+        }
+        await this.rubricService.guardarRubrica(this.rubricaCargada);
+        this.cargarRubricasAsociadas(codigoCurso);
+      }
+
       this.cargarCursos();
 
       // ✅ FIX: Seleccionar automáticamente el curso recién creado/editado
@@ -2402,13 +2613,7 @@ export class CursosPage implements ViewWillEnter {
     return match ? match[0] : '1';
   }
 
-  /**
-   * Detecta si el dispositivo está en orientación horizontal
-   */
-  isLandscape(): boolean {
-    if (typeof window === 'undefined') return false;
-    return window.innerHeight < window.innerWidth;
-  }
+
 
   /**
    * Filtra estudiantes por grupo específico

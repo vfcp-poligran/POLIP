@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Logger } from '@app/core/utils/logger';
 import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
   IonContent,
   IonCard,
   IonCardHeader,
@@ -19,6 +22,12 @@ import {
   IonSegmentButton,
   IonFab,
   IonFabButton,
+  IonList,
+  IonItem,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+  IonBadge,
   IonFabList,
 
   AlertController,
@@ -27,6 +36,8 @@ import {
   ViewWillEnter,
   ViewWillLeave
 } from '@ionic/angular/standalone';
+import { ViewportService } from '@app/core/services/viewport.service';
+import { KeyboardShortcutsService } from '@app/core/services/keyboard-shortcuts.service';
 import { ExportService } from '../../services/export.service';
 import { DataService } from '../../services/data.service';
 import { ToastService } from '../../services/toast.service';
@@ -76,6 +87,15 @@ import {
   styleUrls: ['./rubricas.page.scss'],
   standalone: true,
   imports: [IonFabList,
+    IonList,
+    IonItem,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    IonBadge,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
     IonContent,
     IonCard,
     IonCardHeader,
@@ -99,7 +119,15 @@ import {
   ]
 })
 export class RubricasPage implements ViewWillEnter, ViewWillLeave {
+  private viewportService = inject(ViewportService);
+
+  // Signals de viewport
+  isMobile = this.viewportService.isMobile;
+  isDesktop = this.viewportService.isDesktop;
+  isTablet = this.viewportService.isTablet;
+
   private exportService = inject(ExportService);
+  private shortcuts = inject(KeyboardShortcutsService);
   private dataService = inject(DataService);
   private alertController = inject(AlertController);
   private toastService = inject(ToastService);
@@ -222,6 +250,57 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
     return this.direccionOrdenamiento === 'asc' ? '↑' : '↓';
   }
 
+  async ionViewWillEnter(): Promise<void> {
+    Logger.log('[RubricasPage] ionViewWillEnter');
+    // Ocultar header global en móvil para usar header colapsable local
+    if (this.isMobile()) {
+      this.viewportService.showGlobalHeader.set(false);
+    }
+    await this.dataService.loadRubricas();
+    await this.cargarCursosDisponibles();
+
+    // Registrar atajos de teclado
+    this.registerKeyboardShortcuts();
+  }
+
+  ionViewWillLeave(): void {
+    Logger.log('[RubricasPage] ionViewWillLeave');
+    // Restaurar header global al salir
+    this.viewportService.showGlobalHeader.set(true);
+  }
+
+  /**
+   * Registra atajos de teclado específicos de la página
+   */
+  private registerKeyboardShortcuts(): void {
+    // Ctrl+S: Guardar cambios
+    this.shortcuts.register('ctrl+s', () => {
+      if (this.modoEdicion || this.modoCreacion) {
+        this.guardarRubricaEditada();
+      }
+    });
+
+    // Ctrl+N: Crear nueva rúbrica
+    this.shortcuts.register('ctrl+n', () => {
+      if (!this.modoEdicion && !this.modoCreacion && !this.modoSeleccionCrear) {
+        this.mostrarOpcionesCrearMobile();
+      }
+    });
+
+    // Esc: Cancelar edición/creación
+    this.shortcuts.register('escape', () => {
+      if (this.modoEdicion) {
+        this.cancelarEdicion();
+      } else if (this.modoCreacion) {
+        this.cancelarModoCreacion();
+      } else if (this.modoSeleccionCrear) {
+        this.cancelarSeleccionCrear();
+      }
+    });
+
+    Logger.log('[RubricasPage] Keyboard shortcuts registered');
+  }
+
   /** Indica si hay contenido activo que requiere contraer la lista de rúbricas */
   get tieneContenidoActivo(): boolean {
     return this.rubricaSeleccionada !== null ||
@@ -266,26 +345,6 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   onBusquedaChange(event: any): void {
     const valor = event.target?.value || '';
     this.busquedaTermino = valor;
-  }
-
-  ionViewWillEnter() {
-    this.cargarRubricas();
-    this.cargarCursosDisponibles();
-    // Restaurar estado de modoSeleccionCrear desde UIState
-    const uiState = this.dataService.getUIState();
-    if (uiState.rubricasModoSeleccionCrear) {
-      this.modoSeleccionCrear = true;
-    }
-  }
-
-  /**
-   * Ciclo de vida Ionic: se ejecuta cuando la vista está a punto de salir.
-   * Ideal para limpiar recursos que no deben estar activos cuando la página no está visible.
-   * @see https://ionicframework.com/docs/angular/lifecycle
-   */
-  ionViewWillLeave() {
-    // Cerrar paneles expandidos al salir de la vista
-    this.infoExpanded = false;
   }
 
   cargarRubricas() {

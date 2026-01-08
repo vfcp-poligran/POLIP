@@ -6,6 +6,15 @@
 <!-- ======================================== -->
 <!-- HEADER REDUNDANTE ELIMINADO: Ya existe header global en tabs.page.html -->
 
+<!-- Collapsible Header for Mobile -->
+@if (isMobile()) {
+<ion-header collapse="condense">
+  <ion-toolbar>
+    <ion-title size="large">Cursos</ion-title>
+  </ion-toolbar>
+</ion-header>
+}
+
 <ion-content [fullscreen]="false" id="cursos-page-content">
 
   <!-- MOBILE COURSE RIBBON (Horizontal Scroll) - MOVED HERE -->
@@ -30,45 +39,18 @@
   <!-- 2. ACTION FABs (MOBILE + TABLET) -->
   <!-- ======================================== -->
 
-  <!-- FAB Crear Curso -->
-  @if (!modoEdicion() && !isDesktop()) {
-  <ion-fab slot="fixed" vertical="top" horizontal="end"
-    style="top: calc(8px + env(safe-area-inset-top)); z-index: 1100;" class="fab-crear-premium">
-    <ion-fab-button [color]="BUTTON_CONFIG.CREAR.color" (click)="iniciarCreacionCurso()"
-      [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  }
-
-  <!-- FABs de edición -->
-  @if (modoEdicion() && !isDesktop()) {
-  <ion-fab slot="fixed" vertical="top" horizontal="end"
-    style="top: calc(8px + env(safe-area-inset-top)); z-index: 1100;" class="fab-guardar">
-    <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
-      [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
-      <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  <ion-fab slot="fixed" vertical="top" horizontal="end"
-    style="top: calc(72px + env(safe-area-inset-top)); z-index: 1100;" class="fab-cancelar">
-    <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
-      [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
-      <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-  }
 
   <div class="page-container" id="main-content" role="main">
     <!-- ======================================== -->
     <!-- 2. HEADER DE PÁGINA (DESKTOP ONLY) -->
     <!-- ======================================== -->
-    @if (isDesktop()) {
+    @if (!isMobile()) {
     <div class="page-title-header">
       <div class="title-wrapper">
         <h2>Cursos</h2>
       </div>
-      <!-- HEADER ACTIONS: Visible on Desktop + Tablet -->
+      <!-- HEADER ACTIONS: Visible on Desktop and Tablet -->
+      @if (!isMobile()) {
       <div class="header-actions">
         @if (!modoEdicion()) {
         <ion-button size="small" fill="solid" color="success" (click)="iniciarCreacionCurso()"
@@ -88,6 +70,13 @@
           {{ BUTTON_CONFIG.ELIMINAR.label }}
         </ion-button>
         }
+
+        <!-- Botón Cancelar (Visible siempre para limpiar estado/selección) -->
+        <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
+          [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
+          <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon" slot="start"></ion-icon>
+          {{ BUTTON_CONFIG.CANCELAR.label }}
+        </ion-button>
         } @else {
         <div class="edit-actions">
           <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
@@ -103,6 +92,7 @@
         </div>
         }
       </div>
+      }
     </div>
     }
 
@@ -110,10 +100,43 @@
     <!-- 3. CONTENIDO PRINCIPAL -->
     <!-- ======================================== -->
     @if (cursosDisponibles().length > 0 || (modoEdicion() && !cursoSeleccionado())) {
-    <div class="cursos-container" [class.solo-uno]="cursosDisponibles().length === 0 && modoEdicion()">
+    <div class="cursos-container" [class.solo-uno]="cursosDisponibles().length === 0 && modoEdicion()"
+      [class.split-view]="isSplitPane()">
 
-      <!-- DESKTOP + TABLET: Tabs superiores de selección de curso (Horizontal Segment) -->
-      @if (!isMobile()) {
+      <!-- DESKTOP SIDEBAR (Visible only in Split Pane) -->
+      @if (isSplitPane()) {
+      <div class="desktop-sidebar">
+        <div class="sidebar-header-row">
+          <h3>Mis Cursos</h3>
+        </div>
+        <div class="sidebar-list-container">
+          <ion-list lines="none">
+            @if (modoEdicion() && !cursoSeleccionado()) {
+            <ion-item button [class.selected]="true" detail="false">
+              <div class="course-stripe-indicator" style="background-color: var(--ion-color-medium);"></div>
+              <ion-label>
+                <h3>Nuevo Curso</h3>
+                <p>Sin guardar</p>
+              </ion-label>
+            </ion-item>
+            }
+            @for (curso of cursosDisponibles(); track curso.codigo) {
+            <ion-item button detail="false" [class.selected]="cursoSeleccionado() === curso.codigo"
+              (click)="seleccionarCurso(curso.codigo)">
+              <div class="course-stripe-indicator" [style.background-color]="getCursoColor(curso.codigo)"></div>
+              <ion-label>
+                <h3>{{ curso.nombre }}</h3>
+                <p>{{ curso.codigo }}</p>
+              </ion-label>
+            </ion-item>
+            }
+          </ion-list>
+        </div>
+      </div>
+      }
+
+      <!-- DESKTOP + TABLET: Tabs superiores (Hidden in Split Pane) -->
+      @if (!isMobile() && !isSplitPane()) {
       <ion-segment
         [value]="cursoSeleccionado() || (modoEdicion() && !cursoSeleccionado() ? 'NUEVO' : cursosDisponibles()[0]?.codigo)"
         (ionChange)="seleccionarCurso($any($event).detail.value)" scrollable>
@@ -134,8 +157,8 @@
             <span class="mobile-tablet-label">{{ getCursoMobileLabel(curso) }}</span>
             }
 
-            <!-- Desktop: Full Name + Code -->
-            @if (isDesktop()) {
+            <!-- Desktop + Tablet: Full Name + Code -->
+            @if (!isMobile()) {
             <div class="tab-content-wrapper desktop-view">
               <span class="tab-nombre">{{ curso.nombre }}</span>
               <span class="tab-codigo">{{ curso.codigo }}</span>
@@ -179,7 +202,7 @@
                 <ion-icon name="information-circle" slot="start" color="primary"></ion-icon>
                 <ion-label>Información del Curso</ion-label>
               </ion-item>
-              <div class="ion-padding-vertical" slot="content">
+              <div slot="content">
                 <ng-container *ngTemplateOutlet="contentDetalle"></ng-container>
               </div>
             </ion-accordion>
@@ -191,7 +214,7 @@
                 <ion-icon name="people" slot="start" color="primary"></ion-icon>
                 <ion-label>Integrantes</ion-label>
               </ion-item>
-              <div class="ion-padding-vertical" slot="content">
+              <div slot="content">
                 <ng-container *ngTemplateOutlet="contentIntegrantes"></ng-container>
               </div>
             </ion-accordion>
@@ -216,7 +239,7 @@
                       <div class="course-name-edit-section" style="margin-bottom: 16px;">
                         <ion-item fill="outline" class="course-name-input">
                           <ion-label position="stacked">Nombre del Curso</ion-label>
-                          <ion-input [(ngModel)]="cursoParseado.nombre" type="text"
+                          <ion-input name="courseNameInput" [(ngModel)]="cursoParseado.nombre" type="text"
                             placeholder="Ej: Énfasis Profesional I"></ion-input>
                         </ion-item>
                       </div>
@@ -277,6 +300,52 @@
                             }
                           </div>
                         </div>
+
+                        <!-- Import Rubricas (NUEVO CRUD) -->
+                        <div class="row-import" style="margin-top: 12px; display: flex; gap: 12px; width: 100%;">
+                          <div class="import-cloud-item" (click)="rubricaFileInput.click()" style="flex: 1;">
+                            <div class="cloud-icon-wrapper">
+                              <ion-icon name="list-outline"
+                                [style.color]="rubricaFileName ? 'var(--ion-color-success)' : 'var(--ion-color-secondary)'"></ion-icon>
+                              <div class="cloud-label">Importar (Rúbrica)</div>
+                            </div>
+                            <!-- Input oculto para web -->
+                            <input type="file" #rubricaFileInput accept=".txt" (change)="onRubricaFileSelected($event)"
+                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+                            @if (rubricaFileName) {
+                            <ion-chip color="secondary" size="small" (click)="$event.stopPropagation()">
+                              <ion-label>{{ rubricaFileName }}</ion-label>
+                              <ion-icon name="close-circle"
+                                (click)="desvincularArchivoRubrica(); $event.stopPropagation()"></ion-icon>
+                            </ion-chip>
+                            } @else {
+                            <div class="import-placeholder">
+                              <ion-icon name="document-text-outline"></ion-icon>
+                              <span>Toca para seleccionar TXT</span>
+                            </div>
+                            }
+                          </div>
+                        </div>
+
+                        <!-- Rúbricas existentes (CRUD Delete) -->
+                        @if (rubricasAsociadas.length > 0) {
+                        <div style="margin-top: 16px;">
+                          <h6
+                            style="font-size: 14px; color: var(--ion-color-medium); margin-bottom: 8px; margin-left: 4px;">
+                            Rúbricas Asociadas</h6>
+                          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            @for (rubrica of rubricasAsociadas; track rubrica.id) {
+                            <ion-chip outline color="primary" style="margin: 0;">
+                              <ion-icon name="document-text-outline"></ion-icon>
+                              <ion-label>{{ rubrica.nombre }} ({{ rubrica.tipoEntrega || 'E1' }})</ion-label>
+                              <ion-icon name="trash-outline" color="danger"
+                                (click)="desvincularRubricaDeCurso(rubrica, $event)"></ion-icon>
+                            </ion-chip>
+                            }
+                          </div>
+                        </div>
+                        }
+
                       </div>
 
                       <!-- Sección de Características del Curso -->
@@ -471,7 +540,7 @@
                       <p>{{ estudiantesCurso().length }} estudiantes</p>
                     </ion-label>
                   </ion-item>
-                  <div class="ion-padding-vertical" slot="content">
+                  <div slot="content">
                     <ng-container *ngTemplateOutlet="listaEstudiantes; context: { grupo: 'todos' }"></ng-container>
                   </div>
                 </ion-accordion>
@@ -486,7 +555,7 @@
                       <p>{{ contarIntegrantes(grupo) }} integrantes</p>
                     </ion-label>
                   </ion-item>
-                  <div class="ion-padding-vertical" slot="content">
+                  <div slot="content">
                     <ng-container *ngTemplateOutlet="listaEstudiantes; context: { grupo: grupo }"></ng-container>
                   </div>
                 </ion-accordion>
@@ -507,7 +576,7 @@
                       <p>{{ estudiantesCurso().length }} estudiantes</p>
                     </ion-label>
                   </ion-item>
-                  <div class="ion-padding-vertical" slot="content">
+                  <div slot="content">
                     <ng-container *ngTemplateOutlet="listaEstudiantes; context: { grupo: 'todos' }"></ng-container>
                   </div>
                 </ion-accordion>
@@ -522,7 +591,7 @@
                       <p>{{ contarIntegrantes(grupo) }} integrantes</p>
                     </ion-label>
                   </ion-item>
-                  <div class="ion-padding-vertical" slot="content">
+                  <div slot="content">
                     <ng-container *ngTemplateOutlet="listaEstudiantes; context: { grupo: grupo }"></ng-container>
                   </div>
                 </ion-accordion>
@@ -558,12 +627,20 @@
             @if (estudiantesCurso() && estudiantesCurso().length > 0) {
             <ion-list class="students-accordion-list">
               @for (est of (grupo === 'todos' ? estudiantesCurso() : estudiantesPorGrupo(grupo)); track est.correo) {
-              <ion-item class="student-item-compact">
-                <ion-label class="student-name-label-mobile">
-                  <h3 class="student-name-single-line">{{ est?.nombres }} {{ est?.apellidos }}</h3>
-                  <p class="student-email">{{ est?.correo }}</p>
-                </ion-label>
-              </ion-item>
+              <ion-item-sliding>
+                <ion-item class="student-item-compact">
+                  <ion-label class="student-name-label-mobile">
+                    <h3 class="student-name-single-line">{{ est?.nombres }} {{ est?.apellidos }}</h3>
+                    <p class="student-email">{{ est?.correo }}</p>
+                  </ion-label>
+                </ion-item>
+
+                <ion-item-options side="end">
+                  <ion-item-option color="danger" (click)="confirmarEliminacionEstudiante(est)">
+                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                  </ion-item-option>
+                </ion-item-options>
+              </ion-item-sliding>
               }
             </ion-list>
             } @else {
@@ -585,4 +662,59 @@
     </div>
     }
   </div>
+
+  <!-- FABS: Visible only on Mobile (isMobile) -->
+  @if (isMobile()) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    @if (modoEdicion()) {
+    <!-- Modo Edición: Guardar (Main) y Cancelar (List) -->
+    <ion-fab-button [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
+      [attr.aria-label]="BUTTON_CONFIG.GUARDAR.ariaLabel">
+      <ion-icon [name]="BUTTON_CONFIG.GUARDAR.icon"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
+        [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
+        <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+    } @else {
+    <!-- Modo Lectura -->
+    @if (cursoSeleccionado()) {
+    <!-- Caso: Curso Seleccionado -> Menú de Acciones -->
+    <ion-fab-button color="primary">
+      <ion-icon name="apps"></ion-icon>
+    </ion-fab-button>
+
+    <ion-fab-list side="top">
+      <!-- Eliminar -->
+      <ion-fab-button [color]="BUTTON_CONFIG.ELIMINAR.color" (click)="confirmarEliminacion(cursoSeleccionadoInfo())"
+        [attr.aria-label]="BUTTON_CONFIG.ELIMINAR.ariaLabel">
+        <ion-icon [name]="BUTTON_CONFIG.ELIMINAR.icon"></ion-icon>
+      </ion-fab-button>
+      <!-- Editar -->
+      <ion-fab-button [color]="BUTTON_CONFIG.EDITAR.color" (click)="editarCursoSeleccionado()"
+        [attr.aria-label]="BUTTON_CONFIG.EDITAR.ariaLabel">
+        <ion-icon [name]="BUTTON_CONFIG.EDITAR.icon"></ion-icon>
+      </ion-fab-button>
+      <!-- Crear Nuevo -->
+      <ion-fab-button color="success" (click)="iniciarCreacionCurso()"
+        [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+    } @else {
+    <ion-fab-button color="success" (click)="iniciarCreacionCurso()" [attr.aria-label]="BUTTON_CONFIG.CREAR.ariaLabel">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+    <!-- Cancelar FAB (Lista lateral o botón secundario) -->
+    <ion-fab-list side="top">
+      <ion-fab-button [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()">
+        <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+    }
+    }
+  </ion-fab>
+  }
 </ion-content>
