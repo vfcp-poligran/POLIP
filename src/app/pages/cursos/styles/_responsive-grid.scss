@@ -1,0 +1,29 @@
+// ============================================
+// RESPONSIVE GRID OVERRIDES - 2 COLUMN DESKTOP
+// ============================================
+@use '../../../shared/styles/breakpoints' as bp;
+
+// Override the default form-main-grid to ensure 2 columns on desktop
+.form-main-grid {
+    // Mobile first: single column
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+
+    // Tablet: still single column
+    @media (min-width: 768px) and (max-width: 1023px) {
+        gap: 1rem;
+    }
+
+    // Desktop: 2 columns side-by-side
+    @media (min-width: 1024px) {
+        grid-template-columns: minmax(500px, 2fr) 340px !important;
+        gap: 1.5rem;
+    }
+}
+
+// Ensure columns don't stack
+.main-content-side,
+.config-side-panel {
+    min-width: 0; // Prevent grid blowout
+}

@@ -1,0 +1,79 @@
+// ============================================
+// RESPONSIVE GRID IMPROVEMENTS FOR INICIO
+// ============================================
+@use '../../shared/styles/breakpoints' as *;
+
+// Optimize main content grid for better distribution
+.main-content-grid {
+    margin-top: 1rem;
+
+    .main-layout-row {
+
+        // Desktop: 3 balanced columns
+        @media (min-width: 1200px) {
+            >ion-col {
+                &.column-members {
+                    size: 3.5; // ~29% - Students list
+                }
+
+                &.column-novedades {
+                    size: 5; // ~42% - Main novedades (more space)
+                }
+
+                &.column-registros {
+                    size: 3.5; // ~29% - Registry panel
+                }
+            }
+        }
+
+        // Tablet: 2 columns (members + novedades combined, registros on side)
+        @media (min-width: 768px) and (max-width: 1199px) {
+            >ion-col {
+                &.column-members {
+                    size: 12; // Full width on top
+                    order: 1;
+                }
+
+                &.column-novedades {
+                    size: 7; // 58% width
+                    order: 2;
+                }
+
+                &.column-registros {
+                    size: 5; // 42% width  
+                    order: 3;
+                }
+            }
+        }
+
+        // Mobile: Stack everything
+        @media (max-width: 767px) {
+            >ion-col {
+                size: 12;
+
+                &.column-members {
+                    order: 1;
+                }
+
+                &.column-novedades {
+                    order: 2;
+                }
+
+                &.column-registros {
+                    order: 3;
+                }
+            }
+        }
+    }
+}
+
+// Better spacing for empty states
+.no-curso-seleccionado,
+.sin-grupos-seleccionados {
+    padding: 2rem 1rem;
+    text-align: center;
+
+    @media (min-width: 768px) {
+        padding: 3rem 2rem;
+    }
+}

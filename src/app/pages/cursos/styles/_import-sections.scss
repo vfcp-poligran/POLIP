@@ -1,20 +1,20 @@
 // ============================================
-// SECCIONES DE IMPORTACIÓN DE ARCHIVOS
+// SECCIONES DE IMPORTACIÓN DE ARCHIVOS - COMPACTO
 // ============================================
 @use '../../../shared/styles/breakpoints' as bp;
 
 .course-name-edit-section {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .import-side {
-  margin-top: 1.5rem;
+  margin-top: 0.75rem;
 
   .section-title {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--ion-color-medium-shade);
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -22,19 +22,19 @@
   .import-cloud-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .import-cloud-item {
     position: relative;
     background: var(--ion-color-light);
     border: 2px dashed var(--ion-color-medium);
-    border-radius: 8px;
-    padding: 1.5rem 1rem;
+    border-radius: 6px;
+    padding: 0.75rem 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 140px;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -45,23 +45,23 @@
       background: var(--ion-color-primary-tint);
       border-color: var(--ion-color-primary);
       border-style: solid;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.15);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.15);
     }
 
     .cloud-icon-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
 
       ion-icon {
-        font-size: 3rem;
+        font-size: 2rem;
         transition: transform 0.2s ease;
       }
 
       .cloud-label {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         font-weight: 500;
         color: var(--ion-color-medium-shade);
         white-space: nowrap;
@@ -69,23 +69,23 @@
     }
 
     &:hover .cloud-icon-wrapper ion-icon {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
 
     .import-placeholder {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
+      gap: 0.375rem;
+      margin-top: 0.5rem;
 
       ion-icon {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         color: var(--ion-color-medium);
       }
 
       span {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: var(--ion-color-medium-shade);
         text-align: center;
       }
@@ -93,25 +93,26 @@
 
     ion-chip {
       position: absolute;
-      bottom: 0.5rem;
+      bottom: 0.375rem;
       left: 50%;
       transform: translateX(-50%);
       max-width: 90%;
+      font-size: 0.65rem;
 
       ion-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        max-width: 120px;
+        max-width: 100px;
       }
     }
   }
 
   .row-import {
-    margin-top: 1rem;
+    margin-top: 0.5rem;
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     width: 100%;
   }
 }
@@ -121,11 +122,12 @@
   .import-side {
     .import-cloud-grid {
       grid-template-columns: 1fr;
+      gap: 0.5rem;
     }
 
     .import-cloud-item {
-      min-height: 120px;
-      padding: 1.25rem 0.875rem;
+      min-height: 90px;
+      padding: 0.625rem 0.5rem;
     }
   }
 }

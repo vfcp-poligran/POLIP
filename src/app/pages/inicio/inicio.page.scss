@@ -2,6 +2,7 @@
 @use '../../shared/styles/color-tokens' as colors;
 @use '../../shared/styles/typography-mixins' as typo;
 @use '../../shared/styles/breakpoints' as *;
+@use './styles/responsive-layout'; // Responsive grid improvements
 
 // Use centralized color tokens
 $azul-oscuro: colors.$azul-oscuro;

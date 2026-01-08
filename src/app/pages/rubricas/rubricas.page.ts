@@ -1455,6 +1455,16 @@ export class RubricasPage implements ViewWillEnter, ViewWillLeave {
   }
 
   /**
+   * Cancela la selección actual (pierde foco)
+   */
+  cancelarSeleccion(): void {
+    this.rubricaSeleccionada = null;
+    this.modoEdicion = false;
+    this.modoCreacion = false;
+    this.modoSeleccionCrear = false;
+  }
+
+  /**
    * Callback cuando se guarda una rúbrica desde el editor inline
    */
   onRubricaGuardada(evento: { guardado: boolean; rubrica?: RubricaDefinicion }): void {

@@ -53,7 +53,25 @@
           <ion-icon name="add-circle" slot="start"></ion-icon>
           Crear
         </ion-button>
-        @if (rubricaSeleccionada) {
+        } @else {
+        <!-- Botón Cancelar (Visible en modos de edición/creación) -->
+        <ion-button size="small" fill="solid" color="warning"
+          (click)="modoEdicion ? cancelarEdicion() : modoCreacion ? cancelarModoCreacion() : cancelarSeleccionCrear()"
+          class="ion-hide-md-down">
+          <ion-icon name="close-circle" slot="start"></ion-icon>
+          Cancelar
+        </ion-button>
+        }
+
+        <!-- Botón Cancelar Selección (Visible solo cuando hay rúbrica seleccionada y NO estamos editando) -->
+        @if (rubricaSeleccionada && !modoEdicion && !modoCreacion && !modoSeleccionCrear) {
+        <ion-button size="small" fill="solid" color="warning" (click)="cancelarSeleccion()" class="ion-hide-md-down">
+          <ion-icon name="close-circle" slot="start"></ion-icon>
+          Cancelar
+        </ion-button>
+        }
+
+        @if (rubricaSeleccionada && !modoEdicion && !modoCreacion && !modoSeleccionCrear) {
         <ion-button size="small" fill="solid" color="primary" (click)="editarRubrica(rubricaSeleccionada)">
           <ion-icon name="create" slot="start"></ion-icon>
           Editar

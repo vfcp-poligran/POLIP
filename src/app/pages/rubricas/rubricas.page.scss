@@ -4,6 +4,8 @@
 @use '../../shared/styles/page-header'; // Estilos compartidos de header
 @use '../../shared/styles/typography-variables' as typo-vars; // Variables tipográficas
 @use '../../shared/styles/typography-mixins' as typo; // Mixins tipográficos
+@use './styles/compact'; // Compact styles for all viewports
+@use '../../shared/styles/header' as shared-header; // New shared header styles
 
 // ============================================
 // CONTENEDOR PRINCIPAL
@@ -17,6 +19,12 @@
   @media (max-width: 768px) {
     margin-top: 56px;
   }
+}
+
+// HEADER NORMALIZADO (Overrides shared/styles/page-header if needed)
+.page-title-header {
+  @include shared-header.header-base;
+  // Background heredado del mixin (Azul Oscuro)
 }
 
 // ============================================

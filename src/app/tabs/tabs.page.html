@@ -73,8 +73,6 @@
 
   <main class="main-content-area" [class.has-bottom-tabs]="!isDesktop" [class.search-open]="isSearchOpen">
     <ion-tabs>
-      <ion-router-outlet></ion-router-outlet>
-
       @if (!isDesktop) {
       <ion-tab-bar class="mobile-bottom-tabs" slot="bottom">
         <ion-tab-button *ngFor="let item of navigationItems" [tab]="item.path.split('/').pop()"

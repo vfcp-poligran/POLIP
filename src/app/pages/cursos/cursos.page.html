@@ -71,12 +71,14 @@
         </ion-button>
         }
 
-        <!-- Botón Cancelar (Visible siempre para limpiar estado/selección) -->
+        <!-- Botón Cancelar (Visible cuando hay curso seleccionado para deseleccionar) -->
+        @if (cursoSeleccionado()) {
         <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.CANCELAR.color" (click)="cancelarCreacionCurso()"
           [attr.aria-label]="BUTTON_CONFIG.CANCELAR.ariaLabel">
           <ion-icon [name]="BUTTON_CONFIG.CANCELAR.icon" slot="start"></ion-icon>
           {{ BUTTON_CONFIG.CANCELAR.label }}
         </ion-button>
+        }
         } @else {
         <div class="edit-actions">
           <ion-button size="small" fill="solid" [color]="BUTTON_CONFIG.GUARDAR.color" (click)="guardarCurso()"
@@ -245,115 +247,10 @@
                         </ion-item>
                       </div>
 
-                      <!-- Sección de Importación -->
-                      <div class="import-side section-box">
-                        <div class="section-label">Importar Archivos</div>
-                        <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
-                        <div class="import-cloud-grid">
-                          <!-- Import Personas -->
-                          <div class="import-cloud-item" (click)="onEstudiantesFileSelected($event)">
-                            <div class="cloud-icon-wrapper">
-                              <ion-icon name="cloud-upload"
-                                [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : 'var(--ion-color-primary)'"></ion-icon>
-                              <div class="cloud-label">Importar (Personas)</div>
-                            </div>
-                            <!-- Input oculto para web (fallback) -->
-                            <input type="file" #importEstudiantesInput
-                              accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
-                              (change)="onEstudiantesFileSelected($event)"
-                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
-                            @if (estudiantesFileName) {
-                            <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
-                              <ion-label>{{ estudiantesFileName }}</ion-label>
-                              <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
-                            </ion-chip>
-                            } @else {
-                            <!-- Opción C: Placeholder visual -->
-                            <div class="import-placeholder">
-                              <ion-icon name="document-text-outline"></ion-icon>
-                              <span>Toca para seleccionar CSV</span>
-                            </div>
-                            }
-                          </div>
-
-                          <!-- Import Calificaciones -->
-                          <div class="import-cloud-item" (click)="onCalificacionesFileSelected($event)">
-                            <div class="cloud-icon-wrapper">
-                              <ion-icon name="cloud-upload"
-                                [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : 'var(--ion-color-primary)'"></ion-icon>
-                              <div class="cloud-label">Importar (Calificaciones)</div>
-                            </div>
-                            <!-- Input oculto para web (fallback) -->
-                            <input type="file" #importCalificacionesInput
-                              accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
-                              (change)="onCalificacionesFileSelected($event)"
-                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
-                            @if (calificacionesFileName) {
-                            <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
-                              <ion-label>{{ calificacionesFileName }}</ion-label>
-                              <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
-                            </ion-chip>
-                            } @else {
-                            <!-- Opción C: Placeholder visual -->
-                            <div class="import-placeholder">
-                              <ion-icon name="calculator-outline"></ion-icon>
-                              <span>Toca para seleccionar CSV</span>
-                            </div>
-                            }
-                          </div>
-                        </div>
-
-                        <!-- Import Rubricas (NUEVO CRUD) -->
-                        <div class="row-import">
-                          <div class="import-cloud-item" (click)="rubricaFileInput.click()">
-                            <div class="cloud-icon-wrapper">
-                              <ion-icon name="list-outline"
-                                [style.color]="rubricaFileName ? 'var(--ion-color-success)' : 'var(--ion-color-secondary)'"></ion-icon>
-                              <div class="cloud-label">Importar (Rúbrica)</div>
-                            </div>
-                            <!-- Input oculto para web -->
-                            <input type="file" #rubricaFileInput accept=".txt" (change)="onRubricaFileSelected($event)"
-                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
-                            @if (rubricaFileName) {
-                            <ion-chip color="secondary" size="small" (click)="$event.stopPropagation()">
-                              <ion-label>{{ rubricaFileName }}</ion-label>
-                              <ion-icon name="close-circle"
-                                (click)="desvincularArchivoRubrica(); $event.stopPropagation()"></ion-icon>
-                            </ion-chip>
-                            } @else {
-                            <div class="import-placeholder">
-                              <ion-icon name="document-text-outline"></ion-icon>
-                              <span>Toca para seleccionar TXT</span>
-                            </div>
-                            }
-                          </div>
-                        </div>
-
-                        <!-- Rúbricas existentes (CRUD Delete) -->
-                        @if (rubricasAsociadas.length > 0) {
-                        <div style="margin-top: 16px;">
-                          <h6
-                            style="font-size: 14px; color: var(--ion-color-medium); margin-bottom: 8px; margin-left: 4px;">
-                            Rúbricas Asociadas</h6>
-                          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                            @for (rubrica of rubricasAsociadas; track rubrica.id) {
-                            <ion-chip outline color="primary" style="margin: 0;">
-                              <ion-icon name="document-text-outline"></ion-icon>
-                              <ion-label>{{ rubrica.nombre }} ({{ rubrica.tipoEntrega || 'E1' }})</ion-label>
-                              <ion-icon name="trash-outline" color="danger"
-                                (click)="desvincularRubricaDeCurso(rubrica, $event)"></ion-icon>
-                            </ion-chip>
-                            }
-                          </div>
-                        </div>
-                        }
-
-                      </div>
-
-                      <!-- Sección de Características del Curso -->
+                      <!-- INFORMACIÓN DEL CURSO (Movido arriba) -->
                       @if (cursoParseado) {
-                      <div class="section-box">
-                        <div class="section-label">Información Parseada</div>
+                      <div class="section-box info-section">
+                        <div class="section-label">Información</div>
                         <ion-grid class="parsed-course-info">
                           <ion-row>
                             <ion-col>
@@ -378,9 +275,7 @@
                               <div class="characteristic-item">
                                 <h4 class="label">Modalidad</h4>
                                 <p class="value">{{ (cursoParseado.modalidad || info.modalidad || 'Virtual') |
-                                  capitalize
-                                  }}
-                                </p>
+                                  capitalize }}</p>
                               </div>
                             </ion-col>
                             <ion-col>
@@ -392,12 +287,57 @@
                           </ion-row>
                         </ion-grid>
                       </div>
-                      } @else {
-                      <div class="empty-import-state">
-                        <ion-icon name="cloud-upload" color="medium"></ion-icon>
-                        <p>Importa un archivo para ver los datos del curso</p>
-                      </div>
                       }
+
+                      <!-- Sección de Importación -->
+                      <div class="import-side section-box">
+                        <div class="section-label">Importar Archivos</div>
+                        <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
+                        <div class="import-cloud-grid">
+                          <!-- Import Personas -->
+                          <div class="import-cloud-item" (click)="onEstudiantesFileSelected($event)">
+                            <div class="cloud-icon-wrapper">
+                              <ion-icon name="cloud-upload"
+                                [style.color]="estudiantesFileName ? 'var(--ion-color-success)' : 'var(--ion-color-primary)'"></ion-icon>
+                              <div class="cloud-label">Importar (Personas)</div>
+                            </div>
+                            <!-- Input oculto para web (fallback) -->
+                            <input type="file" #importEstudiantesInput
+                              accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
+                              (change)="onEstudiantesFileSelected($event)"
+                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+                            @if (estudiantesFileName) {
+                            <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
+                              <ion-label>{{ estudiantesFileName }}</ion-label>
+                              <ion-icon name="close-circle" (click)="limpiarEstudiantes()"></ion-icon>
+                            </ion-chip>
+                            }
+                          </div>
+
+                          <!-- Import Calificaciones -->
+                          <div class="import-cloud-item" (click)="onCalificacionesFileSelected($event)">
+                            <div class="cloud-icon-wrapper">
+                              <ion-icon name="cloud-upload"
+                                [style.color]="calificacionesFileName ? 'var(--ion-color-success)' : 'var(--ion-color-primary)'"></ion-icon>
+                              <div class="cloud-label">Importar (Calificaciones)</div>
+                            </div>
+                            <!-- Input oculto para web (fallback) -->
+                            <input type="file" #importCalificacionesInput
+                              accept="text/csv,text/comma-separated-values,application/vnd.ms-excel,application/json,*/*"
+                              (change)="onCalificacionesFileSelected($event)"
+                              style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+                            @if (calificacionesFileName) {
+                            <ion-chip color="primary" size="small" (click)="$event.stopPropagation()">
+                              <ion-label>{{ calificacionesFileName }}</ion-label>
+                              <ion-icon name="close-circle" (click)="limpiarCalificaciones()"></ion-icon>
+                            </ion-chip>
+                            }
+                          </div>
+                        </div>
+
+                      </div>
+
+
                     </div>
 
                     <!-- Columna Derecha: Color y Configuración -->
@@ -405,12 +345,9 @@
                       <div class="section-label">Configuración</div>
                       <!-- Selector de Color -->
                       <div class="color-selector-section">
-                        <button type="button" class="color-toggle-button" (click)="toggleColorPicker()">
-                          <div class="color-preview-swatch"
-                            [style.background-color]="colorCursoSeleccionado || '#1fb2de'">
-                          </div>
-                          <span class="color-label">Color del Curso</span>
-                          <ion-icon [name]="showColorPicker ? 'chevron-up' : 'chevron-down'"></ion-icon>
+                        <button type="button" class="color-swatch-only" (click)="toggleColorPicker()"
+                          [style.background-color]="colorCursoSeleccionado || '#1fb2de'"
+                          [attr.aria-label]="'Seleccionar color del curso'">
                         </button>
 
                         @if (showColorPicker) {

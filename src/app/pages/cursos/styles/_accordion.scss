@@ -1,0 +1,76 @@
+// ============================================
+// ACCORDION STYLES - PURE ACCORDION DESIGN
+// ============================================
+@use '../../../shared/styles/breakpoints' as bp;
+
+// Accordion group container
+ion-accordion-group {
+    &.course-accordion-group {
+        margin-bottom: 1rem;
+    }
+}
+
+// Individual accordion items
+ion-accordion.course-accordion {
+    border: 1px solid var(--ion-color-light-shade);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    background: white;
+
+    // Header styling
+    ion-item[slot="header"] {
+        --background: var(--ion-color-light);
+        --color: var(--ion-text-color);
+        --padding-start: 1rem;
+        --padding-end: 1rem;
+        --min-height: 52px;
+        font-weight: 600;
+
+        ion-icon {
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+        &:hover {
+            --background: rgba(var(--ion-color-primary-rgb), 0.05);
+        }
+    }
+
+    // Content area
+    div[slot="content"] {
+        padding: 0;
+        background: white;
+    }
+
+    // When expanded
+    &.accordion-expanded {
+        border-color: var(--ion-color-primary);
+        box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb), 0.1);
+
+        ion-item[slot="header"] {
+            --background: rgba(var(--ion-color-primary-rgb), 0.08);
+            --color: var(--ion-color-primary);
+
+            ion-icon {
+                color: var(--ion-color-primary);
+            }
+        }
+    }
+
+    // Compact on mobile
+    @include bp.mobile-only {
+        margin-bottom: 0.5rem;
+
+        ion-item[slot="header"] {
+            --min-height: 48px;
+            --padding-start: 0.75rem;
+            --padding-end: 0.75rem;
+            font-size: 0.9rem;
+
+            ion-icon {
+                font-size: 1.1rem;
+            }
+        }
+    }
+}

@@ -1,66 +1,110 @@
 // ============================================
-// DEBUG: SECTION BOXES WITH VISIBLE BORDERS
+// COMPACT SECTION STYLES - NO SCROLLBAR
 // ============================================
+@use '../../../shared/styles/breakpoints' as bp;
 
 .section-box {
-    border: 2px solid var(--ion-color-primary);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border: 1px solid var(--ion-color-medium-tint);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
     position: relative;
-    background: rgba(var(--ion-color-primary-rgb), 0.02);
+    background: rgba(var(--ion-color-light-rgb), 0.3);
+
+    @include bp.desktop-only {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
 }
 
 .section-label {
     position: absolute;
-    top: -12px;
-    left: 16px;
+    top: -10px;
+    left: 12px;
     background: white;
-    padding: 0 8px;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--ion-color-primary);
+    padding: 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ion-color-medium-shade);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     z-index: 1;
 }
 
-// Different colors for different sections
+// Compact course name section
 .course-name-edit-section.section-box {
-    border-color: var(--ion-color-success);
-    background: rgba(var(--ion-color-success-rgb), 0.02);
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
 
-    .section-label {
-        color: var(--ion-color-success);
+    ion-item {
+        --padding-start: 0.5rem;
+        --padding-end: 0.5rem;
+        --min-height: 48px;
+
+        ion-label {
+            font-size: 0.8rem;
+            margin-bottom: 2px;
+        }
     }
 }
 
+// Compact import section
 .import-side.section-box {
-    border-color: var(--ion-color-warning);
-    background: rgba(var(--ion-color-warning-rgb), 0.02);
+    padding: 0.75rem;
 
-    .section-label {
-        color: var(--ion-color-warning);
+    .section-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
     }
 }
 
+// Compact config panel
 .config-side-panel.section-box {
-    border-color: var(--ion-color-tertiary);
-    background: rgba(var(--ion-color-tertiary-rgb), 0.02);
+    padding: 0.75rem;
 
-    .section-label {
-        color: var(--ion-color-tertiary);
+    .color-selector-section {
+        margin-bottom: 0.75rem;
+    }
+
+    .cohort-config-box {
+        margin-top: 0.75rem;
+        padding: 0.75rem;
+
+        .section-title {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .config-fields {
+            gap: 0.5rem;
+
+            ion-select {
+                --padding-start: 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
     }
 }
 
+// Compact parsed info grid
 .parsed-course-info {
-    .section-label {
-        color: var(--ion-color-secondary);
-    }
-}
+    margin: 0;
+    padding: 0.5rem 0;
 
-// Add to parent containing parsed-course-info
-div:has(> .parsed-course-info).section-box {
-    border-color: var(--ion-color-secondary);
-    background: rgba(var(--ion-color-secondary-rgb), 0.02);
+    ion-row {
+        ion-col {
+            padding: 0.25rem;
+        }
+    }
+
+    .characteristic-item {
+        .label {
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+
+        .value {
+            font-size: 0.85rem;
+        }
+    }
 }
