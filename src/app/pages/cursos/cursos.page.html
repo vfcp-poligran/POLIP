@@ -236,7 +236,8 @@
                     <!-- Columna Izquierda: Importación y Datos del Curso -->
                     <div class="main-content-side">
                       <!-- CAMPO DE NOMBRE DEL CURSO (EDITABLE) -->
-                      <div class="course-name-edit-section">
+                      <div class="course-name-edit-section section-box">
+                        <div class="section-label">Nombre del Curso</div>
                         <ion-item fill="outline" class="course-name-input">
                           <ion-label position="stacked">Nombre del Curso</ion-label>
                           <ion-input name="courseNameInput" [(ngModel)]="cursoParseado.nombre" type="text"
@@ -245,7 +246,8 @@
                       </div>
 
                       <!-- Sección de Importación -->
-                      <div class="import-side">
+                      <div class="import-side section-box">
+                        <div class="section-label">Importar Archivos</div>
                         <h4 class="section-title">{{ info.esNuevo ? 'Cargar Estudiantes' : 'Actualizar Datos' }}</h4>
                         <div class="import-cloud-grid">
                           <!-- Import Personas -->
@@ -350,42 +352,46 @@
 
                       <!-- Sección de Características del Curso -->
                       @if (cursoParseado) {
-                      <ion-grid class="parsed-course-info">
-                        <ion-row>
-                          <ion-col>
-                            <div class="characteristic-item">
-                              <h4 class="label">Código</h4>
-                              <p class="value">{{ getDisplayCode(cursoParseado) || info.codigoDisplay }}</p>
-                            </div>
-                          </ion-col>
-                          <ion-col>
-                            <div class="characteristic-item">
-                              <h4 class="label">Ingreso</h4>
-                              <p class="value">{{ cursoParseado.ingreso || info.ingreso || '—' }}</p>
-                            </div>
-                          </ion-col>
-                          <ion-col>
-                            <div class="characteristic-item">
-                              <h4 class="label">Bloque</h4>
-                              <p class="value">{{ (cursoParseado.bloque || info.bloque || '—') | capitalize }}</p>
-                            </div>
-                          </ion-col>
-                          <ion-col>
-                            <div class="characteristic-item">
-                              <h4 class="label">Modalidad</h4>
-                              <p class="value">{{ (cursoParseado.modalidad || info.modalidad || 'Virtual') | capitalize
-                                }}
-                              </p>
-                            </div>
-                          </ion-col>
-                          <ion-col>
-                            <div class="characteristic-item">
-                              <h4 class="label">Año</h4>
-                              <p class="value">{{ cursoParseado.anio || info.anio || '—' }}</p>
-                            </div>
-                          </ion-col>
-                        </ion-row>
-                      </ion-grid>
+                      <div class="section-box">
+                        <div class="section-label">Información Parseada</div>
+                        <ion-grid class="parsed-course-info">
+                          <ion-row>
+                            <ion-col>
+                              <div class="characteristic-item">
+                                <h4 class="label">Código</h4>
+                                <p class="value">{{ getDisplayCode(cursoParseado) || info.codigoDisplay }}</p>
+                              </div>
+                            </ion-col>
+                            <ion-col>
+                              <div class="characteristic-item">
+                                <h4 class="label">Ingreso</h4>
+                                <p class="value">{{ cursoParseado.ingreso || info.ingreso || '—' }}</p>
+                              </div>
+                            </ion-col>
+                            <ion-col>
+                              <div class="characteristic-item">
+                                <h4 class="label">Bloque</h4>
+                                <p class="value">{{ (cursoParseado.bloque || info.bloque || '—') | capitalize }}</p>
+                              </div>
+                            </ion-col>
+                            <ion-col>
+                              <div class="characteristic-item">
+                                <h4 class="label">Modalidad</h4>
+                                <p class="value">{{ (cursoParseado.modalidad || info.modalidad || 'Virtual') |
+                                  capitalize
+                                  }}
+                                </p>
+                              </div>
+                            </ion-col>
+                            <ion-col>
+                              <div class="characteristic-item">
+                                <h4 class="label">Año</h4>
+                                <p class="value">{{ cursoParseado.anio || info.anio || '—' }}</p>
+                              </div>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+                      </div>
                       } @else {
                       <div class="empty-import-state">
                         <ion-icon name="cloud-upload" color="medium"></ion-icon>
@@ -395,7 +401,8 @@
                     </div>
 
                     <!-- Columna Derecha: Color y Configuración -->
-                    <div class="config-side-panel">
+                    <div class="config-side-panel section-box">
+                      <div class="section-label">Configuración</div>
                       <!-- Selector de Color -->
                       <div class="color-selector-section">
                         <button type="button" class="color-toggle-button" (click)="toggleColorPicker()">

@@ -11,6 +11,7 @@
 @use './styles/verification-panel';
 @use './styles/ingreso-config';
 @use './styles/import-sections'; // Import section styles
+@use './styles/section-debug'; // Section debug borders
 @use './styles/mobile-toolbar'; // Mobile toolbar with hamburger
 @use './styles/grupos-accordion'; // Groups accordion for Tablet/Mobile
 @use '../../shared/styles/page-header'; // Estilos compartidos de header

@@ -1,0 +1,66 @@
+// ============================================
+// DEBUG: SECTION BOXES WITH VISIBLE BORDERS
+// ============================================
+
+.section-box {
+    border: 2px solid var(--ion-color-primary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    background: rgba(var(--ion-color-primary-rgb), 0.02);
+}
+
+.section-label {
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: white;
+    padding: 0 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 1;
+}
+
+// Different colors for different sections
+.course-name-edit-section.section-box {
+    border-color: var(--ion-color-success);
+    background: rgba(var(--ion-color-success-rgb), 0.02);
+
+    .section-label {
+        color: var(--ion-color-success);
+    }
+}
+
+.import-side.section-box {
+    border-color: var(--ion-color-warning);
+    background: rgba(var(--ion-color-warning-rgb), 0.02);
+
+    .section-label {
+        color: var(--ion-color-warning);
+    }
+}
+
+.config-side-panel.section-box {
+    border-color: var(--ion-color-tertiary);
+    background: rgba(var(--ion-color-tertiary-rgb), 0.02);
+
+    .section-label {
+        color: var(--ion-color-tertiary);
+    }
+}
+
+.parsed-course-info {
+    .section-label {
+        color: var(--ion-color-secondary);
+    }
+}
+
+// Add to parent containing parsed-course-info
+div:has(> .parsed-course-info).section-box {
+    border-color: var(--ion-color-secondary);
+    background: rgba(var(--ion-color-secondary-rgb), 0.02);
+}
