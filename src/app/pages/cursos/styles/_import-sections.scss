@@ -2,34 +2,38 @@
 // SECCIONES DE IMPORTACIÓN DE ARCHIVOS
 // ============================================
 
+.course-name-edit-section {
+  margin-bottom: 1rem;
+}
+
 .import-side {
-  margin-top: 16px;
+  margin-top: 1.5rem;
 
   .section-title {
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--ion-color-medium-shade);
-    margin-bottom: 12px;
+    margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   .import-cloud-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .import-cloud-item {
     position: relative;
     background: var(--ion-color-light);
     border: 2px dashed var(--ion-color-medium);
-    border-radius: 12px;
-    padding: 20px 12px;
+    border-radius: 8px;
+    padding: 1.5rem 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    min-height: 120px;
+    transition: all 0.2s ease;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,39 +45,38 @@
       border-color: var(--ion-color-primary);
       border-style: solid;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
-    }
-
-    &:active {
-      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.15);
     }
 
     .cloud-icon-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 0.75rem;
 
       ion-icon {
-        font-size: 2.5rem;
-        transition: color 0.3s ease;
+        font-size: 3rem;
+        transition: transform 0.2s ease;
       }
 
       .cloud-label {
-        font-size: 0.85rem;
+        font-size: 0.875rem;
         font-weight: 500;
         color: var(--ion-color-medium-shade);
         white-space: nowrap;
       }
     }
 
+    &:hover .cloud-icon-wrapper ion-icon {
+      transform: scale(1.1);
+    }
+
     .import-placeholder {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      margin-top: 8px;
-      opacity: 0.7;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
 
       ion-icon {
         font-size: 1.5rem;
@@ -89,7 +92,7 @@
 
     ion-chip {
       position: absolute;
-      bottom: 8px;
+      bottom: 0.5rem;
       left: 50%;
       transform: translateX(-50%);
       max-width: 90%;
@@ -101,20 +104,13 @@
         white-space: nowrap;
         max-width: 120px;
       }
-
-      ion-icon {
-        cursor: pointer;
-        &:hover {
-          color: var(--ion-color-danger);
-        }
-      }
     }
   }
 
   .row-import {
-    margin-top: 12px;
+    margin-top: 1rem;
     display: flex;
-    gap: 12px;
+    gap: 1rem;
     width: 100%;
   }
 }
@@ -124,20 +120,11 @@
   .import-side {
     .import-cloud-grid {
       grid-template-columns: 1fr;
-      gap: 10px;
     }
 
     .import-cloud-item {
-      min-height: 100px;
-      padding: 16px 10px;
-    }
-  }
-}
-
-@include bp.tablet-portrait {
-  .import-side {
-    .import-cloud-grid {
-      grid-template-columns: repeat(2, 1fr);
+      min-height: 120px;
+      padding: 1.25rem 0.875rem;
     }
   }
 }

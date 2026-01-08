@@ -60,13 +60,10 @@
 
   ion-router-outlet {
     flex: 1;
-    /* Ocupa el espacio restante inteligentemente */
     display: block;
     position: relative;
     width: 100%;
-    height: 100%;
-    overflow: hidden;
-    /* Evita doble scroll */
+    overflow: auto; // Allow natural scrolling
   }
 
   // Estado con búsqueda abierta
@@ -89,14 +86,6 @@
     @include bp.desktop-only {
       padding-bottom: 0;
     }
-  }
-
-  ion-router-outlet {
-    flex: 1;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
   }
 }
 

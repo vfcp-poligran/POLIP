@@ -236,7 +236,7 @@
                     <!-- Columna Izquierda: Importación y Datos del Curso -->
                     <div class="main-content-side">
                       <!-- CAMPO DE NOMBRE DEL CURSO (EDITABLE) -->
-                      <div class="course-name-edit-section" style="margin-bottom: 16px;">
+                      <div class="course-name-edit-section">
                         <ion-item fill="outline" class="course-name-input">
                           <ion-label position="stacked">Nombre del Curso</ion-label>
                           <ion-input name="courseNameInput" [(ngModel)]="cursoParseado.nombre" type="text"
@@ -302,8 +302,8 @@
                         </div>
 
                         <!-- Import Rubricas (NUEVO CRUD) -->
-                        <div class="row-import" style="margin-top: 12px; display: flex; gap: 12px; width: 100%;">
-                          <div class="import-cloud-item" (click)="rubricaFileInput.click()" style="flex: 1;">
+                        <div class="row-import">
+                          <div class="import-cloud-item" (click)="rubricaFileInput.click()">
                             <div class="cloud-icon-wrapper">
                               <ion-icon name="list-outline"
                                 [style.color]="rubricaFileName ? 'var(--ion-color-success)' : 'var(--ion-color-secondary)'"></ion-icon>
